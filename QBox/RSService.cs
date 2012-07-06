@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Net;
 
@@ -52,7 +49,6 @@ namespace QBox
                     bs = new byte[fs.Length];
                     fs.Read(bs, 0, bs.Length);
                 }
-                
             }
             catch (Exception e)
             {
@@ -97,7 +93,7 @@ namespace QBox
             return new PublishRet(callRet);
         }
 
-        public PublishRet UnPublish(string domain)
+        public PublishRet Unpublish(string domain)
         {
             string url = Config.RS_HOST + "/unpublish/" + Base64UrlSafe.Encode(domain);
             CallRet callRet = Conn.Call(url);
