@@ -1,2 +1,2 @@
-Qiniu Resource (Cloud) Storage SDK for C#
+Qiniu Resource (Cloud) Storage SDK for C# 
 http://docs.qiniutek.com/
