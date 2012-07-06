@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace QBox
 {
     public class Config
     {
         public static string ACCESS_KEY = "<Please apply your access key>";
-        public static string SECRET_KEY = "<Dont change here>";
+        public static string SECRET_KEY = "<Dont send your secret key to anyone>";
 
         public static string REDIRECT_URI = "<RedirectURL>";
         public static string AUTHORIZATION_ENDPOINT = "<AuthURL>";

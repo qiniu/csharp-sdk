@@ -15,6 +15,40 @@ namespace QBox
         public static Client conn;
         public static RSService rs;
 
+        public static void Main()
+        {
+            Config.ACCESS_KEY = "<Please apply your access key>";
+            Config.SECRET_KEY = "<Dont send your secret key to anyone>";
+            
+            conn = new DigestAuthClient();
+            rs = new RSService(conn, tableName);
+            localFile = Process.GetCurrentProcess().MainModule.FileName;
+            key = System.IO.Path.GetFileName(localFile);
+
+            try
+            {
+                PutFile();
+                Get();
+                Stat();
+                Delete();
+                CliPutFile();
+                Get();
+                Stat();
+                Publish();
+                UnPublish();
+                Drop();
+
+                UpToken();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("RS Exception");
+                Console.WriteLine(e.ToString());
+            }
+
+            Console.ReadLine();
+        }
+
         public static void PutFile()
         {
             Console.WriteLine("\n--- PutFile ---");
@@ -125,7 +159,7 @@ namespace QBox
         {
             Console.WriteLine("\n--- UnPublish ---");
             PrintInput(tableName, null, null, DEMO_DOMAIN);
-            PublishRet publishRet = rs.UnPublish(DEMO_DOMAIN);
+            PublishRet publishRet = rs.Unpublish(DEMO_DOMAIN);
             PrintRet(publishRet);
             if (!publishRet.OK)
             {
@@ -170,6 +204,14 @@ namespace QBox
 
         }
 
+        public static void UpToken()
+        {
+            Console.WriteLine("\n--- Gen UpToken ---");
+            var authPolicy = new AuthPolicy(tableName, 3600);
+            Console.WriteLine("Json: " + authPolicy.Marshal());
+            Console.WriteLine("Token: " + authPolicy.MakeAuthTokenString());
+        }
+
         public static void PrintInput(
             string tblName, string key, string localFile, string domain)
         {
@@ -195,30 +237,6 @@ namespace QBox
             Console.WriteLine("StatusCode: " + callRet.StatusCode.ToString());
             Console.WriteLine("Response:\n" + callRet.Response);
             Console.WriteLine();
-        }
-
-        public static void Main()
-        {
-            Config.ACCESS_KEY = "RLT1NBD08g3kih5-0v8Yi6nX6cBhesa2Dju4P7mT";
-            Config.SECRET_KEY = "k6uZoSDAdKBXQcNYG3UOm4bP3spDVkTg-9hWHIKm";
-
-            conn = new DigestAuthClient();
-            rs = new RSService(conn, tableName);
-            localFile = Process.GetCurrentProcess().MainModule.FileName;
-            key = System.IO.Path.GetFileName(localFile);
-
-            PutFile();
-            Get();
-            Stat();
-            Delete();
-            CliPutFile();
-            Get();
-            Stat();
-            Publish();
-            UnPublish();
-            Drop();
-
-            Console.ReadLine();
         }
     }
 }
