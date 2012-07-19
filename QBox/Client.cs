@@ -6,8 +6,8 @@ namespace QBox
 {
     public abstract class Client
     {
-        public abstract void SetAuth(HttpWebRequest request);
-
+        public abstract void SetAuth(HttpWebRequest request, byte[] body);
+        
         public CallRet Call(string url)
         {
             Console.WriteLine("URL: " + url);
@@ -15,7 +15,7 @@ namespace QBox
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
-                SetAuth(request);
+                SetAuth(request, null);
                 using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
                 {
                     return HandleResult(response);
@@ -37,7 +37,7 @@ namespace QBox
                 request.Method = "POST";
                 request.ContentType = contentType;
                 request.ContentLength = body.Length;
-                SetAuth(request);
+                SetAuth(request, body);
                 using (Stream requestStream = request.GetRequestStream())
                 {
                     requestStream.Write(body, 0, body.Length);
