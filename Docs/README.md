@@ -1,10 +1,13 @@
 ---
+title: C# SDK | 七牛云存储
+---
+
 # C# SDK 使用指南
 
 
 此 SDK 适用于 .NET4 及以上版本。
 
-SDK下载地址：[https://github.com/qiniu/csharp-sdk](https://github.com/qiniu/csharp-sdk)
+SDK下载地址：[https://github.com/qiniu/csharp-sdk/tags](https://github.com/qiniu/csharp-sdk/tags)
 
 
 **应用接入**
@@ -62,10 +65,10 @@ SDK下载地址：[https://github.com/qiniu/csharp-sdk](https://github.com/qiniu
 
     // 首先定义资源表名
     string tableName = "tableName";
-    
+
     // 然后获得签名认证
     DigestAuthClient conn = new DigestAuthClient();
-    
+
     // 签名认证完成后，即可使用该认证来新建资源表
     RSService rs = new RSService(conn, tableName);
 
@@ -94,17 +97,17 @@ SDK下载地址：[https://github.com/qiniu/csharp-sdk](https://github.com/qiniu
 
 	// 调用资源表对象的 PutFile() 方法进行文件上传
 	PutFileRet putFileRet = rs.PutFile(key, mimeType, filePath, customMeta);
-	
+
 ##### 2. 客户端上传
-	    
+
 因为服务器端已经在之前进行过签名认证持有相应的安全凭证，因此可以直接进行上传。而由于客户端并不持有对RS的安全凭证，所以需要获取上传授权，从而得到一个有上传权限的URL，参见[获得上传授权](#rs-PutAuth)。在获得上传授权URL后，就可以开始上传文件了，示例代码如下：
 
 	// 在客户端上传文件之前，需要获得上传授权，得到经过授权的临时URL
     PutAuthRet putAuthRet = rs.PutAuth();
     uploadUrl = putAuthRet.Url;
-    
+
     // 通过该临时 URL 进行文件上传
-	PutFileRet putFileRet = RSClient.PutFile(uploadUrl, tableName, key, mimeType,  
+	PutFileRet putFileRet = RSClient.PutFile(uploadUrl, tableName, key, mimeType,
 	                                         filePath, customMeta, callbackParam);
 
 <a name="rs-Stat"></a>
@@ -112,7 +115,7 @@ SDK下载地址：[https://github.com/qiniu/csharp-sdk](https://github.com/qiniu
 ### 4. 获取已上传文件信息
 
 您可以调用资源表对象的 Stat() 方法并传入一个 Key 来获取指定文件的相关信息。
-    
+
     // 获取资源表中特定文件信息
     StatRet statRet = rs.Stat(key);
 
