@@ -3,8 +3,9 @@ using System.Text;
 using System.IO;
 using LitJson;
 using System.Security.Cryptography;
+using QBox.RS;
 
-namespace QBox
+namespace QBox.Auth
 {
     public class AuthPolicy
     {

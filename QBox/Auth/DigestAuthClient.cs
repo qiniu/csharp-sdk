@@ -3,12 +3,13 @@ using System.Text;
 using System.Net;
 using System.IO;
 using System.Security.Cryptography;
+using QBox.RS;
 
-namespace QBox
+namespace QBox.Auth
 {
     public class DigestAuthClient : Client
     {
-        public override void SetAuth(HttpWebRequest request, byte[] body)
+        public override void SetAuth(HttpWebRequest request, Stream body)
         {
             byte[] secretKey = Encoding.ASCII.GetBytes(Config.SECRET_KEY);
             using (HMACSHA1 hmac = new HMACSHA1(secretKey))
@@ -21,7 +22,7 @@ namespace QBox
                     buffer.WriteByte((byte)'\n');
                     if (request.ContentType == "application/x-www-form-urlencoded" && body != null)
                     {
-                        buffer.Write(body, 0, body.Length);
+                        body.CopyTo(buffer);
                     }
                     byte[] digest = hmac.ComputeHash(buffer.ToArray());
                     string digestBase64 = Base64UrlSafe.Encode(digest);

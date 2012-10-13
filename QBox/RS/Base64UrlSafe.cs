@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace QBox
+namespace QBox.RS
 {
     public static class Base64UrlSafe
     {
@@ -9,17 +9,17 @@ namespace QBox
         {
             if (String.IsNullOrEmpty(text)) return "";
             byte[] bs = Encoding.ASCII.GetBytes(text);
-            string encoded = Convert.ToBase64String(bs);
-            encoded = encoded.Replace('+', '-').Replace('/', '_');
-            return encoded;
+            string encodedStr = Convert.ToBase64String(bs);
+            encodedStr = encodedStr.Replace('+', '-').Replace('/', '_');
+            return encodedStr;
         }
 
         public static string Encode(byte[] bs)
         {
             if (bs == null || bs.Length == 0) return "";
-            string encoded = Convert.ToBase64String(bs);
-            encoded = encoded.Replace('+', '-').Replace('/', '_');
-            return encoded;
+            string encodedStr = Convert.ToBase64String(bs);
+            encodedStr = encodedStr.Replace('+', '-').Replace('/', '_');
+            return encodedStr;
         }
     }
 }

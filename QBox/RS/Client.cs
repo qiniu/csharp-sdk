@@ -2,11 +2,11 @@
 using System.Net;
 using System.IO;
 
-namespace QBox
+namespace QBox.RS
 {
     public abstract class Client
     {
-        public abstract void SetAuth(HttpWebRequest request, byte[] body);
+        public abstract void SetAuth(HttpWebRequest request, Stream body);
         
         public CallRet Call(string url)
         {
@@ -28,7 +28,7 @@ namespace QBox
             }
         }
 
-        public CallRet CallWithBinary(string url, string contentType, byte[] body)
+        public CallRet CallWithBinary(string url, string contentType, Stream body)
         {
             Console.WriteLine("URL: " + url);
             try
@@ -40,7 +40,7 @@ namespace QBox
                 SetAuth(request, body);
                 using (Stream requestStream = request.GetRequestStream())
                 {
-                    requestStream.Write(body, 0, body.Length);
+                    body.CopyTo(requestStream);
                 }
                 using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
                 {
