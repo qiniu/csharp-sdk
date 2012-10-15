@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Net;
 using LitJson;
 
-namespace QBox
+namespace QBox.RS
 {
-    public class GetRet : CallRet
+    public class PutAuthRet : CallRet
     {
-        public string Hash { get; private set; }
-        public long FileSize { get; private set; }
-        public string MimeType { get; private set; }
+        public int Expires { get; private set; }
         public string Url { get; private set; }
 
-        public GetRet(CallRet ret)
+        public PutAuthRet(CallRet ret)
             : base(ret)
         {
-            if (OK && !String.IsNullOrEmpty(Response))
+            if (!String.IsNullOrEmpty(Response))
             {
                 try
                 {
@@ -31,13 +28,7 @@ namespace QBox
         private void Unmarshal(string json)
         {
             JsonData data = JsonMapper.ToObject(json);
-            Hash = (string)data["hash"];
-            JsonData fsize = data["fsize"];
-            if (fsize.IsInt)
-                FileSize = (int)fsize;
-            else if (fsize.IsLong)
-                FileSize = (long)fsize;
-            MimeType = (string)data["mimeType"];
+            Expires = (int)data["expiresIn"];
             Url = (string)data["url"];
         }
     }

@@ -2,17 +2,23 @@
 using System.IO;
 using System.Net;
 
-namespace QBox
+namespace QBox.RS
 {
     public class RSService
     {
         public Client Conn { get; private set; }
-        public string TableName { get; private set; }
+        public string BucketName { get; private set; }
 
-        public RSService(Client conn, string tableName)
+        public RSService(Client conn, string bucketName)
         {
             Conn = conn;
-            TableName = tableName;
+            BucketName = bucketName;
+        }
+
+        public CallRet MkBucket()
+        {
+            string url = Config.RS_HOST + "/mkbucket/" + BucketName;
+            return Conn.Call(url);
         }
 
         public PutAuthRet PutAuth()
@@ -21,9 +27,9 @@ namespace QBox
             return new PutAuthRet(callRet);
         }
 
-        public PutFileRet Put(string key, string mimeType, byte[] body, string customMeta)
+        public PutFileRet PutFile(string key, string mimeType, string localFile, string customMeta)
         {
-            string entryURI = TableName + ":" + key;
+            string entryURI = BucketName + ":" + key;
             if (String.IsNullOrEmpty(mimeType))
             {
                 mimeType = "application/octet-stream";
@@ -35,19 +41,12 @@ namespace QBox
                 url += "/meta/" + Base64UrlSafe.Encode(customMeta);
             }
 
-            CallRet callRet = Conn.CallWithBinary(url, mimeType, body);
-            return new PutFileRet(callRet);
-        }
-
-        public PutFileRet PutFile(string key, string mimeType, string localFile, string customMeta)
-        {
-            byte[] bs = null;
             try
             {
                 using (FileStream fs = File.OpenRead(localFile))
                 {
-                    bs = new byte[fs.Length];
-                    fs.Read(bs, 0, bs.Length);
+                    CallRet callRet = Conn.CallWithBinary(url, mimeType, fs);
+                    return new PutFileRet(callRet);
                 }
             }
             catch (Exception e)
@@ -55,13 +54,11 @@ namespace QBox
                 Console.WriteLine(e.ToString());
                 return new PutFileRet(new CallRet(HttpStatusCode.BadRequest, e));
             }
-            
-            return Put(key, mimeType, bs, customMeta);
         }
 
         public GetRet Get(string key, string attName)
         {
-            string entryURI = TableName + ":" + key;
+            string entryURI = BucketName + ":" + key;
             string url = Config.RS_HOST + "/get/" + Base64UrlSafe.Encode(entryURI) + "/attName/"
                     + Base64UrlSafe.Encode(attName);
             CallRet callRet = Conn.Call(url);
@@ -70,7 +67,7 @@ namespace QBox
 
         public GetRet GetIfNotModified(string key, string attName, string hash)
         {
-            string entryURI = TableName + ":" + key;
+            string entryURI = BucketName + ":" + key;
             string url = Config.RS_HOST + "/get/" + Base64UrlSafe.Encode(entryURI) + "/attName/"
                     + Base64UrlSafe.Encode(attName) + "/base/" + hash;
             CallRet callRet = Conn.Call(url);
@@ -79,40 +76,35 @@ namespace QBox
 
         public StatRet Stat(string key)
         {
-            String entryURI = TableName + ":" + key;
+            String entryURI = BucketName + ":" + key;
             String url = Config.RS_HOST + "/stat/" + Base64UrlSafe.Encode(entryURI);
             CallRet callRet = Conn.Call(url);
             return new StatRet(callRet);
         }
 
-        public PublishRet Publish(string domain)
+        public CallRet Publish(string domain)
         {
-            String url = Config.RS_HOST + "/publish/" + Base64UrlSafe.Encode(domain) + 
-                         "/from/" + TableName;
-            CallRet callRet = Conn.Call(url);
-            return new PublishRet(callRet);
+            String url = Config.RS_HOST + "/publish/" + Base64UrlSafe.Encode(domain) + "/from/" + BucketName;
+            return Conn.Call(url);
         }
 
-        public PublishRet Unpublish(string domain)
+        public CallRet Unpublish(string domain)
         {
             string url = Config.RS_HOST + "/unpublish/" + Base64UrlSafe.Encode(domain);
-            CallRet callRet = Conn.Call(url);
-            return new PublishRet(callRet);
+            return Conn.Call(url);
         }
 
-        public DeleteRet Delete(string key)
+        public CallRet Delete(string key)
         {
-            string entryURI = TableName + ":" + key;
+            string entryURI = BucketName + ":" + key;
             string url = Config.RS_HOST + "/delete/" + Base64UrlSafe.Encode(entryURI);
-            CallRet callRet = Conn.Call(url);
-            return new DeleteRet(callRet);
+            return Conn.Call(url);
         }
 
-        public DropRet Drop()
+        public CallRet Drop()
         {
-            string url = Config.RS_HOST + "/drop/" + TableName;
-            CallRet callRet = Conn.Call(url);
-            return new DropRet(callRet);
+            string url = Config.RS_HOST + "/drop/" + BucketName;
+            return Conn.Call(url);
         }
     }
 }
