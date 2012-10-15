@@ -1,19 +1,20 @@
 ﻿using System;
+using System.Net;
 using LitJson;
 
-namespace QBox
+namespace QBox.RS
 {
-    public class StatRet : CallRet
+    public class GetRet : CallRet
     {
         public string Hash { get; private set; }
         public long FileSize { get; private set; }
-        public long PutTime { get; private set; }
         public string MimeType { get; private set; }
+        public string Url { get; private set; }
 
-        public StatRet(CallRet ret)
+        public GetRet(CallRet ret)
             : base(ret)
         {
-            if (OK && Response != null)
+            if (OK && !String.IsNullOrEmpty(Response))
             {
                 try
                 {
@@ -36,12 +37,8 @@ namespace QBox
                 FileSize = (int)fsize;
             else if (fsize.IsLong)
                 FileSize = (long)fsize;
-            JsonData putTime = data["putTime"];
-            if (putTime.IsInt)
-                PutTime = (int)putTime;
-            else if (putTime.IsLong)
-                PutTime = (long)putTime;
             MimeType = (string)data["mimeType"];
+            Url = (string)data["url"];
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QBox
+namespace QBox.RS
 {
     public class FileParameter
     {

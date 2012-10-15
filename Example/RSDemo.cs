@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using QBox.Auth;
+using QBox.RS;
 
-namespace QBox
+namespace QBox.Example
 {
     public class RSDemo
     {
-        public static string tableName = "Bucket";
+        public static string bucketName;
         public static string key;
         public static string localFile;
-        public static string DEMO_DOMAIN = "iovip.qbox.me/bucket";
+        public static string DEMO_DOMAIN;
         public static Client conn;
         public static RSService rs;
 
@@ -19,40 +21,32 @@ namespace QBox
         {
             Config.ACCESS_KEY = "<Please apply your access key>";
             Config.SECRET_KEY = "<Dont send your secret key to anyone>";
-            
+
+            bucketName = "csharpbucket";
+            DEMO_DOMAIN = "iovip.qbox.me/csharpbucket";
             conn = new DigestAuthClient();
-            rs = new RSService(conn, tableName);
+            rs = new RSService(conn, bucketName);
             localFile = Process.GetCurrentProcess().MainModule.FileName;
             key = System.IO.Path.GetFileName(localFile);
 
-            try
-            {
-                PutFile();
-                Get();
-                Stat();
-                Delete();
-                CliPutFile();
-                Get();
-                Stat();
-                Publish();
-                UnPublish();
-                Drop();
+            CallRet callRet = rs.MkBucket();
+            PrintRet(callRet);
 
-                UpToken();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("RS Exception");
-                Console.WriteLine(e.ToString());
-            }
+            RSPutFile();
+            RSClientPutFile();
+            Get();
+            Stat();
+            Publish();
+            UnPublish();
+            Delete();
+            Drop();
 
             Console.ReadLine();
         }
 
-        public static void PutFile()
+        public static void RSPutFile()
         {
-            Console.WriteLine("\n--- PutFile ---");
-            PrintInput(tableName, key, localFile, null);
+            Console.WriteLine("\n===> RSService.PutFile");
             PutFileRet putFileRet = rs.PutFile(key, null, localFile, null);
             PrintRet(putFileRet);
             if (putFileRet.OK)
@@ -65,10 +59,54 @@ namespace QBox
             }
         }
 
+        public static void RSClientPutFile()
+        {
+            Console.WriteLine("\n==> PutAuth");
+            PutAuthRet putAuthRet = rs.PutAuth();
+            PrintRet(putAuthRet);
+            if (putAuthRet.OK)
+            {
+                Console.WriteLine("Expires: " + putAuthRet.Expires.ToString());
+                Console.WriteLine("Url: " + putAuthRet.Url);
+            }
+            else
+            {
+                Console.WriteLine("Failed to PutAuth");
+            }
+
+            Console.WriteLine("\n===> RSClient.PutFile");
+            PutFileRet putFileRet = RSClient.PutFile(putAuthRet.Url, bucketName, key, null, localFile, null, "key=<key>");
+            PrintRet(putFileRet);
+            if (putFileRet.OK)
+            {
+                Console.WriteLine("Hash: " + putFileRet.Hash);
+            }
+            else
+            {
+                Console.WriteLine("Failed to RSClient.PutFile");
+            }
+
+            Console.WriteLine("\n===> Generate UpToken");
+            var authPolicy = new AuthPolicy(bucketName, 3600);
+            string upToken = authPolicy.MakeAuthTokenString();
+            Console.WriteLine("upToken: " + upToken);
+
+            Console.WriteLine("\n===> RSClient.PutFileWithUpToken");
+            putFileRet = RSClient.PutFileWithUpToken(upToken, bucketName, key, null, localFile, null, "key=<key>");
+            PrintRet(putFileRet);
+            if (putFileRet.OK)
+            {
+                Console.WriteLine("Hash: " + putFileRet.Hash);
+            }
+            else
+            {
+                Console.WriteLine("Failed to RSClient.PutFileWithUpToken");
+            }
+        }
+
         public static void Get()
         {
-            Console.WriteLine("\n--- Get ---");
-            PrintInput(tableName, key, null, null);
+            Console.WriteLine("\n===> Get");
             GetRet getRet = rs.Get(key, "attName");
             PrintRet(getRet);
             if (getRet.OK)
@@ -83,8 +121,7 @@ namespace QBox
                 Console.WriteLine("Failed to Get");
             }
 
-            Console.WriteLine("\n--- GetIfNotModified ---");
-            PrintInput(tableName, key, null, null);
+            Console.WriteLine("\n===> GetIfNotModified");
             getRet = rs.GetIfNotModified(key, "attName", getRet.Hash);
             PrintRet(getRet);
             if (getRet.OK)
@@ -102,8 +139,7 @@ namespace QBox
 
         public static void Stat()
         {
-            Console.WriteLine("\n--- Stat ---");
-            PrintInput(tableName, key, null, null);
+            Console.WriteLine("\n===> Stat");
             StatRet statRet = rs.Stat(key);
             PrintRet(statRet);
             if (statRet.OK)
@@ -121,9 +157,8 @@ namespace QBox
 
         public static void Delete()
         {
-            Console.WriteLine("\n--- Delete ---");
-            PrintInput(tableName, key, null, null);
-            DeleteRet deleteRet = rs.Delete(key);
+            Console.WriteLine("\n===> Delete");
+            CallRet deleteRet = rs.Delete(key);
             PrintRet(deleteRet);
             if (!deleteRet.OK)
             {
@@ -133,9 +168,8 @@ namespace QBox
 
         public static void Drop()
         {
-            Console.WriteLine("\n--- Drop ---");
-            PrintInput(tableName, null, null, null);
-            DropRet dropRet = rs.Drop();
+            Console.WriteLine("\n===> Drop");
+            CallRet dropRet = rs.Drop();
             PrintRet(dropRet);
             if (!dropRet.OK)
             {
@@ -145,9 +179,8 @@ namespace QBox
 
         public static void Publish()
         {
-            Console.WriteLine("\n--- Publish ---");
-            PrintInput(tableName, null, null, DEMO_DOMAIN);
-            PublishRet publishRet = rs.Publish(DEMO_DOMAIN);
+            Console.WriteLine("\n===> Publish");
+            CallRet publishRet = rs.Publish(DEMO_DOMAIN);
             PrintRet(publishRet);
             if (!publishRet.OK)
             {
@@ -157,9 +190,8 @@ namespace QBox
 
         public static void UnPublish()
         {
-            Console.WriteLine("\n--- UnPublish ---");
-            PrintInput(tableName, null, null, DEMO_DOMAIN);
-            PublishRet publishRet = rs.Unpublish(DEMO_DOMAIN);
+            Console.WriteLine("\n===> UnPublish");
+            CallRet publishRet = rs.Unpublish(DEMO_DOMAIN);
             PrintRet(publishRet);
             if (!publishRet.OK)
             {
@@ -167,73 +199,9 @@ namespace QBox
             }
         }
 
-        public static PutAuthRet PutAuth()
-        {
-            Console.WriteLine("\n--- PutAuth ---");
-            PrintInput(null, null, null, null);
-            PutAuthRet putAuthRet = rs.PutAuth();
-            PrintRet(putAuthRet);
-            if (putAuthRet.OK)
-            {
-                Console.WriteLine("Expires: " + putAuthRet.Expires.ToString());
-                Console.WriteLine("Url: " + putAuthRet.Url);
-            }
-            else
-            {
-                Console.WriteLine("Failed to PutAuth");
-            }
-            return putAuthRet;
-        }
-
-        public static void CliPutFile()
-        {
-            PutAuthRet putAuthRet = PutAuth();
-            Console.WriteLine("\n--- CliPutFile ---");
-            PrintInput(tableName, key, localFile, null);
-            PutFileRet putFileRet = RSClient.PutFile(putAuthRet.Url, tableName,
-                            key, null, localFile, null, "key=Config.cs");
-            PrintRet(putFileRet);
-            if (putFileRet.OK)
-            {
-                Console.WriteLine("Hash: " + putFileRet.Hash);
-            }
-            else
-            {
-                Console.WriteLine("Failed to CliPutFile");
-            }
-
-        }
-
-        public static void UpToken()
-        {
-            Console.WriteLine("\n--- Gen UpToken ---");
-            var authPolicy = new AuthPolicy(tableName, 3600);
-            Console.WriteLine("Json: " + authPolicy.Marshal());
-            Console.WriteLine("Token: " + authPolicy.MakeAuthTokenString());
-        }
-
-        public static void PrintInput(
-            string tblName, string key, string localFile, string domain)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("\n[In]");
-            if (!String.IsNullOrEmpty(tblName))
-                sb.AppendLine("TableName: " + tblName);
-            if (!String.IsNullOrEmpty(key))
-                sb.AppendLine("Key: " + key);
-            if (!String.IsNullOrEmpty(localFile))
-                sb.AppendLine("LocalFile: " + localFile);
-            if (!String.IsNullOrEmpty(domain))
-                sb.AppendLine("Domain: " + domain);
-            Console.WriteLine(sb.ToString());
-        }
-
-
         public static void PrintRet(CallRet callRet)
         {
-            Console.WriteLine("\n[Out]");
-            
-            Console.WriteLine("\nCallRet");
+            Console.WriteLine("\n[CallRet]");
             Console.WriteLine("StatusCode: " + callRet.StatusCode.ToString());
             Console.WriteLine("Response:\n" + callRet.Response);
             Console.WriteLine();

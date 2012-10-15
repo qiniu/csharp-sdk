@@ -1,7 +1,7 @@
 ﻿using System;
 using LitJson;
 
-namespace QBox
+namespace QBox.RS
 {
     public class PutFileRet : CallRet
     {
