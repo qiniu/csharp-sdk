@@ -20,8 +20,7 @@ SDK下载地址：[https://github.com/qiniu/csharp-sdk/tags](https://github.com/
 - [新建资源表](#rs-NewService)
 - [上传文件](#rs-PutFile)
     - [服务器端上传](#server-PutFile)
-    - [客户端使用授权URL上传](#client-PutFile)
-    - [客户端使用UpToken上传](#client-PutFileWithUpToke)
+    - [客户端上传](#client-PutFileWithUpToke)
 - [获取已上传文件信息](#rs-Stat)
 - [下载文件](#rs-Get)
 - [发布公开资源](#rs-Publish)
@@ -81,44 +80,24 @@ SDK下载地址：[https://github.com/qiniu/csharp-sdk/tags](https://github.com/
 
 <a name="server-PutFile"></a>
 
-##### 2.1 服务器端上传
+#### 2.1 服务器端上传
 
 	// 调用资源表对象的 PutFile() 方法进行文件上传
 	PutFileRet putFileRet = rs.PutFile(key, mimeType, filePath, customMeta);
 
-<a name="client-PutFile"></a>	
-
-##### 2.2 客户端使用授权URL上传
-
-###### 2.2.1 获取经过授权的临时URL
-
-客户端上传文件之前需要取得上传授权，可以是一个临时有效URL。
-
-    // 调用资源表对象的 putAuth() 方法来获取授权的临时URL
-    PutAuthRet putAuthRet = rs.PutAuth();
-    uploadUrl = putAuthRet.Url;
-
-如果请求成功，putAuthRet 会包含 Url 和 Expires 两个字段。Url 字段对应的值为匿名上传的临时 URL，Expires 对应的值则是该临时 URL 的有效期。
-
-###### 2.2.2 使用临时URL上传文件
-    
-    // 通过该临时 URL 进行文件上传
-	PutFileRet putFileRet = RSClient.PutFile(uploadUrl, tableName, key, mimeType,
-	                                         filePath, customMeta, callbackParam);
-
 <a name="client-PutFileWithUpToke"></a>
 	                                         
-##### 2.3 客户端使用UpToken上传
+#### 2.2 客户端上传
 
-###### 2.3.1 生成用于上传文件的临时凭证UpToken
+##### 2.2.1 生成用于上传文件的临时凭证UpToken
 
-客户端上传文件之前需要取得上传授权，可以一个 UpToken，UpToken 是服务器端颁发给客户端的上传凭证，参数 expires 对应的值则是该 UpToken 的有效期。
+客户端上传文件之前需要取得上传授权 UpToken，UpToken 是服务器端颁发给客户端的上传凭证，参数 expires 对应的值则是该 UpToken 的有效期。
  
 	// 生成 UpToken
 	var authPolicy = new AuthPolicy(tabletName, expires);
     string upToken = authPolicy.MakeAuthTokenString();
     
-###### 2.3.2 使用UpToken上传文件
+##### 2.2.2 使用UpToken上传文件
 
 	// 使用 UpToken 上传文件
 	PutFileRet putFileRet = RSClient.PutFileWithUpToken(
