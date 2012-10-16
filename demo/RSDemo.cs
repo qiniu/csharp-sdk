@@ -22,9 +22,6 @@ namespace QBox.Example
             Config.ACCESS_KEY = "<Please apply your access key>";
             Config.SECRET_KEY = "<Dont send your secret key to anyone>";
 
-            Config.ACCESS_KEY = "iDn5DxTwQTuxHnXfZ5evK54VtoPHavFZA9lerwQ5";
-            Config.SECRET_KEY = "YDVvLC00BMGlwCKHFt3qJfslCala2Z7Bl4lNLMKF";
-
             bucketName = "csharpbucket";
             DEMO_DOMAIN = "csharpbucket.dn.qbox.me";
             conn = new DigestAuthClient();
