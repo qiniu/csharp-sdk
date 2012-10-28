@@ -76,8 +76,8 @@ namespace QBox.RS
 
         public StatRet Stat(string key)
         {
-            String entryURI = BucketName + ":" + key;
-            String url = Config.RS_HOST + "/stat/" + Base64UrlSafe.Encode(entryURI);
+            string entryURI = BucketName + ":" + key;
+            string url = Config.RS_HOST + "/stat/" + Base64UrlSafe.Encode(entryURI);
             CallRet callRet = Conn.Call(url);
             return new StatRet(callRet);
         }

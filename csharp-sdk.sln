@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csharp-sdk", "csharp-sdk\csharp-sdk.csproj", "{1C8C9909-57ED-44E4-81A5-0904E96FA00E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{30BDBA10-458A-4D54-B0E4-40F23B517A5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "demo", "demo\demo.csproj", "{30BDBA10-458A-4D54-B0E4-40F23B517A5F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QBox", "QBox\QBox.csproj", "{1C8C9909-57ED-44E4-81A5-0904E96FA00E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,14 +11,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Debug|x86.ActiveCfg = Debug|x86
-		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Debug|x86.Build.0 = Debug|x86
-		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Release|x86.ActiveCfg = Release|x86
-		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Release|x86.Build.0 = Release|x86
 		{30BDBA10-458A-4D54-B0E4-40F23B517A5F}.Debug|x86.ActiveCfg = Debug|x86
 		{30BDBA10-458A-4D54-B0E4-40F23B517A5F}.Debug|x86.Build.0 = Debug|x86
 		{30BDBA10-458A-4D54-B0E4-40F23B517A5F}.Release|x86.ActiveCfg = Release|x86
 		{30BDBA10-458A-4D54-B0E4-40F23B517A5F}.Release|x86.Build.0 = Release|x86
+		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Debug|x86.ActiveCfg = Debug|x86
+		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Debug|x86.Build.0 = Debug|x86
+		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Release|x86.ActiveCfg = Release|x86
+		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

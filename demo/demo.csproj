@@ -34,16 +34,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="RSDemo.cs" />
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\csharp-sdk\csharp-sdk.csproj">
+    <Compile Include="Demo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\QBox\QBox.csproj">
       <Project>{1C8C9909-57ED-44E4-81A5-0904E96FA00E}</Project>
-      <Name>csharp-sdk</Name>
+      <Name>QBox</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <Content Include="Resource\gogopher.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
