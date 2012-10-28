@@ -13,7 +13,7 @@ namespace QBox.FileOp
 
         public string MakeSpecString()
         {
-            string spec = "/" + Mode.ToString();
+            string spec = "?imageView/" + Mode.ToString();
             if (Width != 0)
                 spec += "/w/" + Width.ToString();
             if (Height != 0)

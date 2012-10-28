@@ -14,7 +14,7 @@ namespace QBox.FileOp
 
         public string MakeSpecString()
         {
-            string spec = "";
+            string spec = "?imageMogr";
             if (!String.IsNullOrEmpty(Thumbnail))
                 spec += "/thumbnail/" + Thumbnail;
             if (!String.IsNullOrEmpty(Gravity))

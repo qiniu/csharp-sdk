@@ -254,6 +254,46 @@ namespace QBox.Demo
             };
             string mogrUrl = imageOp.ImageMogrifyUrl("http://" + DEMO_DOMAIN + "/" + key, mogrSpec);
             Console.WriteLine("ImageMogrifyUrl:" + mogrUrl);
+
+            Console.WriteLine("\n===> Get");
+            GetRet getRet = rs.Get(key, "save-as");
+            PrintRet(getRet);
+            if (getRet.OK)
+            {
+                Console.WriteLine("Hash: " + getRet.Hash);
+                Console.WriteLine("FileSize: " + getRet.FileSize);
+                Console.WriteLine("MimeType: " + getRet.MimeType);
+                Console.WriteLine("Url: " + getRet.Url);
+            }
+            else
+            {
+                Console.WriteLine("Failed to Get");
+            }
+            Console.WriteLine("\n===> ImageMogrifySaveAs");
+            PutFileRet saveAsRet = rs.ImageMogrifySaveAs(getRet.Url, mogrSpec, key + ".mogr-save-as");
+            PrintRet(saveAsRet);
+            if (saveAsRet.OK)
+            {
+                Console.WriteLine("Hash: " + saveAsRet.Hash);
+            }
+            else
+            {
+                Console.WriteLine("Failed to ImageMogrifySaveAs");
+            }
+            Console.WriteLine("\n===> Get");
+            getRet = rs.Get(key + ".mogr-save-as", "mogr-save-as.jpg");
+            PrintRet(getRet);
+            if (getRet.OK)
+            {
+                Console.WriteLine("Hash: " + getRet.Hash);
+                Console.WriteLine("FileSize: " + getRet.FileSize);
+                Console.WriteLine("MimeType: " + getRet.MimeType);
+                Console.WriteLine("Url: " + getRet.Url);
+            }
+            else
+            {
+                Console.WriteLine("Failed to Get");
+            }
         }
 
         public static void PrintRet(CallRet callRet)

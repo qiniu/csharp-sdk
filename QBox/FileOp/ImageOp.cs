@@ -25,12 +25,12 @@ namespace QBox.FileOp
 
         public string ImageViewUrl(string url, ImageViewSpec spec)
         {
-            return url + "?imageView" + spec.MakeSpecString();
+            return url + spec.MakeSpecString();
         }
 
         public string ImageMogrifyUrl(string url, ImageMogrifySpec spec)
         {
-            return url + "?imageMogr" + spec.MakeSpecString();
+            return url + spec.MakeSpecString();
         }
     }
 }
