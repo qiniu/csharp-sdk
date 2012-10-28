@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
 using QBox.Auth;
 using QBox.RS;
+using QBox.FileOp;
 
-namespace QBox.Example
+namespace QBox.Demo
 {
-    public class RSDemo
+    public class Demo
     {
         public static string bucketName;
         public static string key;
@@ -16,6 +13,7 @@ namespace QBox.Example
         public static string DEMO_DOMAIN;
         public static Client conn;
         public static RSService rs;
+        public static ImageOp imageOp;
 
         public static void Main()
         {
@@ -23,16 +21,15 @@ namespace QBox.Example
             Config.SECRET_KEY = "<Dont send your secret key to anyone>";
 
             bucketName = "csharpbucket";
-            DEMO_DOMAIN = "iovip.qbox.me/csharpbucket";
+            DEMO_DOMAIN = "csharpbucket.dn.qbox.me";
+            localFile = "Resource/gogopher.jpg";
+            key = "gogopher.jpg";
+
             conn = new DigestAuthClient();
             rs = new RSService(conn, bucketName);
-            localFile = Process.GetCurrentProcess().MainModule.FileName;
-            key = System.IO.Path.GetFileName(localFile);
+            imageOp = new ImageOp(conn);
 
-            CallRet callRet = rs.MkBucket();
-            PrintRet(callRet);
-
-            RSPutFile();
+            MkBucket();
             RSClientPutFile();
             Get();
             Stat();
@@ -41,7 +38,19 @@ namespace QBox.Example
             Delete();
             Drop();
 
+            MkBucket();
+            RSPutFile();
+            Publish();
+            ImageOps();
+
             Console.ReadLine();
+        }
+
+        public static void MkBucket()
+        {
+            Console.WriteLine("\n===> RSService.MkBucket");
+            CallRet callRet = rs.MkBucket();
+            PrintRet(callRet);
         }
 
         public static void RSPutFile()
@@ -196,6 +205,94 @@ namespace QBox.Example
             if (!publishRet.OK)
             {
                 Console.WriteLine("Failed to UnPublish");
+            }
+        }
+
+        public static void ImageOps()
+        {
+            Console.WriteLine("\n===> ImageInfo");
+            ImageInfoRet infoRet = imageOp.ImageInfo("http://" + DEMO_DOMAIN + "/" + key);
+            PrintRet(infoRet);
+            if (infoRet.OK)
+            {
+                Console.WriteLine("Format: " + infoRet.Format);
+                Console.WriteLine("Width: " + infoRet.Width);
+                Console.WriteLine("Heigth: " + infoRet.Height);
+                Console.WriteLine("ColorModel: " + infoRet.ColorModel);
+            }
+            else
+            {
+                Console.WriteLine("Failed to ImageInfo");
+            }
+
+            Console.WriteLine("\n===> ImageExif");
+            CallRet exifRet = imageOp.ImageExif("http://" + DEMO_DOMAIN + "/" + key);
+            PrintRet(exifRet);
+            if (!exifRet.OK)
+            {
+                Console.WriteLine("Failed to ImageExif");
+            }
+
+            Console.WriteLine("\n===> ImageViewUrl");
+            ImageViewSpec viewSpec = new ImageViewSpec{Mode = 0, Width = 200, Height= 200};
+            string viewUrl = imageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
+            Console.WriteLine("ImageViewUrl 1:" + viewUrl);
+            viewSpec.Quality = 1;
+            viewSpec.Format = "gif";
+            viewUrl = imageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
+            Console.WriteLine("ImageViewUrl 2:" + viewUrl);
+            viewSpec.Quality = 90;
+            viewSpec.Sharpen = 10;
+            viewSpec.Format = "png";
+            viewUrl = imageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
+            Console.WriteLine("ImageViewUrl 3:" + viewUrl);
+
+            Console.WriteLine("\n===> ImageMogrifyUrl");
+            ImageMogrifySpec mogrSpec = new ImageMogrifySpec {
+                Thumbnail = "!50x50r", Gravity = "center", Rotate = 90,
+                Crop = "!50x50", Quality = 80, AutoOrient = true
+            };
+            string mogrUrl = imageOp.ImageMogrifyUrl("http://" + DEMO_DOMAIN + "/" + key, mogrSpec);
+            Console.WriteLine("ImageMogrifyUrl:" + mogrUrl);
+
+            Console.WriteLine("\n===> Get");
+            GetRet getRet = rs.Get(key, "save-as");
+            PrintRet(getRet);
+            if (getRet.OK)
+            {
+                Console.WriteLine("Hash: " + getRet.Hash);
+                Console.WriteLine("FileSize: " + getRet.FileSize);
+                Console.WriteLine("MimeType: " + getRet.MimeType);
+                Console.WriteLine("Url: " + getRet.Url);
+            }
+            else
+            {
+                Console.WriteLine("Failed to Get");
+            }
+            Console.WriteLine("\n===> ImageMogrifySaveAs");
+            PutFileRet saveAsRet = rs.ImageMogrifySaveAs(getRet.Url, mogrSpec, key + ".mogr-save-as");
+            PrintRet(saveAsRet);
+            if (saveAsRet.OK)
+            {
+                Console.WriteLine("Hash: " + saveAsRet.Hash);
+            }
+            else
+            {
+                Console.WriteLine("Failed to ImageMogrifySaveAs");
+            }
+            Console.WriteLine("\n===> Get");
+            getRet = rs.Get(key + ".mogr-save-as", "mogr-save-as.jpg");
+            PrintRet(getRet);
+            if (getRet.OK)
+            {
+                Console.WriteLine("Hash: " + getRet.Hash);
+                Console.WriteLine("FileSize: " + getRet.FileSize);
+                Console.WriteLine("MimeType: " + getRet.MimeType);
+                Console.WriteLine("Url: " + getRet.Url);
+            }
+            else
+            {
+                Console.WriteLine("Failed to Get");
             }
         }
 

@@ -1,14 +1,17 @@
 ﻿using System;
+using QBox.RS;
 using LitJson;
 
-namespace QBox.RS
+namespace QBox.FileOp
 {
-    public class PutAuthRet : CallRet
+    public class ImageInfoRet : CallRet
     {
-        public int Expires { get; private set; }
-        public string Url { get; private set; }
+        public string Format { get; private set; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public string ColorModel { get; private set; }
 
-        public PutAuthRet(CallRet ret)
+        public ImageInfoRet(CallRet ret)
             : base(ret)
         {
             if (!String.IsNullOrEmpty(Response))
@@ -28,8 +31,10 @@ namespace QBox.RS
         private void Unmarshal(string json)
         {
             JsonData data = JsonMapper.ToObject(json);
-            Expires = (int)data["expiresIn"];
-            Url = (string)data["url"];
+            Format = (string)data["format"];
+            Width = (int)data["width"];
+            Height = (int)data["height"];
+            ColorModel = (string)data["colorModel"];
         }
     }
 }
