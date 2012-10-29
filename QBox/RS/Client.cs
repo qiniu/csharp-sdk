@@ -4,9 +4,9 @@ using System.IO;
 
 namespace QBox.RS
 {
-    public abstract class Client
+    public class Client
     {
-        public abstract void SetAuth(HttpWebRequest request, Stream body);
+        public virtual void SetAuth(HttpWebRequest request, Stream body) { }
         
         public CallRet Call(string url)
         {
