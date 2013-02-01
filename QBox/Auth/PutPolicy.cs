@@ -7,14 +7,17 @@ using QBox.RS;
 
 namespace QBox.Auth
 {
-    public class AuthPolicy
+    public class PutPolicy
     {
         public string Scope { get; set; }
         public long Deadline { get; set; }
         public string CallbackUrl { get; set; }
-        public string ReturnUrl { get; set; }
+        public string CallbackBodyType { get; set; }
+        public bool Escape { get; set; }
+        public string AsyncOps { get; set; }
+        public string ReturnBody { get; set; }
 
-        public AuthPolicy(string scope, long expires)
+        public PutPolicy(string scope, long expires)
         {
             Scope = scope;
             DateTime begin = new DateTime(1970, 1, 1);
@@ -28,10 +31,16 @@ namespace QBox.Auth
             JsonData data = new JsonData();
             data["scope"] = Scope;
             data["deadline"] = Deadline;
-            if (CallbackUrl != null)
+            if (!String.IsNullOrEmpty(CallbackUrl))
                 data["callbackUrl"] = CallbackUrl;
-            if (ReturnUrl != null)
-                data["returnUrl"] = ReturnUrl;
+            if (!String.IsNullOrEmpty(CallbackBodyType))
+                data["callbackBodyType"] = CallbackBodyType;
+            if (Escape)
+                data["escape"] = 1;
+            if (!String.IsNullOrEmpty(AsyncOps))
+                data["asyncOps"] = AsyncOps;
+            if (!String.IsNullOrEmpty(ReturnBody))
+                data["returnBody"] = ReturnBody;
             return data.ToJson();
         }
 

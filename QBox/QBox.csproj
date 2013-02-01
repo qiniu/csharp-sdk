@@ -38,6 +38,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Auth\PutAuthClient.cs" />
     <Compile Include="FileOp\ImageMogrifySpec.cs" />
     <Compile Include="FileOp\ImageViewSpec.cs" />
     <Compile Include="Json\IJsonWrapper.cs" />
@@ -48,7 +49,7 @@
     <Compile Include="Json\JsonWriter.cs" />
     <Compile Include="Json\Lexer.cs" />
     <Compile Include="Json\ParserToken.cs" />
-    <Compile Include="Auth\AuthPolicy.cs" />
+    <Compile Include="Auth\PutPolicy.cs" />
     <Compile Include="Auth\DigestAuthClient.cs" />
     <Compile Include="FileOp\ImageInfoRet.cs" />
     <Compile Include="FileOp\ImageOp.cs" />
@@ -62,6 +63,8 @@
     <Compile Include="RS\MultiPartFormDataPost.cs" />
     <Compile Include="RS\PutAuthRet.cs" />
     <Compile Include="RS\PutFileRet.cs" />
+    <Compile Include="RS\ResumablePut.cs" />
+    <Compile Include="RS\ResumablePutFileRet.cs" />
     <Compile Include="RS\RSClient.cs" />
     <Compile Include="RS\RSService.cs" />
     <Compile Include="RS\StatRet.cs" />
