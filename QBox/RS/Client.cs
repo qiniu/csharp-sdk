@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.IO;
+using QBox.Util;
 
 namespace QBox.RS
 {
@@ -28,7 +29,7 @@ namespace QBox.RS
             }
         }
 
-        public CallRet CallWithBinary(string url, string contentType, Stream body)
+        public CallRet CallWithBinary(string url, string contentType, Stream body, long length)
         {
             Console.WriteLine("URL: " + url);
             try
@@ -36,11 +37,11 @@ namespace QBox.RS
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
                 request.ContentType = contentType;
-                request.ContentLength = body.Length;
+                request.ContentLength = length;
                 SetAuth(request, body);
                 using (Stream requestStream = request.GetRequestStream())
                 {
-                    body.CopyTo(requestStream);
+                    StreamUtil.CopyN(body, requestStream, length);
                 }
                 using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
                 {

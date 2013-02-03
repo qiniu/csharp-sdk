@@ -7,7 +7,7 @@ using QBox.RS;
 
 namespace QBox.Auth
 {
-    public class PutPolicy
+    public class AuthPolicy
     {
         public string Scope { get; set; }
         public long Deadline { get; set; }
@@ -17,7 +17,7 @@ namespace QBox.Auth
         public string AsyncOps { get; set; }
         public string ReturnBody { get; set; }
 
-        public PutPolicy(string scope, long expires)
+        public AuthPolicy(string scope, long expires)
         {
             Scope = scope;
             DateTime begin = new DateTime(1970, 1, 1);

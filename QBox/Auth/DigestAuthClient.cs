@@ -22,7 +22,12 @@ namespace QBox.Auth
                     buffer.WriteByte((byte)'\n');
                     if (request.ContentType == "application/x-www-form-urlencoded" && body != null)
                     {
+                        if (!body.CanSeek)
+                        {
+                            throw new Exception("stream can not seek");
+                        }
                         body.CopyTo(buffer);
+                        body.Seek(0, SeekOrigin.Begin);
                     }
                     byte[] digest = hmac.ComputeHash(buffer.ToArray());
                     string digestBase64 = Base64UrlSafe.Encode(digest);

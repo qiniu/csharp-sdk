@@ -46,7 +46,7 @@ namespace QBox.RS
             {
                 using (FileStream fs = File.OpenRead(localFile))
                 {
-                    CallRet callRet = Conn.CallWithBinary(url, mimeType, fs);
+                    CallRet callRet = Conn.CallWithBinary(url, mimeType, fs, fs.Length);
                     return new PutFileRet(callRet);
                 }
             }

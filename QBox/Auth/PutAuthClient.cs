@@ -1,17 +1,22 @@
 ﻿using System;
-using System.Text;
 using System.Net;
 using System.IO;
-using System.Security.Cryptography;
 using QBox.RS;
 
 namespace QBox.Auth
 {
-    class PutAuthClient : Client
+    public class PutAuthClient : Client
     {
+        public byte[] UpToken { get; set; }
+
+        public PutAuthClient(byte[] upToken)
+        {
+            UpToken = upToken;
+        }
+
         public override void SetAuth(HttpWebRequest request, Stream body)
         {
-            string authHead = "QBox " + Config.ACCESS_KEY + ":" + digestBase64;
+            string authHead = "UpToken " + UpToken;
             request.Headers.Add("Authorization", authHead);
         }
     }
