@@ -27,7 +27,7 @@ namespace QBox.Auth
                         {
                             throw new Exception("stream can not seek");
                         }
-                        body.CopyTo(buffer);
+                        StreamUtil.Copy(body, buffer);
                         body.Seek(0, SeekOrigin.Begin);
                     }
                     byte[] digest = hmac.ComputeHash(buffer.ToArray());
