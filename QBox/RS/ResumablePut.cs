@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using QBox.Util;
 
 namespace QBox.RS
 {
@@ -9,25 +10,25 @@ namespace QBox.RS
         private static int ChunkBits = 22;
         private static long ChunkSize = 1 << ChunkBits;
 
-        public static ResumablePutFileRet Mkblock(Client client, Stream body, long length)
+        public static ResumablePutFileRet Mkblock(string host, Client client, Stream body, long length)
         {
-            string url = Config.UP_HOST + "/mkblk/" + Convert.ToString(length);
-            CallRet callRet = client.CallWithBinary(url, "application/octet-stream", body, length);
+            string url = host + "/mkblk/" + Convert.ToString(length);
+            CallRet callRet = client.PostWithBinary(url, "application/octet-stream", body, length);
             return new ResumablePutFileRet(callRet);
         }
 
-        public static PutFileRet Mkfile(Client client, string entryURI, long fsize, 
+        public static PutFileRet Mkfile(string host, Client client, string entryURI, long fsize, 
             string customMeta, string callbackParam, string[] ctxs)
         {
-            string url = Config.UP_HOST + "/rs-mkfile/" + Base64UrlSafe.Encode(entryURI) + 
+            string url = host + "/rs-mkfile/" + Base64UrlSafe.Encode(entryURI) + 
                 "/fsize/" + Convert.ToString(fsize);
             if (!String.IsNullOrEmpty(callbackParam))
             {
-                url += "/params/" + callbackParam;
+                url += "/params/" + Base64UrlSafe.Encode(callbackParam);
             }
             if (!String.IsNullOrEmpty(customMeta))
             {
-                url += "/meta/" + customMeta;
+                url += "/meta/" + Base64UrlSafe.Encode(customMeta);
             }
 
             using (Stream body = new MemoryStream())
@@ -41,7 +42,8 @@ namespace QBox.RS
                         body.WriteByte((byte)',');
                     }
                 }
-                CallRet ret= client.CallWithBinary(url, "text/plain", body, body.Length);
+                body.Seek(0, SeekOrigin.Begin);
+                CallRet ret= client.PostWithBinary(url, "text/plain", body, body.Length);
                 return new PutFileRet(ret);
             }
         }
@@ -52,12 +54,14 @@ namespace QBox.RS
         {
             long fsize = 0;
             string[] ctxs = null;
+            string host = Config.UP_HOST;
             using (FileStream fs = File.OpenRead(localFile))
             {
                 fsize = fs.Length;
                 int chunkCnt = (int)((fsize + (ChunkSize - 1)) >> ChunkBits);
                 long chunkSize = ChunkSize;
                 ctxs = new string[chunkCnt];
+                Console.WriteLine("ResumablePut ==> fsize: {0}, chunkCnt: {1}", fsize, chunkCnt);
                 for (int i = 0; i < chunkCnt; i++)
                 {
                     if (i == chunkCnt - 1)
@@ -67,10 +71,12 @@ namespace QBox.RS
                     ResumablePutFileRet ret = null;
                     for (int retry = 0; retry < Config.PUT_RETRY_TIMES; retry++)
                     {
-                        ret = Mkblock(client, fs, chunkSize);
+                        fs.Seek(i * ChunkSize, SeekOrigin.Begin);
+                        ret = Mkblock(host, client, fs, chunkSize);
                         if (ret.OK)
                         {
                             ctxs[i] = ret.Ctx;
+                            host = ret.Host;
                             break;
                         }
                     }
@@ -83,7 +89,7 @@ namespace QBox.RS
             }
 
             string entryURI = tableName + ":" + key;
-            return Mkfile(client, entryURI, fsize, customMeta, callbackParam, ctxs);
+            return Mkfile(host, client, entryURI, fsize, customMeta, callbackParam, ctxs);
         }
     }
 }

@@ -10,6 +10,8 @@ namespace QBox.Demo
         public static string bucketName;
         public static string key;
         public static string localFile;
+        public static string bigkey;
+        public static string bigFile;
         public static string DEMO_DOMAIN;
         public static Client conn;
         public static RSService rs;
@@ -20,29 +22,28 @@ namespace QBox.Demo
             Config.ACCESS_KEY = "<Please apply your access key>";
             Config.SECRET_KEY = "<Dont send your secret key to anyone>";
 
-            Config.ACCESS_KEY = "dbsrtUEWFt_HMlY59qw5KqaydbvML1zxtxsvioUX";
-            Config.SECRET_KEY = "EZUwWLGLfbq0y94SLteofzzqKc60Dxg5kc1Rv2ct";
-
-            bucketName = "demo";
-            DEMO_DOMAIN = bucketName + ".qiniudn.me";
-            localFile = "Resource/gogopher.jpg";
+            bucketName = "yourbucket";
+            DEMO_DOMAIN = bucketName + ".qiniudn.com";
             key = "gogopher.jpg";
+            localFile = "Resource/gogopher.jpg";
+            bigkey = key;
+            bigFile = localFile;
 
             conn = new DigestAuthClient();
             rs = new RSService(conn, bucketName);
             imageOp = new ImageOp(conn);
 
-            //mkbucket();
-            //rsclientputfile();
-            //get();
-            //stat();
-            //delete();
+            MkBucket();
+            RSClientPutFile();
+            Get(key);
             ResumablePutFile();
-            //Drop();
+            Stat(bigkey);
+            Delete(key);
+            Drop();
 
-            //MkBucket();
-            //RSPutFile();
-            //ImageOps();
+            MkBucket();
+            RSPutFile();
+            ImageOps();
 
             Console.ReadLine();
         }
@@ -91,13 +92,11 @@ namespace QBox.Demo
 
         public static void ResumablePutFile()
         {
-            Console.WriteLine("\n===> ResumablePut New PutAuthClient");
-            var authPolicy = new AuthPolicy(bucketName, 3600);
-            byte[] upToken = authPolicy.MakeAuthToken();
-            PutAuthClient client = new PutAuthClient(upToken);
-
             Console.WriteLine("\n===> ResumablePut.PutFile");
-            PutFileRet putFileRet = ResumablePut.PutFile(client, bucketName, key, null, localFile, null, "key=<key>");
+            var authPolicy = new AuthPolicy(bucketName, 3600);
+            string upToken = authPolicy.MakeAuthTokenString();
+            PutAuthClient client = new PutAuthClient(upToken);
+            PutFileRet putFileRet = ResumablePut.PutFile(client, bucketName, bigkey, null, bigFile, null, "key=<key>");
             PrintRet(putFileRet);
             if (putFileRet.OK)
             {
@@ -109,7 +108,7 @@ namespace QBox.Demo
             }
         }
 
-        public static void Get()
+        public static void Get(string key)
         {
             Console.WriteLine("\n===> RSService.Get");
             GetRet getRet = rs.Get(key, "attName");
@@ -142,7 +141,7 @@ namespace QBox.Demo
             }
         }
 
-        public static void Stat()
+        public static void Stat(string key)
         {
             Console.WriteLine("\n===> RSService.Stat");
             StatRet statRet = rs.Stat(key);
@@ -160,7 +159,7 @@ namespace QBox.Demo
             }
         }
 
-        public static void Delete()
+        public static void Delete(string key)
         {
             Console.WriteLine("\n===> RSService.Delete");
             CallRet deleteRet = rs.Delete(key);

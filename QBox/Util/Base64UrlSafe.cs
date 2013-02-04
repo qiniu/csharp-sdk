@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace QBox.RS
+namespace QBox.Util
 {
     public static class Base64UrlSafe
     {

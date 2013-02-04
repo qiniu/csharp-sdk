@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Net;
+using QBox.Util;
 
 namespace QBox.RS
 {
@@ -71,7 +72,7 @@ namespace QBox.RS
                     body.Write(encoding.GetBytes(header), 0, encoding.GetByteCount(header));
                     using (FileStream fs = File.OpenRead(fileToUpload.FileName))
                     {
-                        fs.CopyTo(body);
+                        StreamUtil.Copy(fs, body);
                     }
                 }
                 else

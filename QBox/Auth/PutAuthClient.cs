@@ -7,9 +7,9 @@ namespace QBox.Auth
 {
     public class PutAuthClient : Client
     {
-        public byte[] UpToken { get; set; }
+        public string UpToken { get; set; }
 
-        public PutAuthClient(byte[] upToken)
+        public PutAuthClient(string upToken)
         {
             UpToken = upToken;
         }

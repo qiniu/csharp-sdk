@@ -14,13 +14,13 @@ namespace QBox.FileOp
 
         public ImageInfoRet ImageInfo(string url)
         {
-            CallRet callRet = Conn.Call(url + "?imageInfo");
+            CallRet callRet = Conn.Get(url + "?imageInfo");
             return new ImageInfoRet(callRet);
         }
 
         public CallRet ImageExif(string url)
         {
-            return Conn.Call(url + "?exif");
+            return Conn.Get(url + "?exif");
         }
 
         public string ImageViewUrl(string url, ImageViewSpec spec)

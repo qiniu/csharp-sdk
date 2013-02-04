@@ -4,6 +4,7 @@ using System.IO;
 using LitJson;
 using System.Security.Cryptography;
 using QBox.RS;
+using QBox.Util;
 
 namespace QBox.Auth
 {

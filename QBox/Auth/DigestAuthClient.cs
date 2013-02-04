@@ -4,6 +4,7 @@ using System.Net;
 using System.IO;
 using System.Security.Cryptography;
 using QBox.RS;
+using QBox.Util;
 
 namespace QBox.Auth
 {

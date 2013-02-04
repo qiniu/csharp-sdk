@@ -54,7 +54,7 @@
     <Compile Include="FileOp\ImageInfoRet.cs" />
     <Compile Include="FileOp\ImageOp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RS\Base64UrlSafe.cs" />
+    <Compile Include="Util\Base64UrlSafe.cs" />
     <Compile Include="RS\CallRet.cs" />
     <Compile Include="RS\Client.cs" />
     <Compile Include="RS\Config.cs" />
