@@ -45,6 +45,8 @@ namespace QBox.Demo
             RSPutFile();
             ImageOps();
 
+            MakeDownloadToken();
+
             Console.ReadLine();
         }
 
@@ -179,6 +181,15 @@ namespace QBox.Demo
             {
                 Console.WriteLine("Failed to Drop");
             }
+        }
+
+        public static void MakeDownloadToken()
+        {
+            Console.WriteLine("\n===> Auth.MakeDownloadToken");
+            string pattern = "*/*";
+            var downloadPolicy = new DownloadPolicy(pattern, 3600);
+            string dnToken = downloadPolicy.MakeAuthTokenString();
+            Console.WriteLine("dnToken: " + dnToken);
         }
 
         public static void ImageOps()

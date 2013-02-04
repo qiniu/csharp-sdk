@@ -38,6 +38,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Auth\AuthToken.cs" />
+    <Compile Include="Auth\DownloadPolicy.cs" />
     <Compile Include="Auth\PutAuthClient.cs" />
     <Compile Include="FileOp\ImageMogrifySpec.cs" />
     <Compile Include="FileOp\ImageViewSpec.cs" />
