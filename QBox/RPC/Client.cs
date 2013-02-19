@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Net;
 using System.IO;
+using QBox.Util;
 
-namespace QBox.RS
+namespace QBox.RPC
 {
     public class Client
     {
         public virtual void SetAuth(HttpWebRequest request, Stream body) { }
-        
+
         public CallRet Call(string url)
         {
-            Console.WriteLine("URL: " + url);
+            Console.WriteLine("Client.Post ==> URL: " + url);
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
@@ -28,19 +29,19 @@ namespace QBox.RS
             }
         }
 
-        public CallRet CallWithBinary(string url, string contentType, Stream body)
+        public CallRet CallWithBinary(string url, string contentType, Stream body, long length)
         {
-            Console.WriteLine("URL: " + url);
+            Console.WriteLine("Client.PostWithBinary ==> URL: {0} Length:{1}", url, length);
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
                 request.ContentType = contentType;
-                request.ContentLength = body.Length;
+                request.ContentLength = length;
                 SetAuth(request, body);
                 using (Stream requestStream = request.GetRequestStream())
                 {
-                    body.CopyTo(requestStream);
+                    StreamUtil.CopyN(body, requestStream, length);
                 }
                 using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
                 {

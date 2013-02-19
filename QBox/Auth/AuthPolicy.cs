@@ -4,6 +4,7 @@ using System.IO;
 using LitJson;
 using System.Security.Cryptography;
 using QBox.RS;
+using QBox.Util;
 
 namespace QBox.Auth
 {
@@ -12,7 +13,10 @@ namespace QBox.Auth
         public string Scope { get; set; }
         public long Deadline { get; set; }
         public string CallbackUrl { get; set; }
-        public string ReturnUrl { get; set; }
+        public string CallbackBodyType { get; set; }
+        public bool Escape { get; set; }
+        public string AsyncOps { get; set; }
+        public string ReturnBody { get; set; }
 
         public AuthPolicy(string scope, long expires)
         {
@@ -28,43 +32,22 @@ namespace QBox.Auth
             JsonData data = new JsonData();
             data["scope"] = Scope;
             data["deadline"] = Deadline;
-            if (CallbackUrl != null)
+            if (!String.IsNullOrEmpty(CallbackUrl))
                 data["callbackUrl"] = CallbackUrl;
-            if (ReturnUrl != null)
-                data["returnUrl"] = ReturnUrl;
+            if (!String.IsNullOrEmpty(CallbackBodyType))
+                data["callbackBodyType"] = CallbackBodyType;
+            if (Escape)
+                data["escape"] = 1;
+            if (!String.IsNullOrEmpty(AsyncOps))
+                data["asyncOps"] = AsyncOps;
+            if (!String.IsNullOrEmpty(ReturnBody))
+                data["returnBody"] = ReturnBody;
             return data.ToJson();
         }
 
         public byte[] MakeAuthToken()
         {
-            Encoding encoding = Encoding.ASCII;
-            byte[] accessKey = encoding.GetBytes(Config.ACCESS_KEY);
-            byte[] secretKey = encoding.GetBytes(Config.SECRET_KEY);
-            byte[] upToken = null;
-            try
-            {
-                byte[] policyBase64 = encoding.GetBytes(Base64UrlSafe.Encode(Marshal()));
-                byte[] digestBase64 = null;
-                using (HMACSHA1 hmac = new HMACSHA1(secretKey))
-                {
-                    byte[] digest = hmac.ComputeHash(policyBase64);
-                    digestBase64 = encoding.GetBytes(Base64UrlSafe.Encode(digest));
-                }
-                using (MemoryStream buffer = new MemoryStream())
-                {
-                    buffer.Write(accessKey, 0, accessKey.Length);
-                    buffer.WriteByte((byte)':');
-                    buffer.Write(digestBase64, 0, digestBase64.Length);
-                    buffer.WriteByte((byte)':');
-                    buffer.Write(policyBase64, 0, policyBase64.Length);
-                    upToken = buffer.ToArray();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-            return upToken;
+            return AuthToken.Make(Marshal());
         }
 
         public string MakeAuthTokenString()
