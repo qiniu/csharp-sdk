@@ -2,6 +2,7 @@
 using QBox.Auth;
 using QBox.RS;
 using QBox.FileOp;
+using QBox.RPC;
 
 namespace QBox.Demo
 {
@@ -15,7 +16,6 @@ namespace QBox.Demo
         public static string DEMO_DOMAIN;
         public static Client conn;
         public static RSService rs;
-        public static ImageOp imageOp;
 
         public static void Main()
         {
@@ -31,7 +31,6 @@ namespace QBox.Demo
 
             conn = new DigestAuthClient();
             rs = new RSService(conn, bucketName);
-            imageOp = new ImageOp(conn);
 
             MkBucket();
             RSClientPutFile();
@@ -195,7 +194,7 @@ namespace QBox.Demo
         public static void ImageOps()
         {
             Console.WriteLine("\n===> FileOp.ImageInfo");
-            ImageInfoRet infoRet = imageOp.ImageInfo("http://" + DEMO_DOMAIN + "/" + key);
+            ImageInfoRet infoRet = ImageOp.ImageInfo("http://" + DEMO_DOMAIN + "/" + key);
             PrintRet(infoRet);
             if (infoRet.OK)
             {
@@ -210,7 +209,7 @@ namespace QBox.Demo
             }
 
             Console.WriteLine("\n===> FileOp.ImageExif");
-            CallRet exifRet = imageOp.ImageExif("http://" + DEMO_DOMAIN + "/" + key);
+            CallRet exifRet = ImageOp.ImageExif("http://" + DEMO_DOMAIN + "/" + key);
             PrintRet(exifRet);
             if (!exifRet.OK)
             {
@@ -219,16 +218,16 @@ namespace QBox.Demo
 
             Console.WriteLine("\n===> FileOp.ImageViewUrl");
             ImageViewSpec viewSpec = new ImageViewSpec{Mode = 0, Width = 200, Height= 200};
-            string viewUrl = imageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
+            string viewUrl = ImageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
             Console.WriteLine("ImageViewUrl 1:" + viewUrl);
             viewSpec.Quality = 1;
             viewSpec.Format = "gif";
-            viewUrl = imageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
+            viewUrl = ImageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
             Console.WriteLine("ImageViewUrl 2:" + viewUrl);
             viewSpec.Quality = 90;
             viewSpec.Sharpen = 10;
             viewSpec.Format = "png";
-            viewUrl = imageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
+            viewUrl = ImageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
             Console.WriteLine("ImageViewUrl 3:" + viewUrl);
 
             Console.WriteLine("\n===> FileOp.ImageMogrifyUrl");
@@ -236,7 +235,7 @@ namespace QBox.Demo
                 Thumbnail = "!50x50r", Gravity = "center", Rotate = 90,
                 Crop = "!50x50", Quality = 80, AutoOrient = true
             };
-            string mogrUrl = imageOp.ImageMogrifyUrl("http://" + DEMO_DOMAIN + "/" + key, mogrSpec);
+            string mogrUrl = ImageOp.ImageMogrifyUrl("http://" + DEMO_DOMAIN + "/" + key, mogrSpec);
             Console.WriteLine("ImageMogrifyUrl:" + mogrUrl);
 
             Console.WriteLine("\n===> Get");

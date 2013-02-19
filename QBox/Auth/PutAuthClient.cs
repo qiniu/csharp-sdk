@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.IO;
-using QBox.RS;
+using QBox.RPC;
 
 namespace QBox.Auth
 {

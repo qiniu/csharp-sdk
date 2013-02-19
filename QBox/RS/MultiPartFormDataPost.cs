@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 using QBox.Util;
+using QBox.RPC;
 
 namespace QBox.RS
 {

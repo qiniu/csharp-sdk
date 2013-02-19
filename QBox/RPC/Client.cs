@@ -3,33 +3,13 @@ using System.Net;
 using System.IO;
 using QBox.Util;
 
-namespace QBox.RS
+namespace QBox.RPC
 {
     public class Client
     {
         public virtual void SetAuth(HttpWebRequest request, Stream body) { }
 
-        public CallRet Get(string url)
-        {
-            Console.WriteLine("Client.Get ==> URL: " + url);
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                request.Method = "GET";
-                SetAuth(request, null);
-                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
-                {
-                    return HandleResult(response);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                return new CallRet(HttpStatusCode.BadRequest, e);
-            }
-        }
-
-        public CallRet Post(string url)
+        public CallRet Call(string url)
         {
             Console.WriteLine("Client.Post ==> URL: " + url);
             try
@@ -49,7 +29,7 @@ namespace QBox.RS
             }
         }
 
-        public CallRet PostWithBinary(string url, string contentType, Stream body, long length)
+        public CallRet CallWithBinary(string url, string contentType, Stream body, long length)
         {
             Console.WriteLine("Client.PostWithBinary ==> URL: {0} Length:{1}", url, length);
             try

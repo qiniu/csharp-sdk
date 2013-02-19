@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using LitJson;
+using QBox.RPC;
 
 namespace QBox.RS
 {

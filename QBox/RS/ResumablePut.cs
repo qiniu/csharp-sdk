@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using QBox.Util;
+using QBox.RPC;
 
 namespace QBox.RS
 {
@@ -13,7 +14,7 @@ namespace QBox.RS
         public static ResumablePutFileRet Mkblock(string host, Client client, Stream body, long length)
         {
             string url = host + "/mkblk/" + Convert.ToString(length);
-            CallRet callRet = client.PostWithBinary(url, "application/octet-stream", body, length);
+            CallRet callRet = client.CallWithBinary(url, "application/octet-stream", body, length);
             return new ResumablePutFileRet(callRet);
         }
 
@@ -43,7 +44,7 @@ namespace QBox.RS
                     }
                 }
                 body.Seek(0, SeekOrigin.Begin);
-                CallRet ret= client.PostWithBinary(url, "text/plain", body, body.Length);
+                CallRet ret= client.CallWithBinary(url, "text/plain", body, body.Length);
                 return new PutFileRet(ret);
             }
         }

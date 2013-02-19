@@ -1,5 +1,6 @@
 ﻿using System;
 using LitJson;
+using QBox.RPC;
 
 namespace QBox.RS
 {

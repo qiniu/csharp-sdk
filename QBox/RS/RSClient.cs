@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using QBox.Util;
+using QBox.RPC;
 
 namespace QBox.RS
 {
