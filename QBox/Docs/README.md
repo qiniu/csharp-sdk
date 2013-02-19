@@ -239,13 +239,13 @@ client 参数是能自动为请求在 HTTP Header 中添加 UpToken 的 Client�
 	    public int Height { get; private set; }
 	    public string ColorModel { get; private set; }
 	}
-	public ImageInfoRet ImageInfo(string url);
+	public static ImageInfoRet ImageInfo(string url);
 
 例子：
 
 	using QBox.FileOp;
 	
-	ImageInfoRet ret = imageOp.ImageInfo("http://yourbucket.qiniudn.com/" + key);
+	ImageInfoRet ret = ImageOp.ImageInfo("http://yourbucket.qiniudn.com/" + key);
 	if (ret.OK)
 	{
 	    Console.WriteLine("Format: " + ret.Format);
@@ -260,13 +260,14 @@ client 参数是能自动为请求在 HTTP Header 中添加 UpToken 的 Client�
 
 获取图片 EXIF 信息，API 为：
 
-	public CallRet ImageExif(string url);
+	public static CallRet ImageExif(string url);
 	
 例子：
 
 	using QBox.FileOp;
+	using QBox.RPC;
 	
-	CallRet ret = imageOp.ImageExif("http://yourbucket.qiniudn.com/" + key);
+	CallRet ret = ImageOp.ImageExif("http://yourbucket.qiniudn.com/" + key);
 	if (ret.OK) Console.Writeline("Exif:\n" + ret.Response);
 
 <a name="imageview"></a>
@@ -294,7 +295,7 @@ client 参数是能自动为请求在 HTTP Header 中添加 UpToken 的 Client�
 	using QBox.FileOp;
 	
 	ImageViewSpec viewSpec = new ImageViewSpec{Mode = 1, Width = 200, Height= 200};
-	string viewUrl = imageOp.ImageViewUrl("http://yourbucket.qiniudn.com/" + key, viewSpec);
+	string viewUrl = ImageOp.ImageViewUrl("http://yourbucket.qiniudn.com/" + key, viewSpec);
 	Console.WriteLine("ImageViewUrl:" + viewUrl);
 
 <a name="imagemogrify"></a>
@@ -325,7 +326,7 @@ client 参数是能自动为请求在 HTTP Header 中添加 UpToken 的 Client�
 	ImageMogrifySpec mogrSpec = new ImageMogrifySpec {
 	                Thumbnail = "!50x50r", Gravity = "center", Rotate = 90,
 	                Crop = "!50x50", Quality = 80, AutoOrient = true};
-	string mogrUrl = imageOp.ImageMogrifyUrl("http://yourbucket.qiniudn.com/" + key, mogrSpec);
+	string mogrUrl = ImageOp.ImageMogrifyUrl("http://yourbucket.qiniudn.com/" + key, mogrSpec);
 	Console.WriteLine("ImageMogrifyUrl:" + mogrUrl);
 
 可以将处理后的图片持久化到云存储，这里需要一个结过授权的图片 URL， 可以用 Get 接口获取的，所需 API 为：
