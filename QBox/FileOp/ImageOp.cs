@@ -1,34 +1,27 @@
 ﻿using System;
-using QBox.RS;
+using QBox.RPC;
 
 namespace QBox.FileOp
 {
-    public class ImageOp
+    public static class ImageOp
     {
-        public Client Conn { get; private set; }
-
-        public ImageOp(Client conn)
+        public static ImageInfoRet ImageInfo(string url)
         {
-            Conn = conn;
-        }
-
-        public ImageInfoRet ImageInfo(string url)
-        {
-            CallRet callRet = Conn.Call(url + "?imageInfo");
+            CallRet callRet = FileOpClient.Get(url + "?imageInfo");
             return new ImageInfoRet(callRet);
         }
 
-        public CallRet ImageExif(string url)
+        public static CallRet ImageExif(string url)
         {
-            return Conn.Call(url + "?exif");
+            return FileOpClient.Get(url + "?exif");
         }
 
-        public string ImageViewUrl(string url, ImageViewSpec spec)
+        public static string ImageViewUrl(string url, ImageViewSpec spec)
         {
             return url + spec.MakeSpecString();
         }
 
-        public string ImageMogrifyUrl(string url, ImageMogrifySpec spec)
+        public static string ImageMogrifyUrl(string url, ImageMogrifySpec spec)
         {
             return url + spec.MakeSpecString();
         }

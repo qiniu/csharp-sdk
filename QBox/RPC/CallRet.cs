@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace QBox.RS
+namespace QBox.RPC
 {
     public class CallRet
     {
