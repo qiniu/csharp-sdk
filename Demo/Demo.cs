@@ -2,6 +2,7 @@
 using QBox.Auth;
 using QBox.RS;
 using QBox.FileOp;
+using QBox.RPC;
 
 namespace QBox.Demo
 {
@@ -10,38 +11,40 @@ namespace QBox.Demo
         public static string bucketName;
         public static string key;
         public static string localFile;
+        public static string bigkey;
+        public static string bigFile;
         public static string DEMO_DOMAIN;
         public static Client conn;
         public static RSService rs;
-        public static ImageOp imageOp;
 
         public static void Main()
         {
             Config.ACCESS_KEY = "<Please apply your access key>";
             Config.SECRET_KEY = "<Dont send your secret key to anyone>";
 
-            bucketName = "csharpbucket";
-            DEMO_DOMAIN = "csharpbucket.dn.qbox.me";
-            localFile = "Resource/gogopher.jpg";
+            bucketName = "yourbucket";
+            DEMO_DOMAIN = bucketName + ".qiniudn.com";
             key = "gogopher.jpg";
+            localFile = "Resource/gogopher.jpg";
+            bigkey = key;
+            bigFile = localFile;
 
             conn = new DigestAuthClient();
             rs = new RSService(conn, bucketName);
-            imageOp = new ImageOp(conn);
 
             MkBucket();
             RSClientPutFile();
-            Get();
-            Stat();
-            Publish();
-            UnPublish();
-            Delete();
+            Get(key);
+            ResumablePutFile();
+            Stat(bigkey);
+            Delete(key);
             Drop();
 
             MkBucket();
             RSPutFile();
-            Publish();
             ImageOps();
+
+            MakeDownloadToken();
 
             Console.ReadLine();
         }
@@ -70,38 +73,13 @@ namespace QBox.Demo
 
         public static void RSClientPutFile()
         {
-            Console.WriteLine("\n==> PutAuth");
-            PutAuthRet putAuthRet = rs.PutAuth();
-            PrintRet(putAuthRet);
-            if (putAuthRet.OK)
-            {
-                Console.WriteLine("Expires: " + putAuthRet.Expires.ToString());
-                Console.WriteLine("Url: " + putAuthRet.Url);
-            }
-            else
-            {
-                Console.WriteLine("Failed to PutAuth");
-            }
-
-            Console.WriteLine("\n===> RSClient.PutFile");
-            PutFileRet putFileRet = RSClient.PutFile(putAuthRet.Url, bucketName, key, null, localFile, null, "key=<key>");
-            PrintRet(putFileRet);
-            if (putFileRet.OK)
-            {
-                Console.WriteLine("Hash: " + putFileRet.Hash);
-            }
-            else
-            {
-                Console.WriteLine("Failed to RSClient.PutFile");
-            }
-
-            Console.WriteLine("\n===> Generate UpToken");
+            Console.WriteLine("\n===> RSClient Generate UpToken");
             var authPolicy = new AuthPolicy(bucketName, 3600);
             string upToken = authPolicy.MakeAuthTokenString();
             Console.WriteLine("upToken: " + upToken);
 
             Console.WriteLine("\n===> RSClient.PutFileWithUpToken");
-            putFileRet = RSClient.PutFileWithUpToken(upToken, bucketName, key, null, localFile, null, "key=<key>");
+            PutFileRet putFileRet = RSClient.PutFileWithUpToken(upToken, bucketName, key, null, localFile, null, "key=<key>");
             PrintRet(putFileRet);
             if (putFileRet.OK)
             {
@@ -113,9 +91,27 @@ namespace QBox.Demo
             }
         }
 
-        public static void Get()
+        public static void ResumablePutFile()
         {
-            Console.WriteLine("\n===> Get");
+            Console.WriteLine("\n===> ResumablePut.PutFile");
+            var authPolicy = new AuthPolicy(bucketName, 3600);
+            string upToken = authPolicy.MakeAuthTokenString();
+            PutAuthClient client = new PutAuthClient(upToken);
+            PutFileRet putFileRet = ResumablePut.PutFile(client, bucketName, bigkey, null, bigFile, null, "key=<key>");
+            PrintRet(putFileRet);
+            if (putFileRet.OK)
+            {
+                Console.WriteLine("Hash: " + putFileRet.Hash);
+            }
+            else
+            {
+                Console.WriteLine("Failed to ResumablePut.PutFile");
+            }
+        }
+
+        public static void Get(string key)
+        {
+            Console.WriteLine("\n===> RSService.Get");
             GetRet getRet = rs.Get(key, "attName");
             PrintRet(getRet);
             if (getRet.OK)
@@ -130,7 +126,7 @@ namespace QBox.Demo
                 Console.WriteLine("Failed to Get");
             }
 
-            Console.WriteLine("\n===> GetIfNotModified");
+            Console.WriteLine("\n===> RSService.GetIfNotModified");
             getRet = rs.GetIfNotModified(key, "attName", getRet.Hash);
             PrintRet(getRet);
             if (getRet.OK)
@@ -146,9 +142,9 @@ namespace QBox.Demo
             }
         }
 
-        public static void Stat()
+        public static void Stat(string key)
         {
-            Console.WriteLine("\n===> Stat");
+            Console.WriteLine("\n===> RSService.Stat");
             StatRet statRet = rs.Stat(key);
             PrintRet(statRet);
             if (statRet.OK)
@@ -164,9 +160,9 @@ namespace QBox.Demo
             }
         }
 
-        public static void Delete()
+        public static void Delete(string key)
         {
-            Console.WriteLine("\n===> Delete");
+            Console.WriteLine("\n===> RSService.Delete");
             CallRet deleteRet = rs.Delete(key);
             PrintRet(deleteRet);
             if (!deleteRet.OK)
@@ -177,7 +173,7 @@ namespace QBox.Demo
 
         public static void Drop()
         {
-            Console.WriteLine("\n===> Drop");
+            Console.WriteLine("\n===> RSService.Drop");
             CallRet dropRet = rs.Drop();
             PrintRet(dropRet);
             if (!dropRet.OK)
@@ -186,32 +182,19 @@ namespace QBox.Demo
             }
         }
 
-        public static void Publish()
+        public static void MakeDownloadToken()
         {
-            Console.WriteLine("\n===> Publish");
-            CallRet publishRet = rs.Publish(DEMO_DOMAIN);
-            PrintRet(publishRet);
-            if (!publishRet.OK)
-            {
-                Console.WriteLine("Failed to Publish");
-            }
-        }
-
-        public static void UnPublish()
-        {
-            Console.WriteLine("\n===> UnPublish");
-            CallRet publishRet = rs.Unpublish(DEMO_DOMAIN);
-            PrintRet(publishRet);
-            if (!publishRet.OK)
-            {
-                Console.WriteLine("Failed to UnPublish");
-            }
+            Console.WriteLine("\n===> Auth.MakeDownloadToken");
+            string pattern = "*/*";
+            var downloadPolicy = new DownloadPolicy(pattern, 3600);
+            string dnToken = downloadPolicy.MakeAuthTokenString();
+            Console.WriteLine("dnToken: " + dnToken);
         }
 
         public static void ImageOps()
         {
-            Console.WriteLine("\n===> ImageInfo");
-            ImageInfoRet infoRet = imageOp.ImageInfo("http://" + DEMO_DOMAIN + "/" + key);
+            Console.WriteLine("\n===> FileOp.ImageInfo");
+            ImageInfoRet infoRet = ImageOp.ImageInfo("http://" + DEMO_DOMAIN + "/" + key);
             PrintRet(infoRet);
             if (infoRet.OK)
             {
@@ -225,34 +208,34 @@ namespace QBox.Demo
                 Console.WriteLine("Failed to ImageInfo");
             }
 
-            Console.WriteLine("\n===> ImageExif");
-            CallRet exifRet = imageOp.ImageExif("http://" + DEMO_DOMAIN + "/" + key);
+            Console.WriteLine("\n===> FileOp.ImageExif");
+            CallRet exifRet = ImageOp.ImageExif("http://" + DEMO_DOMAIN + "/" + key);
             PrintRet(exifRet);
             if (!exifRet.OK)
             {
                 Console.WriteLine("Failed to ImageExif");
             }
 
-            Console.WriteLine("\n===> ImageViewUrl");
+            Console.WriteLine("\n===> FileOp.ImageViewUrl");
             ImageViewSpec viewSpec = new ImageViewSpec{Mode = 0, Width = 200, Height= 200};
-            string viewUrl = imageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
+            string viewUrl = ImageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
             Console.WriteLine("ImageViewUrl 1:" + viewUrl);
             viewSpec.Quality = 1;
             viewSpec.Format = "gif";
-            viewUrl = imageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
+            viewUrl = ImageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
             Console.WriteLine("ImageViewUrl 2:" + viewUrl);
             viewSpec.Quality = 90;
             viewSpec.Sharpen = 10;
             viewSpec.Format = "png";
-            viewUrl = imageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
+            viewUrl = ImageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
             Console.WriteLine("ImageViewUrl 3:" + viewUrl);
 
-            Console.WriteLine("\n===> ImageMogrifyUrl");
+            Console.WriteLine("\n===> FileOp.ImageMogrifyUrl");
             ImageMogrifySpec mogrSpec = new ImageMogrifySpec {
                 Thumbnail = "!50x50r", Gravity = "center", Rotate = 90,
                 Crop = "!50x50", Quality = 80, AutoOrient = true
             };
-            string mogrUrl = imageOp.ImageMogrifyUrl("http://" + DEMO_DOMAIN + "/" + key, mogrSpec);
+            string mogrUrl = ImageOp.ImageMogrifyUrl("http://" + DEMO_DOMAIN + "/" + key, mogrSpec);
             Console.WriteLine("ImageMogrifyUrl:" + mogrUrl);
 
             Console.WriteLine("\n===> Get");
@@ -269,7 +252,7 @@ namespace QBox.Demo
             {
                 Console.WriteLine("Failed to Get");
             }
-            Console.WriteLine("\n===> ImageMogrifySaveAs");
+            Console.WriteLine("\n===> FileOp.ImageMogrifySaveAs");
             PutFileRet saveAsRet = rs.ImageMogrifySaveAs(getRet.Url, mogrSpec, key + ".mogr-save-as");
             PrintRet(saveAsRet);
             if (saveAsRet.OK)

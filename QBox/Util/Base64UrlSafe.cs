@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Text;
 
-namespace QBox.RS
+namespace QBox.Util
 {
     public static class Base64UrlSafe
     {
         public static string Encode(string text)
         {
             if (String.IsNullOrEmpty(text)) return "";
-            byte[] bs = Encoding.ASCII.GetBytes(text);
+            byte[] bs = Encoding.UTF8.GetBytes(text);
             string encodedStr = Convert.ToBase64String(bs);
             encodedStr = encodedStr.Replace('+', '-').Replace('/', '_');
             return encodedStr;

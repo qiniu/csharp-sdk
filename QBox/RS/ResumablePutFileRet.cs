@@ -4,12 +4,13 @@ using QBox.RPC;
 
 namespace QBox.RS
 {
-    public class PutAuthRet : CallRet
+    public class ResumablePutFileRet : CallRet
     {
-        public int Expires { get; private set; }
-        public string Url { get; private set; }
+        public string Ctx { get; private set; }
+        public string Checksum { get; private set; }
+        public string Host { get; private set; }
 
-        public PutAuthRet(CallRet ret)
+        public ResumablePutFileRet(CallRet ret)
             : base(ret)
         {
             if (!String.IsNullOrEmpty(Response))
@@ -29,8 +30,9 @@ namespace QBox.RS
         private void Unmarshal(string json)
         {
             JsonData data = JsonMapper.ToObject(json);
-            Expires = (int)data["expiresIn"];
-            Url = (string)data["url"];
+            Ctx = (string)data["ctx"];
+            Checksum = (string)data["checksum"];
+            Host = (string)data["host"];
         }
     }
 }

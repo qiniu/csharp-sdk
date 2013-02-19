@@ -38,6 +38,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Auth\AuthToken.cs" />
+    <Compile Include="Auth\DownloadPolicy.cs" />
+    <Compile Include="Auth\PutAuthClient.cs" />
+    <Compile Include="FileOp\FileOpClient.cs" />
     <Compile Include="FileOp\ImageMogrifySpec.cs" />
     <Compile Include="FileOp\ImageViewSpec.cs" />
     <Compile Include="Json\IJsonWrapper.cs" />
@@ -53,18 +57,21 @@
     <Compile Include="FileOp\ImageInfoRet.cs" />
     <Compile Include="FileOp\ImageOp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RS\Base64UrlSafe.cs" />
-    <Compile Include="RS\CallRet.cs" />
-    <Compile Include="RS\Client.cs" />
+    <Compile Include="Util\Base64UrlSafe.cs" />
+    <Compile Include="RPC\CallRet.cs" />
+    <Compile Include="RPC\Client.cs" />
     <Compile Include="RS\Config.cs" />
     <Compile Include="RS\FileParameter.cs" />
     <Compile Include="RS\GetRet.cs" />
     <Compile Include="RS\MultiPartFormDataPost.cs" />
     <Compile Include="RS\PutAuthRet.cs" />
     <Compile Include="RS\PutFileRet.cs" />
+    <Compile Include="RS\ResumablePut.cs" />
+    <Compile Include="RS\ResumablePutFileRet.cs" />
     <Compile Include="RS\RSClient.cs" />
     <Compile Include="RS\RSService.cs" />
     <Compile Include="RS\StatRet.cs" />
+    <Compile Include="Util\StreamUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
