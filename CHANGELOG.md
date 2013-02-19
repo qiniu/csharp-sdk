@@ -1,13 +1,15 @@
 ## CHANGE LOG
 
-### v3.0.0
+### v2.4.0
 
-增加 DownloadToken 支持（QBox/Auth）
+2013-02-19
 
-AuthPolicy 增加 Escape，AsyncOps，ReturnBody 字段（QBox/Auth）
+Issue [#10](https://github.com/qiniu/csharp-sdk/pull/10):
 
-增加简易的断点续上传支持（QBox/RS）
+- QBox.Auth.AuthPolicy 增加成员：CallbackBodyType, Escape, AsyncOps, ReturnBody
+- DownloadToken支持：增加 QBox.Auth.DownloadPolicy 类
+- 增加 PutAuth 支持：增加 QBox.Auth.PutAuthClient 类
+- 非兼容调整：QBox.RS.Client 改名为 QBox.RPC.Client
+- 简易断点续上传支持: 增加 QBox.RS.ResumablePut 类
+- hotfix: 修复了 Base64 编码不支持中文的情况（QBox/Util）
 
-更新了文档（QBox/Docs）
-
-修复了 Base64 编码不支持中文的情况（QBox/Util）
