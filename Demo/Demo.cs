@@ -3,6 +3,7 @@ using QBox.Auth;
 using QBox.RS;
 using QBox.FileOp;
 using QBox.RPC;
+using QBox.Util;
 
 namespace QBox.Demo
 {
@@ -34,6 +35,7 @@ namespace QBox.Demo
 
             MkBucket();
             RSClientPutFile();
+            RSClientPutFileWithCRC32();
             Get(key);
             ResumablePutFile();
             Stat(bigkey);
@@ -41,7 +43,6 @@ namespace QBox.Demo
             Drop();
 
             MkBucket();
-            RSPutFile();
             ImageOps();
 
             MakeDownloadToken();
@@ -54,21 +55,6 @@ namespace QBox.Demo
             Console.WriteLine("\n===> RSService.MkBucket");
             CallRet callRet = rs.MkBucket();
             PrintRet(callRet);
-        }
-
-        public static void RSPutFile()
-        {
-            Console.WriteLine("\n===> RSService.PutFile");
-            PutFileRet putFileRet = rs.PutFile(key, null, localFile, null);
-            PrintRet(putFileRet);
-            if (putFileRet.OK)
-            {
-                Console.WriteLine("Hash: " + putFileRet.Hash);
-            }
-            else
-            {
-                Console.WriteLine("Failed to PutFile");
-            }
         }
 
         public static void RSClientPutFile()
@@ -88,6 +74,30 @@ namespace QBox.Demo
             else
             {
                 Console.WriteLine("Failed to RSClient.PutFileWithUpToken");
+            }
+        }
+
+        public static void RSClientPutFileWithCRC32()
+        {
+            Console.WriteLine("\n===> RSClientPutFileWithCRC32 Generate CRC32");
+            UInt32 crc = CRC32.CheckSumFile(localFile);
+            Console.WriteLine("CRC32: " + crc.ToString());
+
+            Console.WriteLine("\n===> RSClientPutFileWithCRC32 Generate UpToken");
+            var authPolicy = new AuthPolicy(bucketName, 3600);
+            string upToken = authPolicy.MakeAuthTokenString();
+            Console.WriteLine("upToken: " + upToken);
+
+            Console.WriteLine("\n===> RSClient.PutFileWithUpToken(CRC32)");
+            PutFileRet putFileRet = RSClient.PutFileWithUpToken(upToken, bucketName, key, null, localFile, null, "key=<key>", crc);
+            PrintRet(putFileRet);
+            if (putFileRet.OK)
+            {
+                Console.WriteLine("Hash: " + putFileRet.Hash);
+            }
+            else
+            {
+                Console.WriteLine("Failed to RSClient.PutFileWithUpToken(CRC32)");
             }
         }
 

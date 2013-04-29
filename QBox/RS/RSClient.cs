@@ -45,6 +45,14 @@ namespace QBox.RS
             string upToken, string tableName, string key, string mimeType,
             string localFile, string customMeta, string callbackParam)
         {
+            return PutFileWithUpToken(upToken, tableName, key, 
+                mimeType, localFile, customMeta, callbackParam, 0);
+        }
+
+        public static PutFileRet PutFileWithUpToken(
+            string upToken, string tableName, string key, string mimeType,
+            string localFile, string customMeta, string callbackParam, UInt32 crc32)
+        {
             string entryURI = tableName + ":" + key;
             if (String.IsNullOrEmpty(mimeType))
             {
@@ -55,6 +63,10 @@ namespace QBox.RS
             if (!String.IsNullOrEmpty(customMeta))
             {
                 action += "/meta/" + Base64UrlSafe.Encode(customMeta);
+            }
+            if (crc32 != 0)
+            {
+                action += "/crc32/" + crc32.ToString();
             }
 
             try

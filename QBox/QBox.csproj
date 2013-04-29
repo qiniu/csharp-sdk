@@ -71,6 +71,7 @@
     <Compile Include="RS\RSClient.cs" />
     <Compile Include="RS\RSService.cs" />
     <Compile Include="RS\StatRet.cs" />
+    <Compile Include="Util\CRC32.cs" />
     <Compile Include="Util\StreamUtil.cs" />
   </ItemGroup>
   <ItemGroup>
