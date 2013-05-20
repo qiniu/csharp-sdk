@@ -6,9 +6,9 @@ namespace QBox.FileOp
 {
     public class ImageInfoRet : CallRet
     {
-        public string Format { get; private set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
+        public string Format { get; private set; }
         public string ColorModel { get; private set; }
 
         public ImageInfoRet(CallRet ret)
