@@ -42,6 +42,7 @@
     <Compile Include="Auth\GetPolicy.cs" />
     <Compile Include="Auth\PutAuthClient.cs" />
     <Compile Include="FileOp\Exif.cs" />
+    <Compile Include="FileOp\ExifRet.cs" />
     <Compile Include="FileOp\FileOpClient.cs" />
     <Compile Include="FileOp\ImageMogrify.cs" />
     <Compile Include="FileOp\ImageView.cs" />

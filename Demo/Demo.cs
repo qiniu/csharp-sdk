@@ -11,9 +11,11 @@ namespace QBox.Demo
 {
     public class Demo
     {
-        public static string bucketName;
-        public static string key;
+        public static string localBucket;
+        public static string localKey;
         public static string localFile;
+        public static string localLargeKey;
+        public static string localLargeFile;
         public static string DEMO_DOMAIN;
 
         public static void Main()
@@ -21,31 +23,30 @@ namespace QBox.Demo
             Config.ACCESS_KEY = "<Please apply your access key>";
             Config.SECRET_KEY = "<Dont send your secret key to anyone>";
 
-            bucketName = "yourbucket";
-            DEMO_DOMAIN = bucketName + ".qiniudn.com";
-            key = "gogopher.jpg";
+            localBucket = "yourbucket";
+            DEMO_DOMAIN = localBucket + ".qiniudn.com";
+            localKey = "gogopher.jpg";
             localFile = "Resource/gogopher.jpg";
 
-            PutFile();
-            Stat();
-            Delete();
-            ResumablePutFile();
+            PutFile(localBucket, localKey, localFile);
+            ResumablePutFile(localBucket, localKey, localFile);
+            FileManage();
             MakeGetToken();
             ImageOps();
 
             Console.ReadLine();
         }
 
-        public static void PutFile()
+        public static void PutFile(string bucket, string key, string fname)
         {
             Console.WriteLine("\n===>PutFile: Generate UpToken");
-            var policy = new PutPolicy(bucketName, 3600);
+            var policy = new PutPolicy(bucket, 3600);
             string upToken = policy.Token();
             Console.WriteLine("upToken: " + upToken);
 
-            Console.WriteLine("\n===> PutFile");
-            PutExtra extra = new PutExtra { Bucket = bucketName, MimeType = "image/jpeg" };
-            PutRet ret = IOClient.PutFile(upToken, key, localFile, extra);
+            Console.WriteLine("\n===> PutFile {0}:{1} fname:{2}", bucket, key, fname);
+            PutExtra extra = new PutExtra { Bucket = bucket };
+            PutRet ret = IOClient.PutFile(upToken, key, fname, extra);
             PrintRet(ret);
             if (ret.OK)
             {
@@ -57,16 +58,16 @@ namespace QBox.Demo
             }
         }
 
-        public static void ResumablePutFile()
+        public static void ResumablePutFile(string bucket, string key, string fname)
         {
             Console.WriteLine("\n===> ResumablePutFile: Generate UpToken");
-            var policy = new PutPolicy(bucketName, 3600);
+            var policy = new PutPolicy(localBucket, 3600);
             string upToken = policy.Token();
             Console.WriteLine("upToken: " + upToken);
 
-            PutExtra extra = new PutExtra { Bucket = bucketName, MimeType = "image/jpeg" };
-            PutRet ret = IOClient.ResumablePutFile(upToken, key, localFile, extra);
-            PrintRet(ret);
+            Console.WriteLine("\n===> ResumablePutFile {0}:{1} fname:{2}", bucket, key, fname);
+            PutExtra extra = new PutExtra { Bucket = bucket };
+            PutRet ret = IOClient.ResumablePutFile(upToken, key, fname, extra);
             if (ret.OK)
             {
                 Console.WriteLine("Hash: " + ret.Hash);
@@ -77,12 +78,53 @@ namespace QBox.Demo
             }
         }
 
-        public static void Stat()
+        public static void FileManage()
         {
-            Console.WriteLine("\n===> Stat");
+            Stat(localBucket, localKey);
+            Copy(localBucket, localKey, localBucket, "copy.jpg");
+            Stat(localBucket, "copy.jpg");
+            Move(localBucket, "copy.jpg", localBucket, "move.jpg");
+            Stat(localBucket, "move.jpg");
+            Delete(localBucket, "move.jpg");
+        }
+
+        public static void Move(string bucketSrc, string keySrc, string bucketDest, string keyDest)
+        {
+            Console.WriteLine("\n===> Move {0}:{1} To {2}:{3}", 
+                bucketSrc, keySrc, bucketDest, keyDest);
             RSClient client = new RSClient();
-            Entry entry = client.Stat(bucketName, key);
-            PrintRet(entry);
+            CallRet ret = client.Move(bucketSrc, keySrc, bucketDest, keyDest);
+            if (ret.OK)
+            {
+                Console.WriteLine("Move OK");
+            }
+            else
+            {
+                Console.WriteLine("Failed to Move");
+            }
+        }
+
+        public static void Copy(string bucketSrc, string keySrc, string bucketDest, string keyDest)
+        {
+            Console.WriteLine("\n===> Copy {0}:{1} To {2}:{3}",
+                bucketSrc, keySrc, bucketDest, keyDest);
+            RSClient client = new RSClient();
+            CallRet ret = client.Copy(bucketSrc, keySrc, bucketDest, keyDest);
+            if (ret.OK)
+            {
+                Console.WriteLine("Copy OK");
+            }
+            else
+            {
+                Console.WriteLine("Failed to Copy");
+            }
+        }
+
+        public static void Stat(string bucket, string key)
+        {
+            Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
+            RSClient client = new RSClient();
+            Entry entry = client.Stat(bucket, key);
             if (entry.OK)
             {
                 Console.WriteLine("Hash: " + entry.Hash);
@@ -97,13 +139,16 @@ namespace QBox.Demo
             }
         }
 
-        public static void Delete()
+        public static void Delete(string bucket, string key)
         {
-            Console.WriteLine("\n===> Delete");
+            Console.WriteLine("\n===> Delete {0}:{1}", bucket, key);
             RSClient client = new RSClient();
-            CallRet ret = client.Delete(bucketName, key);
-            PrintRet(ret);
-            if (!ret.OK)
+            CallRet ret = client.Delete(bucket, key);
+            if (ret.OK)
+            {
+                Console.WriteLine("Delete OK");
+            }
+            else
             {
                 Console.WriteLine("Failed to Delete");
             }
@@ -120,12 +165,11 @@ namespace QBox.Demo
 
         public static void ImageOps()
         {
-            string host = "http://" + DEMO_DOMAIN + "/" + key;
+            string host = "http://" + DEMO_DOMAIN + "/" + localKey;
 
             Console.WriteLine("\n===> FileOp.ImageInfo");
             string imageInfoURL = ImageInfo.MakeRequest(host);
             ImageInfoRet infoRet = ImageInfo.Call(imageInfoURL);
-            PrintRet(infoRet);
             if (infoRet.OK)
             {
                 Console.WriteLine("Format: " + infoRet.Format);
@@ -140,9 +184,14 @@ namespace QBox.Demo
 
             Console.WriteLine("\n===> FileOp.Exif");
             string exifURL = Exif.MakeRequest(host);
-            CallRet exifRet = Exif.Call(exifURL);
-            PrintRet(exifRet);
-            if (!exifRet.OK)
+            ExifRet exifRet = Exif.Call(exifURL);
+            if (exifRet.OK)
+            {
+                Console.WriteLine("ApertureValue.val: " + exifRet["ApertureValue"].val);
+                Console.WriteLine("ApertureValue.type: " + exifRet["ApertureValue"].type.ToString());
+                Console.WriteLine("ExifInfo: " + exifRet.ToString());
+            }
+            else
             {
                 Console.WriteLine("Failed to ImageExif");
             }

@@ -10,9 +10,10 @@ namespace QBox.FileOp
             return url + "?exif";
         }
 
-        public static CallRet Call(string url)
+        public static ExifRet Call(string url)
         {
-            return FileOpClient.Get(url);
+            CallRet callRet = FileOpClient.Get(url);
+            return new ExifRet(callRet);
         }
     }
 }

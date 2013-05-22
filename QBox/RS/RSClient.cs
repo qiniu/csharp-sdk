@@ -28,5 +28,23 @@ namespace QBox.RS
             string url = Config.RS_HOST + "/delete/" + Base64URLSafe.Encode(entryURI);
             return Conn.Call(url);
         }
+
+        public CallRet Move(string bucketSrc, string keySrc, string bucketDest, string keyDest)
+        {
+            string entryURISrc = bucketSrc + ":" + keySrc;
+            string entryURIDest = bucketDest + ":" + keyDest;
+            string url = Config.RS_HOST + "/move/" +
+                Base64URLSafe.Encode(entryURISrc) + "/" + Base64URLSafe.Encode(entryURIDest);
+            return Conn.Call(url);
+        }
+
+        public CallRet Copy(string bucketSrc, string keySrc, string bucketDest, string keyDest)
+        {
+            string entryURISrc = bucketSrc + ":" + keySrc;
+            string entryURIDest = bucketDest + ":" + keyDest;
+            string url = Config.RS_HOST + "/copy/" +
+                Base64URLSafe.Encode(entryURISrc) + "/" + Base64URLSafe.Encode(entryURIDest);
+            return Conn.Call(url);
+        }
     }
 }
