@@ -2,7 +2,7 @@
 using System.Text;
 using System.IO;
 using System.Security.Cryptography;
-using QBox.RS;
+using QBox.Conf;
 using QBox.Util;
 
 namespace QBox.Auth
@@ -11,35 +11,33 @@ namespace QBox.Auth
     {
         public static byte[] Make(string scope)
         {
-            Encoding encoding = Encoding.ASCII;
-            byte[] accessKey = encoding.GetBytes(Config.ACCESS_KEY);
-            byte[] secretKey = encoding.GetBytes(Config.SECRET_KEY);
-            byte[] upToken = null;
+            byte[] accessKey = Config.Encoding.GetBytes(Config.ACCESS_KEY);
+            byte[] secretKey = Config.Encoding.GetBytes(Config.SECRET_KEY);
+            byte[] token = null;
             try
             {
-                byte[] policyBase64 = encoding.GetBytes(Base64UrlSafe.Encode(scope));
-                byte[] digestBase64 = null;
+                byte[] encodedScope = Config.Encoding.GetBytes(Base64URLSafe.Encode(scope));
+                byte[] digestScope = null;
                 using (HMACSHA1 hmac = new HMACSHA1(secretKey))
                 {
-                    byte[] digest = hmac.ComputeHash(policyBase64);
-                    digestBase64 = encoding.GetBytes(Base64UrlSafe.Encode(digest));
+                    byte[] digest = hmac.ComputeHash(encodedScope);
+                    digestScope = Config.Encoding.GetBytes(Base64URLSafe.Encode(digest));
                 }
                 using (MemoryStream buffer = new MemoryStream())
                 {
                     buffer.Write(accessKey, 0, accessKey.Length);
                     buffer.WriteByte((byte)':');
-                    buffer.Write(digestBase64, 0, digestBase64.Length);
+                    buffer.Write(digestScope, 0, digestScope.Length);
                     buffer.WriteByte((byte)':');
-                    buffer.Write(policyBase64, 0, policyBase64.Length);
-                    upToken = buffer.ToArray();
+                    buffer.Write(encodedScope, 0, encodedScope.Length);
+                    token = buffer.ToArray();
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
-            return upToken;
+            return token;
         }
-        
     }
 }

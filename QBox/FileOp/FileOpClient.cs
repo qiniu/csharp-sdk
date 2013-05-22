@@ -5,11 +5,11 @@ using QBox.RPC;
 
 namespace QBox.FileOp
 {
-    public static class FileOpClient
+    static class FileOpClient
     {
         public static CallRet Get(string url)
         {
-            Console.WriteLine("Client.Get ==> URL: " + url);
+            Console.WriteLine("FopClient.Get ==> URL: " + url);
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);

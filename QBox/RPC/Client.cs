@@ -41,7 +41,7 @@ namespace QBox.RPC
                 SetAuth(request, body);
                 using (Stream requestStream = request.GetRequestStream())
                 {
-                    StreamUtil.CopyN(body, requestStream, length);
+                    Util.IO.CopyN(requestStream, body, length);
                 }
                 using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
                 {
