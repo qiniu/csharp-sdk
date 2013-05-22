@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text;
 using System.IO;
-using LitJson;
+using System.Collections.Generic;
+using System.Web.Script.Serialization;
 using System.Security.Cryptography;
 using QBox.Util;
 using QBox.Conf;
@@ -31,7 +32,7 @@ namespace QBox.Auth
 
         public string Marshal()
         {
-            JsonData data = new JsonData();
+            var data = new Dictionary<string,dynamic>();
             data["scope"] = Scope;
             data["deadline"] = Expires;
             if (!String.IsNullOrEmpty(CallbackUrl))
@@ -48,7 +49,8 @@ namespace QBox.Auth
                 data["escape"] = Escape;
             if (DetectMime != 0)
                 data["detectMime"] = DetectMime;
-            return data.ToJson();
+            var jss = new JavaScriptSerializer();
+            return jss.Serialize(data);
         }
 
         public string Token()

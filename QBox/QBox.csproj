@@ -50,14 +50,6 @@
     <Compile Include="IO\MultiPart.cs" />
     <Compile Include="IO\PutExtra.cs" />
     <Compile Include="IO\PutRet.cs" />
-    <Compile Include="Json\IJsonWrapper.cs" />
-    <Compile Include="Json\JsonData.cs" />
-    <Compile Include="Json\JsonException.cs" />
-    <Compile Include="Json\JsonMapper.cs" />
-    <Compile Include="Json\JsonReader.cs" />
-    <Compile Include="Json\JsonWriter.cs" />
-    <Compile Include="Json\Lexer.cs" />
-    <Compile Include="Json\ParserToken.cs" />
     <Compile Include="Auth\PutPolicy.cs" />
     <Compile Include="Auth\QBoxAuthClient.cs" />
     <Compile Include="FileOp\ImageInfoRet.cs" />
@@ -78,8 +70,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

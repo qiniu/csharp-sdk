@@ -1,5 +1,6 @@
 ﻿using System;
-using LitJson;
+using System.Collections.Generic;
+using System.Web.Script.Serialization;
 using QBox.RPC;
 
 namespace QBox.RS
@@ -31,21 +32,16 @@ namespace QBox.RS
 
         private void Unmarshal(string json)
         {
-            JsonData data = JsonMapper.ToObject(json);
-            Hash = (string)data["hash"];
-            MimeType = (string)data["mimeType"];
-
-            JsonData fsize = data["fsize"];
-            if (fsize.IsInt)
-                Fsize = (int)fsize;
-            else if (fsize.IsLong)
-                Fsize = (long)fsize;
-
-            JsonData putTime = data["putTime"];
-            if (putTime.IsInt)
-                PutTime = (int)putTime;
-            else if (putTime.IsLong)
-                PutTime = (long)putTime;
+            var jss = new JavaScriptSerializer();
+            var dict = jss.Deserialize<Dictionary<string, dynamic>>(json);
+            Hash = (string)dict["hash"];
+            MimeType = (string)dict["mimeType"];
+            Fsize = (long)dict["fsize"];
+            PutTime = (long)dict["putTime"];
+            if (dict.ContainsKey("customer"))
+            {
+                Customer = (string)dict["customer"];
+            }
         }
     }
 }

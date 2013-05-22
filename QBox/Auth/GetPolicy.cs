@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
+using System.Web.Script.Serialization;
 using System.Security.Cryptography;
-using LitJson;
 using QBox.Util;
 using QBox.Conf;
 
@@ -24,10 +25,11 @@ namespace QBox.Auth
 
         public string Marshal()
         {
-            JsonData data = new JsonData();
+            var data = new Dictionary<string, dynamic>();
             data["S"] = Pattern;
             data["E"] = Deadline;
-            return data.ToJson();
+            var jss = new JavaScriptSerializer();
+            return jss.Serialize(data);
         }
 
         public string Token()
