@@ -1,14 +1,15 @@
 ﻿using System;
-using LitJson;
+using System.Collections.Generic;
+using System.Web.Script.Serialization;
 using QBox.RPC;
 
 namespace QBox.FileOp
 {
     public class ImageInfoRet : CallRet
     {
-        public string Format { get; private set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
+        public string Format { get; private set; }
         public string ColorModel { get; private set; }
 
         public ImageInfoRet(CallRet ret)
@@ -30,11 +31,12 @@ namespace QBox.FileOp
 
         private void Unmarshal(string json)
         {
-            JsonData data = JsonMapper.ToObject(json);
-            Format = (string)data["format"];
-            Width = (int)data["width"];
-            Height = (int)data["height"];
-            ColorModel = (string)data["colorModel"];
+            var jss = new JavaScriptSerializer();
+            var dict = jss.Deserialize<Dictionary<string, dynamic>>(json);
+            Format = (string)dict["format"];
+            Width = (int)dict["width"];
+            Height = (int)dict["height"];
+            ColorModel = (string)dict["colorModel"];
         }
     }
 }

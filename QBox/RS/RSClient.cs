@@ -1,90 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using QBox.Util;
+﻿using QBox.Util;
 using QBox.RPC;
+using QBox.Auth;
+using QBox.Conf;
 
 namespace QBox.RS
 {
     public class RSClient
     {
-        public static PutFileRet PutFile(
-            string url, string bucketName, string key, string mimeType,
-            string localFile, string customMeta, string callbackParam)
-        {
-            string entryURI = bucketName + ":" + key;
-            if (String.IsNullOrEmpty(mimeType))
-            {
-                mimeType = "application/octet-stream";
-            }
-            string action = "/rs-put/" + Base64UrlSafe.Encode(entryURI) +
-                    "/mimeType/" + Base64UrlSafe.Encode(mimeType);
-            if (!String.IsNullOrEmpty(customMeta))
-            {
-                action += "/meta/" + Base64UrlSafe.Encode(customMeta);
-            }
+        public Client Conn { get; private set; }
 
-            try
-            {
-                var postParams = new Dictionary<string, object>();
-                postParams["action"] = action;
-                postParams["file"] = new FileParameter(localFile, mimeType);
-                if (!String.IsNullOrEmpty(callbackParam))
-                    postParams["params"] = callbackParam;
-                CallRet callRet = MultiPartFormDataPost.Post(url, postParams);
-                return new PutFileRet(callRet);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                return new PutFileRet(new CallRet(HttpStatusCode.BadRequest, e));
-            }
+        public RSClient()
+        {
+            Conn = new QBoxAuthClient();
         }
 
-        public static PutFileRet PutFileWithUpToken(
-            string upToken, string tableName, string key, string mimeType,
-            string localFile, string customMeta, string callbackParam)
+        public Entry Stat(string bucket, string key)
         {
-            return PutFileWithUpToken(upToken, tableName, key, 
-                mimeType, localFile, customMeta, callbackParam, 0);
+            string entryURI = bucket + ":" + key;
+            string url = Config.RS_HOST + "/stat/" + Base64URLSafe.Encode(entryURI);
+            CallRet callRet = Conn.Call(url);
+            return new Entry(callRet);
         }
 
-        public static PutFileRet PutFileWithUpToken(
-            string upToken, string tableName, string key, string mimeType,
-            string localFile, string customMeta, string callbackParam, UInt32 crc32)
+        public CallRet Delete(string bucket, string key)
         {
-            string entryURI = tableName + ":" + key;
-            if (String.IsNullOrEmpty(mimeType))
-            {
-                mimeType = "application/octet-stream";
-            }
-            string action = "/rs-put/" + Base64UrlSafe.Encode(entryURI) +
-                    "/mimeType/" + Base64UrlSafe.Encode(mimeType);
-            if (!String.IsNullOrEmpty(customMeta))
-            {
-                action += "/meta/" + Base64UrlSafe.Encode(customMeta);
-            }
-            if (crc32 != 0)
-            {
-                action += "/crc32/" + crc32.ToString();
-            }
+            string entryURI = bucket + ":" + key;
+            string url = Config.RS_HOST + "/delete/" + Base64URLSafe.Encode(entryURI);
+            return Conn.Call(url);
+        }
 
-            try
-            {
-                var postParams = new Dictionary<string, object>();
-                postParams["auth"] = upToken;
-                postParams["action"] = action;
-                postParams["file"] = new FileParameter(localFile, mimeType);
-                if (!String.IsNullOrEmpty(callbackParam))
-                    postParams["params"] = callbackParam;
-                CallRet callRet = MultiPartFormDataPost.Post(Config.UP_HOST + "/upload", postParams);
-                return new PutFileRet(callRet);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                return new PutFileRet(new CallRet(HttpStatusCode.BadRequest, e));
-            }
+        public CallRet Move(string bucketSrc, string keySrc, string bucketDest, string keyDest)
+        {
+            string entryURISrc = bucketSrc + ":" + keySrc;
+            string entryURIDest = bucketDest + ":" + keyDest;
+            string url = Config.RS_HOST + "/move/" +
+                Base64URLSafe.Encode(entryURISrc) + "/" + Base64URLSafe.Encode(entryURIDest);
+            return Conn.Call(url);
+        }
+
+        public CallRet Copy(string bucketSrc, string keySrc, string bucketDest, string keyDest)
+        {
+            string entryURISrc = bucketSrc + ":" + keySrc;
+            string entryURIDest = bucketDest + ":" + keyDest;
+            string url = Config.RS_HOST + "/copy/" +
+                Base64URLSafe.Encode(entryURISrc) + "/" + Base64URLSafe.Encode(entryURIDest);
+            return Conn.Call(url);
         }
     }
 }

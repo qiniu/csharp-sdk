@@ -1,168 +1,137 @@
 ﻿using System;
+using QBox.Conf;
 using QBox.Auth;
-using QBox.RS;
 using QBox.FileOp;
 using QBox.RPC;
 using QBox.Util;
+using QBox.IO;
+using QBox.RS;
 
 namespace QBox.Demo
 {
     public class Demo
     {
-        public static string bucketName;
-        public static string key;
+        public static string localBucket;
+        public static string localKey;
         public static string localFile;
-        public static string bigkey;
-        public static string bigFile;
+        public static string localLargeKey;
+        public static string localLargeFile;
         public static string DEMO_DOMAIN;
-        public static Client conn;
-        public static RSService rs;
 
         public static void Main()
         {
             Config.ACCESS_KEY = "<Please apply your access key>";
             Config.SECRET_KEY = "<Dont send your secret key to anyone>";
 
-            bucketName = "yourbucket";
-            DEMO_DOMAIN = bucketName + ".qiniudn.com";
-            key = "gogopher.jpg";
+            localBucket = "yourbucket";
+            DEMO_DOMAIN = localBucket + ".qiniudn.com";
+            localKey = "gogopher.jpg";
             localFile = "Resource/gogopher.jpg";
-            bigkey = key;
-            bigFile = localFile;
 
-            conn = new DigestAuthClient();
-            rs = new RSService(conn, bucketName);
-
-            MkBucket();
-            RSClientPutFile();
-            RSClientPutFileWithCRC32();
-            Get(key);
-            ResumablePutFile();
-            Stat(bigkey);
-            Delete(key);
-            Drop();
-
-            MkBucket();
+            PutFile(localBucket, localKey, localFile);
+            ResumablePutFile(localBucket, localKey, localFile);
+            FileManage();
+            MakeGetToken();
             ImageOps();
-
-            MakeDownloadToken();
 
             Console.ReadLine();
         }
 
-        public static void MkBucket()
+        public static void PutFile(string bucket, string key, string fname)
         {
-            Console.WriteLine("\n===> RSService.MkBucket");
-            CallRet callRet = rs.MkBucket();
-            PrintRet(callRet);
-        }
-
-        public static void RSClientPutFile()
-        {
-            Console.WriteLine("\n===> RSClient Generate UpToken");
-            var authPolicy = new AuthPolicy(bucketName, 3600);
-            string upToken = authPolicy.MakeAuthTokenString();
+            Console.WriteLine("\n===>PutFile: Generate UpToken");
+            var policy = new PutPolicy(bucket, 3600);
+            string upToken = policy.Token();
             Console.WriteLine("upToken: " + upToken);
 
-            Console.WriteLine("\n===> RSClient.PutFileWithUpToken");
-            PutFileRet putFileRet = RSClient.PutFileWithUpToken(upToken, bucketName, key, null, localFile, null, "key=<key>");
-            PrintRet(putFileRet);
-            if (putFileRet.OK)
+            Console.WriteLine("\n===> PutFile {0}:{1} fname:{2}", bucket, key, fname);
+            PutExtra extra = new PutExtra { Bucket = bucket };
+            PutRet ret = IOClient.PutFile(upToken, key, fname, extra);
+            PrintRet(ret);
+            if (ret.OK)
             {
-                Console.WriteLine("Hash: " + putFileRet.Hash);
+                Console.WriteLine("Hash: " + ret.Hash);
             }
             else
             {
-                Console.WriteLine("Failed to RSClient.PutFileWithUpToken");
+                Console.WriteLine("Failed to PutFile");
             }
         }
 
-        public static void RSClientPutFileWithCRC32()
+        public static void ResumablePutFile(string bucket, string key, string fname)
         {
-            Console.WriteLine("\n===> RSClientPutFileWithCRC32 Generate CRC32");
-            UInt32 crc = CRC32.CheckSumFile(localFile);
-            Console.WriteLine("CRC32: " + crc.ToString());
-
-            Console.WriteLine("\n===> RSClientPutFileWithCRC32 Generate UpToken");
-            var authPolicy = new AuthPolicy(bucketName, 3600);
-            string upToken = authPolicy.MakeAuthTokenString();
+            Console.WriteLine("\n===> ResumablePutFile: Generate UpToken");
+            var policy = new PutPolicy(localBucket, 3600);
+            string upToken = policy.Token();
             Console.WriteLine("upToken: " + upToken);
 
-            Console.WriteLine("\n===> RSClient.PutFileWithUpToken(CRC32)");
-            PutFileRet putFileRet = RSClient.PutFileWithUpToken(upToken, bucketName, key, null, localFile, null, "key=<key>", crc);
-            PrintRet(putFileRet);
-            if (putFileRet.OK)
+            Console.WriteLine("\n===> ResumablePutFile {0}:{1} fname:{2}", bucket, key, fname);
+            PutExtra extra = new PutExtra { Bucket = bucket };
+            PutRet ret = IOClient.ResumablePutFile(upToken, key, fname, extra);
+            if (ret.OK)
             {
-                Console.WriteLine("Hash: " + putFileRet.Hash);
+                Console.WriteLine("Hash: " + ret.Hash);
             }
             else
             {
-                Console.WriteLine("Failed to RSClient.PutFileWithUpToken(CRC32)");
+                Console.WriteLine("Failed to ResumablePutFile");
             }
         }
 
-        public static void ResumablePutFile()
+        public static void FileManage()
         {
-            Console.WriteLine("\n===> ResumablePut.PutFile");
-            var authPolicy = new AuthPolicy(bucketName, 3600);
-            string upToken = authPolicy.MakeAuthTokenString();
-            PutAuthClient client = new PutAuthClient(upToken);
-            PutFileRet putFileRet = ResumablePut.PutFile(client, bucketName, bigkey, null, bigFile, null, "key=<key>");
-            PrintRet(putFileRet);
-            if (putFileRet.OK)
+            Stat(localBucket, localKey);
+            Copy(localBucket, localKey, localBucket, "copy.jpg");
+            Stat(localBucket, "copy.jpg");
+            Move(localBucket, "copy.jpg", localBucket, "move.jpg");
+            Stat(localBucket, "move.jpg");
+            Delete(localBucket, "move.jpg");
+        }
+
+        public static void Move(string bucketSrc, string keySrc, string bucketDest, string keyDest)
+        {
+            Console.WriteLine("\n===> Move {0}:{1} To {2}:{3}", 
+                bucketSrc, keySrc, bucketDest, keyDest);
+            RSClient client = new RSClient();
+            CallRet ret = client.Move(bucketSrc, keySrc, bucketDest, keyDest);
+            if (ret.OK)
             {
-                Console.WriteLine("Hash: " + putFileRet.Hash);
+                Console.WriteLine("Move OK");
             }
             else
             {
-                Console.WriteLine("Failed to ResumablePut.PutFile");
+                Console.WriteLine("Failed to Move");
             }
         }
 
-        public static void Get(string key)
+        public static void Copy(string bucketSrc, string keySrc, string bucketDest, string keyDest)
         {
-            Console.WriteLine("\n===> RSService.Get");
-            GetRet getRet = rs.Get(key, "attName");
-            PrintRet(getRet);
-            if (getRet.OK)
+            Console.WriteLine("\n===> Copy {0}:{1} To {2}:{3}",
+                bucketSrc, keySrc, bucketDest, keyDest);
+            RSClient client = new RSClient();
+            CallRet ret = client.Copy(bucketSrc, keySrc, bucketDest, keyDest);
+            if (ret.OK)
             {
-                Console.WriteLine("Hash: " + getRet.Hash);
-                Console.WriteLine("FileSize: " + getRet.FileSize);
-                Console.WriteLine("MimeType: " + getRet.MimeType);
-                Console.WriteLine("Url: " + getRet.Url);
+                Console.WriteLine("Copy OK");
             }
             else
             {
-                Console.WriteLine("Failed to Get");
-            }
-
-            Console.WriteLine("\n===> RSService.GetIfNotModified");
-            getRet = rs.GetIfNotModified(key, "attName", getRet.Hash);
-            PrintRet(getRet);
-            if (getRet.OK)
-            {
-                Console.WriteLine("Hash: " + getRet.Hash);
-                Console.WriteLine("FileSize: " + getRet.FileSize);
-                Console.WriteLine("MimeType: " + getRet.MimeType);
-                Console.WriteLine("Url: " + getRet.Url);
-            }
-            else
-            {
-                Console.WriteLine("Failed to GetIfNotModified");
+                Console.WriteLine("Failed to Copy");
             }
         }
 
-        public static void Stat(string key)
+        public static void Stat(string bucket, string key)
         {
-            Console.WriteLine("\n===> RSService.Stat");
-            StatRet statRet = rs.Stat(key);
-            PrintRet(statRet);
-            if (statRet.OK)
+            Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
+            RSClient client = new RSClient();
+            Entry entry = client.Stat(bucket, key);
+            if (entry.OK)
             {
-                Console.WriteLine("Hash: " + statRet.Hash);
-                Console.WriteLine("FileSize: " + statRet.FileSize);
-                Console.WriteLine("PutTime: " + statRet.PutTime);
-                Console.WriteLine("MimeType: " + statRet.MimeType);
+                Console.WriteLine("Hash: " + entry.Hash);
+                Console.WriteLine("Fsize: " + entry.Fsize);
+                Console.WriteLine("PutTime: " + entry.PutTime);
+                Console.WriteLine("MimeType: " + entry.MimeType);
+                Console.WriteLine("Customer: " + entry.Customer);
             }
             else
             {
@@ -170,42 +139,37 @@ namespace QBox.Demo
             }
         }
 
-        public static void Delete(string key)
+        public static void Delete(string bucket, string key)
         {
-            Console.WriteLine("\n===> RSService.Delete");
-            CallRet deleteRet = rs.Delete(key);
-            PrintRet(deleteRet);
-            if (!deleteRet.OK)
+            Console.WriteLine("\n===> Delete {0}:{1}", bucket, key);
+            RSClient client = new RSClient();
+            CallRet ret = client.Delete(bucket, key);
+            if (ret.OK)
+            {
+                Console.WriteLine("Delete OK");
+            }
+            else
             {
                 Console.WriteLine("Failed to Delete");
             }
         }
 
-        public static void Drop()
+        public static void MakeGetToken()
         {
-            Console.WriteLine("\n===> RSService.Drop");
-            CallRet dropRet = rs.Drop();
-            PrintRet(dropRet);
-            if (!dropRet.OK)
-            {
-                Console.WriteLine("Failed to Drop");
-            }
-        }
-
-        public static void MakeDownloadToken()
-        {
-            Console.WriteLine("\n===> Auth.MakeDownloadToken");
+            Console.WriteLine("\n===> GetPolicy Token");
             string pattern = "*/*";
-            var downloadPolicy = new DownloadPolicy(pattern, 3600);
-            string dnToken = downloadPolicy.MakeAuthTokenString();
-            Console.WriteLine("dnToken: " + dnToken);
+            var policy = new GetPolicy(pattern, 3600);
+            string getToken = policy.Token();
+            Console.WriteLine("GetToken: " + getToken);
         }
 
         public static void ImageOps()
         {
+            string host = "http://" + DEMO_DOMAIN + "/" + localKey;
+
             Console.WriteLine("\n===> FileOp.ImageInfo");
-            ImageInfoRet infoRet = ImageOp.ImageInfo("http://" + DEMO_DOMAIN + "/" + key);
-            PrintRet(infoRet);
+            string imageInfoURL = ImageInfo.MakeRequest(host);
+            ImageInfoRet infoRet = ImageInfo.Call(imageInfoURL);
             if (infoRet.OK)
             {
                 Console.WriteLine("Format: " + infoRet.Format);
@@ -218,75 +182,37 @@ namespace QBox.Demo
                 Console.WriteLine("Failed to ImageInfo");
             }
 
-            Console.WriteLine("\n===> FileOp.ImageExif");
-            CallRet exifRet = ImageOp.ImageExif("http://" + DEMO_DOMAIN + "/" + key);
-            PrintRet(exifRet);
-            if (!exifRet.OK)
+            Console.WriteLine("\n===> FileOp.Exif");
+            string exifURL = Exif.MakeRequest(host);
+            ExifRet exifRet = Exif.Call(exifURL);
+            if (exifRet.OK)
+            {
+                Console.WriteLine("ApertureValue.val: " + exifRet["ApertureValue"].val);
+                Console.WriteLine("ApertureValue.type: " + exifRet["ApertureValue"].type.ToString());
+                Console.WriteLine("ExifInfo: " + exifRet.ToString());
+            }
+            else
             {
                 Console.WriteLine("Failed to ImageExif");
             }
 
-            Console.WriteLine("\n===> FileOp.ImageViewUrl");
-            ImageViewSpec viewSpec = new ImageViewSpec{Mode = 0, Width = 200, Height= 200};
-            string viewUrl = ImageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
-            Console.WriteLine("ImageViewUrl 1:" + viewUrl);
-            viewSpec.Quality = 1;
-            viewSpec.Format = "gif";
-            viewUrl = ImageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
-            Console.WriteLine("ImageViewUrl 2:" + viewUrl);
-            viewSpec.Quality = 90;
-            viewSpec.Sharpen = 10;
-            viewSpec.Format = "png";
-            viewUrl = ImageOp.ImageViewUrl("http://" + DEMO_DOMAIN + "/" + key, viewSpec);
-            Console.WriteLine("ImageViewUrl 3:" + viewUrl);
+            Console.WriteLine("\n===> FileOp.ImageView");
+            ImageView imageView = new ImageView { Mode = 0, Width = 200, Height = 200, Quality = 90, Format = "gif" };
+            string viewUrl = imageView.MakeRequest(host);
+            Console.WriteLine("ImageViewURL:" + viewUrl);
 
-            Console.WriteLine("\n===> FileOp.ImageMogrifyUrl");
-            ImageMogrifySpec mogrSpec = new ImageMogrifySpec {
-                Thumbnail = "!50x50r", Gravity = "center", Rotate = 90,
-                Crop = "!50x50", Quality = 80, AutoOrient = true
+            Console.WriteLine("\n===> FileOp.ImageMogrify");
+            ImageMogrify imageMogr = new ImageMogrify
+            {
+                Thumbnail = "!50x50r",
+                Gravity = "center",
+                Rotate = 90,
+                Crop = "!50x50",
+                Quality = 80,
+                AutoOrient = true
             };
-            string mogrUrl = ImageOp.ImageMogrifyUrl("http://" + DEMO_DOMAIN + "/" + key, mogrSpec);
-            Console.WriteLine("ImageMogrifyUrl:" + mogrUrl);
-
-            Console.WriteLine("\n===> Get");
-            GetRet getRet = rs.Get(key, "save-as");
-            PrintRet(getRet);
-            if (getRet.OK)
-            {
-                Console.WriteLine("Hash: " + getRet.Hash);
-                Console.WriteLine("FileSize: " + getRet.FileSize);
-                Console.WriteLine("MimeType: " + getRet.MimeType);
-                Console.WriteLine("Url: " + getRet.Url);
-            }
-            else
-            {
-                Console.WriteLine("Failed to Get");
-            }
-            Console.WriteLine("\n===> FileOp.ImageMogrifySaveAs");
-            PutFileRet saveAsRet = rs.ImageMogrifySaveAs(getRet.Url, mogrSpec, key + ".mogr-save-as");
-            PrintRet(saveAsRet);
-            if (saveAsRet.OK)
-            {
-                Console.WriteLine("Hash: " + saveAsRet.Hash);
-            }
-            else
-            {
-                Console.WriteLine("Failed to ImageMogrifySaveAs");
-            }
-            Console.WriteLine("\n===> Get");
-            getRet = rs.Get(key + ".mogr-save-as", "mogr-save-as.jpg");
-            PrintRet(getRet);
-            if (getRet.OK)
-            {
-                Console.WriteLine("Hash: " + getRet.Hash);
-                Console.WriteLine("FileSize: " + getRet.FileSize);
-                Console.WriteLine("MimeType: " + getRet.MimeType);
-                Console.WriteLine("Url: " + getRet.Url);
-            }
-            else
-            {
-                Console.WriteLine("Failed to Get");
-            }
+            string mogrUrl = imageMogr.MakeRequest(host);
+            Console.WriteLine("ImageMogrifyURL:" + mogrUrl);
         }
 
         public static void PrintRet(CallRet callRet)

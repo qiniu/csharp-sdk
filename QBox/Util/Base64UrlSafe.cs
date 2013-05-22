@@ -3,7 +3,7 @@ using System.Text;
 
 namespace QBox.Util
 {
-    public static class Base64UrlSafe
+    public static class Base64URLSafe
     {
         public static string Encode(string text)
         {
