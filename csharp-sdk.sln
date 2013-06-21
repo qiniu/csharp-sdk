@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QBox", "QBox\QBox.csproj", "{1C8C9909-57ED-44E4-81A5-0904E96FA00E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{8BA368D7-3784-4C50-9A28-4FA1A9C81555}"
@@ -19,6 +19,9 @@ Global
 		{8BA368D7-3784-4C50-9A28-4FA1A9C81555}.Debug|x86.Build.0 = Debug|x86
 		{8BA368D7-3784-4C50-9A28-4FA1A9C81555}.Release|x86.ActiveCfg = Release|x86
 		{8BA368D7-3784-4C50-9A28-4FA1A9C81555}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Demo\Demo.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

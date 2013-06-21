@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using QBox.Conf;
 using QBox.Auth;
 using QBox.FileOp;
@@ -6,6 +7,7 @@ using QBox.RPC;
 using QBox.Util;
 using QBox.IO;
 using QBox.RS;
+using QBox.RSF;
 
 namespace QBox.Demo
 {
@@ -20,13 +22,14 @@ namespace QBox.Demo
 
         public static void Main()
         {
-            Config.ACCESS_KEY = "<Please apply your access key>";
-            Config.SECRET_KEY = "<Dont send your secret key to anyone>";
+            Config.ACCESS_KEY = "gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp";
+            Config.SECRET_KEY = "OjY7IMysXu1erRRuWe7gkaiHcD6-JMJ4hXeRPZ1B";
 
-            localBucket = "yourbucket";
+            localBucket = "icattlecoder2";
             DEMO_DOMAIN = localBucket + ".qiniudn.com";
             localKey = "gogopher.jpg";
             localFile = "Resource/gogopher.jpg";
+			List(localBucket);
 
             PutFile(localBucket, localKey, localFile);
             ResumablePutFile(localBucket, localKey, localFile);
@@ -36,6 +39,20 @@ namespace QBox.Demo
 
             Console.ReadLine();
         }
+		public static void List (string bucket)
+		{
+			RSF.RSFService rsf = new QBox.RSF.RSFService(bucket);
+			List<DumpItem> items = rsf.Next();
+			while(true){
+				items = rsf.Next();
+				if(items!=null){
+					foreach(DumpItem i in items)
+					{
+						Console.WriteLine("",i.Key,i.FSize,i.PutTime,i.Mime,i.EndUser);
+					}
+				}else{break;}
+			}
+		}
 
         public static void PutFile(string bucket, string key, string fname)
         {

@@ -10,6 +10,7 @@ namespace QBox.Conf
 
         public static string RS_HOST = "http://rs.qbox.me";
         public static string UP_HOST = "http://up.qbox.me";
+		public static string RSF_HOST = "http://rsf.qbox.me";
 
         public static Encoding Encoding = Encoding.UTF8;
     }
