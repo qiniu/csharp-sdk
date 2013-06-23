@@ -33,8 +33,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Auth\AuthToken.cs" />
+    <Compile Include="Auth\digest\Digest_auth.cs" />
     <Compile Include="Auth\GetPolicy.cs" />
-    <Compile Include="Auth\Mac.cs" />
+    <Compile Include="Auth\digest\Mac.cs" />
     <Compile Include="Auth\PutAuthClient.cs" />
     <Compile Include="FileOp\Exif.cs" />
     <Compile Include="FileOp\ExifRet.cs" />

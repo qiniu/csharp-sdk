@@ -38,9 +38,11 @@ namespace QBox.RPC
                 request.Method = "POST";
                 request.ContentType = contentType;
                 request.ContentLength = length;
-                SetAuth(request, body);
+                SetAuth(request, null);
+                //SetAuth(request, body);
                 using (Stream requestStream = request.GetRequestStream())
                 {
+                    
                     Util.IO.CopyN(requestStream, body, length);
                 }
                 using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)

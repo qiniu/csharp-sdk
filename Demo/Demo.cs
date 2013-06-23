@@ -25,12 +25,15 @@ namespace QBox.Demo
             Config.ACCESS_KEY = "gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp";
             Config.SECRET_KEY = "OjY7IMysXu1erRRuWe7gkaiHcD6-JMJ4hXeRPZ1B";
 
-            localBucket = "icattlecoder4";
+            localBucket = "icattlecoder3";
             DEMO_DOMAIN = localBucket + ".qiniudn.com";
             localKey = "gogopher.jpg";
             localFile = "Resource/gogopher.jpg";
 			//List(localBucket);
+            string[] keys = new string[3] { "Makefile", "Makefile", "Makefile" };
             Stat("icattlecoder3", "Makefile");
+            BatchStat(localBucket, keys);
+
 
             PutFile(localBucket, localKey, localFile);
             ResumablePutFile(localBucket, localKey, localFile);
@@ -162,6 +165,13 @@ namespace QBox.Demo
             {
                 Console.WriteLine("Failed to Stat");
             }
+        }
+        public static void BatchStat(string bucket, string[] keys)
+        {
+            //Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
+            RSClient client = new RSClient();
+            client.BatchStat(bucket, keys);
+ 
         }
 
         public static void Delete(string bucket, string key)

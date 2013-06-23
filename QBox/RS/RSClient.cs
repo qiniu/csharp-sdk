@@ -12,24 +12,24 @@ namespace QBox.RS
     /// <summary>
     /// 文件操作
     /// </summary>
-    public enum FileHandle
+    public class FileHandle
     {
         /// <summary>
         /// 查看
         /// </summary>
-        STAT = "stat",
+        public const string STAT = "stat";
         /// <summary>
         /// 移动
         /// </summary>
-        MOVE = "move",
+        public const string MOVE = "move";
         /// <summary>
         /// 复制
         /// </summary>
-        COPY = "copy",
+        public const string COPY = "copy";
         /// <summary>
         /// 删除
         /// </summary>
-        DELETE = "delete"
+        public const string DELETE = "delete";
     }
     public class RSClient
     {
@@ -73,7 +73,7 @@ namespace QBox.RS
             return Conn.Call(url);
         }
 
-        private string getBatchOp_1(FileHandle opName, string bucketName, string[] keys)
+        private string getBatchOp_1(string opName, string bucketName, string[] keys)
         {
             if (keys.Length < 1)
                 return string.Empty;
@@ -90,11 +90,8 @@ namespace QBox.RS
         public List<Entry> BatchStat(string bucket, string[] keys)
         {
             string requestBody = getBatchOp_1(FileHandle.STAT, bucket, keys);
-            Conn.CallWithBinary(Conf.Config.RS_HOST, "", requestBody.ToStream(), "");
-
-
+            CallRet ret = Conn.CallWithBinary(Conf.Config.RS_HOST + "/batch", "application/x-www-form-urlencoded", requestBody.ToStream(), requestBody.Length);
             return null;
- 
         }
 
     }
