@@ -25,11 +25,12 @@ namespace QBox.Demo
             Config.ACCESS_KEY = "gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp";
             Config.SECRET_KEY = "OjY7IMysXu1erRRuWe7gkaiHcD6-JMJ4hXeRPZ1B";
 
-            localBucket = "icattlecoder2";
+            localBucket = "icattlecoder4";
             DEMO_DOMAIN = localBucket + ".qiniudn.com";
             localKey = "gogopher.jpg";
             localFile = "Resource/gogopher.jpg";
-			List(localBucket);
+			//List(localBucket);
+            Stat("icattlecoder3", "Makefile");
 
             PutFile(localBucket, localKey, localFile);
             ResumablePutFile(localBucket, localKey, localFile);
@@ -39,21 +40,28 @@ namespace QBox.Demo
 
             Console.ReadLine();
         }
+        /// <summary>
+        /// Fetch 测试
+        /// </summary>
+        /// <param name="bucket"></param>
 		public static void List (string bucket)
 		{
-			RSF.RSFService rsf = new QBox.RSF.RSFService(bucket);
-			List<DumpItem> items = rsf.Next();
-			while(true){
-				items = rsf.Next();
-				if(items!=null){
-					foreach(DumpItem i in items)
-					{
-						Console.WriteLine("",i.Key,i.FSize,i.PutTime,i.Mime,i.EndUser);
-					}
-				}else{break;}
-			}
+			RSF.RSFClient rsf = new QBox.RSF.RSFClient(bucket);
+            rsf.Prefix = string.Empty;
+            rsf.Limit = 10;
+            List<DumpItem> items;
+            while ((items=rsf.Next())!=null)
+            {
+                //todo
+            }
+            DumpRet ret = rsf.ListPrefix(localBucket, "test", string.Empty);
 		}
-
+        /// <summary>
+        /// 上传文件测试
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <param name="fname"></param>
         public static void PutFile(string bucket, string key, string fname)
         {
             Console.WriteLine("\n===>PutFile: Generate UpToken");

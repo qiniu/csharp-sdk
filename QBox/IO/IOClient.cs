@@ -30,7 +30,8 @@ namespace QBox.IO
             try
             {
                 var postParams = new Dictionary<string, object>();
-                postParams["auth"] = upToken;
+                postParams["key"] = key;
+                postParams["token"] = upToken;
                 postParams["action"] = action;
                 postParams["file"] = new FileParameter(localFile, extra.MimeType);
                 if (!String.IsNullOrEmpty(extra.CallbackParams))

@@ -13,33 +13,45 @@ namespace QBox.RSF
 		/// <summary>
 		/// 文件大小.
 		/// </summary>
-		//[JsonProperty("fsize")]
+		[JsonProperty("fsize")]
 		public Int64 FSize {
 			get {
 				return fSize;
 			}
+            set
+            {
+                fSize = value;
+            }
 		}
 
 		Int64 putTime;
 		/// <summary>
 		/// 修改时间.
 		/// </summary>
-		//[JsonProperty("putTime")]
+		[JsonProperty("putTime")]
 		public Int64 PutTime {
 			get {
 				return putTime;
 			}
+            set
+            {
+                putTime = value;
+            }
 		}
 
 		string key;
 		/// <summary>
 		/// 文件名.
 		/// </summary>
-		[JsonProperty("Key")]
+		[JsonProperty("key")]
 		public string Key {
 			get {
 				return key;
 			}
+            set
+            {
+                key = value;
+            }
 		}
 
 		string hash;
@@ -51,6 +63,9 @@ namespace QBox.RSF
 			get {
 				return hash;
 			}
+            set {
+                hash = value;
+            }
 		}
 
 		string mime;
@@ -62,6 +77,10 @@ namespace QBox.RSF
 			get {
 				return mime;
 			}
+            set
+            {
+                mime = value;
+            }
 		}
 
 		string endUser;
@@ -69,6 +88,10 @@ namespace QBox.RSF
 			get {
 				return endUser;
 			}
+            set
+            {
+                endUser = value;
+            }
 		}
 	}
 

@@ -5,6 +5,9 @@ namespace QBox.Conf
 {
     public class Config
     {
+
+        public static string USER_AGENT = "<User-Agent,eg.qiniu csharp-sdk v6.0.0>";
+
         public static string ACCESS_KEY = "<Please apply your access key>";
         public static string SECRET_KEY = "<Dont send your secret key to anyone>";
 

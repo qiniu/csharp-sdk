@@ -6,11 +6,12 @@ using QBox.Auth;
 using Newtonsoft.Json;
 namespace QBox.RSF
 {
-	public class RSFService
+	public class RSFClient:QBoxAuthClient
 	{
+        //
 		public const int MAX_LIMIT = 10;
-
-		//public Client Conn { get return;}
+        //失败重试次数
+        public const int RETRY_TIME = 3;
 		private Client conn;
 		private string bucketName;
         public string BucketName { get; private set; }
@@ -56,9 +57,8 @@ namespace QBox.RSF
 			}
 		}
 
-		public RSFService (string bucketName)
+		public RSFClient (string bucketName)
 		{
-			this.conn = new QBoxAuthClient();
 			this.bucketName = bucketName;
 		}
 		/// <summary>
@@ -79,28 +79,44 @@ namespace QBox.RSF
 		/// <param name='limit'>
 		/// Limit.
 		/// </param>
-		private DumpRet ListPrefix (string bucketName, string prefix, string markerIn, int limit=MAX_LIMIT)
-		{
-			string url = Config.RSF_HOST + string.Format ("/list?bucket={0}", bucketName);// + bucketName + 
-			if (!string.IsNullOrEmpty (markerIn)) {
-				url += string.Format ("&marker={0}", markerIn);
-			}
-			if (!string.IsNullOrEmpty (prefix)) {
-				url += string.Format ("&prefix={0}", prefix);
-			}
-			if (limit > 0) {
-				limit = limit > MAX_LIMIT ? MAX_LIMIT : limit;
-				url += string.Format ("&limit={0}", limit);
-			}
-			try {
-				CallRet ret = this.conn.Call (url);
-				return JsonConvert.DeserializeObject<DumpRet> (ret.Response);
-			} catch (Exception e) {	
-				//LOG
-				Console.WriteLine (string.Format ("listPrefix error => {0}", e.Message));
-				return null;
-			}
-		}
+        public DumpRet ListPrefix(string bucketName, string prefix, string markerIn, int limit = MAX_LIMIT)
+        {
+            string url = Config.RSF_HOST + string.Format("/list?bucket={0}", bucketName);// + bucketName + 
+            if (!string.IsNullOrEmpty(markerIn))
+            {
+                url += string.Format("&marker={0}", markerIn);
+            }
+            if (!string.IsNullOrEmpty(prefix))
+            {
+                url += string.Format("&prefix={0}", prefix);
+            }
+            if (limit > 0)
+            {
+                limit = limit > MAX_LIMIT ? MAX_LIMIT : limit;
+                url += string.Format("&limit={0}", limit);
+            }
+            for (int i = 0; i < RETRY_TIME; i++)
+            {
+                CallRet ret = Call(url);
+                if (ret.OK)
+                {
+                    return JsonConvert.DeserializeObject<DumpRet>(ret.Response);
+                }
+                else
+                {
+                    Console.WriteLine("listPrefix fail ===> {0}", ret.Exception.Message);
+                }
+            }
+            return null;
+        }
+        /// <summary>
+        /// call this func before you Invoke Next()
+        /// </summary>
+        public void Init()
+        {
+            end = false;
+            this.marker = string.Empty; 
+        }
 		/// <summary>
 		/// Next this instance.
 		/// </summary>

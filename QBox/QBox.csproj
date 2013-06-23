@@ -34,6 +34,7 @@
   <ItemGroup>
     <Compile Include="Auth\AuthToken.cs" />
     <Compile Include="Auth\GetPolicy.cs" />
+    <Compile Include="Auth\Mac.cs" />
     <Compile Include="Auth\PutAuthClient.cs" />
     <Compile Include="FileOp\Exif.cs" />
     <Compile Include="FileOp\ExifRet.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Util\IO.cs" />
     <Compile Include="RSF\DumpItem.cs" />
     <Compile Include="RSF\RSFService.cs" />
+    <Compile Include="Util\StreamEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -84,7 +86,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="RSF\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

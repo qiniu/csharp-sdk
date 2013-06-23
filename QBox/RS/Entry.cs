@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using QBox.RPC;
-
+using Newtonsoft.Json;
 namespace QBox.RS
 {
     public class Entry : CallRet
