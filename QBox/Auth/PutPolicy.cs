@@ -21,7 +21,7 @@ namespace QBox.Auth
         private string returnBody;
         private string asyncOps;
         private string endUser;
-        private UInt32 expires = 3600;       
+        private UInt64 expires = 3600;       
 
         /// <summary>
         /// 一般指文件要上传到的目标存储空间（Bucket）。若为”Bucket”，表示限定只能传到该Bucket（仅限于新增文件）；若为”Bucket:Key”，表示限定特定的文件，可修改该文件。
@@ -92,7 +92,7 @@ namespace QBox.Auth
         /// 定义 uploadToken 的失效时间，Unix时间戳，精确到秒，缺省为 3600 秒
         /// </summary>
         [JsonProperty("deadline")]
-        public UInt32 Expires
+        public UInt64 Expires
         {
             get { return expires;  }
             set { expires = value; }
