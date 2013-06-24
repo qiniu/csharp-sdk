@@ -22,7 +22,7 @@ namespace QBox.Auth
                 {
                     buffer.Write(pathAndQueryBytes, 0, pathAndQueryBytes.Length);
                     buffer.WriteByte((byte)'\n');
-                    if (request.ContentType == "sapplication/x-www-form-urlencoded" && body != null)
+                    if (request.ContentType == "application/x-www-form-urlencoded" && body != null)
                     {
                         if (!body.CanSeek)
                         {

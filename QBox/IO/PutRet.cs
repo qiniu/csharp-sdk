@@ -7,7 +7,14 @@ namespace QBox.IO
 {
     public class PutRet : CallRet
     {
+        /// <summary>
+        /// 如果 uptoken 没有指定 ReturnBody，那么返回值是标准的 PutRet 结构
+        /// </summary>
         public string Hash { get; private set; }
+        /// <summary>
+        /// 如果传入的 key == UNDEFINED_KEY，则服务端返回 key
+        /// </summary>
+        public string key {get; private set;  }
 
         public PutRet(CallRet ret)
             : base(ret)

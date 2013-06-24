@@ -32,7 +32,7 @@ namespace QBox.Demo
 			//List(localBucket);
             string[] keys = new string[3] { "Makefile", "Makefile", "Makefile" };
             Stat("icattlecoder3", "Makefile");
-            BatchStat(localBucket, keys);
+            //BatchStat(localBucket, keys);
 
 
             PutFile(localBucket, localKey, localFile);

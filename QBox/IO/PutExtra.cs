@@ -5,13 +5,33 @@ using System.Text;
 
 namespace QBox.IO
 {
+    public enum CheckCrcType
+    {
+        /// <summary>
+        /// default
+        /// </summary>
+        DEFAULT_CHECK=-1,
+        /// <summary>
+        /// 表示不进行 crc32 校验
+        /// </summary>
+        NO_CHECK = 0,   
+        /// <summary>
+        ///对于 Put 等同于 CheckCrc = 2；对于 PutFile 会自动计算 crc32 值
+        /// </summary>
+        CHECK_AUTO=1,
+        /// <summary>
+        /// 表示进行 crc32 校验，且 crc32 值就是PutExtra:Crc32
+        /// </summary>
+        CHECK = 2 
+
+    }
     public class PutExtra
     {
-        public string CallbackParams { get; set; }
-        public string Bucket { get; set; }
-        public string CustomMeta { get; set; }
+        public string Params { get; set; }
         public string MimeType { get; set; }
-        public Int64 Crc32 { get; set; }
+        public Int32 Crc32 { get; set; }
+        public CheckCrcType CheckCrc { get; set; }
+        public string Bucket { get; set; }
 
         public PutExtra()
         {
@@ -22,7 +42,7 @@ namespace QBox.IO
         {
             Bucket = bucket;
             MimeType = mimeType;
-            CallbackParams = callbackParams;
+            Params = callbackParams;
             Crc32 = -1;
         }
     }

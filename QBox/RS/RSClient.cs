@@ -80,10 +80,10 @@ namespace QBox.RS
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < keys.Length - 1; i++)
             {
-                string item = string.Format("op/{0}/{1}&", opName, Base64URLSafe.Encode(string.Format("{0}:{1}", bucketName, keys[i])));
+                string item = string.Format("op=/{0}/{1}&", opName, Base64URLSafe.Encode(string.Format("{0}:{1}", bucketName, keys[i])));
                 sb.Append(item);
             }
-            string litem = string.Format("op/{0}/{1}", opName, Base64URLSafe.Encode(string.Format("{0}:{1}", bucketName, keys[keys.Length - 1])));
+            string litem = string.Format("op=/{0}/{1}", opName, Base64URLSafe.Encode(string.Format("{0}:{1}", bucketName, keys[keys.Length - 1])));
             return sb.Append(litem).ToString();
         }
 

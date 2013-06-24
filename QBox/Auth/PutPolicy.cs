@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using System.Text;
 using System.IO;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ namespace QBox.Auth
        [JsonProperty("callBackUrl")]
         public string CallBackUrl
         {
-            get { return string.IsNullOrEmpty(callBackUrl) ? string.Empty : callBackUrl; }
+            get { return  callBackUrl; }
             set { callBackUrl = value; }
         }        
         /// <summary>
@@ -46,7 +47,7 @@ namespace QBox.Auth
         [JsonProperty("callBackBody")]
         public string CallBackBody
         {
-            get { return string.IsNullOrEmpty(callBackBody) ? string.Empty : callBackBody; }
+            get { return callBackBody; }
             set { callBackBody = value; }
         }
 
@@ -57,7 +58,7 @@ namespace QBox.Auth
         [JsonProperty("returnUrl")]
         public string ReturnUrl
         {
-            get { return string.IsNullOrEmpty(returnUrl) ? string.Empty : returnUrl;  }
+            get { return returnUrl;  }
             set { returnUrl = value; }
         }
         /// <summary>
@@ -66,7 +67,7 @@ namespace QBox.Auth
         [JsonProperty("returnBody")]
         public string ReturnBody
         {
-            get { return string.IsNullOrEmpty(returnBody) ? string.Empty : returnBody;  }
+            get { return returnBody;  }
             set { returnBody = value; }
         }
         /// <summary>
@@ -75,7 +76,7 @@ namespace QBox.Auth
         [JsonProperty("asyncOps")]
         public string AsyncOps
         {
-            get { return string.IsNullOrEmpty(asyncOps) ? string.Empty : asyncOps; }
+            get { return asyncOps; }
             set { asyncOps = value; }
         }
         /// <summary>
@@ -84,7 +85,7 @@ namespace QBox.Auth
         [JsonProperty("endUser")]
         public string EndUser
         {
-            get { return string.IsNullOrEmpty(endUser) ? string.Empty : endUser; }
+            get { return endUser; }
             set { endUser = value; }
         }
         /// <summary>
@@ -109,19 +110,27 @@ namespace QBox.Auth
         public string Marshal()
         {
             // 步骤1：组织元数据（JSONString）
-            string flag = JsonConvert.SerializeObject(this);
+            JsonSerializerSettings setting = new JsonSerializerSettings();
+            setting.NullValueHandling = NullValueHandling.Ignore;
+            string flag = JsonConvert.SerializeObject(this,setting);
             // 步骤2：将 Flags 进行安全编码
             string encodedFlags = Base64URLSafe.Encode(flag);
             return encodedFlags;           
         }
         /// <summary>
-        /// 
+        /// 生成上传Token
         /// </summary>
         /// <returns></returns>
         public string Token()
-        {
-            // 步骤3：将编码后的元数据混入私钥进行签名
-            return Config.Encoding.GetString(AuthToken.Make(Marshal()));
+        {            
+            // 步骤1：组织元数据（JSONString）
+            string flag = QboxJsonHelper.JsonEncode(this);
+            // 步骤2：将 Flags 进行安全编码
+            string encodedFlags = Base64URLSafe.Encode(flag);
+            //步骤3：将编码后的元数据混入私钥进行签名
+            //步骤4：
+            //步骤5：
+            return Config.Encoding.GetString(AuthToken.Make(encodedFlags));
         }
     }
 }

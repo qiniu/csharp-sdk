@@ -63,7 +63,8 @@
     <Compile Include="Util\CRC32.cs" />
     <Compile Include="Util\IO.cs" />
     <Compile Include="RSF\DumpItem.cs" />
-    <Compile Include="RSF\RSFService.cs" />
+    <Compile Include="RSF\RSFClient.cs" />
+    <Compile Include="Util\QboxJsonHelper.cs" />
     <Compile Include="Util\StreamEx.cs" />
   </ItemGroup>
   <ItemGroup>
