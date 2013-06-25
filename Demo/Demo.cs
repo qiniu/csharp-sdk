@@ -25,15 +25,16 @@ namespace QBox.Demo
             Config.ACCESS_KEY = "gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp";
             Config.SECRET_KEY = "OjY7IMysXu1erRRuWe7gkaiHcD6-JMJ4hXeRPZ1B";
 
-            localBucket = "icattlecoder3";
+            localBucket = "icattlecoder2";
             DEMO_DOMAIN = localBucket + ".qiniudn.com";
-            localKey = "gogopher.jpg";
+            localKey = "gogophesdr1.jpg";
             localFile = "Resource/gogopher.jpg";
 			//List(localBucket);
-            string[] keys = new string[3] { "Makefile", "Makefile", "Makefile" };
-            Stat("icattlecoder3", "Makefile");
+            string[] keys = new string[3] { "gogophser.jpg", "gogophesdr1.jpg", "gogopher.jpg" };
+            //Stat("icattlecoder3", "Makefile");
             //BatchStat(localBucket, keys);
-
+            //BatchDelete(localBucket, keys);
+            BatchCopy(localBucket, keys);
 
             PutFile(localBucket, localKey, localFile);
             ResumablePutFile(localBucket, localKey, localFile);
@@ -116,12 +117,14 @@ namespace QBox.Demo
             Delete(localBucket, "move.jpg");
         }
 
+        #region FileManage
         public static void Move(string bucketSrc, string keySrc, string bucketDest, string keyDest)
         {
             Console.WriteLine("\n===> Move {0}:{1} To {2}:{3}", 
                 bucketSrc, keySrc, bucketDest, keyDest);
             RSClient client = new RSClient();
-            CallRet ret = client.Move(bucketSrc, keySrc, bucketDest, keyDest);
+            new EntryPathPair(bucketSrc, keySrc, bucketDest, keyDest);
+            CallRet ret = client.Move(new EntryPathPair(bucketSrc, keySrc, bucketDest, keyDest));
             if (ret.OK)
             {
                 Console.WriteLine("Move OK");
@@ -137,7 +140,7 @@ namespace QBox.Demo
             Console.WriteLine("\n===> Copy {0}:{1} To {2}:{3}",
                 bucketSrc, keySrc, bucketDest, keyDest);
             RSClient client = new RSClient();
-            CallRet ret = client.Copy(bucketSrc, keySrc, bucketDest, keyDest);
+            CallRet ret = client.Copy(new EntryPathPair(bucketSrc, keySrc, bucketDest, keyDest));
             if (ret.OK)
             {
                 Console.WriteLine("Copy OK");
@@ -152,7 +155,7 @@ namespace QBox.Demo
         {
             Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
             RSClient client = new RSClient();
-            Entry entry = client.Stat(bucket, key);
+            Entry entry = client.Stat(new Scope(bucket, key));
             if (entry.OK)
             {
                 Console.WriteLine("Hash: " + entry.Hash);
@@ -166,28 +169,71 @@ namespace QBox.Demo
                 Console.WriteLine("Failed to Stat");
             }
         }
-        public static void BatchStat(string bucket, string[] keys)
-        {
-            //Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
-            RSClient client = new RSClient();
-            client.BatchStat(bucket, keys);
- 
-        }
-
         public static void Delete(string bucket, string key)
         {
             Console.WriteLine("\n===> Delete {0}:{1}", bucket, key);
             RSClient client = new RSClient();
-            CallRet ret = client.Delete(bucket, key);
+            CallRet ret = client.Delete(new Scope(bucket, key));
             if (ret.OK)
             {
                 Console.WriteLine("Delete OK");
             }
             else
             {
-                Console.WriteLine("Failed to Delete");
+                Console.WriteLine("Failed to delete");
             }
         }
+        #endregion 
+       
+        #region Batch FileManage
+        public static void BatchStat(string bucket, string[] keys)
+        {
+            RSClient client = new RSClient();
+            List<Scope> scopes= new List<Scope>();
+            foreach(string key in keys)
+            {
+                Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
+                scopes.Add(new Scope(bucket,key));
+            }
+            client.BatchStat(scopes.ToArray()); 
+        }
+
+        public static void BatchDelete(string bucket, string[] keys)
+        {
+            RSClient client = new RSClient();
+            List<Scope> scopes = new List<Scope>();
+            foreach (string key in keys)
+            {
+                Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
+                scopes.Add(new Scope(bucket, key));
+            }
+            client.BatchDelete(scopes.ToArray());
+        }
+        public static void BatchCopy(string bucket, string[] keys)
+        {
+            List<EntryPathPair> pairs = new List<EntryPathPair>();
+            foreach (string key in keys)
+            {
+                EntryPathPair entry = new EntryPathPair(bucket, key, Guid.NewGuid().ToString());
+                pairs.Add(entry);
+            }
+            RSClient client = new RSClient();
+            client.BatchCopy(pairs.ToArray());
+        }
+        public static void BatchMove(string bucket, string[] keys)
+        {
+            List<EntryPathPair> pairs = new List<EntryPathPair>();
+            foreach (string key in keys)
+            {
+                EntryPathPair entry = new EntryPathPair(bucket, key, Guid.NewGuid().ToString());
+                pairs.Add(entry);
+            }
+            RSClient client = new RSClient();
+            client.BatchMove(pairs.ToArray());
+        }
+        #endregion
+
+       
 
         public static void MakeGetToken()
         {

@@ -95,6 +95,7 @@ namespace QBox.RSF
 		}
 	}
 
+
 	/// <summary>
 	/// Fetch 返回结果.
 	/// </summary>

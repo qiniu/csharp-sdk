@@ -20,32 +20,30 @@ namespace QBox.IO
         /// <returns></returns>
         public static PutRet PutFile(string upToken, string key, string localFile, PutExtra extra)
         {
-            string entryURI = extra.Bucket + ":" + key;
-            string action = "/rs-put/" + Base64URLSafe.Encode(entryURI);
-            if (!String.IsNullOrEmpty(extra.MimeType))
-            {
-                action += "/mimeType/" + Base64URLSafe.Encode(extra.MimeType);
-            }
-            //if (!String.IsNullOrEmpty(extra.))
+            //string entryURI = extra.Bucket + ":" + key;
+            //string action = "/rs-put/" + Base64URLSafe.Encode(entryURI);
+            //if (!String.IsNullOrEmpty(extra.MimeType))
             //{
-            //    action += "/meta/" + Base64URLSafe.Encode(extra.CustomMeta);
+            //    action += "/mimeType/" + Base64URLSafe.Encode(extra.MimeType);
             //}
-            if (extra.Crc32 >= 0)
-            {
-                action += "/crc32/" + extra.Crc32.ToString();
-            }
-
+            //if (extra.Crc32 >= 0)
+            //{
+            //    action += "/crc32/" + extra.Crc32.ToString();
+            //}
             try
             {
                 var postParams = new Dictionary<string, object>();
-                postParams["auth"] = upToken;
-                postParams["action"] = action;
+                postParams["token"] = upToken;
+                postParams["key"] = key;
                 postParams["file"] = new FileParameter(localFile, extra.MimeType);
-                if (!String.IsNullOrEmpty(extra.Params))
-                    postParams["params"] = extra.Params;
-               // MultiPart.Post(@"http://up.qiniu.com", postParams);
-                //return null;
-                CallRet callRet = MultiPart.Post(Config.UP_HOST + "/upload", postParams);
+                if (extra.Params!=null)
+                {
+                    foreach (KeyValuePair<string, string> pair in extra.Params)
+                    {
+                        postParams["x:" + pair.Key] = pair.Value;
+                    }
+                }
+                CallRet callRet = MultiPart.Post(Config.UP_HOST, postParams);
                 return new PutRet(callRet);
             }
             catch (Exception e)

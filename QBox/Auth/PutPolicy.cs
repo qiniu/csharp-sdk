@@ -106,31 +106,14 @@ namespace QBox.Auth
             TimeSpan interval = new TimeSpan(now.Ticks - begin.Ticks);
             Expires = (UInt32)interval.TotalSeconds + expires;
         }
-
-        public string Marshal()
-        {
-            // 步骤1：组织元数据（JSONString）
-            JsonSerializerSettings setting = new JsonSerializerSettings();
-            setting.NullValueHandling = NullValueHandling.Ignore;
-            string flag = JsonConvert.SerializeObject(this,setting);
-            // 步骤2：将 Flags 进行安全编码
-            string encodedFlags = Base64URLSafe.Encode(flag);
-            return encodedFlags;           
-        }
         /// <summary>
         /// 生成上传Token
         /// </summary>
         /// <returns></returns>
         public string Token()
         {            
-            // 步骤1：组织元数据（JSONString）
             string flag = QboxJsonHelper.JsonEncode(this);
-            // 步骤2：将 Flags 进行安全编码
-            string encodedFlags = Base64URLSafe.Encode(flag);
-            //步骤3：将编码后的元数据混入私钥进行签名
-            //步骤4：
-            //步骤5：
-            return Config.Encoding.GetString(AuthToken.Make(encodedFlags));
+            return Config.Encoding.GetString(AuthToken.Make(flag));
         }
     }
 }

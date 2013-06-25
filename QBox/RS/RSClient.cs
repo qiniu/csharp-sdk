@@ -1,6 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
-
+using Newtonsoft.Json;
 using System.Text;
 using QBox.Util;
 using QBox.RPC;
@@ -10,7 +11,7 @@ using QBox.Conf;
 namespace QBox.RS
 {
     /// <summary>
-    /// 文件操作
+    /// 文件管理操作
     /// </summary>
     public class FileHandle
     {
@@ -31,68 +32,206 @@ namespace QBox.RS
         /// </summary>
         public const string DELETE = "delete";
     }
-    public class RSClient
+
+    
+
+    /// <summary>
+    /// 表示资源存储客户端，提供对文件的查看（stat），移动(move)，复制（copy）,删除（delete）操作
+    /// 以及与这些操作对应的批量操作
+    /// </summary>
+    public class RSClient : QBoxAuthClient
     {
-        public Client Conn { get; private set; }
-
-        public RSClient()
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="op"></param>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private CallRet op(string op, Scope scope)
         {
-            Conn = new QBoxAuthClient();
+            string url = string.Format("/{0}/{1}/{2}",
+                Config.RS_HOST,
+                op,
+                Base64URLSafe.Encode(scope.URI));
+            return Call(url);
         }
-
-        public Entry Stat(string bucket, string key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="op"></param>
+        /// <param name="pair"></param>
+        /// <returns></returns>
+        private CallRet op2(string op, EntryPathPair pair)
         {
-            string entryURI = bucket + ":" + key;
-            string url = Config.RS_HOST + "/stat/" + Base64URLSafe.Encode(entryURI);
-            CallRet callRet = Conn.Call(url);
+            string url = string.Format("/{0}/{1}/{2}/{3}",
+                Config.RS_HOST,
+                op,
+                Base64URLSafe.Encode(pair.URISrc),
+                Base64URLSafe.Encode(pair.URIDest));
+            return Call(url);
+        }
+        /// <summary>
+        /// 文件信息查看
+        /// </summary>
+        /// <param name="bucket">七牛云存储空间名称</param>
+        /// <param name="key">需要查看的文件key</param>
+        /// <returns>文件的基本信息，见<see cref="Stat">Entry</see></returns>
+        public Entry Stat(Scope scope)
+        {
+            CallRet callRet = op(FileHandle.MOVE, scope);
             return new Entry(callRet);
         }
-
-        public CallRet Delete(string bucket, string key)
+        /// <summary>
+        /// 删除文件
+        /// </summary>
+        /// <param name="bucket">七牛云存储空间名称</param>
+        /// <param name="key">需要删除的文件key</param>
+        /// <returns></returns>
+        public CallRet Delete(Scope scope)
         {
-            string entryURI = bucket + ":" + key;
-            string url = Config.RS_HOST + "/delete/" + Base64URLSafe.Encode(entryURI);
-            return Conn.Call(url);
+            CallRet callRet = op(FileHandle.DELETE, scope);
+            return new Entry(callRet);
         }
-
-        public CallRet Move(string bucketSrc, string keySrc, string bucketDest, string keyDest)
+        /// <summary>
+        /// 移动文件
+        /// </summary>
+        /// <param name="bucketSrc">文件所属的源空间名称</param>
+        /// <param name="keySrc">源key</param>
+        /// <param name="bucketDest">目标空间名称</param>
+        /// <param name="keyDest">目标key</param>
+        /// <returns>见<see cref="CallRet">CallRet</see></returns>
+        public CallRet Move(EntryPathPair pathPair)
         {
-            string entryURISrc = bucketSrc + ":" + keySrc;
-            string entryURIDest = bucketDest + ":" + keyDest;
-            string url = Config.RS_HOST + "/move/" +
-                Base64URLSafe.Encode(entryURISrc) + "/" + Base64URLSafe.Encode(entryURIDest);
-            return Conn.Call(url);
+            return op2(FileHandle.MOVE, pathPair);
         }
-
-        public CallRet Copy(string bucketSrc, string keySrc, string bucketDest, string keyDest)
+        /// <summary>
+        /// 复制
+        /// </summary>
+        /// <param name="bucketSrc">文件所属的空间名称</param>
+        /// <param name="keySrc">需要复制的文件key</param>
+        /// <param name="bucketDest">复制至目标空间</param>
+        /// <param name="keyDest">复制的副本文件key</param>
+        /// <returns>见<see cref="CallRet">CallRet</see></returns>
+        public CallRet Copy(EntryPathPair pathPair)
         {
-            string entryURISrc = bucketSrc + ":" + keySrc;
-            string entryURIDest = bucketDest + ":" + keyDest;
-            string url = Config.RS_HOST + "/copy/" +
-                Base64URLSafe.Encode(entryURISrc) + "/" + Base64URLSafe.Encode(entryURIDest);
-            return Conn.Call(url);
+            return op2(FileHandle.COPY, pathPair);
         }
+        // <summary>
+        /// 获取一元批操作http request Body
+        /// </summary>
+        /// <param name="opName">操作名</param>
+        /// <param name="bucketName"></param>
+        /// <param name="keys"></param>
+        // <returns></returns>
 
-        private string getBatchOp_1(string opName, string bucketName, string[] keys)
+
+
+        /// <summary>
+        /// 获取一元批操作http request Body
+        /// </summary>
+        /// <param name="opName">操作名</param>
+        /// <param name="keys">操作对象keys</param>
+        /// <returns>Request Body</returns>
+        private string getBatchOp_1(string opName, Scope[] keys)
         {
             if (keys.Length < 1)
                 return string.Empty;
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < keys.Length - 1; i++)
             {
-                string item = string.Format("op=/{0}/{1}&", opName, Base64URLSafe.Encode(string.Format("{0}:{1}", bucketName, keys[i])));
+                string item = string.Format("op=/{0}/{1}&",
+                    opName,
+                    Base64URLSafe.Encode(keys[i].URI));
                 sb.Append(item);
             }
-            string litem = string.Format("op=/{0}/{1}", opName, Base64URLSafe.Encode(string.Format("{0}:{1}", bucketName, keys[keys.Length - 1])));
+            string litem = string.Format("op=/{0}/{1}", opName, Base64URLSafe.Encode(string.Format("{0}:{1}", keys[keys.Length - 1].URI)));
             return sb.Append(litem).ToString();
         }
-
-        public List<Entry> BatchStat(string bucket, string[] keys)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="opName"></param>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        private string getBatchOp_2(string opName, EntryPathPair[] keys)
         {
-            string requestBody = getBatchOp_1(FileHandle.STAT, bucket, keys);
-            CallRet ret = Conn.CallWithBinary(Conf.Config.RS_HOST + "/batch", "application/x-www-form-urlencoded", requestBody.ToStream(), requestBody.Length);
+            if (keys.Length < 1)
+                return string.Empty;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < keys.Length - 1; i++)
+            {
+                string item = string.Format("op=/{0}/{1}/{2}&", opName,
+                    Base64URLSafe.Encode(keys[i].URISrc),
+                    Base64URLSafe.Encode(keys[i].URIDest));
+                sb.Append(item);
+            }
+            string litem = string.Format("op=/{0}/{1}/{2}", opName,
+                    Base64URLSafe.Encode(keys[keys.Length - 1].URISrc),
+                    Base64URLSafe.Encode(keys[keys.Length - 1].URIDest));
+            return sb.Append(litem).ToString();
+        }
+        private CallRet batch(string requestBody)
+        {
+            return CallWithBinary(Conf.Config.RS_HOST + "/batch", "application/x-www-form-urlencoded", requestBody.ToStream(), requestBody.Length);
+        }
+        /// <summary>
+        /// 批操作：文件信息查看
+        /// <example>
+        /// <code>
+        /// public static void BatchStat(string bucket, string[] keys)
+        ///{
+        ///    RSClient client = new RSClient();
+        ///    List<Scope> scopes= new List<Scope>();
+        ///    foreach(string key in keys)
+        ///    {
+        ///        Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
+        ///        scopes.Add(new Scope(bucket,key));
+        ///    }
+        ///    client.BatchStat(scopes.ToArray()); 
+        ///}
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="keys">文件bucket+key,see<see cref="Scope"/></param>
+        /// <returns></returns>
+        public List<BatchRetItem> BatchStat(Scope[] keys)
+        {
+            string requestBody = getBatchOp_1(FileHandle.STAT, keys);
+            CallRet ret = batch(requestBody);
+            if (ret.OK)
+            {
+                List<BatchRetItem> items = JsonConvert.DeserializeObject<List<BatchRetItem>>(ret.Response);
+                return items;
+            }
             return null;
         }
-
+        /// <summary>
+        /// 批操作：文件移动
+        /// </summary>
+        /// <param name="entryPathPair"><see cref="">EntryPathPair</see></param>
+        public CallRet BatchMove(EntryPathPair[] entryPathPairs)
+        {
+            string requestBody = getBatchOp_2(FileHandle.MOVE, entryPathPairs);
+            return batch(requestBody);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="entryPathPari"></param>
+        public void BatchCopy(EntryPathPair[] entryPathPari)
+        {
+            string requestBody = getBatchOp_2(FileHandle.COPY, entryPathPari);
+            CallRet ret = batch(requestBody);
+        }
+        public CallRet BatchDelete(Scope[] keys)
+        {
+            string requestBody = getBatchOp_1(FileHandle.DELETE, keys);
+            CallRet ret = batch(requestBody);
+            return ret;
+        }
+        //public void BatchDelete(string bucket,
     }
 }

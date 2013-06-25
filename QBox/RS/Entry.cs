@@ -5,6 +5,7 @@ using QBox.RPC;
 using Newtonsoft.Json;
 namespace QBox.RS
 {
+
     public class Entry : CallRet
     {
         public string Hash { get; private set; }

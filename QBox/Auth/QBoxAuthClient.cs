@@ -28,12 +28,11 @@ namespace QBox.Auth
                         {
                             throw new Exception("stream can not seek");
                         }
-                        Util.IO.Copy(body, buffer);
+                        Util.IO.Copy(buffer, body);
                         body.Seek(0, SeekOrigin.Begin);
                     }
                     byte[] digest = hmac.ComputeHash(buffer.ToArray());
                     string digestBase64 = Base64URLSafe.Encode(digest);
-
                     string authHead = "QBox " + Config.ACCESS_KEY + ":" + digestBase64;
                     request.Headers.Add("Authorization", authHead);
                 }

@@ -27,7 +27,8 @@ namespace QBox.IO
     }
     public class PutExtra
     {
-        public string Params { get; set; }
+        public Dictionary<string, string> Params{ get; set; }
+       // public string Params { get; set; }
         public string MimeType { get; set; }
         public Int32 Crc32 { get; set; }
         public CheckCrcType CheckCrc { get; set; }
@@ -37,12 +38,11 @@ namespace QBox.IO
         {
             Crc32 = -1;
         }
-
-        public PutExtra(string bucket, string mimeType, string callbackParams)
+                
+        public PutExtra(string bucket, string mimeType)
         {
             Bucket = bucket;
             MimeType = mimeType;
-            Params = callbackParams;
             Crc32 = -1;
         }
     }
