@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\QBox.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -34,7 +35,6 @@
   <ItemGroup>
     <Compile Include="Auth\AuthToken.cs" />
     <Compile Include="Auth\digest\Digest_auth.cs" />
-    <Compile Include="Auth\GetPolicy.cs" />
     <Compile Include="Auth\digest\Mac.cs" />
     <Compile Include="Auth\PutAuthClient.cs" />
     <Compile Include="FileOp\Exif.cs" />
@@ -47,7 +47,9 @@
     <Compile Include="IO\MultiPart.cs" />
     <Compile Include="IO\PutExtra.cs" />
     <Compile Include="IO\PutRet.cs" />
-    <Compile Include="Auth\PutPolicy.cs" />
+    <Compile Include="IO\Resumable\Settings.cs" />
+    <Compile Include="RS\GetPolicy.cs" />
+    <Compile Include="RS\PutPolicy.cs" />
     <Compile Include="Auth\QBoxAuthClient.cs" />
     <Compile Include="FileOp\ImageInfoRet.cs" />
     <Compile Include="FileOp\ImageInfo.cs" />
@@ -59,8 +61,8 @@
     <Compile Include="RPC\CallRet.cs" />
     <Compile Include="RPC\Client.cs" />
     <Compile Include="Conf\Config.cs" />
-    <Compile Include="IO\ResumablePut.cs" />
-    <Compile Include="IO\ResumablePutRet.cs" />
+    <Compile Include="IO\Resumable\ResumablePut.cs" />
+    <Compile Include="IO\Resumable\ResumablePutRet.cs" />
     <Compile Include="RS\RSClient.cs" />
     <Compile Include="Util\CRC32.cs" />
     <Compile Include="Util\IO.cs" />

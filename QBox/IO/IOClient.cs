@@ -5,9 +5,13 @@ using QBox.Conf;
 using QBox.Auth;
 using QBox.RPC;
 using QBox.Util;
+using QBox.IO.Resumable;
 
 namespace QBox.IO
 {
+    /// <summary>
+    /// 上传客户端
+    /// </summary>
     public class IOClient
     {
         /// <summary>
@@ -52,13 +56,21 @@ namespace QBox.IO
                 return new PutRet(new CallRet(HttpStatusCode.BadRequest, e));
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="upToken"></param>
+        /// <param name="key"></param>
+        /// <param name="localFile"></param>
+        /// <param name="extra"></param>
+        /// <returns></returns>
         public static PutRet ResumablePutFile(string upToken, string key, string localFile, PutExtra extra)
         {
             PutAuthClient client = new PutAuthClient(upToken);
-            return null;
-            //return ResumablePut.PutFile(client, extra.Bucket, key, extra.MimeType, localFile, 
-               // extra.CustomMeta, extra.Params);
-        }
+            Settings setting = new Settings(1, 1);
+            IO.Resumable.PutExtra ext = new Resumable.PutExtra();            
+            return ResumablePut.PutFile(client, extra.Bucket, key, extra.MimeType, localFile, "");
+            //return ResumablePut.PutFile(client, extra.Bucket, key, extra.MimeType, localFile,extra.Params);
+        }        
     }
 }

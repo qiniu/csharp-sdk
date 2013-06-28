@@ -25,19 +25,20 @@ namespace QBox.Demo
             Config.ACCESS_KEY = "gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp";
             Config.SECRET_KEY = "OjY7IMysXu1erRRuWe7gkaiHcD6-JMJ4hXeRPZ1B";
 
-            localBucket = "icattlecoder2";
+            localBucket = "icattlecoder3";
             DEMO_DOMAIN = localBucket + ".qiniudn.com";
-            localKey = "gogophesdr1.jpg";
+            localKey = "gogophesdr12.jpg";
             localFile = "Resource/gogopher.jpg";
-			//List(localBucket);
+            localLargeFile = "Resource/BigFile";
+            //List(localBucket);
             string[] keys = new string[3] { "gogophser.jpg", "gogophesdr1.jpg", "gogopher.jpg" };
             //Stat("icattlecoder3", "Makefile");
             //BatchStat(localBucket, keys);
             //BatchDelete(localBucket, keys);
-            BatchCopy(localBucket, keys);
+            //BatchCopy(localBucket, keys);
 
-            PutFile(localBucket, localKey, localFile);
-            ResumablePutFile(localBucket, localKey, localFile);
+            //PutFile(localBucket, localKey, localFile);
+            ResumablePutFile(localBucket, localKey, localLargeFile);
             FileManage();
             MakeGetToken();
             ImageOps();
@@ -51,14 +52,13 @@ namespace QBox.Demo
 		public static void List (string bucket)
 		{
 			RSF.RSFClient rsf = new QBox.RSF.RSFClient(bucket);
-            rsf.Prefix = string.Empty;
-            rsf.Limit = 10;
+            rsf.Prefix = "test";
+            rsf.Limit = 100;
             List<DumpItem> items;
             while ((items=rsf.Next())!=null)
-            {
+            {                
                 //todo
             }
-            DumpRet ret = rsf.ListPrefix(localBucket, "test", string.Empty);
 		}
         /// <summary>
         /// 上传文件测试
@@ -237,11 +237,11 @@ namespace QBox.Demo
 
         public static void MakeGetToken()
         {
-            Console.WriteLine("\n===> GetPolicy Token");
-            string pattern = "*/*";
-            var policy = new GetPolicy(pattern, 3600);
-            string getToken = policy.Token();
-            Console.WriteLine("GetToken: " + getToken);
+            //Console.WriteLine("\n===> GetPolicy Token");
+            //string pattern = "*/*";
+            //var policy = new GetPolicy(pattern, 3600);
+            //string getToken = policy.Token();
+            //Console.WriteLine("GetToken: " + getToken);
         }
 
         public static void ImageOps()

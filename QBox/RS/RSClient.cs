@@ -36,18 +36,16 @@ namespace QBox.RS
     
 
     /// <summary>
-    /// 表示资源存储客户端，提供对文件的查看（stat），移动(move)，复制（copy）,删除（delete）操作
+    /// 资源存储客户端，提供对文件的查看（stat），移动(move)，复制（copy）,删除（delete）操作
     /// 以及与这些操作对应的批量操作
     /// </summary>
     public class RSClient : QBoxAuthClient
-    {
-        
+    {  
         /// <summary>
         /// 
         /// </summary>
         /// <param name="op"></param>
-        /// <param name="bucket"></param>
-        /// <param name="key"></param>
+        /// <param name="scope"></param>
         /// <returns></returns>
         private CallRet op(string op, Scope scope)
         {
@@ -75,9 +73,8 @@ namespace QBox.RS
         /// <summary>
         /// 文件信息查看
         /// </summary>
-        /// <param name="bucket">七牛云存储空间名称</param>
-        /// <param name="key">需要查看的文件key</param>
-        /// <returns>文件的基本信息，见<see cref="Stat">Entry</see></returns>
+        /// <param name="scope"></param>
+        /// <returns>文件的基本信息，见<see cref="Entry">Entry</see></returns>
         public Entry Stat(Scope scope)
         {
             CallRet callRet = op(FileHandle.MOVE, scope);
@@ -146,7 +143,7 @@ namespace QBox.RS
                     Base64URLSafe.Encode(keys[i].URI));
                 sb.Append(item);
             }
-            string litem = string.Format("op=/{0}/{1}", opName, Base64URLSafe.Encode(string.Format("{0}:{1}", keys[keys.Length - 1].URI)));
+            string litem = string.Format("op=/{0}/{1}", opName, Base64URLSafe.Encode(keys[keys.Length - 1].URI));
             return sb.Append(litem).ToString();
         }
         /// <summary>
@@ -221,16 +218,20 @@ namespace QBox.RS
         /// </summary>
         /// <param name="bucket"></param>
         /// <param name="entryPathPari"></param>
-        public void BatchCopy(EntryPathPair[] entryPathPari)
+        public CallRet BatchCopy(EntryPathPair[] entryPathPari)
         {
             string requestBody = getBatchOp_2(FileHandle.COPY, entryPathPari);
-            CallRet ret = batch(requestBody);
+            return batch(requestBody);
         }
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
         public CallRet BatchDelete(Scope[] keys)
         {
             string requestBody = getBatchOp_1(FileHandle.DELETE, keys);
-            CallRet ret = batch(requestBody);
-            return ret;
+            return batch(requestBody);
         }
         //public void BatchDelete(string bucket,
     }

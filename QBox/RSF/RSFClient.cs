@@ -6,82 +6,99 @@ using QBox.Auth;
 using Newtonsoft.Json;
 namespace QBox.RSF
 {
-	public class RSFClient:QBoxAuthClient
-	{
-        //
-		public const int MAX_LIMIT = 10;
+    /// <summary>
+    /// RS Fetch 
+    /// </summary>
+    public class RSFClient : QBoxAuthClient
+    {
+        
+        private const int MAX_LIMIT = 10;
         //失败重试次数
-        public const int RETRY_TIME = 3;
-		private Client conn;
-		private string bucketName;
+        private const int RETRY_TIME = 3;
+        private string bucketName;
         /// <summary>
         /// bucket name
         /// </summary>
         public string BucketName { get; private set; }
 
-		private int limit;
-		public int Limit {
-			get {
-				return limit;
-			}
-			set {
+        private int limit;
+        /// <summary>
+        /// Fetch返回结果条目数量限制
+        /// </summary>
+        public int Limit
+        {
+            get
+            {
+                return limit;
+            }
+            set
+            {
                 limit = value > MAX_LIMIT ? MAX_LIMIT : value;
-			}
-		}
+            }
+        }
 
-		private bool end=false;
+        private bool end = false;
 
-		private string prefix;
-		/// <summary>
-		/// 文件前缀
-		/// </summary>
-		/// <value>
-		/// The prefix.
-		/// </value>
-		public string Prefix {
-			get {
-				return prefix;
-			}
-			set {
-				prefix = value;
-			}
-		}
+        private string prefix;
+        /// <summary>
+        /// 文件前缀
+        /// </summary>
+        /// <value>
+        /// The prefix.
+        /// </value>
+        public string Prefix
+        {
+            get
+            {
+                return prefix;
+            }
+            set
+            {
+                prefix = value;
+            }
+        }
 
-		private string marker;
-		/// <summary>
-		/// Fetch 定位符.
-		/// </summary>
-		public string Marker {
-			get {
-				return marker;
-			}
-			set {
-				marker = value;
-			}
-		}
-
-		public RSFClient (string bucketName)
-		{
-			this.bucketName = bucketName;
-		}
-		/// <summary>
-		/// The origin Fetch interface,we recomment to use Next().
-		/// </summary>
-		/// <returns>
-		/// Dump
-		/// </returns>
-		/// <param name='bucketName'>
-		/// Bucket name.
-		/// </param>
-		/// <param name='prefix'>
-		/// Prefix.
-		/// </param>
-		/// <param name='markerIn'>
-		/// Marker in.
-		/// </param>
-		/// <param name='limit'>
-		/// Limit.
-		/// </param>
+        private string marker;
+        /// <summary>
+        /// Fetch 定位符.
+        /// </summary>
+        public string Marker
+        {
+            get
+            {
+                return marker;
+            }
+            set
+            {
+                marker = value;
+            }
+        }
+        /// <summary>
+        /// RS Fetch Client
+        /// </summary>
+        /// <param name="bucketName">七牛云存储空间名称</param>
+        public RSFClient(string bucketName)
+        {
+            this.bucketName = bucketName;
+        }
+        /// <summary>
+        /// The origin Fetch interface,we recomment to use Next().
+        /// </summary>
+        /// <returns>
+        /// Dump
+        /// </returns>
+        /// <param name='bucketName'>
+        /// Bucket name.
+        /// </param>
+        /// <param name='prefix'>
+        /// Prefix.
+        /// </param>
+        /// <param name='markerIn'>
+        /// Marker in.
+        /// </param>
+        /// <param name='limit'>
+        /// Limit.
+        /// </param>
         public DumpRet ListPrefix(string bucketName, string prefix, string markerIn, int limit = MAX_LIMIT)
         {
             string url = Config.RSF_HOST + string.Format("/list?bucket={0}", bucketName);// + bucketName + 
@@ -118,26 +135,42 @@ namespace QBox.RSF
         public void Init()
         {
             end = false;
-            this.marker = string.Empty; 
+            this.marker = string.Empty;
         }
-		/// <summary>
-		/// Next.
-		/// </summary>
-		public List<DumpItem> Next()
-		{
-			if (end) {
-				return null;
-			}
-			DumpRet ret = ListPrefix (this.bucketName, this.prefix, this.marker,this.limit);
-			if (ret.Items.Count == 0) {
-				end = true;
-				return null;
-			}				
-			this.marker = ret.Marker;
-			end = ret.Items.Count < MAX_LIMIT;
-			return ret.Items;
-		}
-
-	}
+        /// <summary>
+        /// Next.
+        /// <example>
+        /// <code>
+        /// public static void List (string bucket)
+		///{
+        ///     RSF.RSFClient rsf = new QBox.RSF.RSFClient(bucket);
+        ///     rsf.Prefix = "test";
+        ///     rsf.Limit = 100;
+        ///     List<DumpItem> items;
+        ///     while ((items=rsf.Next())!=null)
+        ///     {                
+        ///      //todo
+        ///     }
+        ///}s
+        /// </code>
+        /// </example>
+        /// </summary>
+        public List<DumpItem> Next()
+        {
+            if (end)
+            {
+                return null;
+            }
+            DumpRet ret = ListPrefix(this.bucketName, this.prefix, this.marker, this.limit);
+            if (ret.Items.Count == 0)
+            {
+                end = true;
+                return null;
+            }
+            this.marker = ret.Marker;
+            end = ret.Items.Count < this.limit;
+            return ret.Items;
+        }
+    }
 }
 

@@ -12,9 +12,7 @@ namespace QBox.Util
          {
              JsonSerializerSettings setting = new JsonSerializerSettings();
              setting.NullValueHandling = NullValueHandling.Ignore;
-             string flag = JsonConvert.SerializeObject(obj, setting);
-             return flag;
-
+             return JsonConvert.SerializeObject(obj, setting);
          }
     }
 }

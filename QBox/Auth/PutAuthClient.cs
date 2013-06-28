@@ -13,7 +13,11 @@ namespace QBox.Auth
         {
             UpToken = upToken;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="body"></param>
         public override void SetAuth(HttpWebRequest request, Stream body)
         {
             string authHead = "UpToken " + UpToken;

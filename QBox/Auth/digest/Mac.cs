@@ -26,13 +26,36 @@ namespace QBox.Auth.digest
             get { return Conf.Config.Encoding.GetBytes(Config.ACCESS_KEY); }
             set { secretKey = value; }
         }
-
-        public string SignWithData(byte[] data)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public string _sign(byte[] data)
         {
-            HMACSHA1 hmac = new HMACSHA1(SecretKey);
+              HMACSHA1 hmac = new HMACSHA1(SecretKey);
             byte[] digest = hmac.ComputeHash(data);
-            string sign = Base64URLSafe.Encode(digest);
-            return null;
+            return Base64URLSafe.Encode(digest);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public string Sign(byte[] data)
+        {
+            return string.Format("{0}:{1}",this.accessKey,_sign(data));
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public string SignWithData(byte[] b)
+        {         
+            string data = Base64URLSafe.Encode(b);
+            return string.Format("{0}:{1}:{2}",this.accessKey,data);
+        }
+       // public string SignRequest(string path,string )
     }
 }
