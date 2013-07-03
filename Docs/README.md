@@ -141,12 +141,6 @@ public class EntryPathPair
 }
 
 ```
-```c#
-/// <summary>
-/// bucket+   ":"+ key
-/// </summary>
-public class Scope
-```
 
 <a name=rs-stat></a>
 ### 3.1 查看单个文件属性信息
