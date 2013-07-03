@@ -43,13 +43,13 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QBox\QBox.csproj">
-      <Project>{1C8C9909-57ED-44E4-81A5-0904E96FA00E}</Project>
-      <Name>QBox</Name>
-    </ProjectReference>
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <ProjectReference Include="..\Qiniu\Qiniu.csproj">
+      <Project>{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}</Project>
+      <Name>Qiniu</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

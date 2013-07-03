@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QBox", "QBox\QBox.csproj", "{1C8C9909-57ED-44E4-81A5-0904E96FA00E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{8BA368D7-3784-4C50-9A28-4FA1A9C81555}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinDemo", "WinDemo\WinDemo.csproj", "{AAC82806-F1FF-403B-8319-9D4418D52D05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QiniuDemo", "QiniuDemo", "{CB499617-AA1B-4121-9D53-94C423D9DF3F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{65603FA4-DDC3-4FD7-ADA3-7BCC2161A247}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu", "Qiniu\Qiniu.csproj", "{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,19 +17,28 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Debug|x86.ActiveCfg = Debug|x86
-		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Debug|x86.Build.0 = Debug|x86
-		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Release|x86.ActiveCfg = Release|x86
-		{1C8C9909-57ED-44E4-81A5-0904E96FA00E}.Release|x86.Build.0 = Release|x86
 		{8BA368D7-3784-4C50-9A28-4FA1A9C81555}.Debug|x86.ActiveCfg = Debug|x86
 		{8BA368D7-3784-4C50-9A28-4FA1A9C81555}.Debug|x86.Build.0 = Debug|x86
 		{8BA368D7-3784-4C50-9A28-4FA1A9C81555}.Release|x86.ActiveCfg = Release|x86
 		{8BA368D7-3784-4C50-9A28-4FA1A9C81555}.Release|x86.Build.0 = Release|x86
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Demo\Demo.csproj
+		{AAC82806-F1FF-403B-8319-9D4418D52D05}.Debug|x86.ActiveCfg = Debug|x86
+		{AAC82806-F1FF-403B-8319-9D4418D52D05}.Debug|x86.Build.0 = Debug|x86
+		{AAC82806-F1FF-403B-8319-9D4418D52D05}.Release|x86.ActiveCfg = Release|x86
+		{AAC82806-F1FF-403B-8319-9D4418D52D05}.Release|x86.Build.0 = Release|x86
+		{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}.Debug|x86.ActiveCfg = Debug|x86
+		{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}.Debug|x86.Build.0 = Debug|x86
+		{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}.Release|x86.ActiveCfg = Release|x86
+		{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80} = {65603FA4-DDC3-4FD7-ADA3-7BCC2161A247}
+		{AAC82806-F1FF-403B-8319-9D4418D52D05} = {CB499617-AA1B-4121-9D53-94C423D9DF3F}
+		{8BA368D7-3784-4C50-9A28-4FA1A9C81555} = {CB499617-AA1B-4121-9D53-94C423D9DF3F}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Demo\Demo.csproj
 	EndGlobalSection
 EndGlobal

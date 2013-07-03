@@ -1,6 +1,7 @@
 .DS_Store
 *.swp
 *.suo
-
+Demo
+WinDemo
 bin
 obj
