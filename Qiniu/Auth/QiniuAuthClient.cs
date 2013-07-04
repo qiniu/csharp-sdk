@@ -33,7 +33,7 @@ namespace Qiniu.Auth
                     }
                     byte[] digest = hmac.ComputeHash(buffer.ToArray());
                     string digestBase64 = Base64URLSafe.Encode(digest);
-                    string authHead = "Qiniu " + Config.ACCESS_KEY + ":" + digestBase64;
+                    string authHead = "QBox " + Config.ACCESS_KEY + ":" + digestBase64;
                     request.Headers.Add("Authorization", authHead);
                 }
             }

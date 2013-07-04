@@ -48,7 +48,7 @@ namespace Qiniu.RS
         /// <returns></returns>
         private CallRet op(string op, Scope scope)
         {
-            string url = string.Format("/{0}/{1}/{2}",
+            string url = string.Format("{0}/{1}/{2}",
                 Config.RS_HOST,
                 op,
                 Base64URLSafe.Encode(scope.URI));
@@ -62,7 +62,7 @@ namespace Qiniu.RS
         /// <returns></returns>
         private CallRet op2(string op, EntryPathPair pair)
         {
-            string url = string.Format("/{0}/{1}/{2}/{3}",
+            string url = string.Format("{0}/{1}/{2}/{3}",
                 Config.RS_HOST,
                 op,
                 Base64URLSafe.Encode(pair.URISrc),
@@ -76,7 +76,7 @@ namespace Qiniu.RS
         /// <returns>文件的基本信息，见<see cref="Entry">Entry</see></returns>
         public Entry Stat(Scope scope)
         {
-            CallRet callRet = op(FileHandle.MOVE, scope);
+            CallRet callRet = op(FileHandle.STAT, scope);
             return new Entry(callRet);
         }
         /// <summary>
@@ -222,6 +222,5 @@ namespace Qiniu.RS
             string requestBody = getBatchOp_1(FileHandle.DELETE, keys);
             return batch(requestBody);
         }
-        //public void BatchDelete(string bucket,
     }
 }

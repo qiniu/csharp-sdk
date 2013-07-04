@@ -25,8 +25,9 @@ namespace Qiniu.IO
         /// <param name="key"></param>
         /// <param name="localFile"></param>
         /// <param name="extra"></param>
-        public void PutFile(string upToken, string key, string localFile, PutExtra extra)
+        public PutRet PutFile(string upToken, string key, string localFile, PutExtra extra)
         {
+            PutRet ret;
             try
             {
                 var postParams = new Dictionary<string, object>();
@@ -45,12 +46,16 @@ namespace Qiniu.IO
                     }
                 }
                 CallRet callRet = MultiPart.Post(Config.UP_HOST, postParams);
-                putFinished(new PutRet(callRet));
+                ret = new PutRet(callRet);
+                putFinished(ret);
+                return ret;
             }
             catch (Exception e)
             {
-                putFinished(new PutRet(new CallRet(HttpStatusCode.BadRequest, e)));
-            }
+                ret = new PutRet(new CallRet(HttpStatusCode.BadRequest, e));
+                putFinished(ret);
+                return ret;
+            }            
         }
 
         private void putFinished(PutRet ret)
