@@ -11,7 +11,7 @@ namespace QiniuSDKTest
     ///包含所有 ImageInfoTest 单元测试
     ///</summary>
     [TestClass()]
-    public class ImageInfoTest
+    public class ImageInfoTest:Test
     {
 
 
@@ -72,10 +72,11 @@ namespace QiniuSDKTest
         {
             string url = string.Empty; // TODO: 初始化为适当的值
             string expected = string.Empty; // TODO: 初始化为适当的值
-            string actual;
-            actual = ImageInfo.MakeRequest(url);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            string actual;            
+            actual = ImageInfo.MakeRequest(FileOpUrl);
+            System.Diagnostics.Process.Start(actual);
+            ImageInfoRet ret= ImageInfo.Call(actual);
+            Assert.IsNotNull(ret, "ImageInfoTest MakeRequestTest Failure");
         }
     }
 }

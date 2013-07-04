@@ -12,7 +12,7 @@ namespace Qiniu.RSF
     public class RSFClient : QiniuAuthClient
     {
         
-        private const int MAX_LIMIT = 10;
+        private const int MAX_LIMIT = 1000;
         //失败重试次数
         private const int RETRY_TIME = 3;
         private string bucketName;
@@ -99,7 +99,7 @@ namespace Qiniu.RSF
         /// <param name='limit'>
         /// Limit.
         /// </param>
-        public DumpRet ListPrefix(string bucketName, string prefix, string markerIn, int limit = MAX_LIMIT)
+        public DumpRet ListPrefix(string bucketName, string prefix="", string markerIn="", int limit = MAX_LIMIT)
         {
             string url = Config.RSF_HOST + string.Format("/list?bucket={0}", bucketName);// + bucketName + 
             if (!string.IsNullOrEmpty(markerIn))

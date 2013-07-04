@@ -38,6 +38,7 @@ namespace Qiniu.FileOp
         public MarkerGravity gravity;
         public WaterMarker(int dissolve = 50, MarkerGravity gravity = MarkerGravity.SouthEast, int dx = 10, int dy = 10)
         {
+            Dissolve = dissolve;
             this.dissolve = dissolve;
             this.dx = dx;
             this.dy = dy;

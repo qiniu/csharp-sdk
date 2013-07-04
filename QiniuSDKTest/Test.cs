@@ -8,6 +8,17 @@ namespace QiniuSDKTest
 {
     public class Test
     {
+        protected string Bucket = "icattlecoder3";
+        protected string LocalKey = "gogopher.jpg";
+        protected string DOMAIN = "qiniuphotos.qiniudn.com";
+        protected string LocalFile = @"C:\Users\floyd\Downloads\ChromeSetup.exe";
+        protected string BigFile = @"C:\Users\floyd\Downloads\ChromeSetup.exe";
+        protected string FileOpUrl = "http://qiniuphotos.qiniudn.com/gogopher.jpg";
+        protected string NewKey
+        {
+            get { return Guid.NewGuid().ToString(); }
+        }
+
         private void Init()
         {
             Config.ACCESS_KEY = "gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp";
@@ -18,7 +29,7 @@ namespace QiniuSDKTest
         {
             Init();
         }
-        public void Printf(string str)
+        protected void PrintLn(string str)
         {
             Console.WriteLine(str);
         }

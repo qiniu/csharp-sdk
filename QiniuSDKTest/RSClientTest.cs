@@ -74,14 +74,14 @@ namespace QiniuSDKTest
         {
             RSClient target = new RSClient(); 
             //YES
-            Scope scope = new Scope("icattlecoder3", "3695df2e-304a-4af2-a401-74e791c05cf4"); ; 
+            Scope scope = new Scope(Bucket, LocalKey); 
             Entry actual;
             actual = target.Stat(scope);
-            Assert.IsTrue(!string.IsNullOrEmpty(actual.Hash), "Failure");
+            Assert.IsTrue(!string.IsNullOrEmpty(actual.Hash), "StatTest Failure");
             //NO
             scope = new Scope("notexsit", "errorkey");
             actual = target.Stat(scope);
-            Assert.IsTrue(string.IsNullOrEmpty(actual.Hash), "Faliure");
+            Assert.IsTrue(string.IsNullOrEmpty(actual.Hash), "StatTest Faliure");
 
         }
 
@@ -92,16 +92,11 @@ namespace QiniuSDKTest
         public void MoveTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            EntryPathPair pathPair = new EntryPathPair("icattlecoder3", "moveTest", "moveTest2"); ; // TODO: 初始化为适当的值
+            EntryPathPair pathPair = new EntryPathPair(Bucket, LocalKey, NewKey); ; // TODO: 初始化为适当的值
             CallRet actual;
             //YES
             actual = target.Move(pathPair);
-            Assert.IsTrue(actual.OK, "Move Failure");
-            //NO
-            pathPair = new EntryPathPair("icattlecoder3", "moveTest2", "moveTest"); // TODO: 初始化为适当的值
-            actual = target.Move(pathPair);
-            Assert.IsNotNull(actual.OK, "Move Failure");
-
+            Assert.IsTrue(actual.OK, "MoveTest Failure");          
         }
 
         /// <summary>
@@ -111,14 +106,10 @@ namespace QiniuSDKTest
         public void DeleteTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            Scope scope = new Scope("icattlecoder3", "moveTest"); // TODO: 初始化为适当的值
-       
+            Scope scope = new Scope(Bucket,LocalKey); // TODO: 初始化为适当的值       
             CallRet actual;
             actual = target.Delete(scope);
-            Assert.IsTrue(actual.OK, "Delete Failure");
-
-            scope = new Scope("icattlecoder3", "moveTest");
-            Assert.IsTrue(!actual.OK, "Delete Failure");
+            Assert.IsTrue(actual.OK, "DeleteTest Failure");            
         }
 
         /// <summary>
@@ -128,12 +119,10 @@ namespace QiniuSDKTest
         public void CopyTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            EntryPathPair pathPair = null; // TODO: 初始化为适当的值
-            CallRet expected = null; // TODO: 初始化为适当的值
+            EntryPathPair pathPair = new EntryPathPair(Bucket, LocalKey, NewKey); // TODO: 初始化为适当的值
             CallRet actual;
             actual = target.Copy(pathPair);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            Assert.IsTrue(actual.OK, "CopyTest Failure");   
         }
 
         /// <summary>
@@ -143,12 +132,12 @@ namespace QiniuSDKTest
         public void BatchStatTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            Scope[] keys = null; // TODO: 初始化为适当的值
-            List<BatchRetItem> expected = null; // TODO: 初始化为适当的值
+            Scope[] keys = new Scope[2]; // TODO: 初始化为适当的值
+            keys[0] = new Scope(Bucket, LocalKey);
+            keys[1] = new Scope("xxx", "xxx");//error params
             List<BatchRetItem> actual;
             actual = target.BatchStat(keys);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            Assert.IsTrue(actual.Count > 0, "BatchStatTest Failure");
         }
 
         /// <summary>
@@ -158,12 +147,14 @@ namespace QiniuSDKTest
         public void BatchMoveTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            EntryPathPair[] entryPathPairs = null; // TODO: 初始化为适当的值
-            CallRet expected = null; // TODO: 初始化为适当的值
+            EntryPathPair[] entryPathPairs = new EntryPathPair[2]; // TODO: 初始化为适当的值
+            string tmpKey = NewKey;
+            entryPathPairs[0] = new EntryPathPair(Bucket, LocalKey, tmpKey);
+            entryPathPairs[1] = new EntryPathPair(Bucket, tmpKey, LocalKey);
+
             CallRet actual;
             actual = target.BatchMove(entryPathPairs);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            Assert.IsTrue(actual.OK, "BatchMoveTest Failure");
         }
 
         /// <summary>
@@ -173,12 +164,12 @@ namespace QiniuSDKTest
         public void BatchDeleteTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            Scope[] keys = null; // TODO: 初始化为适当的值
-            CallRet expected = null; // TODO: 初始化为适当的值
+            Scope[] keys = new Scope[2]; // TODO: 初始化为适当的值
+            keys[0] = new Scope(Bucket, LocalKey);
+            keys[1] = new Scope("xxx", "xxx");//error params
             CallRet actual;
-            actual = target.BatchDelete(keys);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            actual = target.BatchDelete(keys);            
+            Assert.IsTrue(actual.OK, "BatchStatTest Failure"); ;
         }
 
         /// <summary>
@@ -188,12 +179,14 @@ namespace QiniuSDKTest
         public void BatchCopyTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            EntryPathPair[] entryPathPari = null; // TODO: 初始化为适当的值
-            CallRet expected = null; // TODO: 初始化为适当的值
+
+            EntryPathPair[] entryPathPairs = new EntryPathPair[2]; // TODO: 初始化为适当的值
+            string tmpKey = NewKey;
+            entryPathPairs[0] = new EntryPathPair(Bucket, LocalKey, tmpKey);
+            entryPathPairs[1] = new EntryPathPair(Bucket, tmpKey, NewKey);            
             CallRet actual;
-            actual = target.BatchCopy(entryPathPari);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            actual = target.BatchCopy(entryPathPairs);
+            Assert.IsTrue(actual.OK, "BatchStatTest Failure"); ;
         }
     }
 }

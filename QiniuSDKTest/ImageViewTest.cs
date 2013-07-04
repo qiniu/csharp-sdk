@@ -11,7 +11,7 @@ namespace QiniuSDKTest
     ///包含所有 ImageViewTest 单元测试
     ///</summary>
     [TestClass()]
-    public class ImageViewTest
+    public class ImageViewTest:Test
     {
 
 
@@ -71,12 +71,13 @@ namespace QiniuSDKTest
         public void MakeRequestTest()
         {
             ImageView target = new ImageView { Mode = 0, Width = 200, Height = 200, Quality = 90, Format = "gif" }; // TODO: 初始化为适当的值
-            string url = "<your url>"; // TODO: 初始化为适当的值
+            string url = FileOpUrl; // TODO: 初始化为适当的值
             string expected = string.Empty; // TODO: 初始化为适当的值
             string actual;
             actual = target.MakeRequest(url);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            System.Diagnostics.Process.Start(actual);
+            Assert.IsTrue(!string.IsNullOrEmpty(actual), "ImageViewTest MakeRequestTest Failure");
+           
         }
     }
 }

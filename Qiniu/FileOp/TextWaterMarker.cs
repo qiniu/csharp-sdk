@@ -14,8 +14,7 @@ namespace Qiniu.FileOp
         private int fontSize;
         private string color;
         public int Dissolve
-        {
-            get { return dissolve; }
+        {          
             set
             {
                 if (value < 0) dissolve = 0;

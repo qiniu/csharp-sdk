@@ -5,18 +5,15 @@ namespace Qiniu.Util
 {
     public static class StreamEx
     {
+        /// <summary>
+        /// string To Stream
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public static Stream ToStream(this string str)
         {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                using (StreamWriter writer = new StreamWriter(stream))
-                {
-                    writer.Write(str);
-                    writer.Flush();
-                    stream.Position = 0;
-                    return stream;
-                }
-            }
+            Stream s = new MemoryStream(Conf.Config.Encoding.GetBytes(str));
+            return s;
         }
     }
 }

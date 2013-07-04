@@ -1,17 +1,18 @@
-﻿using Qiniu.FileOp;
+﻿using Qiniu.RS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using Qiniu.Auth.digest;
 
 namespace QiniuSDKTest
 {
     
     
     /// <summary>
-    ///这是 WaterMarkerTest 的测试类，旨在
-    ///包含所有 WaterMarkerTest 单元测试
+    ///这是 GetPolicyTest 的测试类，旨在
+    ///包含所有 GetPolicyTest 单元测试
     ///</summary>
     [TestClass()]
-    public class WaterMarkerTest
+    public class GetPolicyTest:Test
     {
 
 
@@ -70,17 +71,25 @@ namespace QiniuSDKTest
         [TestMethod()]
         public void MakeRequestTest()
         {
-            int dissolve = 0; // TODO: 初始化为适当的值
-            MarkerGravity gravity = new MarkerGravity(); // TODO: 初始化为适当的值
-            int dx = 0; // TODO: 初始化为适当的值
-            int dy = 0; // TODO: 初始化为适当的值
-            WaterMarker target = new WaterMarker(dissolve, gravity, dx, dy); // TODO: 初始化为适当的值
-            string url = string.Empty; // TODO: 初始化为适当的值
-            string expected = string.Empty; // TODO: 初始化为适当的值
             string actual;
-            actual = target.MakeRequest(url);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            actual = GetPolicy.MakeRequest(FileOpUrl);
+            System.Diagnostics.Process.Start(actual);
+            PrintLn(actual);
+            Assert.IsTrue(!string.IsNullOrEmpty(actual), "GetPolicyTest MakeRequestTest Failure");
+        }
+
+        /// <summary>
+        ///MakeBaseUrl 的测试
+        ///</summary>
+        [TestMethod()]
+        public void MakeBaseUrlTest()
+        {
+
+            string actual;
+            actual = GetPolicy.MakeBaseUrl(Bucket+".qiniudn.com", LocalKey);
+            System.Diagnostics.Process.Start(actual);
+            PrintLn(actual);
+            Assert.IsTrue(!string.IsNullOrEmpty(actual), "GetPolicyTest MakeBaseUrlTest Failure");
         }
     }
 }

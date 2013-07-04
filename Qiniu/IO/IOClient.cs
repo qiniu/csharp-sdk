@@ -30,6 +30,7 @@ namespace Qiniu.IO
             PutRet ret;
             try
             {
+
                 var postParams = new Dictionary<string, object>();
                 postParams["token"] = upToken;
                 postParams["key"] = key;

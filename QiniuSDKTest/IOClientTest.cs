@@ -72,19 +72,19 @@ namespace QiniuSDKTest
         public void PutFileTest()
         {
             IOClient target = new IOClient(); 
-
-            string upToken = string.Empty; 
-            string key = Guid.NewGuid().ToString(); 
-            Printf(key);
-            string localFile = @"C:\Users\floyd\Downloads\ChromeSetup.exe";
-
-            PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值            
-            extra.Bucket = "icattlecoder3";
-
+            string upToken = string.Empty;
+            string key = LocalKey;
+            PrintLn(key);
+            PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值
+            extra.MimeType = "text/plain";
+            extra.Crc32 = 123;
+            extra.CheckCrc = CheckCrcType.CHECK;
+            extra.Params = new System.Collections.Generic.Dictionary<string, string>();
+            extra.Bucket = Bucket;
             PutPolicy put = new PutPolicy(extra.Bucket);
-
-            PutRet ret = target.PutFile(put.Token(), key, localFile, extra);
-
+            PutRet ret = target.PutFile(put.Token(), key, LocalFile, extra);
+            //error params
+            target.PutFile("lskd", "kd", "kdf", null);
             Assert.IsTrue(ret.OK, "PutFileTest Failure");
 
         }

@@ -21,7 +21,6 @@ namespace Qiniu.Util
 
         public static void CopyN(Stream dst, Stream src, long numBytesToCopy)
         {
-            Console.WriteLine("Stream.CopyN: {0}", numBytesToCopy);
             byte[] buffer = new byte[bufferLen];
             long numBytesWritten = 0;
             while (numBytesWritten < numBytesToCopy)
@@ -35,7 +34,6 @@ namespace Qiniu.Util
                 if (n == 0) break;
                 dst.Write(buffer, 0, n);
                 numBytesWritten += n;
-                //Console.WriteLine("Stream.CopyN.Write: {0} {1}", n, numBytesWritten);
             }
             if (numBytesWritten != numBytesToCopy)
             {

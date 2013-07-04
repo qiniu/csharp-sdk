@@ -1,4 +1,5 @@
 ﻿using Qiniu.FileOp;
+using Qiniu.RS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -11,7 +12,7 @@ namespace QiniuSDKTest
     ///包含所有 ImageWaterMarkerTest 单元测试
     ///</summary>
     [TestClass()]
-    public class ImageWaterMarkerTest
+    public class ImageWaterMarkerTest:Test
     {
 
 
@@ -70,18 +71,17 @@ namespace QiniuSDKTest
         [TestMethod()]
         public void MakeRequestTest()
         {
-            string imageUrl = string.Empty; // TODO: 初始化为适当的值
-            int dissolve = 0; // TODO: 初始化为适当的值
-            MarkerGravity gravity = new MarkerGravity(); // TODO: 初始化为适当的值
-            int dx = 0; // TODO: 初始化为适当的值
-            int dy = 0; // TODO: 初始化为适当的值
-            ImageWaterMarker target = new ImageWaterMarker(imageUrl, dissolve, gravity, dx, dy); // TODO: 初始化为适当的值
-            string url = string.Empty; // TODO: 初始化为适当的值
-            string expected = string.Empty; // TODO: 初始化为适当的值
+            string imageUrl = "http://www.b1.qiniudn.com/images/logo-2.png"; // TODO: 初始化为适当的值
+            int dissolve = 50; // TODO: 初始化为适当的值
+            ImageWaterMarker target = new ImageWaterMarker(imageUrl,dissolve,MarkerGravity.Center); // TODO: 初始化为适当的值
             string actual;
-            actual = target.MakeRequest(url);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            actual = target.MakeRequest(FileOpUrl);
+            // 如果是私有空间，添加下面一句
+            actual = GetPolicy.MakeRequest(actual);
+            System.Diagnostics.Process.Start(actual);
+            PrintLn(actual);
+            Assert.IsTrue(!string.IsNullOrEmpty(actual), "ImageWaterMarkerTest MakeRequestTest Failure");
+           
         }
     }
 }

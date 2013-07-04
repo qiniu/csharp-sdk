@@ -25,13 +25,8 @@ namespace Qiniu.Auth.digest
         public byte[] SecretKey
         {
             get { return secretKey; }
-            set { secretKey = value; }
         }
-        public Mac()
-        {
-            this.accessKey = Config.ACCESS_KEY;
-            this.secretKey = Config.Encoding.GetBytes(Config.SECRET_KEY);
-        }
+        
         public Mac(string access, byte[] secretKey)
         {
             this.accessKey = access;

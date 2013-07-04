@@ -6,7 +6,7 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}</ProjectGuid>
+    <ProjectGuid>{7F3B884F-C867-4AAC-94CB-AF31A4543303}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QiniuSDKTest</RootNamespace>
@@ -52,17 +52,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExifTest.cs" />
+    <Compile Include="GetPolicyTest.cs" />
     <Compile Include="ImageInfoTest.cs" />
     <Compile Include="ImageMogrifyTest.cs" />
     <Compile Include="ImageViewTest.cs" />
     <Compile Include="ImageWaterMarkerTest.cs" />
     <Compile Include="IOClientTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResumablePutTest.cs" />
     <Compile Include="RSClientTest.cs" />
     <Compile Include="RSFClientTest.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="TextWaterMarkerTest.cs" />
-    <Compile Include="WaterMarkerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Qiniu\Qiniu.csproj">

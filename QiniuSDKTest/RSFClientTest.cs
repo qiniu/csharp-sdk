@@ -13,7 +13,7 @@ namespace QiniuSDKTest
     ///包含所有 RSFClientTest 单元测试
     ///</summary>
     [TestClass()]
-    public class RSFClientTest
+    public class RSFClientTest:Test
     {
         
         public RSFClientTest()
@@ -78,13 +78,13 @@ namespace QiniuSDKTest
         [TestMethod()]
         public void NextTest()
         {
-            string bucketName = string.Empty; // TODO: 初始化为适当的值
-            RSFClient target = new RSFClient(bucketName); // TODO: 初始化为适当的值
-            List<DumpItem> expected = null; // TODO: 初始化为适当的值
+            RSFClient target = new RSFClient(Bucket); // TODO: 初始化为适当的值
+            target.Marker = string.Empty;
+            target.Prefix = string.Empty;
+            target.Limit = 100;
             List<DumpItem> actual;
             actual = target.Next();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            Assert.IsTrue(actual.Count > 0, "ListPrefixTest Failure");
         }
 
         /// <summary>
@@ -93,21 +93,20 @@ namespace QiniuSDKTest
         [TestMethod()]
         public void ListPrefixTest()
         {
-            string bucketName = "icattlecoder3"; // TODO: 初始化为适当的值
-            Console.WriteLine("sdlkfj");
-            RSFClient target = new RSFClient(bucketName); // TODO: 初始化为适当的值
-            string bucketName1 = string.Empty; // TODO: 初始化为适当的值
-            string prefix = string.Empty; // TODO: 初始化为适当的值
-            string markerIn = string.Empty; // TODO: 初始化为适当的值
-            int limit = 0; // TODO: 初始化为适当的值
-
-            DumpRet expected = null; // TODO: 初始化为适当的值
+            RSFClient target = new RSFClient(Bucket); // TODO: 初始化为适当的值
+            target.Marker = string.Empty;
+            target.Prefix = string.Empty;
+            target.Limit = 100;
             DumpRet actual;
-            actual = target.ListPrefix(bucketName1, prefix, markerIn, limit);
-            Assert.IsTrue(actual.Items.Count > 0, "false");
-            //Assert.AreEqual(
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            actual = target.ListPrefix(Bucket);
+            foreach (DumpItem item in actual.Items)
+            {
+                Console.WriteLine("Key:{0},Hash:{1},Mime:{2},PutTime:{3},EndUser:{4}", item.Key, item.Hash, item.Mime, item.PutTime, item.EndUser);
+            }
+            PrintLn(actual.Items.Count.ToString());
+            //error params
+            Assert.IsTrue(actual.Items.Count > 0, "ListPrefixTest Failure");
+
         }
     }
 }

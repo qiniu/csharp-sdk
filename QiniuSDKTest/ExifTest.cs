@@ -1,4 +1,5 @@
 ﻿using Qiniu.FileOp;
+using Qiniu.RS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -11,7 +12,7 @@ namespace QiniuSDKTest
     ///包含所有 ExifTest 单元测试
     ///</summary>
     [TestClass()]
-    public class ExifTest
+    public class ExifTest:Test
     {
 
 
@@ -70,12 +71,13 @@ namespace QiniuSDKTest
         [TestMethod()]
         public void MakeRequestTest()
         {
-            string url = string.Empty; // TODO: 初始化为适当的值
-            string expected = string.Empty; // TODO: 初始化为适当的值
-            string actual;
-            actual = Exif.MakeRequest(url);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("验证此测试方法的正确性。");
+            string url = GetPolicy.MakeBaseUrl(DOMAIN, LocalKey); // TODO: 初始化为适当的值          
+            string actual = Exif.MakeRequest(url);
+            ExifRet ret = Exif.Call(actual);
+            PrintLn(ret.OK.ToString());
+            PrintLn(ret.Response);
+            PrintLn(ret.StatusCode.ToString());
+            Assert.IsTrue(ret.OK, "MakeRequestTest Failure");
         }
     }
 }

@@ -5,7 +5,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{65603FA4-DDC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu", "Qiniu\Qiniu.csproj", "{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QiniuSDKTest", "QiniuSDKTest\QiniuSDKTest.csproj", "{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QiniuSDKTest", "QiniuSDKTest\QiniuSDKTest.csproj", "{7F3B884F-C867-4AAC-94CB-AF31A4543303}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A5E34F96-724C-4AE9-90D1-EEF1EF134D4D}"
+	ProjectSection(SolutionItems) = preProject
+		csharp-sdk.vsmdi = csharp-sdk.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -30,25 +37,22 @@ Global
 		{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}.Release|Mixed Platforms.Build.0 = Release|x86
 		{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}.Release|x86.ActiveCfg = Release|x86
 		{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}.Release|x86.Build.0 = Release|x86
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7}.Release|x86.ActiveCfg = Release|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80} = {65603FA4-DDC3-4FD7-ADA3-7BCC2161A247}
-		{B355DD51-08F3-48FF-A02A-2ABCEA0912C7} = {65603FA4-DDC3-4FD7-ADA3-7BCC2161A247}
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Demo\Demo.csproj
-	EndGlobalSection
+		{7F3B884F-C867-4AAC-94CB-AF31A4543303} = {65603FA4-DDC3-4FD7-ADA3-7BCC2161A247}
+	EndGlobalSection	
 EndGlobal

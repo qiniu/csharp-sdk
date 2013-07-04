@@ -12,7 +12,7 @@ namespace QiniuSDKTest
     ///包含所有 ImageMogrifyTest 单元测试
     ///</summary>
     [TestClass()]
-    public class ImageMogrifyTest
+    public class ImageMogrifyTest:Test
     {
 
 
@@ -71,14 +71,19 @@ namespace QiniuSDKTest
         [TestMethod()]
         public void MakeRequestTest()
         {
-            ImageMogrify target = new ImageMogrify(); // TODO: 初始化为适当的值
-            string url = string.Empty; // TODO: 初始化为适当的值
-            string expected = string.Empty; // TODO: 初始化为适当的值
-            string actual;
-            actual = target.MakeRequest(url);
-            GetPolicy get = new GetPolicy();
-           
-            Assert.IsTrue(string.IsNullOrEmpty(actual), "Image Mogrify Test Failure");
+            ImageMogrify target = new ImageMogrify
+            {
+                Thumbnail = "!50x50r",
+                Gravity = "center",
+                Rotate = 90,
+                Crop = "!50x50",
+                Quality = 80,
+                AutoOrient = true
+            };
+            string mogrUrl = target.MakeRequest(FileOpUrl);
+            System.Diagnostics.Process.Start(mogrUrl);
+            PrintLn(mogrUrl);
+            Assert.IsTrue(!string.IsNullOrEmpty(mogrUrl), "ImageMogrifyTest MakeRequestTest Failure");
         }
     }
 }

@@ -44,7 +44,7 @@ namespace Qiniu.RPC
                 request.ContentLength = length;
                 SetAuth(request, body);                
                 using (Stream requestStream = request.GetRequestStream())
-                {                    
+                {
                     Util.IO.CopyN(requestStream, body, length);
                 }
                 using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
