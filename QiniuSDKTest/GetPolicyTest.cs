@@ -84,7 +84,6 @@ namespace QiniuSDKTest
         [TestMethod()]
         public void MakeBaseUrlTest()
         {
-
             string actual;
             actual = GetPolicy.MakeBaseUrl(Bucket+".qiniudn.com", LocalKey);
             System.Diagnostics.Process.Start(actual);
