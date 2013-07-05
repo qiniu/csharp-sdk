@@ -6,8 +6,7 @@ using Qiniu.Auth.digest;
 namespace Qiniu.RPC
 {
     public class Client
-    {
-       
+    {       
         public virtual void SetAuth(HttpWebRequest request, Stream body) { }
 
         public CallRet Call(string url)
@@ -17,8 +16,7 @@ namespace Qiniu.RPC
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.UserAgent = Conf.Config.USER_AGENT;
-               
-                request.Method = "POST";
+                request.Method = "POST";                
                 SetAuth(request, null);
                 using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
                 {
@@ -42,7 +40,7 @@ namespace Qiniu.RPC
                 request.Method = "POST";
                 request.ContentType = contentType;
                 request.ContentLength = length;
-                SetAuth(request, body);                
+                SetAuth(request, body);
                 using (Stream requestStream = request.GetRequestStream())
                 {
                     Util.IO.CopyN(requestStream, body, length);

@@ -11,31 +11,36 @@ namespace Qiniu.Auth
 {
     public class QiniuAuthClient : Client
     {
+        protected Mac mac;
+        public QiniuAuthClient(Mac mac = null)
+        {
+            this.mac = mac == null ? new Mac() : mac;
+        }
         public override void SetAuth(HttpWebRequest request, Stream body)
         {
-            byte[] secretKey = Config.Encoding.GetBytes(Config.SECRET_KEY);
-            using (HMACSHA1 hmac = new HMACSHA1(secretKey))
+            string pathAndQuery = request.Address.PathAndQuery;
+            byte[] pathAndQueryBytes = Config.Encoding.GetBytes(pathAndQuery);
+            using (MemoryStream buffer = new MemoryStream())
             {
-                string pathAndQuery = request.Address.PathAndQuery;
-                byte[] pathAndQueryBytes = Config.Encoding.GetBytes(pathAndQuery);
-                using (MemoryStream buffer = new MemoryStream())
+                string digestBase64 = null;
+                if (request.ContentType == "application/x-www-form-urlencoded" && body != null)
+                {
+                    if (!body.CanSeek)
+                    {
+                        throw new Exception("stream can not seek");
+                    }
+                    Util.IO.Copy(buffer, body);
+                    body.Seek(0, SeekOrigin.Begin);
+                    digestBase64 = mac.SignRequest(request, buffer.ToArray());
+                }
+                else
                 {
                     buffer.Write(pathAndQueryBytes, 0, pathAndQueryBytes.Length);
                     buffer.WriteByte((byte)'\n');
-                    if (request.ContentType == "application/x-www-form-urlencoded" && body != null)
-                    {
-                        if (!body.CanSeek)
-                        {
-                            throw new Exception("stream can not seek");
-                        }
-                        Util.IO.Copy(buffer, body);
-                        body.Seek(0, SeekOrigin.Begin);
-                    }
-                    byte[] digest = hmac.ComputeHash(buffer.ToArray());
-                    string digestBase64 = Base64URLSafe.Encode(digest);
-                    string authHead = "QBox " + Config.ACCESS_KEY + ":" + digestBase64;
-                    request.Headers.Add("Authorization", authHead);
+                    digestBase64 = mac.Sign(buffer.ToArray());
                 }
+                string authHead = "QBox " + digestBase64;
+                request.Headers.Add("Authorization", authHead);
             }
         }
     }

@@ -23,7 +23,7 @@ namespace Qiniu.IO.Resumable
         #region 记录总文件大小,用于计算上传百分比
         private long fsize;
         private float chunks;
-        private float uploadChunks = 0;
+        private float uploadedChunks = 0;
         #endregion
 
         /// <summary>
@@ -111,14 +111,15 @@ namespace Qiniu.IO.Resumable
                         key = UNDEFINED_KEY;
                     }
                     CallRet ret = Mkfile(client, key, fs.Length);
-                    if (PutFinished != null)
-                    {
-                        PutFinished(this, ret);
-                    }
                     if (Progress != null)
                     {
                         Progress(1.0f);
                     }
+                    if (PutFinished != null)
+                    {
+                        PutFinished(this, ret);
+                    }
+                   
                 }
             });
             //启动异步上传
@@ -129,10 +130,10 @@ namespace Qiniu.IO.Resumable
         /// </summary>
         private void progress()
         {
-            uploadChunks++;
+            uploadedChunks++;
             if (Progress != null)
             {
-                Progress((float)uploadChunks / chunks);
+                Progress((float)uploadedChunks / chunks);
             }
         }
        
@@ -185,10 +186,10 @@ namespace Qiniu.IO.Resumable
                     }
                     else
                     {
-                        uploadChunks++;
+                        uploadedChunks++;
                         if (Progress != null)
                         {
-                            Progress((float)uploadChunks / chunks);
+                            Progress((float)uploadedChunks / chunks);
                         }
                         break;
                     }

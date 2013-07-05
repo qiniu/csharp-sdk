@@ -38,8 +38,14 @@ namespace Qiniu.RS
     /// 资源存储客户端，提供对文件的查看（stat），移动(move)，复制（copy）,删除（delete）操作
     /// 以及与这些操作对应的批量操作
     /// </summary>
-    public class RSClient : QiniuAuthClient
-    {        
+    public class RSClient :QiniuAuthClient
+    {
+
+
+        public RSClient(Mac mac=null)
+            : base(mac)
+        {
+        }
         /// <summary>
         /// 
         /// </summary>

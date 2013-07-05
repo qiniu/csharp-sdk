@@ -26,7 +26,13 @@ namespace Qiniu.Auth.digest
         {
             get { return secretKey; }
         }
-        
+
+        public Mac()
+        {
+            this.accessKey = Conf.Config.ACCESS_KEY;
+            this.secretKey = Config.Encoding.GetBytes(Config.SECRET_KEY);
+        }
+
         public Mac(string access, byte[] secretKey)
         {
             this.accessKey = access;
@@ -63,13 +69,13 @@ namespace Qiniu.Auth.digest
             string data = Base64URLSafe.Encode(b);
             return string.Format("{0}:{1}:{2}", this.accessKey, _sign(Config.Encoding.GetBytes(data)), data);
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="incbody"></param>
-        /// <returns></returns>
-        public string SignRequest(System.Net.HttpWebRequest request, bool incbody)
+       /// <summary>
+        /// SignRequest
+       /// </summary>
+       /// <param name="request"></param>
+       /// <param name="body"></param>
+       /// <returns></returns>
+        public string SignRequest(System.Net.HttpWebRequest request, byte[] body)
         {
             MemoryStream mstream = new MemoryStream();
             Uri u = request.Address;
@@ -81,17 +87,9 @@ namespace Qiniu.Auth.digest
                 {
                     buffer.Write(pathAndQueryBytes, 0, pathAndQueryBytes.Length);
                     buffer.WriteByte((byte)'\n');
-                    if (incbody)
+                    if (body.Length > 0)
                     {
-                        using (Stream body = request.GetRequestStream())
-                        {
-                                if (!body.CanSeek)
-                                {
-                                    throw new Exception("stream can not seek");
-                                }
-                                Util.IO.Copy(buffer, body);
-                                body.Seek(0, SeekOrigin.Begin);
-                        }
+                        buffer.Write(body, 0, body.Length);
                     }
                     byte[] digest = hmac.ComputeHash(buffer.ToArray());
                     string digestBase64 = Base64URLSafe.Encode(digest);
@@ -101,4 +99,3 @@ namespace Qiniu.Auth.digest
         }
     }
 }
-

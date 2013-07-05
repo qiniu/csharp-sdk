@@ -84,7 +84,7 @@ namespace QiniuSDKTest
             PutPolicy put = new PutPolicy(extra.Bucket);
             PutRet ret = target.PutFile(put.Token(), key, LocalFile, extra);
             //error params
-            target.PutFile("lskd", "kd", "kdf", null);
+            target.PutFile("error", "error", "error", null);
             Assert.IsTrue(ret.OK, "PutFileTest Failure");
 
         }

@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="284dd5a3-779e-453e-bf52-b63fb7e67f36" name="floyd@X60 2013-07-05 13:28:46" runUser="x60\floyd" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="本地" id="22996ac0-419b-4282-9b52-fde35ccc2b77">
+    <Description>这些设置为本地测试运行的默认测试设置。</Description>
+    <Deployment runDeploymentRoot="floyd_X60 2013-07-05 13_28_46">
+      <DeploymentItem filename="E:\workspace\csharp-sdk\Qiniu\bin\Debug\Newtonsoft.Json.dll" />
+      <DeploymentItem filename="E:\workspace\csharp-sdk\Qiniu\bin\Debug\Qiniu.dll" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific>
+        <UnitTestRunConfig testTypeId="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b">
+          <AssemblyResolution>
+            <TestDirectory useLoadContext="true" />
+          </AssemblyResolution>
+        </UnitTestRunConfig>
+        <WebTestRunConfiguration testTypeId="4e7599fa-5ecb-43e9-a887-cd63cf72d207">
+          <Browser name="Internet Explorer 7.0">
+            <Headers>
+              <Header name="User-Agent" value="Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)" />
+              <Header name="Accept" value="*/*" />
+              <Header name="Accept-Language" value="{{$IEAcceptLanguage}}" />
+              <Header name="Accept-Encoding" value="GZIP" />
+            </Headers>
+          </Browser>
+        </WebTestRunConfiguration>
+      </TestTypeSpecific>
+      <AgentRule name="LocalMachineDefaultRole">
+        <DataCollectors>
+          <DataCollector uri="datacollector://microsoft/CodeCoverage/1.0" assemblyQualifiedName="Microsoft.VisualStudio.TestTools.CodeCoverage.CoveragePlugIn, Microsoft.VisualStudio.QualityTools.Plugins.CodeCoverage, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" friendlyName="代码覆盖率">
+            <Configuration>
+              <CodeCoverage xmlns="">
+                <Regular>
+                  <CodeCoverageItem binaryFile="E:\workspace\csharp-sdk\Qiniu\bin\Debug\Qiniu.dll" pdbFile="E:\workspace\csharp-sdk\Qiniu\bin\Debug\Qiniu.instr.pdb" instrumentInPlace="true" />
+                </Regular>
+              </CodeCoverage>
+            </Configuration>
+          </DataCollector>
+        </DataCollectors>
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2013-07-05T13:28:46.3630595+08:00" queuing="2013-07-05T13:28:49.2354223+08:00" start="2013-07-05T13:28:49.3784414+08:00" finish="2013-07-05T13:29:05.8095296+08:00" />
+  <ResultSummary outcome="Failed">
+    <Counters total="20" executed="20" passed="17" error="0" failed="3" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <ResultFiles>
+      <ResultFile path="X60\data.coverage" />
+    </ResultFiles>
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="DeleteTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="89d87e59-4637-15cc-5451-75af7ef1cf89">
+      <Execution id="4610fb9a-c3c6-460c-ab90-d7b08c05abc8" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="DeleteTest" />
+    </UnitTest>
+    <UnitTest name="MakeRequestTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="36d4dd4e-e8d4-19e3-83d2-f3769a16db62">
+      <Execution id="946099a5-9355-4777-b4ee-90f78b674ef9" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.ImageViewTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="MakeRequestTest" />
+    </UnitTest>
+    <UnitTest name="BatchCopyTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="8df4e7f6-62fc-87a4-94d8-0f504d32f6f5">
+      <Execution id="0a9bc227-56ab-4458-a133-814ad2ea4746" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="BatchCopyTest" />
+    </UnitTest>
+    <UnitTest name="MoveTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="7f86b51d-d52d-1e09-8d13-fb53b819d4aa">
+      <Execution id="0e320844-c69a-4cb8-8ae3-5406079af926" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="MoveTest" />
+    </UnitTest>
+    <UnitTest name="MakeRequestTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="07ce0e25-1c71-86cf-0935-27e102f72352">
+      <Execution id="c201d6e2-55ad-4cdd-b17d-966e5e6be247" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.ImageMogrifyTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="MakeRequestTest" />
+    </UnitTest>
+    <UnitTest name="MakeBaseUrlTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="9da208d9-34a3-a1bb-e639-fc34409284a7">
+      <Execution id="c72c48fe-f09e-4679-90b7-40e9955cf643" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.GetPolicyTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="MakeBaseUrlTest" />
+    </UnitTest>
+    <UnitTest name="BatchDeleteTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="52866f6f-065a-e039-996a-11d45c455ce1">
+      <Execution id="978947af-1ecc-4fd5-98e2-648be6da9dd6" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="BatchDeleteTest" />
+    </UnitTest>
+    <UnitTest name="MakeRequestTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="ff0c1a31-fdc3-a011-3901-056b19e75101">
+      <Execution id="5d3a3c83-e782-4b96-a77e-dbfd4ad2491f" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.ExifTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="MakeRequestTest" />
+    </UnitTest>
+    <UnitTest name="MakeRequestTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="5a39ecef-17ad-44d4-9ad1-9c171fb86d24">
+      <Execution id="f7361cda-3e08-4795-8075-d808680a9606" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.ImageWaterMarkerTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="MakeRequestTest" />
+    </UnitTest>
+    <UnitTest name="BatchStatTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="5f2ffc4c-daaf-822e-c639-6acaa9875c06">
+      <Execution id="75569a32-fe9c-481e-9342-002f46077765" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="BatchStatTest" />
+    </UnitTest>
+    <UnitTest name="PutFileTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="f4e8655e-8922-dd7c-46c2-fcae0c10a13c">
+      <Execution id="ce37d080-924c-4afb-9ef0-617716a52412" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.IOClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="PutFileTest" />
+    </UnitTest>
+    <UnitTest name="PutFileTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="0ccd1cd6-2601-f8de-785f-f34bbccb8a09">
+      <Execution id="cd042b0a-e9fc-4c73-ae82-7d7a9bad4f34" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.ResumablePutTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="PutFileTest" />
+    </UnitTest>
+    <UnitTest name="BatchMoveTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="c5f54410-9861-32ac-bc37-6bec423ab303">
+      <Execution id="cb4b9ed6-3ffc-4bdc-9edb-0074d9755170" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="BatchMoveTest" />
+    </UnitTest>
+    <UnitTest name="MakeRequestTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="45eb36e2-81cb-8ad2-e532-b1c8cbcb8fa4">
+      <Execution id="c49cc4ce-2ae3-4c61-a8ff-93e8317512d1" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.TextWaterMarkerTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="MakeRequestTest" />
+    </UnitTest>
+    <UnitTest name="StatTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="19ab029c-98d8-9718-69b3-97bc3ae7b46d">
+      <Execution id="9c847823-7441-422c-860e-81ae7d9f8168" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="StatTest" />
+    </UnitTest>
+    <UnitTest name="NextTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="5ead6bce-4d24-96be-e6a5-116ae8617cfb">
+      <Execution id="21cf3deb-5519-4969-8dda-fb66f9148e7a" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSFClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="NextTest" />
+    </UnitTest>
+    <UnitTest name="MakeRequestTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="8b301e10-8039-2da6-0430-ee607556fed4">
+      <Execution id="6af4d9d2-a508-4f11-82d6-9eeea5866560" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.GetPolicyTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="MakeRequestTest" />
+    </UnitTest>
+    <UnitTest name="CopyTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="90f12d0c-0d96-ed08-0875-0d79f1cadfc6">
+      <Execution id="b0718e50-e8fd-46c6-a59c-c632c8323b53" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="CopyTest" />
+    </UnitTest>
+    <UnitTest name="ListPrefixTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="df26e3e1-50a0-3ebb-1780-3e06dd76a4c2">
+      <Execution id="298fd2ae-c81c-43bb-b3fb-1fe3bea4ccad" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.RSFClientTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="ListPrefixTest" />
+    </UnitTest>
+    <UnitTest name="MakeRequestTest" storage="e:\workspace\csharp-sdk\qiniusdktest\bin\debug\qiniusdktest.dll" id="09ca2b89-e269-060c-9da4-bf777387db61">
+      <Execution id="6353b635-e451-4874-aece-1ee9cc022b7f" />
+      <TestMethod codeBase="E:/workspace/csharp-sdk/QiniuSDKTest/bin/Debug/QiniuSDKTest.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="QiniuSDKTest.ImageInfoTest, QiniuSDKTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="MakeRequestTest" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="列表中未列出的结果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="所有已加载的结果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="07ce0e25-1c71-86cf-0935-27e102f72352" executionId="c201d6e2-55ad-4cdd-b17d-966e5e6be247" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="09ca2b89-e269-060c-9da4-bf777387db61" executionId="6353b635-e451-4874-aece-1ee9cc022b7f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0ccd1cd6-2601-f8de-785f-f34bbccb8a09" executionId="cd042b0a-e9fc-4c73-ae82-7d7a9bad4f34" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="19ab029c-98d8-9718-69b3-97bc3ae7b46d" executionId="9c847823-7441-422c-860e-81ae7d9f8168" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="36d4dd4e-e8d4-19e3-83d2-f3769a16db62" executionId="946099a5-9355-4777-b4ee-90f78b674ef9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="45eb36e2-81cb-8ad2-e532-b1c8cbcb8fa4" executionId="c49cc4ce-2ae3-4c61-a8ff-93e8317512d1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="52866f6f-065a-e039-996a-11d45c455ce1" executionId="978947af-1ecc-4fd5-98e2-648be6da9dd6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5a39ecef-17ad-44d4-9ad1-9c171fb86d24" executionId="f7361cda-3e08-4795-8075-d808680a9606" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5ead6bce-4d24-96be-e6a5-116ae8617cfb" executionId="21cf3deb-5519-4969-8dda-fb66f9148e7a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5f2ffc4c-daaf-822e-c639-6acaa9875c06" executionId="75569a32-fe9c-481e-9342-002f46077765" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7f86b51d-d52d-1e09-8d13-fb53b819d4aa" executionId="0e320844-c69a-4cb8-8ae3-5406079af926" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="89d87e59-4637-15cc-5451-75af7ef1cf89" executionId="4610fb9a-c3c6-460c-ab90-d7b08c05abc8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8b301e10-8039-2da6-0430-ee607556fed4" executionId="6af4d9d2-a508-4f11-82d6-9eeea5866560" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8df4e7f6-62fc-87a4-94d8-0f504d32f6f5" executionId="0a9bc227-56ab-4458-a133-814ad2ea4746" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="90f12d0c-0d96-ed08-0875-0d79f1cadfc6" executionId="b0718e50-e8fd-46c6-a59c-c632c8323b53" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9da208d9-34a3-a1bb-e639-fc34409284a7" executionId="c72c48fe-f09e-4679-90b7-40e9955cf643" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c5f54410-9861-32ac-bc37-6bec423ab303" executionId="cb4b9ed6-3ffc-4bdc-9edb-0074d9755170" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="df26e3e1-50a0-3ebb-1780-3e06dd76a4c2" executionId="298fd2ae-c81c-43bb-b3fb-1fe3bea4ccad" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f4e8655e-8922-dd7c-46c2-fcae0c10a13c" executionId="ce37d080-924c-4afb-9ef0-617716a52412" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ff0c1a31-fdc3-a011-3901-056b19e75101" executionId="5d3a3c83-e782-4b96-a77e-dbfd4ad2491f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="c201d6e2-55ad-4cdd-b17d-966e5e6be247" testId="07ce0e25-1c71-86cf-0935-27e102f72352" testName="MakeRequestTest" computerName="X60" duration="00:00:00.1408220" startTime="2013-07-05T13:28:50.4165743+08:00" endTime="2013-07-05T13:28:50.9186362+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c201d6e2-55ad-4cdd-b17d-966e5e6be247">
+      <Output>
+        <StdOut>http://qiniuphotos.qiniudn.com/gogopher.jpg?imageMogr/auto-orient/thumbnail/!50x50r/gravity/center/crop/!50x50/quality/80/rotate/90</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="6353b635-e451-4874-aece-1ee9cc022b7f" testId="09ca2b89-e269-060c-9da4-bf777387db61" testName="MakeRequestTest" computerName="X60" duration="00:00:00.3551635" startTime="2013-07-05T13:28:50.9276382+08:00" endTime="2013-07-05T13:28:51.2936854+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6353b635-e451-4874-aece-1ee9cc022b7f">
+      <Output>
+        <StdOut>FopClient.Get ==&gt; URL: http://qiniuphotos.qiniudn.com/gogopher.jpg?imageInfo</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="cd042b0a-e9fc-4c73-ae82-7d7a9bad4f34" testId="0ccd1cd6-2601-f8de-785f-f34bbccb8a09" testName="PutFileTest" computerName="X60" duration="00:00:03.4799563" startTime="2013-07-05T13:28:51.3006862+08:00" endTime="2013-07-05T13:28:54.7881287+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cd042b0a-e9fc-4c73-ae82-7d7a9bad4f34">
+      <Output>
+        <StdOut>Client.PostWithBinary ==&gt; URL: http://up.qiniu.com/mkblk/781800 Length:262144
+Client.PostWithBinary ==&gt; URL: http://up.qiniu.com/bput/CzUpHmyjbNSdrYqDKHlaoLtHQw6xkf7wG-cKt7o4IBgAb8_oIa6rGWsJdH3jE4-JH3v-sgZgNog0KRjqEX5OoO2AmykPBGLHmAmdXSLvWpTUftBH63NIu3AHAPyEbCxfZyo4PLOqyKFvfZe9DMATrcyvkK2CAAAAAAAABAAAAAAAqAMAAOLZv1Ho7QsAAAAEAAMAAAAGAP____8=/262144 Length:262144
+Client.PostWithBinary ==&gt; URL: http://up.qiniu.com/bput/L-84XEhuvLg_-pQr8RuUfY7NZ3BngQv99R6XcBsCpUoATmB1kKg6zaKjHXRKmCMmQqC0nxWjMpXTqN-N2-0N4Q_3u91iph2P3b9tcX7uZlNFWEtnGkIJz-WiRX3tekJEe7jmYaW8NAkxvPxddatbQKdXrZUVAAAAAAAACAAAAAAAqAMAAOLZv1Ho7QsAAAAIAAMAAAAGAP____8=/524288 Length:257512
+100%
+0
+781800
+781800
+Client.PostWithBinary ==&gt; URL: http://up.qiniu.com/rs-mkfile/aWNhdHRsZWNvZGVyLXByaXZhdGU6MDBlNmMzOGUtODZjNC00NWIwLTg1MTctZjIxY2RmZWRkODYz/fsize/781800/ Length:208
+100%</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="9c847823-7441-422c-860e-81ae7d9f8168" testId="19ab029c-98d8-9718-69b3-97bc3ae7b46d" testName="StatTest" computerName="X60" duration="00:00:00.0792106" startTime="2013-07-05T13:28:54.8141306+08:00" endTime="2013-07-05T13:28:54.9001419+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9c847823-7441-422c-860e-81ae7d9f8168">
+      <Output>
+        <StdOut>Client.Post ==&gt; URL: http://rs.Qbox.me/stat/aWNhdHRsZWNvZGVyLXByaXZhdGU6Z29nb3BoZXIuanBn
+Client.Post ==&gt; URL: http://rs.Qbox.me/stat/bm90ZXhzaXQ6ZXJyb3JrZXk=
+System.Net.WebException: 远程服务器返回错误: (631) status code 631。
+   在 System.Net.HttpWebRequest.GetResponse()
+   在 Qiniu.RPC.Client.Call(String url) 位置 E:\workspace\test\Qiniu\RPC\Client.cs:行号 31</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="946099a5-9355-4777-b4ee-90f78b674ef9" testId="36d4dd4e-e8d4-19e3-83d2-f3769a16db62" testName="MakeRequestTest" computerName="X60" duration="00:00:00.0641010" startTime="2013-07-05T13:28:54.9061449+08:00" endTime="2013-07-05T13:28:54.9871541+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="946099a5-9355-4777-b4ee-90f78b674ef9">
+    </UnitTestResult>
+    <UnitTestResult executionId="c49cc4ce-2ae3-4c61-a8ff-93e8317512d1" testId="45eb36e2-81cb-8ad2-e532-b1c8cbcb8fa4" testName="MakeRequestTest" computerName="X60" duration="00:00:00.1992090" startTime="2013-07-05T13:28:55.0011551+08:00" endTime="2013-07-05T13:28:55.2111837+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c49cc4ce-2ae3-4c61-a8ff-93e8317512d1">
+      <Output>
+        <StdOut>http://qiniuphotos.qiniudn.com/gogopher.jpg?watermark/2/text/UWluaXU=/fontsize/2000/fill/IzEyM2FiYw==/dissolve/50/gravity/South/dx/0/dy/0&amp;e=1373034535&amp;token=gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp:fGk1zWOcHkkkRrFUhxGjqHJRFiE=</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="978947af-1ecc-4fd5-98e2-648be6da9dd6" testId="52866f6f-065a-e039-996a-11d45c455ce1" testName="BatchDeleteTest" computerName="X60" duration="00:00:00.0564972" startTime="2013-07-05T13:28:55.2421871+08:00" endTime="2013-07-05T13:28:55.3381982+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="978947af-1ecc-4fd5-98e2-648be6da9dd6">
+      <Output>
+        <StdOut>Client.PostWithBinary ==&gt; URL: http://rs.Qbox.me/batch Length:79</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f7361cda-3e08-4795-8075-d808680a9606" testId="5a39ecef-17ad-44d4-9ad1-9c171fb86d24" testName="MakeRequestTest" computerName="X60" duration="00:00:00.6203786" startTime="2013-07-05T13:28:55.3532013+08:00" endTime="2013-07-05T13:28:56.0072843+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f7361cda-3e08-4795-8075-d808680a9606">
+      <Output>
+        <StdOut>http://qiniuphotos.qiniudn.com/gogopher.jpg?watermark/1/image/aHR0cDovL3d3dy5iMS5xaW5pdWRuLmNvbS9pbWFnZXMvbG9nby0yLnBuZw==/dissolve/50/gravity/Center/dx/10/dy/10&amp;e=1373034535&amp;token=gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp:aEs0LQgCsAxpvj2eJRikxYdJ0F8=</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="21cf3deb-5519-4969-8dda-fb66f9148e7a" testId="5ead6bce-4d24-96be-e6a5-116ae8617cfb" testName="NextTest" computerName="X60" duration="00:00:03.1983029" startTime="2013-07-05T13:28:56.1883071+08:00" endTime="2013-07-05T13:28:59.4387199+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="21cf3deb-5519-4969-8dda-fb66f9148e7a">
+      <Output>
+        <StdOut>Client.Post ==&gt; URL: http://rsf.Qbox.me/list?bucket=icattlecoder-private&amp;limit=100</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="75569a32-fe9c-481e-9342-002f46077765" testId="5f2ffc4c-daaf-822e-c639-6acaa9875c06" testName="BatchStatTest" computerName="X60" duration="00:00:00.0964668" startTime="2013-07-05T13:28:59.4447204+08:00" endTime="2013-07-05T13:28:59.5497347+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="75569a32-fe9c-481e-9342-002f46077765">
+      <Output>
+        <StdOut>Client.PostWithBinary ==&gt; URL: http://rs.Qbox.me/batch Length:75</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0e320844-c69a-4cb8-8ae3-5406079af926" testId="7f86b51d-d52d-1e09-8d13-fb53b819d4aa" testName="MoveTest" computerName="X60" duration="00:00:00.0706435" startTime="2013-07-05T13:28:59.5607348+08:00" endTime="2013-07-05T13:28:59.6457458+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0e320844-c69a-4cb8-8ae3-5406079af926">
+      <Output>
+        <StdOut>Client.Post ==&gt; URL: http://rs.Qbox.me/move/aWNhdHRsZWNvZGVyLXByaXZhdGU6Z29nb3BoZXIuanBn/aWNhdHRsZWNvZGVyLXByaXZhdGU6MjNlNDRkMzAtMGVjYy00YjczLWE2M2QtYTI2OTkwMjEzNjIw
+System.Net.WebException: 远程服务器返回错误: (612) status code 612。
+   在 System.Net.HttpWebRequest.GetResponse()
+   在 Qiniu.RPC.Client.Call(String url) 位置 E:\workspace\test\Qiniu\RPC\Client.cs:行号 31</StdOut>
+        <ErrorInfo>
+          <Message>Assert.IsTrue 失败。MoveTest Failure</Message>
+          <StackTrace>   在 QiniuSDKTest.RSClientTest.MoveTest() 位置 E:\workspace\test\QiniuSDKTest\RSClientTest.cs:行号 99
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="4610fb9a-c3c6-460c-ab90-d7b08c05abc8" testId="89d87e59-4637-15cc-5451-75af7ef1cf89" testName="DeleteTest" computerName="X60" duration="00:00:00.0245495" startTime="2013-07-05T13:28:59.6517475+08:00" endTime="2013-07-05T13:28:59.6897517+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4610fb9a-c3c6-460c-ab90-d7b08c05abc8">
+      <Output>
+        <StdOut>Client.Post ==&gt; URL: http://rs.Qbox.me/delete/aWNhdHRsZWNvZGVyLXByaXZhdGU6Z29nb3BoZXIuanBn
+System.Net.WebException: 远程服务器返回错误: (612) status code 612。
+   在 System.Net.HttpWebRequest.GetResponse()
+   在 Qiniu.RPC.Client.Call(String url) 位置 E:\workspace\test\Qiniu\RPC\Client.cs:行号 31</StdOut>
+        <ErrorInfo>
+          <Message>Assert.IsTrue 失败。DeleteTest Failure</Message>
+          <StackTrace>   在 QiniuSDKTest.RSClientTest.DeleteTest() 位置 E:\workspace\test\QiniuSDKTest\RSClientTest.cs:行号 112
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="6af4d9d2-a508-4f11-82d6-9eeea5866560" testId="8b301e10-8039-2da6-0430-ee607556fed4" testName="MakeRequestTest" computerName="X60" duration="00:00:00.0765633" startTime="2013-07-05T13:28:59.6947520+08:00" endTime="2013-07-05T13:28:59.7987654+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6af4d9d2-a508-4f11-82d6-9eeea5866560">
+      <Output>
+        <StdOut>http://qiniuphotos.qiniudn.com/gogopher.jpg?e=1373034539&amp;token=gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp:YH6T3aHoCHOzlYXHh0X1BlMc0-A=</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0a9bc227-56ab-4458-a133-814ad2ea4746" testId="8df4e7f6-62fc-87a4-94d8-0f504d32f6f5" testName="BatchCopyTest" computerName="X60" duration="00:00:00.0405585" startTime="2013-07-05T13:28:59.8067701+08:00" endTime="2013-07-05T13:28:59.8587741+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0a9bc227-56ab-4458-a133-814ad2ea4746">
+      <Output>
+        <StdOut>Client.PostWithBinary ==&gt; URL: http://rs.Qbox.me/batch Length:293</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="b0718e50-e8fd-46c6-a59c-c632c8323b53" testId="90f12d0c-0d96-ed08-0875-0d79f1cadfc6" testName="CopyTest" computerName="X60" duration="00:00:00.0412582" startTime="2013-07-05T13:28:59.8647752+08:00" endTime="2013-07-05T13:28:59.9397833+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b0718e50-e8fd-46c6-a59c-c632c8323b53">
+      <Output>
+        <StdOut>Client.Post ==&gt; URL: http://rs.Qbox.me/copy/aWNhdHRsZWNvZGVyLXByaXZhdGU6Z29nb3BoZXIuanBn/aWNhdHRsZWNvZGVyLXByaXZhdGU6YTYyMjM3YjYtNzE1OS00M2FmLThmNmItZTFmMTdhMWUyNjgw
+System.Net.WebException: 远程服务器返回错误: (612) status code 612。
+   在 System.Net.HttpWebRequest.GetResponse()
+   在 Qiniu.RPC.Client.Call(String url) 位置 E:\workspace\test\Qiniu\RPC\Client.cs:行号 31</StdOut>
+        <ErrorInfo>
+          <Message>Assert.IsTrue 失败。CopyTest Failure</Message>
+          <StackTrace>   在 QiniuSDKTest.RSClientTest.CopyTest() 位置 E:\workspace\test\QiniuSDKTest\RSClientTest.cs:行号 125
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c72c48fe-f09e-4679-90b7-40e9955cf643" testId="9da208d9-34a3-a1bb-e639-fc34409284a7" testName="MakeBaseUrlTest" computerName="X60" duration="00:00:00.4654429" startTime="2013-07-05T13:28:59.9537843+08:00" endTime="2013-07-05T13:29:00.4348475+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c72c48fe-f09e-4679-90b7-40e9955cf643">
+      <Output>
+        <StdOut>http://icattlecoder-private.qiniudn.com/gogopher.jpg</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="cb4b9ed6-3ffc-4bdc-9edb-0074d9755170" testId="c5f54410-9861-32ac-bc37-6bec423ab303" testName="BatchMoveTest" computerName="X60" duration="00:00:00.0442633" startTime="2013-07-05T13:29:00.5058550+08:00" endTime="2013-07-05T13:29:00.6278700+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cb4b9ed6-3ffc-4bdc-9edb-0074d9755170">
+      <Output>
+        <StdOut>Client.PostWithBinary ==&gt; URL: http://rs.Qbox.me/batch Length:261</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="298fd2ae-c81c-43bb-b3fb-1fe3bea4ccad" testId="df26e3e1-50a0-3ebb-1780-3e06dd76a4c2" testName="ListPrefixTest" computerName="X60" duration="00:00:02.1003153" startTime="2013-07-05T13:29:00.6598755+08:00" endTime="2013-07-05T13:29:02.7741443+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="298fd2ae-c81c-43bb-b3fb-1fe3bea4ccad">
+      <Output>
+        <StdOut>Client.Post ==&gt; URL: http://rsf.Qbox.me/list?bucket=icattlecoder-private&amp;limit=1000
+Key:00e6c38e-86c4-45b0-8517-f21cdfedd863,Hash:FqrqmcdtgATOCy4iAoUaQe8RT6S4,Mime:application/octet-stream,PutTime:13730021341132682,EndUser:
+Key:c93c7a02-4acc-49c4-a701-077e0d8cafa9,Hash:FqrqmcdtgATOCy4iAoUaQe8RT6S4,Mime:application/octet-stream,PutTime:13730017682558482,EndUser:
+2</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="ce37d080-924c-4afb-9ef0-617716a52412" testId="f4e8655e-8922-dd7c-46c2-fcae0c10a13c" testName="PutFileTest" computerName="X60" duration="00:00:01.3098591" startTime="2013-07-05T13:29:02.7811445+08:00" endTime="2013-07-05T13:29:04.1003130+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ce37d080-924c-4afb-9ef0-617716a52412">
+      <Output>
+        <StdOut>gogopher.jpg
+URL: http://up.qiniu.com</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="5d3a3c83-e782-4b96-a77e-dbfd4ad2491f" testId="ff0c1a31-fdc3-a011-3901-056b19e75101" testName="MakeRequestTest" computerName="X60" duration="00:00:00.0148300" startTime="2013-07-05T13:29:04.1053126+08:00" endTime="2013-07-05T13:29:04.1273165+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5d3a3c83-e782-4b96-a77e-dbfd4ad2491f">
+      <Output>
+        <StdOut>FopClient.Get ==&gt; URL: http://qiniuphotos.qiniudn.com/gogopher.jpg?exif
+True
+{"ApertureValue":{"val":"5.00 EV (f/5.7)","type":5},"ColorSpace":{"val":"sRGB","type":3},"ComponentsConfiguration":{"val":"- - - -","type":7},"CustomRendered":{"val":"正常过程","type":3},"DateTime":{"val":"2011:11:19 17:09:23","type":2},"DateTimeDigitized":{"val":"2011:11:19 17:09:23","type":2},"DateTimeOriginal":{"val":"2011:11:19 17:09:23","type":2},"ExifVersion":{"val":"未知的Exif版本","type":7},"ExposureBiasValue":{"val":"0.33 EV","type":10},"ExposureMode":{"val":"自动曝光","type":3},"ExposureProgram":{"val":"光圈优先","type":3},"ExposureTime":{"val":"1/50 sec.","type":5},"FNumber":{"val":"f/5.6","type":5},"Flash":{"val":"Flash did not fire, compulsory flash mode","type":3},"FlashPixVersion":{"val":"FlashPix版本 1.0","type":7},"FocalLength":{"val":"45.0 mm","type":5},"FocalPlaneResolutionUnit":{"val":"英寸","type":3},"FocalPlaneXResolution":{"val":"5728.18","type":5},"FocalPlaneYResolution":{"val":"5808.40","type":5},"ISOSpeedRatings":{"val":"3200","type":3},"Make":{"val":"Canon","type":2},"MaxApertureValue":{"val":"5.19 EV (f/6.0)","type":5},"MeteringMode":{"val":"样式","type":3},"Model":{"val":"Canon EOS 600D","type":2},"Orientation":{"val":"Top-left","type":3},"PixelXDimension":{"val":"640","type":4},"PixelYDimension":{"val":"427","type":4},"ResolutionUnit":{"val":"英寸","type":3},"SceneCaptureType":{"val":"标准","type":3},"ShutterSpeedValue":{"val":"5.62 EV (1/49 sec.)","type":10},"SubSecTimeDigitized":{"val":"11","type":2},"SubSecTimeOriginal":{"val":"11","type":2},"SubsecTime":{"val":"11","type":2},"WhiteBalance":{"val":"自动白平衡","type":3},"XResolution":{"val":"72","type":5},"YResolution":{"val":"72","type":5}}
+OK</StdOut>
+      </Output>
+    </UnitTestResult>
+  </Results>
+</TestRun>
