@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Runtime.Serialization;
-using System.Text;
-using System.IO;
-using System.Collections.Generic;
-using System.Web.Script.Serialization;
-using System.Security.Cryptography;
-using Qiniu.Util;
-using Qiniu.Conf;
-using Qiniu.Auth;
-using Qiniu.Auth.digest;
 using Newtonsoft.Json;
+using Qiniu.Auth.digest;
+using Qiniu.Conf;
+using Qiniu.Util;
 
 namespace Qiniu.RS
 {

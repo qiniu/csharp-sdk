@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Qiniu.Conf;
-using Qiniu.Util;
-using Qiniu.RPC;
-using Qiniu.Auth;
-using Qiniu.RS;
 using System.Threading.Tasks;
+using Qiniu.Auth;
+using Qiniu.Conf;
+using Qiniu.RPC;
+using Qiniu.RS;
+using Qiniu.Util;
 
 namespace Qiniu.IO.Resumable
 {

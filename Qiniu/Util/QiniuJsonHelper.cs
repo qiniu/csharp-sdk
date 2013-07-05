@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Qiniu.Util
 {
@@ -14,10 +10,6 @@ namespace Qiniu.Util
              setting.NullValueHandling = NullValueHandling.Ignore;
              return JsonConvert.SerializeObject(obj, setting);
          }
-         //public static object JsonDecode<T>(string text)
-         //{
-         //    JsonConvert.DeserializeObject<T>(text);
-         //}
          public static T ToObject<T>(this string value)
          {
              return JsonConvert.DeserializeObject<T>(value);

@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using Qiniu.Conf;
-using Qiniu.Auth;
 using Qiniu.RPC;
-using Qiniu.Util;
-using Qiniu.IO.Resumable;
 
 namespace Qiniu.IO
 {

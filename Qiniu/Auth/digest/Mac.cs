@@ -1,8 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
 using Qiniu.Conf;
 using Qiniu.Util;
@@ -56,7 +53,6 @@ namespace Qiniu.Auth.digest
         /// <returns></returns>
         public string Sign(byte[] b)
         {
-            string data = Base64URLSafe.Encode(b);
             return string.Format("{0}:{1}", this.accessKey, _sign(b));
         }
         /// <summary>

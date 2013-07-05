@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Qiniu.RPC;
-using Qiniu.Conf;
-using Qiniu.Auth;
 using Newtonsoft.Json;
+using Qiniu.Auth;
+using Qiniu.Conf;
+using Qiniu.RPC;
 namespace Qiniu.RSF
 {
     /// <summary>

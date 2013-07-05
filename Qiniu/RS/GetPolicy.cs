@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Qiniu.Conf;
 using Qiniu.Auth.digest;
+using Qiniu.Conf;
 namespace Qiniu.RS
 {
     /// <summary>

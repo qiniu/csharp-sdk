@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using Qiniu.RPC;
-using Newtonsoft.Json;
 namespace Qiniu.RS
 {
 

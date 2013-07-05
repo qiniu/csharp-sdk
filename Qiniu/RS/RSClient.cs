@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 using System.Text;
-using Qiniu.Util;
-using Qiniu.RPC;
+using Newtonsoft.Json;
 using Qiniu.Auth;
 using Qiniu.Auth.digest;
 using Qiniu.Conf;
+using Qiniu.RPC;
+using Qiniu.Util;
 
 namespace Qiniu.RS
 {

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Net;
 using System.IO;
-using Qiniu.Util;
-using Qiniu.Auth.digest;
+using System.Net;
 namespace Qiniu.RPC
 {
     public class Client
