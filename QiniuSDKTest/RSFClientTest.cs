@@ -79,12 +79,19 @@ namespace QiniuSDKTest
         public void NextTest()
         {
             RSFClient target = new RSFClient(Bucket); // TODO: 初始化为适当的值
+            target.Init();
             target.Marker = string.Empty;
             target.Prefix = string.Empty;
-            target.Limit = 100;
+            target.Limit = 1000;
             List<DumpItem> actual;
+            int count = 0;  
             actual = target.Next();
-            Assert.IsTrue(actual.Count > 0, "ListPrefixTest Failure");
+            while (actual != null)
+            {
+                count += actual.Count;
+                actual = target.Next();
+            }
+            Assert.IsTrue(count == 2, "ListPrefixTest Failure");
         }
 
         /// <summary>

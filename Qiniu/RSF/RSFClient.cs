@@ -10,8 +10,7 @@ namespace Qiniu.RSF
     /// RS Fetch 
     /// </summary>
     public class RSFClient : QiniuAuthClient
-    {
-        
+    {        
         private const int MAX_LIMIT = 1000;
         //失败重试次数
         private const int RETRY_TIME = 3;
@@ -124,7 +123,7 @@ namespace Qiniu.RSF
                 }
                 else
                 {
-                    Console.WriteLine("listPrefix fail ===> {0}", ret.Exception.Message);
+                    throw new Exception(string.Format("listPrefix fail ===> {0}", ret.Exception.Message));
                 }
             }
             return null;
@@ -161,15 +160,22 @@ namespace Qiniu.RSF
             {
                 return null;
             }
-            DumpRet ret = ListPrefix(this.bucketName, this.prefix, this.marker, this.limit);
-            if (ret.Items.Count == 0)
+            try
             {
-                end = true;
-                return null;
+                DumpRet ret = ListPrefix(this.bucketName, this.prefix, this.marker, this.limit);
+                if (ret.Items.Count == 0)
+                {
+                    end = true;
+                    return null;
+                }
+                this.marker = ret.Marker;
+                if (this.marker == null)
+                    end = true;
+                return ret.Items;
             }
-            this.marker = ret.Marker;
-            end = ret.Items.Count < this.limit;
-            return ret.Items;
+            catch(Exception e) {
+                throw e;
+            }
         }
     }
 }
