@@ -74,12 +74,12 @@ namespace QiniuSDKTest
         {
             RSClient target = new RSClient(); 
             //YES
-            Scope scope = new Scope(Bucket, LocalKey); 
+            EntryPath scope = new EntryPath(Bucket, LocalKey); 
             Entry actual;
             actual = target.Stat(scope);
             Assert.IsTrue(!string.IsNullOrEmpty(actual.Hash), "StatTest Failure");
             //NO
-            scope = new Scope("notexsit", "errorkey");
+            scope = new EntryPath("notexsit", "errorkey");
             actual = target.Stat(scope);
             Assert.IsTrue(string.IsNullOrEmpty(actual.Hash), "StatTest Faliure");
 
@@ -106,7 +106,7 @@ namespace QiniuSDKTest
         public void DeleteTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            Scope scope = new Scope(Bucket,LocalKey); // TODO: 初始化为适当的值       
+            EntryPath scope = new EntryPath(Bucket,LocalKey); // TODO: 初始化为适当的值       
             CallRet actual;
             actual = target.Delete(scope);
             Assert.IsTrue(actual.OK, "DeleteTest Failure");            
@@ -132,9 +132,9 @@ namespace QiniuSDKTest
         public void BatchStatTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            Scope[] keys = new Scope[2]; // TODO: 初始化为适当的值
-            keys[0] = new Scope(Bucket, LocalKey);
-            keys[1] = new Scope("xxx", "xxx");//error params
+            EntryPath[] keys = new EntryPath[2]; // TODO: 初始化为适当的值
+            keys[0] = new EntryPath(Bucket, LocalKey);
+            keys[1] = new EntryPath("xxx", "xxx");//error params
             List<BatchRetItem> actual;
             actual = target.BatchStat(keys);
             Assert.IsTrue(actual.Count > 0, "BatchStatTest Failure");
@@ -164,9 +164,9 @@ namespace QiniuSDKTest
         public void BatchDeleteTest()
         {
             RSClient target = new RSClient(); // TODO: 初始化为适当的值
-            Scope[] keys = new Scope[2]; // TODO: 初始化为适当的值
-            keys[0] = new Scope(Bucket, LocalKey);
-            keys[1] = new Scope("xxx", "xxx");//error params
+            EntryPath[] keys = new EntryPath[2]; // TODO: 初始化为适当的值
+            keys[0] = new EntryPath(Bucket, LocalKey);
+            keys[1] = new EntryPath("xxx", "xxx");//error params
             CallRet actual;
             actual = target.BatchDelete(keys);            
             Assert.IsTrue(actual.OK, "BatchStatTest Failure"); ;

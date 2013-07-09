@@ -3,7 +3,7 @@
     /// <summary>
     /// bucket+   ":"+ key
     /// </summary>
-    public class Scope
+    public class EntryPath
     {
         private string bucket;
         /// <summary>
@@ -31,7 +31,7 @@
         public string Base64EncodedURI { get { return Qiniu.Util.Base64URLSafe.Encode(this.uri); } }
     
 
-        public Scope(string bucket, string key)
+        public EntryPath(string bucket, string key)
         {
             this.bucket = bucket;
             this.key = key;
@@ -44,12 +44,12 @@
     /// </summary>
     public class EntryPathPair
     {
-        Scope src;
-        Scope dest;
+        EntryPath src;
+        EntryPath dest;
         private void _entryPathPair(string bucketSrc, string keySrc, string bucketDest, string keyDest)
         {
-            this.src = new Scope(bucketSrc, keySrc);
-            this.dest = new Scope(bucketDest, keyDest);
+            this.src = new EntryPath(bucketSrc, keySrc);
+            this.dest = new EntryPath(bucketDest, keyDest);
         }
         /// <summary>
         /// 二元操作路径构造函数

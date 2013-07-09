@@ -224,7 +224,7 @@ namespace Qiniu.IO.Resumable
         
         private CallRet Mkfile(Client client, string key, long fsize)
         {
-            Scope entry = new Scope(extra.Bucket, key);
+            EntryPath entry = new EntryPath(extra.Bucket, key);
             string url = string.Format("{0}/rs-mkfile/{1}/fsize/{2}/", Config.UP_HOST, entry.Base64EncodedURI, fsize);
             if (!string.IsNullOrEmpty(extra.MimeType))
             {

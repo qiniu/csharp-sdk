@@ -50,7 +50,7 @@ namespace Qiniu.RS
         /// <param name="op"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private CallRet op(string op, Scope scope)
+        private CallRet op(string op, EntryPath scope)
         {
             string url = string.Format("{0}/{1}/{2}",
                 Config.RS_HOST,
@@ -78,7 +78,7 @@ namespace Qiniu.RS
         /// </summary>
         /// <param name="scope"></param>
         /// <returns>文件的基本信息，见<see cref="Entry">Entry</see></returns>
-        public Entry Stat(Scope scope)
+        public Entry Stat(EntryPath scope)
         {
             CallRet callRet = op(FileHandle.STAT, scope);
             return new Entry(callRet);
@@ -89,7 +89,7 @@ namespace Qiniu.RS
         /// <param name="bucket">七牛云存储空间名称</param>
         /// <param name="key">需要删除的文件key</param>
         /// <returns></returns>
-        public CallRet Delete(Scope scope)
+        public CallRet Delete(EntryPath scope)
         {
             CallRet callRet = op(FileHandle.DELETE, scope);
             return new Entry(callRet);
@@ -124,7 +124,7 @@ namespace Qiniu.RS
         /// <param name="opName">操作名</param>
         /// <param name="keys">操作对象keys</param>
         /// <returns>Request Body</returns>
-        private string getBatchOp_1(string opName, Scope[] keys)
+        private string getBatchOp_1(string opName, EntryPath[] keys)
         {
             if (keys.Length < 1)
                 return string.Empty;
@@ -186,7 +186,7 @@ namespace Qiniu.RS
         /// </summary>
         /// <param name="keys">文件bucket+key,see<see cref="Scope"/></param>
         /// <returns></returns>
-        public List<BatchRetItem> BatchStat(Scope[] keys)
+        public List<BatchRetItem> BatchStat(EntryPath[] keys)
         {
             string requestBody = getBatchOp_1(FileHandle.STAT, keys);
             CallRet ret = batch(requestBody);
@@ -221,7 +221,7 @@ namespace Qiniu.RS
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public CallRet BatchDelete(Scope[] keys)
+        public CallRet BatchDelete(EntryPath[] keys)
         {
             string requestBody = getBatchOp_1(FileHandle.DELETE, keys);
             return batch(requestBody);
