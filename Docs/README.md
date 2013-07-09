@@ -86,9 +86,9 @@ qiniu.conf.SECRET_KEY = "<YOUR_APP_SECRET_KEY>"
 ```c#
 // 摘要:
 //    对bucket、key进行封装
-public class Scope
+public class EntryPath
 {
-	public Scope(string bucket, string key);
+	public EntryPath(string bucket, string key);
 
 	public string Base64EncodedURI { get; }
 	//
@@ -158,7 +158,7 @@ using Qiniu.RS
 public static void Stat(string bucket, string key)
 {	
     RSClient client = new RSClient();
-    Entry entry = client.Stat(new Scope(bucket, key));
+    Entry entry = client.Stat(new EntryPath(bucket, key));
     if (entry.OK)
     {
 		Console.WriteLine("Hash: " + entry.Hash);
@@ -245,7 +245,7 @@ public static void Delete(string bucket, string key)
 {
     Console.WriteLine("\n===> Delete {0}:{1}", bucket, key);
     RSClient client = new RSClient();
-    CallRet ret = client.Delete(new Scope(bucket, key));
+    CallRet ret = client.Delete(new EntryPath(bucket, key));
     if (ret.OK)
     {
 		Console.WriteLine("Delete OK");
@@ -268,13 +268,13 @@ public static void Delete(string bucket, string key)
 public static void BatchStat(string bucket, string[] keys)
 {
 	RSClient client = new RSClient();
-	List<Scope> scopes= new List<Scope>();
+	List<EntryPath> EntryPaths= new List<EntryPath>();
 	foreach(string key in keys)
 	{
 		Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
-		scopes.Add(new Scope(bucket,key));
+		EntryPaths.Add(new EntryPath(bucket,key));
 	}
-	client.BatchStat(scopes.ToArray()); 
+	client.BatchStat(EntryPaths.ToArray()); 
 }
 ```
 
@@ -322,13 +322,13 @@ public static void BatchMove(string bucket, string[] keys)
 public static void BatchDelete(string bucket, string[] keys)
 {
 	RSClient client = new RSClient();
-	List<Scope> scopes = new List<Scope>();
+	List<EntryPath> EntryPaths = new List<EntryPath>();
 	foreach (string key in keys)
 	{
 		Console.WriteLine("\n===> Stat {0}:{1}", bucket, key);
-		scopes.Add(new Scope(bucket, key));
+		EntryPaths.Add(new EntryPath(bucket, key));
 	}
-	client.BatchDelete(scopes.ToArray());
+	client.BatchDelete(EntryPaths.ToArray());
 }
 ```
 <a name=rsf-api></a>

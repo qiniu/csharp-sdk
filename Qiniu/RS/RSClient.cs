@@ -38,8 +38,6 @@ namespace Qiniu.RS
     /// </summary>
     public class RSClient :QiniuAuthClient
     {
-
-
         public RSClient(Mac mac=null)
             : base(mac)
         {
