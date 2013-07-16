@@ -1,5 +1,6 @@
-Qiniu Resource Storage SDK for CSharp
-===
+---
+title: CSharp SDK | 七牛云存储
+---
 
 此 Charp SDK 适用于.net framework>4.0版本，基于 [七牛云存储官方API](http://docs.qiniu.com/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 >
@@ -145,6 +146,7 @@ public class EntryPathPair
 
 <a name=rs-stat></a>
 ### 3.1 查看单个文件属性信息
+
 ```c#
 
 //example
@@ -176,6 +178,7 @@ public static void Stat(string bucket, string key)
 
 <a name=rs-copy></a>
 ### 3.2 复制单个文件
+
 ```c#
 //example
 
@@ -203,6 +206,7 @@ public static void Copy(string bucketSrc, string keySrc, string bucketDest, stri
 
 <a name=rs-move></a>
 ### 3.3 移动单个文件
+
 ```c#
 //example
 
@@ -233,6 +237,7 @@ public static void Move(string bucketSrc, string keySrc, string bucketDest, stri
 
 <a name=rs-delete></a>
 ### 3.4 删除单个文件
+
 ```C#
 //example
 
@@ -262,6 +267,7 @@ public static void Delete(string bucket, string key)
 当您需要一次性进行多个操作时, 可以使用批量操作.
 <a name=batch-stat></a>
 #### 3.5.1 批量获取文件属性信息
+
 ```C#
 //example
 
@@ -280,6 +286,7 @@ public static void BatchStat(string bucket, string[] keys)
 
 <a name=batch-copy></a>
 #### 3.5.2 批量复制文件
+
 ```C#
 //example
 
@@ -298,6 +305,7 @@ public static void BatchCopy(string bucket, string[] keys)
 
 <a name=batch-move></a>
 #### 3.5.3 批量移动文件
+
 ```c#
 //example
 
@@ -316,6 +324,7 @@ public static void BatchMove(string bucket, string[] keys)
 
 <a name=batch-delete></a>
 #### 3.5.4 批量删除文件
+
 ```c#
 //example
 
@@ -331,6 +340,7 @@ public static void BatchDelete(string bucket, string[] keys)
 	client.BatchDelete(EntryPaths.ToArray());
 }
 ```
+
 <a name=rsf-api></a>
 ##4. 资源列表
 资源列表接口允许用户列出空间下的所有文件信息。使用资源列表接口如果引入Qiniu.RSF命名空间。
@@ -342,7 +352,9 @@ using Qiniu.RSF;
 	RSFClient client = new RSFClient();
 	client.listPrifix("<bucketName>", "<prefix>", "<marker>", 500);
 ```
+
 或者,
+
 ```c#
 public static void List (string bucket)
 {
@@ -356,6 +368,7 @@ public static void List (string bucket)
 	}
 }
 ```
+
 <a name=get-and-put-api></a>
 ## 5. 上传下载接口
 
@@ -364,6 +377,7 @@ public static void List (string bucket)
 <a name=make-uptoken></a>
 #### 5.1.1 上传授权uptoken
 uptoken是一个字符串，作为http协议Header的一部分（Authorization字段）发送到我们七牛的服务端，表示这个http请求是经过认证的。
+
 ```c#
 
 PutPolicy put = new PutPolicy(bucketName);
@@ -373,7 +387,7 @@ put.Token();
     
 <a name=upload></a>
 ### 5.2 文件上传
-**注意**：如果您只是想要上传已存在您电脑本地或者是服务器上的文件到七牛云存储，可以直接使用七牛提供的 [qrsync](/v3/tools/qrsync/) 上传工具。
+**注意**：如果您只是想要上传已存在您电脑本地或者是服务器上的文件到七牛云存储，可以直接使用七牛提供的 [qrsync](/tools/qrsync.html/) 上传工具。
 文件上传有两种方式，一种是以普通方式直传文件，简称普通上传，另一种方式是断点续上传，断点续上传在网络条件很一般的情况下也能有出色的上传速度，而且对大文件的传输非常友好。
 
 <a name=io-upload></a>
@@ -409,6 +423,7 @@ public static void PutFile(string bucket, string key, string fname)
 	client.PutFile(upToken, key, fname, extra);	
 }
 ```
+
 为防止在上传较大文件时发生GUI界面出现假死现像，c# SDK的内部被设计为异步上传模式，您可以通过注册client的PutFinished事件获取上传结果。该事件无论上传是否会成功，都会被触发。
 
 
@@ -417,6 +432,7 @@ public static void PutFile(string bucket, string key, string fname)
 ### 5.2.2 断点续上传
 
 上传本地文件
+
 ```c#
 
 public static void ResumablePutFile(string bucket, string key, string fname)
@@ -445,6 +461,7 @@ public static void ResumablePutFile(string bucket, string key, string fname)
 	client.PutFile(upToken, fname, Guid.NewGuid().ToString());
 }
 ```
+
 ResumablePut采用分快上传，各快之间采用并行上传,通过注册事件Progress可以获取当前文件上传进度，同时您也可以通过注册ResumablePutExtra以下两个事件监听当前上传进度以及成功情况：
 
 ```c#
@@ -491,13 +508,16 @@ public static void MakeGetToken(string domain, string key)
 <a name=fop-api></a>
 ## 6. 数据处理接口
 七牛支持在云端对图像, 视频, 音频等富媒体进行个性化处理。使用数据处理接口需要引入Qiniu.FileOp命名空间。
+
 ```c#
 using Qiniu.FileOp;
 ```
+
 <a name=fop-image></a>
 ### 6.1 图像
 <a name=fop-image-info></a>
 ### 6.1.1 查看图像属性
+
 ```c#
 
 	string domain = "domain";
@@ -526,6 +546,7 @@ using Qiniu.FileOp;
 
 <a name=fop-exif></a>
 ### 6.1.2 查看图片EXIF信息
+
 ```C#
 
 	string exifURL = Exif.MakeRequest(url);
@@ -546,6 +567,7 @@ using Qiniu.FileOp;
 
 <a name=fop-image-view></a>
 ### 6.1.3 生成图片预览
+
 ```c#
 
 	ImageView imageView = new ImageView { Mode = 0, Width = 200, Height = 200, Quality = 90, Format = "gif" };
@@ -557,6 +579,7 @@ using Qiniu.FileOp;
 
 <a name=fop-image-mogr></a>
 ### 6.1.4 图片高级处理(缩略、裁剪、旋转、转化)
+
 ```c#
 
 	ImageMogrify imageMogr = new ImageMogrify
@@ -573,8 +596,10 @@ using Qiniu.FileOp;
 	Console.WriteLine("ImageMogrifyURL:" + mogrUrl);
 
 ```
+
 <a name=fop-image-watermark></a>
 ### 6.1.5 图像水印接口
+
 ```c#
 
 	//文字水印
