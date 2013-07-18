@@ -1,9 +1,6 @@
 ---
-title: C# SDK | 七牛云存储
+title: CSharp SDK
 ---
-
-# C# SDK 使用指南
-
 
 此 SDK 适用于 .NET4 及以上版本。
 
