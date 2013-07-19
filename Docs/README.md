@@ -37,8 +37,8 @@ SDK 在这里：[https://github.com/qiniu/csharp-sdk/tags](https://github.com/qi
 
 要接入七牛云存储，您需要拥有一对有效的 Access Key 和 Secret Key 用来进行签名认证。可以通过如下步骤获得：
 
-1. [开通七牛开发者帐号](https://dev.qiniutek.com/signup)
-2. [登录七牛开发者自助平台，查看 Access Key 和 Secret Key](https://dev.qiniutek.com/account/keys) 。
+1. [开通七牛开发者帐号](https://portal.qiniu.com/signup)
+2. [登录七牛开发者自助平台，查看 Access Key 和 Secret Key](https://portal.qiniu.com/setting/key) 。
 
 在获取到 Access Key 和 Secret Key 之后，您可以在您的程序中调用如下两行代码进行初始化对接：
 
@@ -69,7 +69,7 @@ UpToken 是由 AuthPolicy 以及 AccessKey 和 SecretKey 生成的。
         public string ReturnBody { get; set; }
     }
 
-各字段的含义见[这里](http://docs.qiniutek.com/v3/api/io/#upload-token-algorithm)。
+各字段的含义见[这里](http://docs.qiniu.com/api/put.html#uploadToken)。
 
 生成 UpToken 例子：
 
@@ -93,7 +93,7 @@ DownloadToken 是由 DownloadPolicy 以及 AccessKey 和 SecretKey 生成的。
         public long Deadline { get; set; }
     }
 
-各参数的含义见[这里](http://docs.qiniutek.com/v3/api/io/#private-download)。
+各参数的含义见[这里](http://docs.qiniu.com/api/get.html#download-token)。
 
 生成 DownloadToken 例子：
 
@@ -179,7 +179,7 @@ client 参数是能自动为请求在 HTTP Header 中添加 UpToken 的 Client�
 
     http://<绑定域名>/key
 
-对于[私有资源](http://docs.qiniutek.com/v3/api/io/#private-download)，需要 downloadToken，访问方式为：
+对于[私有资源](http://docs.qiniu.com/api/get.html#private-download)，需要 downloadToken，访问方式为：
 
     http://<绑定域名>/key?token=<downloadToken>
 
@@ -302,7 +302,7 @@ client 参数是能自动为请求在 HTTP Header 中添加 UpToken 的 Client�
         public string MakeSpecString()
     }
 
-具体字段含义见[这里](http://docs.qiniutek.com/v3/api/foimg/#imageView)
+具体字段含义见[这里](http://docs.qiniu.com/api/image-process.html#imageView)
 
 例子：
 
@@ -331,7 +331,7 @@ client 参数是能自动为请求在 HTTP Header 中添加 UpToken 的 Client�
         public string MakeSpecString()
     }
 
-具体字段含义见[这里](http://docs.qiniutek.com/v3/api/foimg/#imageMogr)。
+具体字段含义见[这里](http://docs.qiniu.com/api/image-process.html#imageMogr)。
 
 例子：
 
