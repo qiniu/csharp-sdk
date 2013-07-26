@@ -16,6 +16,18 @@ namespace Qiniu.IO
         /// </summary>
         public event EventHandler<PutRet> PutFinished;
         /// <summary>
+        /// fire PutFinished Event
+        /// </summary>
+        /// <param name="ret">put result</param>
+        protected void putFinished(PutRet ret)
+        {
+            if (PutFinished != null)
+            {
+                PutFinished(this, ret);
+            }
+        }
+
+        /// <summary>
         /// 上传文件
         /// </summary>
         /// <param name="upToken"></param>
@@ -27,7 +39,6 @@ namespace Qiniu.IO
             PutRet ret;
             try
             {
-
                 var postParams = new Dictionary<string, object>();
                 postParams["token"] = upToken;
                 postParams["key"] = key;
@@ -56,12 +67,8 @@ namespace Qiniu.IO
             }            
         }
 
-        private void putFinished(PutRet ret)
-        {
-            if (PutFinished != null)
-            {
-                PutFinished(this, ret);
-            }
-        }
+ 
+        
+    
     }
 }

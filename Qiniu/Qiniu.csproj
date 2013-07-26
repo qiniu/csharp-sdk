@@ -58,7 +58,7 @@
     <Compile Include="FileOp\ImageInfoRet.cs" />
     <Compile Include="FileOp\ImageInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RS\BatchPathPair.cs" />
+    <Compile Include="RS\RSPath.cs" />
     <Compile Include="RS\BatchRet.cs" />
     <Compile Include="RS\Entry.cs" />
     <Compile Include="Util\Base64UrlSafe.cs" />
