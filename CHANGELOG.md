@@ -4,8 +4,8 @@
 
 2013-07-30
 
-- 开发环境支持Mono
-- 单元测试由原VisulStuio支持变换为Nunit Framework支持
+- 开发环境支持Xamarin,Mono
+- 移植单元测试,由原VisulStudio支持变换为Nunit Framework支持
 
 
 2013-07-3
