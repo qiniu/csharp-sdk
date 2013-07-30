@@ -44,7 +44,7 @@ namespace Qiniu.IO
         /// 上传文件
         /// </summary>
         /// <param name="upToken"></param>
-        /// <param name="key"></param>
+        /// <param name="key"></param>h
         /// <param name="localFile"></param>
         /// <param name="extra"></param>
         public PutRet PutFile(string upToken, string key, string localFile, PutExtra extra)

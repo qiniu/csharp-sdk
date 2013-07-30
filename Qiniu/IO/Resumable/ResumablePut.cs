@@ -89,7 +89,6 @@ namespace Qiniu.IO.Resumable
                         int readLen = BLOCKSIZE;
                         if ((i + 1) * BLOCKSIZE > fsize)
                             readLen = (int)(fsize - i * BLOCKSIZE);
-                        QiniuAuthClient xclient = new QiniuAuthClient();
                         byte[] byteBuf = new byte[readLen];
                         lock (fs)
                         {

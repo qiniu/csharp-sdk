@@ -17,7 +17,6 @@ namespace Qiniu.Test.IO
 		public void PutFileTest()
 		{
 			IOClient target = new IOClient(); 
-			string upToken = string.Empty;
 			string key = LocalKey;
 			PrintLn(key);
 			PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值
@@ -37,7 +36,6 @@ namespace Qiniu.Test.IO
 		public void PutTest()
 		{
 			IOClient target = new IOClient(); 
-			string upToken = string.Empty;
 			string key = LocalKey;
 			PrintLn(key);
 			PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值

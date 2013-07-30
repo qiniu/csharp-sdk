@@ -20,7 +20,6 @@ namespace Qiniu.Test.FileOp
         [Test]
         public void MakeRequestTest()
         {
-            string url = string.Empty; // TODO: 初始化为适当的值
             string expected = string.Empty; // TODO: 初始化为适当的值
             string actual;            
             actual = ImageInfo.MakeRequest(FileOpUrl);

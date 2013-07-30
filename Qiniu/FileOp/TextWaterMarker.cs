@@ -10,16 +10,6 @@ namespace Qiniu.FileOp
         private string fontName;
         private int fontSize;
         private string color;
-        public int Dissolve
-        {          
-            set
-            {
-                if (value < 0) dissolve = 0;
-                else if (value > 100) dissolve = 100;
-                else
-                    dissolve = value;
-            }
-        }
 
         public TextWaterMarker(string text, string fontname = "", string color = "", int fontsize = 0, int dissolve = 50, MarkerGravity gravity = MarkerGravity.SouthEast, int dx = 10, int dy = 10)
             : base(dissolve,gravity, dx, dy)
