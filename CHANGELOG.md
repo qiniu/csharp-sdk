@@ -2,8 +2,13 @@
 
 ### v6.0.0
 
+2013-07-30
+
+- 开发环境支持Mono
+- 单元测试由原VisulStuio支持变换为Nunit Framework支持
+
+
 2013-07-3
-- Mono
 
 - QBox命名空间更新为Qiniu
 - 遵循 [Qiniu API SDKSpec 6.0](https://github.com/qiniu/sdkspec/tree/v6.0.0)

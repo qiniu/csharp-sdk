@@ -29,7 +29,7 @@ namespace Qiniu.IO
         public string MimeType { get; set; }
         public Int32 Crc32 { get; set; }
         public CheckCrcType CheckCrc { get; set; }
-        public string Bucket { get; set; }
+        public string Scope { get; set; }
 
         public PutExtra()
         {
@@ -38,7 +38,7 @@ namespace Qiniu.IO
                 
         public PutExtra(string bucket, string mimeType)
         {
-            Bucket = bucket;
+            Scope = bucket;
             MimeType = mimeType;
             Crc32 = -1;
         }

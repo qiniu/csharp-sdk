@@ -73,7 +73,6 @@ namespace Qiniu.Auth.digest
        /// <returns></returns>
         public string SignRequest(System.Net.HttpWebRequest request, byte[] body)
         {
-            MemoryStream mstream = new MemoryStream();
             Uri u = request.Address;
             using (HMACSHA1 hmac = new HMACSHA1(secretKey))
             {

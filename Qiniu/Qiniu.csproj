@@ -46,7 +46,6 @@
     <Compile Include="FileOp\ImageWaterMarker.cs" />
     <Compile Include="FileOp\WaterMarker.cs" />
     <Compile Include="FileOp\TextWaterMarker.cs" />
-    <Compile Include="IO\FileParameter.cs" />
     <Compile Include="IO\IOClient.cs" />
     <Compile Include="IO\MultiPart.cs" />
     <Compile Include="IO\PutExtra.cs" />
@@ -82,7 +81,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>bin\Debug\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\Newtonsoft.Json\Src\Newtonsoft.Json\bin\Debug\Net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup />
