@@ -20,10 +20,9 @@ namespace Qiniu.Test.FileOp
         [Test]
         public void MakeRequestTest()
         {
-            string expected = string.Empty; // TODO: 初始化为适当的值
             string actual;            
             actual = ImageInfo.MakeRequest(FileOpUrl);
-            System.Diagnostics.Process.Start(actual);
+            //System.Diagnostics.Process.Start(actual);
             ImageInfoRet ret= ImageInfo.Call(actual);
             Assert.IsNotNull(ret, "ImageInfoTest MakeRequestTest Failure");
         }

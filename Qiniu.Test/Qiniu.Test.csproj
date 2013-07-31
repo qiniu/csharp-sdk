@@ -33,6 +33,7 @@
     <Reference Include="nunit.framework">
       <HintPath>..\tools\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -48,6 +49,8 @@
     <Compile Include="FileOp\TextWaterMarkerTest.cs" />
     <Compile Include="Auth\PutPolicy.cs" />
     <Compile Include="IO\Resumable\ResumablePutTest.cs" />
+    <Compile Include="TestHelper\IOHelper.cs" />
+    <Compile Include="TestHelper\RSHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -64,5 +67,11 @@
     <Folder Include="FileOp\" />
     <Folder Include="Auth\" />
     <Folder Include="IO\Resumable\" />
+    <Folder Include="TestHelper\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

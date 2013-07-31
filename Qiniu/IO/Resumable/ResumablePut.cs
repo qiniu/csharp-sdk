@@ -73,57 +73,45 @@ namespace Qiniu.IO.Resumable
         /// <param name="key">key</param>
         /// <param name="localFile">本地文件名</param>
         public void PutFile(string upToken, string localFile, string key)
-        {
-            Action a = new Action(() =>
-            {
-                PutAuthClient client = new PutAuthClient(upToken);
-                using (FileStream fs = File.OpenRead(localFile))
-                {
-                    int block_cnt = block_count(fs.Length);
-                    fsize = fs.Length;
-                    chunks = fsize / extra.chunkSize + 1;
-                    extra.Progresses = new BlkputRet[block_cnt];
-                    //并行上传
-                    Parallel.For(0, block_cnt, (i) =>
-                    {
-                        int readLen = BLOCKSIZE;
-                        if ((i + 1) * BLOCKSIZE > fsize)
-                            readLen = (int)(fsize - i * BLOCKSIZE);
-                        byte[] byteBuf = new byte[readLen];
-                        lock (fs)
-                        {
-                            fs.Seek(i * BLOCKSIZE, SeekOrigin.Begin);
-                            fs.Read(byteBuf, 0, readLen);
-                            BlkputRet blkRet= ResumableBlockPut(client, byteBuf, i, readLen);
-                            if (blkRet == null)
-                            {
-                                extra.OnNotifyErr(new PutNotifyErrorEvent(i, readLen, "Make Block Error"));
-                            }
-                            else
-                            {
-                                extra.OnNotify(new PutNotifyEvent(i, readLen, extra.Progresses[i]));
-                            }                            
-                        }
-                    });
-                    if (string.IsNullOrEmpty(key))
-                    {
-                        key = UNDEFINED_KEY;
-                    }
-                    CallRet ret = Mkfile(client, key, fs.Length);
-                    if (Progress != null)
-                    {
-                        Progress(1.0f);
-                    }
-                    if (PutFinished != null)
-                    {
-                        PutFinished(this, ret);
-                    }
+		{
+			PutAuthClient client = new PutAuthClient (upToken);
+			using (FileStream fs = File.OpenRead(localFile)) {
+				int block_cnt = block_count (fs.Length);
+				fsize = fs.Length;
+				chunks = fsize / extra.chunkSize + 1;
+				extra.Progresses = new BlkputRet[block_cnt];
+				//并行上传
+				Parallel.For (0, block_cnt, (i) =>
+				{
+					int readLen = BLOCKSIZE;
+					if ((i + 1) * BLOCKSIZE > fsize)
+						readLen = (int)(fsize - i * BLOCKSIZE);
+					byte[] byteBuf = new byte[readLen];
+					lock (fs) {
+						fs.Seek (i * BLOCKSIZE, SeekOrigin.Begin);
+						fs.Read (byteBuf, 0, readLen);
+						BlkputRet blkRet = ResumableBlockPut (client, byteBuf, i, readLen);
+						if (blkRet == null) {
+							extra.OnNotifyErr (new PutNotifyErrorEvent (i, readLen, "Make Block Error"));
+						} else {
+							extra.OnNotify (new PutNotifyEvent (i, readLen, extra.Progresses [i]));
+						}                            
+					}
+				});
+				if (string.IsNullOrEmpty (key)) {
+					key = UNDEFINED_KEY;
+				}
+				CallRet ret = Mkfile (client, key, fs.Length);
+				if (Progress != null) {
+					Progress (1.0f);
+				}
+				if (PutFinished != null) {
+					PutFinished (this, ret);
+				}
                    
-                }
-            });
-            //启动异步上传
-            a.BeginInvoke(null, null);
-        }
+			}
+           
+		}
         /// <summary>
         /// 百分比进度提示
         /// </summary>

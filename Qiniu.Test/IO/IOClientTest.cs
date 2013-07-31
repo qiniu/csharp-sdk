@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Qiniu.IO;
 using Qiniu.RS;
 using Qiniu.Util;
+using Qiniu.Test.TestHelper;
 
 namespace Qiniu.Test.IO
 {
@@ -16,27 +17,36 @@ namespace Qiniu.Test.IO
 		[Test]
 		public void PutFileTest()
 		{
-			IOClient target = new IOClient(); 
-			string key = LocalKey;
-			PrintLn(key);
-			PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值
+			IOClient target = new IOClient (); 
+			string key = NewKey;
+			PrintLn (key);
+			PutExtra extra = new PutExtra (); // TODO: 初始化为适当的值
 			extra.MimeType = "text/plain";
 			extra.Crc32 = 123;
 			extra.CheckCrc = CheckCrcType.CHECK;
-			extra.Params = new System.Collections.Generic.Dictionary<string, string>();
+			extra.Params = new System.Collections.Generic.Dictionary<string, string> ();
 			extra.Scope = Bucket;
-			PutPolicy put = new PutPolicy(extra.Scope);
-			PutRet ret = target.PutFile(put.Token(), key, LocalFile, extra);
+			PutPolicy put = new PutPolicy (extra.Scope);
+			TmpFIle file = new TmpFIle (1024 * 10);
+			target.PutFinished += new EventHandler<PutRet> ((o,e) => {
+				file.Del ();
+				if (e.OK) {
+					RSHelper.RSDel (Bucket, file.FileName);
+				}
+			});
+
+			PutRet ret = target.PutFile (put.Token (), file.FileName, file.FileName, extra);
+
 			//error params
-			target.PutFile("error", "error", "error", null);
-			Assert.IsTrue(ret.OK, "PutFileTest Failure");
+			//target.PutFile("error", "error", "error", null);
+			Assert.IsTrue (ret.OK, "PutFileTest Failure");
 
 		}
 		[Test]
 		public void PutTest()
 		{
 			IOClient target = new IOClient(); 
-			string key = LocalKey;
+			string key = NewKey;
 			PrintLn(key);
 			PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值
 			extra.MimeType = "text/plain";
@@ -45,7 +55,11 @@ namespace Qiniu.Test.IO
 			extra.Params = new System.Collections.Generic.Dictionary<string, string>();
 			extra.Scope = Bucket;
 			PutPolicy put = new PutPolicy(extra.Scope);
-
+			target.PutFinished += new EventHandler<PutRet> ((o,e) => {
+				if (e.OK) {
+					RSHelper.RSDel (Bucket, key);
+				}
+			});
 			PutRet ret = target.Put(put.Token(), key, "Hello, Qiniu Cloud!".ToStream(), extra);
 		
 			Assert.IsTrue(ret.OK, "PutFileTest Failure");

@@ -22,10 +22,9 @@ namespace Qiniu.Test.FileOp
         {
             ImageView target = new ImageView { Mode = 0, Width = 200, Height = 200, Quality = 90, Format = "gif" }; // TODO: 初始化为适当的值
             string url = FileOpUrl; // TODO: 初始化为适当的值
-            string expected = string.Empty; // TODO: 初始化为适当的值
             string actual;
             actual = target.MakeRequest(url);
-            System.Diagnostics.Process.Start(actual);
+            //System.Diagnostics.Process.Start(actual);
             Assert.IsTrue(!string.IsNullOrEmpty(actual), "ImageViewTest MakeRequestTest Failure");
            
         }

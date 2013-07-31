@@ -1,16 +1,17 @@
 using System;
 using Qiniu.Conf;
+using System.Collections;
 
 namespace Qiniu.Test
 {
 	public class QiniuTestBase
 	{
 
-		protected string Bucket = "icattlecoder3";
+		protected string Bucket = "";
 		protected string LocalKey = "gogopher.jpg";
 		protected string DOMAIN = "qiniuphotos.qiniudn.com";
 		protected string LocalFile = @"~/.profile";
-		protected string BigFile = @"C:\Users\floyd\Downloads\ChromeSetup.exe";
+		protected string BigFile = @"";
 		protected string FileOpUrl = "http://qiniuphotos.qiniudn.com/gogopher.jpg";
 		protected string NewKey
 		{
@@ -19,8 +20,11 @@ namespace Qiniu.Test
 
 		private void Init()
 		{
-			Config.ACCESS_KEY = "gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp";
-			Config.SECRET_KEY = "OjY7IMysXu1erRRuWe7gkaiHcD6-JMJ4hXeRPZ1B";
+
+			Config.ACCESS_KEY = System.Configuration.ConfigurationManager.AppSettings ["QINIU_ACCESS_KEY"];
+			Config.SECRET_KEY = System.Configuration.ConfigurationManager.AppSettings ["QINIU_SECRET_KEY"];
+			Bucket = System.Configuration.ConfigurationManager.AppSettings ["QINIU_TEST_BUCKET"];
+			DOMAIN = System.Configuration.ConfigurationManager.AppSettings ["QINIU_TEST_DOMAIN"];
 		}
 
 		public QiniuTestBase()

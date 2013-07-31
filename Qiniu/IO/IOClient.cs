@@ -49,7 +49,11 @@ namespace Qiniu.IO
         /// <param name="extra"></param>
         public PutRet PutFile(string upToken, string key, string localFile, PutExtra extra)
         {
+			if (System.IO.File.Exists (localFile)) {
+				new Exception (string.Format ("{0} does't exist", localFile));
+			}
             PutRet ret;
+			key = key.ToUrlEncode ();
             NameValueCollection formData = getFormData(upToken, key, extra);
             try
             {
@@ -75,10 +79,14 @@ namespace Qiniu.IO
         /// <param name="extra">Extra.</param>
         public PutRet Put(string upToken, string key, System.IO.Stream putStream, PutExtra extra)
         {
+			if (!putStream.CanRead) {
+				throw new Exception ("read put Stream error");
+			}
             PutRet ret;
             NameValueCollection formData = getFormData(upToken, key, extra);
             try
             {
+
 				CallRet callRet = MultiPart.MultiPost(Config.UP_HOST, formData, putStream);
                 ret = new PutRet(callRet);
 				onPutFinished(ret);

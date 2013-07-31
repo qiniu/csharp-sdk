@@ -1,8 +1,11 @@
 ﻿using System;
+using System.IO;
 using NUnit.Framework;
 using Qiniu.IO.Resumable;
 using Qiniu.RS;
+using Qiniu.RPC;
 using Qiniu.Util;
+using Qiniu.Test.TestHelper;
 
 namespace Qiniu.Test.IO.Resumable
 {
@@ -19,7 +22,7 @@ namespace Qiniu.Test.IO.Resumable
         [Test]
         public void PutFileTest()
         {
-            Settings putSetting = new Settings(); // TODO: 初始化为适当的值
+			Settings putSetting = new Settings(); // TODO: 初始化为适当的值
             ResumablePutExtra extra = new ResumablePutExtra();
             extra.Notify += new EventHandler<PutNotifyEvent>(extra_Notify);
             extra.NotifyErr += new EventHandler<PutNotifyErrorEvent>(extra_NotifyErr);
@@ -27,13 +30,26 @@ namespace Qiniu.Test.IO.Resumable
             ResumablePut target = new ResumablePut(putSetting, extra); // TODO: 初始化为适当的值
             string upToken = new PutPolicy(extra.Bucket).Token();
             target.Progress += new Action<float>(target_Progress);
-            target.PutFile(upToken, BigFile, NewKey);            
+			TmpFIle file=new TmpFIle(1024*1024*4);
+			target.PutFinished += new EventHandler<CallRet> ((o,e) => {
+				file.Del ();
+				if (e.OK) {
+					RSHelper.RSDel (Bucket, file.FileName);
+				}
+			});
+			target.PutFile (upToken, file.FileName, file.FileName);
 
-        }
+			//Action a = new Action (() =>
+			//{
+			//	target.PutFile (upToken, BigFile, NewKey);            
+			//});
+			//a.BeginInvoke (null,null);
+
+		}
 
         void extra_NotifyErr(object sender, PutNotifyErrorEvent e)
         {
-            //throw new NotImplementedException();
+            
         }
 
         void extra_Notify(object sender, PutNotifyEvent e)
@@ -41,15 +57,12 @@ namespace Qiniu.Test.IO.Resumable
             PrintLn(e.BlkIdx.ToString());
             PrintLn(e.BlkSize.ToString());
             PrintLn(e.Ret.offset.ToString());
-            //throw new NotImplementedException();
         }
-        bool tag = false;
         void target_Progress(float obj)
         {            
             if (obj > 0.999999)
             {
                 PrintLn((obj * 100).ToString() + "%");
-                tag = true;
             }
         }
     }
