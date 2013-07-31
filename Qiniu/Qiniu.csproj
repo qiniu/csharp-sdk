@@ -1,97 +1,97 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Qiniu</RootNamespace>
-    <AssemblyName>Qiniu</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Qiniu.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Auth\digest\Mac.cs" />
-    <Compile Include="Auth\PutAuthClient.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Auth\QiniuAuthClient.cs" />
-    <Compile Include="FileOp\Exif.cs" />
-    <Compile Include="FileOp\ExifRet.cs" />
-    <Compile Include="FileOp\FileOpClient.cs" />
-    <Compile Include="FileOp\ImageMogrify.cs" />
-    <Compile Include="FileOp\ImageView.cs" />
-    <Compile Include="FileOp\ImageWaterMarker.cs" />
-    <Compile Include="FileOp\WaterMarker.cs" />
-    <Compile Include="FileOp\TextWaterMarker.cs" />
-    <Compile Include="IO\IOClient.cs" />
-    <Compile Include="IO\MultiPart.cs" />
-    <Compile Include="IO\PutExtra.cs" />
-    <Compile Include="IO\PutRet.cs" />
-    <Compile Include="IO\Resumable\ResumablePutExtra.cs" />
-    <Compile Include="IO\Resumable\Settings.cs" />
-    <Compile Include="RS\GetPolicy.cs" />
-    <Compile Include="RS\PutPolicy.cs" />
-    <Compile Include="FileOp\ImageInfoRet.cs" />
-    <Compile Include="FileOp\ImageInfo.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RS\RSPath.cs" />
-    <Compile Include="RS\BatchRet.cs" />
-    <Compile Include="RS\Entry.cs" />
-    <Compile Include="Util\Base64UrlSafe.cs" />
-    <Compile Include="RPC\CallRet.cs" />
-    <Compile Include="RPC\Client.cs" />
-    <Compile Include="Conf\Config.cs" />
-    <Compile Include="IO\Resumable\ResumablePut.cs" />
-    <Compile Include="IO\Resumable\ResumablePutRet.cs" />
-    <Compile Include="RS\RSClient.cs" />
-    <Compile Include="Util\CRC32.cs" />
-    <Compile Include="Util\IO.cs" />
-    <Compile Include="RSF\DumpItem.cs" />
-    <Compile Include="RSF\RSFClient.cs" />
-    <Compile Include="Util\QiniuJsonHelper.cs" />
-    <Compile Include="Util\StreamEx.cs" />
-    <Compile Include="Util\StringEx.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\tools\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+		<ProductVersion>8.0.30703</ProductVersion>
+		<SchemaVersion>2.0</SchemaVersion>
+		<ProjectGuid>{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}</ProjectGuid>
+		<OutputType>Library</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>Qiniu</RootNamespace>
+		<AssemblyName>Qiniu</AssemblyName>
+		<FileAlignment>512</FileAlignment>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+		<PlatformTarget>x86</PlatformTarget>
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<DocumentationFile>bin\Debug\Qiniu.XML</DocumentationFile>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+		<PlatformTarget>x86</PlatformTarget>
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release\</OutputPath>
+		<DefineConstants>TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="Auth\digest\Mac.cs" />
+		<Compile Include="Auth\PutAuthClient.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Include="Auth\QiniuAuthClient.cs" />
+		<Compile Include="FileOp\Exif.cs" />
+		<Compile Include="FileOp\ExifRet.cs" />
+		<Compile Include="FileOp\FileOpClient.cs" />
+		<Compile Include="FileOp\ImageMogrify.cs" />
+		<Compile Include="FileOp\ImageView.cs" />
+		<Compile Include="FileOp\ImageWaterMarker.cs" />
+		<Compile Include="FileOp\WaterMarker.cs" />
+		<Compile Include="FileOp\TextWaterMarker.cs" />
+		<Compile Include="IO\IOClient.cs" />
+		<Compile Include="IO\MultiPart.cs" />
+		<Compile Include="IO\PutExtra.cs" />
+		<Compile Include="IO\PutRet.cs" />
+		<Compile Include="IO\Resumable\ResumablePutExtra.cs" />
+		<Compile Include="IO\Resumable\Settings.cs" />
+		<Compile Include="RS\GetPolicy.cs" />
+		<Compile Include="RS\PutPolicy.cs" />
+		<Compile Include="FileOp\ImageInfoRet.cs" />
+		<Compile Include="FileOp\ImageInfo.cs" />
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="RS\RSPath.cs" />
+		<Compile Include="RS\BatchRet.cs" />
+		<Compile Include="RS\Entry.cs" />
+		<Compile Include="Util\Base64UrlSafe.cs" />
+		<Compile Include="RPC\CallRet.cs" />
+		<Compile Include="RPC\Client.cs" />
+		<Compile Include="Conf\Config.cs" />
+		<Compile Include="IO\Resumable\ResumablePut.cs" />
+		<Compile Include="IO\Resumable\ResumablePutRet.cs" />
+		<Compile Include="RS\RSClient.cs" />
+		<Compile Include="Util\CRC32.cs" />
+		<Compile Include="Util\IO.cs" />
+		<Compile Include="RSF\DumpItem.cs" />
+		<Compile Include="RSF\RSFClient.cs" />
+		<Compile Include="Util\QiniuJsonHelper.cs" />
+		<Compile Include="Util\StreamEx.cs" />
+		<Compile Include="Util\StringEx.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<Reference Include="Microsoft.CSharp" />
+		<Reference Include="System" />
+		<Reference Include="System.Web" />
+		<Reference Include="System.Web.Extensions" />
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>..\tools\Newtonsoft.Json.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+	<ItemGroup />
+	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+	<!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	   Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup />
-/Project>
+ <ItemGroup />
+</Project>
