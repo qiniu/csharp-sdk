@@ -81,7 +81,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\Newtonsoft.Json\Src\Newtonsoft.Json\bin\Debug\Net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\tools\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup />
@@ -94,4 +94,4 @@
   </Target>
   -->
   <ItemGroup />
-</Project>
+/Project>
