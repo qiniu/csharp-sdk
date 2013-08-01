@@ -23,9 +23,6 @@ namespace Qiniu.Test.FileOp
             string url = GetPolicy.MakeBaseUrl(DOMAIN, LocalKey); // TODO: 初始化为适当的值          
             string actual = Exif.MakeRequest(url);
             ExifRet ret = Exif.Call(actual);
-            PrintLn(ret.OK.ToString());
-            PrintLn(ret.Response);
-            PrintLn(ret.StatusCode.ToString());
             Assert.IsTrue(ret.OK, "MakeRequestTest Failure");
         }
     }

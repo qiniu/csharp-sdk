@@ -17,7 +17,8 @@ namespace Qiniu.Test.IO
 		[Test]
 		public void PutFileTest()
 		{
-			IOClient target = new IOClient (); 
+
+			IOClient target = new IOClient(); 
 			string key = NewKey;
 			PrintLn (key);
 			PutExtra extra = new PutExtra (); // TODO: 初始化为适当的值

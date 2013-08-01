@@ -74,6 +74,7 @@ namespace Qiniu.IO.Resumable
         /// <param name="localFile">本地文件名</param>
         public void PutFile(string upToken, string localFile, string key)
 		{
+			key = key.ToUrlEncode ();
 			PutAuthClient client = new PutAuthClient (upToken);
 			using (FileStream fs = File.OpenRead(localFile)) {
 				int block_cnt = block_count (fs.Length);

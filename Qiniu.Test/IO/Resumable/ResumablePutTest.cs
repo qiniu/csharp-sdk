@@ -20,24 +20,26 @@ namespace Qiniu.Test.IO.Resumable
         ///PutFile 的测试
         ///</summary>
         [Test]
-        public void PutFileTest()
+        public void ResumablePutFileTest()
         {
 			Settings putSetting = new Settings(); // TODO: 初始化为适当的值
+			string key=NewKey;
             ResumablePutExtra extra = new ResumablePutExtra();
             extra.Notify += new EventHandler<PutNotifyEvent>(extra_Notify);
             extra.NotifyErr += new EventHandler<PutNotifyErrorEvent>(extra_NotifyErr);
             extra.Bucket = Bucket;
             ResumablePut target = new ResumablePut(putSetting, extra); // TODO: 初始化为适当的值
-            string upToken = new PutPolicy(extra.Bucket).Token();
+			Console.WriteLine ("extra.Bucket:"+extra.Bucket);
+            string upToken = new PutPolicy(extra.Bucket).Token(new Qiniu.Auth.digest.Mac());
             target.Progress += new Action<float>(target_Progress);
 			TmpFIle file=new TmpFIle(1024*1024*4);
 			target.PutFinished += new EventHandler<CallRet> ((o,e) => {
 				file.Del ();
 				if (e.OK) {
-					RSHelper.RSDel (Bucket, file.FileName);
+					RSHelper.RSDel (Bucket, key);
 				}
 			});
-			target.PutFile (upToken, file.FileName, file.FileName);
+			target.PutFile (upToken, file.FileName, key);
 
 			//Action a = new Action (() =>
 			//{

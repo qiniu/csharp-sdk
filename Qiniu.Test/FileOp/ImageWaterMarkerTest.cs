@@ -11,13 +11,13 @@ namespace Qiniu.Test.FileOp
     ///这是 ImageWaterMarkerTest 的测试类，旨在
     ///包含所有 ImageWaterMarkerTest 单元测试
     ///</summary>
-    [TestFixture]
+    //[TestFixture]
     public class ImageWaterMarkerTest:QiniuTestBase
     {
         /// <summary>
         ///MakeRequest 的测试
         ///</summary>
-        [Test]
+        //[Test]
         public void MakeRequestTest()
         {
             string imageUrl = "http://www.b1.qiniudn.com/images/logo-2.png"; // TODO: 初始化为适当的值

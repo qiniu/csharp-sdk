@@ -7,24 +7,33 @@ namespace Qiniu.Test
 	public class QiniuTestBase
 	{
 
-		protected string Bucket = "";
-		protected string LocalKey = "gogopher.jpg";
-		protected string DOMAIN = "qiniuphotos.qiniudn.com";
-		protected string LocalFile = @"~/.profile";
-		protected string BigFile = @"";
-		protected string FileOpUrl = "http://qiniuphotos.qiniudn.com/gogopher.jpg";
-		protected string NewKey
+		protected static string Bucket = "";
+		protected static  string LocalKey = "gogopher.jpg";
+		protected static string DOMAIN = "qiniuphotos.qiniudn.com";
+		protected static string LocalFile = @"~/.profile";
+		protected static string BigFile = @"";
+		protected static string FileOpUrl = "http://qiniuphotos.qiniudn.com/gogopher.jpg";
+		protected static string NewKey
 		{
 			get { return Guid.NewGuid().ToString(); }
 		}
-
+		private static bool init = false;
 		private void Init()
 		{
+			if (init)
+				return;
+			//for make test
+			Config.ACCESS_KEY = System.Environment.GetEnvironmentVariable ("QINIU_ACCESS_KEY");  
+			Config.SECRET_KEY = System.Environment.GetEnvironmentVariable ("QINIU_SECRET_KEY");  
+			Bucket =System.Environment.GetEnvironmentVariable ("QINIU_TEST_BUCKET");   
+			DOMAIN =System.Environment.GetEnvironmentVariable ("QINIU_TEST_DOMAIN"); 
 
-			Config.ACCESS_KEY = System.Configuration.ConfigurationManager.AppSettings ["QINIU_ACCESS_KEY"];
-			Config.SECRET_KEY = System.Configuration.ConfigurationManager.AppSettings ["QINIU_SECRET_KEY"];
-			Bucket = System.Configuration.ConfigurationManager.AppSettings ["QINIU_TEST_BUCKET"];
-			DOMAIN = System.Configuration.ConfigurationManager.AppSettings ["QINIU_TEST_DOMAIN"];
+			//for MonoDevelop Nunit 
+			//Config.ACCESS_KEY = System.Configuration.ConfigurationManager.AppSettings ["QINIU_ACCESS_KEY"];
+			//Config.SECRET_KEY = System.Configuration.ConfigurationManager.AppSettings ["QINIU_SECRET_KEY"];
+			//Bucket = System.Configuration.ConfigurationManager.AppSettings ["QINIU_TEST_BUCKET"];
+			//DOMAIN = System.Configuration.ConfigurationManager.AppSettings ["QINIU_TEST_DOMAIN"];
+			init = true;
 		}
 
 		public QiniuTestBase()
