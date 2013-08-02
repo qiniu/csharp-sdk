@@ -5,12 +5,10 @@ install:
  - sudo apt-get update && sudo apt-get install nunit mono-gmcs cli-common-dev libgl1-mesa-dev libsdl1.2-dev libopenal-dev
 
 before_script:
-# - move the following val to app.settings
-# - export QINIU_ACCESS_KEY="iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
-# - export QINIU_SECRET_KEY="6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
-# - export QINIU_TEST_BUCKET="a"
-# - export QINIU_TEST_DOMAIN="aatest.qiniudn.com"
-# Run the build script which will automatically call RALint and ensure that the IDE project files are still valid.
+  - export QINIU_ACCESS_KEY="gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp";
+  - export QINIU_SECRET_KEY="OjY7IMysXu1erRRuWe7gkaiHcD6-JMJ4hXeRPZ1B";
+  - export QINIU_TEST_BUCKET="icattlecoder3";
+  - export QINIU_TEST_DOMAIN="qiniuphotos";
 
 script:
  - make
