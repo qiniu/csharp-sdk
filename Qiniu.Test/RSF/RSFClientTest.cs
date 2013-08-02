@@ -53,7 +53,7 @@ namespace Qiniu.Test.RSF
 				count += actual.Count;
 				actual = target.Next();
 			}
-			Assert.IsTrue(count == 3, "ListPrefixTest Failure");
+			Assert.IsTrue(count >= 3, "ListPrefixTest Failure");
 		}
 
 		/// <summary>
@@ -74,7 +74,7 @@ namespace Qiniu.Test.RSF
 			}
 
 			//error params
-			Assert.IsTrue(actual.Items.Count==3, "ListPrefixTest Failure");
+			Assert.IsTrue(actual.Items.Count>=3, "ListPrefixTest Failure");
 
 		}
 	}
