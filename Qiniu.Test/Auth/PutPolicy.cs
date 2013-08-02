@@ -22,7 +22,7 @@ namespace Qiniu.Test.FileOp
 		{
 			string actual;
 			actual = GetPolicy.MakeRequest(FileOpUrl);
-			System.Diagnostics.Process.Start(actual);
+			//System.Diagnostics.Process.Start(actual);
 			PrintLn(actual);
 			Assert.IsTrue(!string.IsNullOrEmpty(actual), "GetPolicyTest MakeRequestTest Failure");
 		}
@@ -35,7 +35,7 @@ namespace Qiniu.Test.FileOp
 		{
 			string actual;
 			actual = GetPolicy.MakeBaseUrl(Bucket+".qiniudn.com", LocalKey);
-			System.Diagnostics.Process.Start(actual);
+			//System.Diagnostics.Process.Start(actual);
 			PrintLn(actual);
 			Assert.IsTrue(!string.IsNullOrEmpty(actual), "GetPolicyTest MakeBaseUrlTest Failure");
 		}

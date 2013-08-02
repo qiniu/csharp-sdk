@@ -33,7 +33,7 @@ namespace Qiniu.Test.FileOp
             actual = target.MakeRequest(FileOpUrl);
             // 如果是私有空间，添加下面一句
             actual= GetPolicy.MakeRequest(actual);
-            System.Diagnostics.Process.Start(actual);
+            //System.Diagnostics.Process.Start(actual);
             PrintLn(actual);
             Assert.IsTrue(!string.IsNullOrEmpty(actual), "TextWaterMarkerTest MakeRequestTest Failure");
         }

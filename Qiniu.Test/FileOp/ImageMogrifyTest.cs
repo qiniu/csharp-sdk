@@ -30,7 +30,7 @@ namespace Qiniu.Test.FileOp
                 AutoOrient = true
             };
             string mogrUrl = target.MakeRequest(FileOpUrl);
-            System.Diagnostics.Process.Start(mogrUrl);
+            //System.Diagnostics.Process.Start(mogrUrl);
             PrintLn(mogrUrl);
             Assert.IsTrue(!string.IsNullOrEmpty(mogrUrl), "ImageMogrifyTest MakeRequestTest Failure");
         }

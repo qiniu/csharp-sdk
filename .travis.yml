@@ -8,7 +8,7 @@ before_script:
   - export QINIU_ACCESS_KEY="gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp";
   - export QINIU_SECRET_KEY="OjY7IMysXu1erRRuWe7gkaiHcD6-JMJ4hXeRPZ1B";
   - export QINIU_TEST_BUCKET="icattlecoder3";
-  - export QINIU_TEST_DOMAIN="qiniuphotos";
+  - export QINIU_TEST_DOMAIN="qiniuphotos.qiniudn.com";
 
 script:
  - make
