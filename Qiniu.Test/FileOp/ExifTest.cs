@@ -20,7 +20,7 @@ namespace Qiniu.Test.FileOp
         [Test]
         public void MakeRequestTest()
         {
-            string url = GetPolicy.MakeBaseUrl(DOMAIN, LocalKey); // TODO: 初始化为适当的值          
+			string url = GetPolicy.MakeBaseUrl("qiniuphotos.qiniudn.com", "gogopher.jpg"); // TODO: 初始化为适当的值          
             string actual = Exif.MakeRequest(url);
             ExifRet ret = Exif.Call(actual);
             Assert.IsTrue(ret.OK, "MakeRequestTest Failure");
