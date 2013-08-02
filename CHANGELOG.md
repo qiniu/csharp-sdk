@@ -2,14 +2,11 @@
 
 ### v6.0.0
 
-2013-07-30
+2013-07-30 #issue[17](https://github.com/qiniu/csharp-sdk/pull/17)
 
 - 开发环境支持Xamarin,Mono
+- 增加tools,包含Json库，nunit.framework.dll
 - 移植单元测试,由原VisulStudio支持变换为Nunit Framework支持
-
-
-2013-07-3
-
 - QBox命名空间更新为Qiniu
 - 遵循 [Qiniu API SDKSpec 6.0](https://github.com/qiniu/sdkspec/tree/v6.0.0)
 - 增加 RSF 支持：增加 Qiniu.RSF.RSFClient 类
