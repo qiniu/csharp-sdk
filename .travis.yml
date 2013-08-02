@@ -2,7 +2,7 @@ language: c
 
 # Make sure build dependencies are installed.
 install:
- - sudo apt-get update && sudo apt-get install mono-gmcs cli-common-dev libgl1-mesa-dev libsdl1.2-dev libopenal-dev
+ - sudo apt-get update && sudo apt-get install nunit mono-gmcs cli-common-dev libgl1-mesa-dev libsdl1.2-dev libopenal-dev
 
 before_script:
 # - move the following val to app.settings
