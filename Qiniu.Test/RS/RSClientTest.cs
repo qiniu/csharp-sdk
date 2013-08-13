@@ -41,7 +41,7 @@ namespace Qiniu.Test.RS
 			EntryPath scope = new EntryPath(Bucket, tmpKeys[0]); 
 			Entry actual;
 			actual = target.Stat(scope);
-			Assert.IsTrue(!string.IsNullOrEmpty(actual.Hash), "StatTest Failure");
+			Assert.IsTrue(actual.OK, "StatTest Failure");
 		}
 
 		/// <summary>

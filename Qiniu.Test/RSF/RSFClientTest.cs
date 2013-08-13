@@ -14,26 +14,29 @@ namespace Qiniu.Test.RSF
 	[TestFixture]
 	public class RSFClientTest:QiniuTestBase
 	{
-		private List<string> tmpKeys=new List<string>();
+		private List<string> tmpKeys = new List<string> ();
 
-		public RSFClientTest()
+		public RSFClientTest ()
 		{
 
 		}
+
 		[TestFixtureSetUp]
-		public void BeforeTest()
+		public void BeforeTest ()
 		{
 			#region before test
-			tmpKeys = RSHelper.RSPut(Bucket,3);
+			tmpKeys = RSHelper.RSPut (Bucket, 3);
 			#endregion
 		}
+
 		[TestFixtureTearDown]
-		public void AfterTest()
+		public void AfterTest ()
 		{
 			foreach (string k in tmpKeys) {
 				RSHelper.RSDel (Bucket, k);
 			}
 		}
+		/*
 		/// <summary>
 		///Next 的测试
 		///</summary>
@@ -55,26 +58,25 @@ namespace Qiniu.Test.RSF
 			}
 			Assert.IsTrue(count >= 3, "ListPrefixTest Failure");
 		}
-
+		*/
 		/// <summary>
 		///ListPrefix 的测试
 		///</summary>
 		[Test]
-		public void ListPrefixTest()
+		public void ListPrefixTest ()
 		{
-			RSFClient target = new RSFClient(Bucket); // TODO: 初始化为适当的值
+			RSFClient target = new RSFClient (Bucket); // TODO: 初始化为适当的值
 			target.Marker = string.Empty;
-			target.Prefix = string.Empty;
-			target.Limit = 100;
+			target.Prefix = "csharp";
+			target.Limit = 3;
 			DumpRet actual;
-			actual = target.ListPrefix(Bucket);
-			foreach (DumpItem item in actual.Items)
-			{
-				Console.WriteLine("Key:{0},Hash:{1},Mime:{2},PutTime:{3},EndUser:{4}", item.Key, item.Hash, item.Mime, item.PutTime, item.EndUser);
+			actual = target.ListPrefix (Bucket);
+			foreach (DumpItem item in actual.Items) {
+				Console.WriteLine ("Key:{0},Hash:{1},Mime:{2},PutTime:{3},EndUser:{4}", item.Key, item.Hash, item.Mime, item.PutTime, item.EndUser);
 			}
 
 			//error params
-			Assert.IsTrue(actual.Items.Count>=3, "ListPrefixTest Failure");
+			Assert.IsTrue (actual.Items.Count >= 3, "ListPrefixTest Failure");
 
 		}
 	}
