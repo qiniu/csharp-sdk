@@ -21,6 +21,7 @@ namespace Qiniu.Test
 		{
 			if (init)
 				return;
+				
 			//for make test
 
 			Config.ACCESS_KEY = System.Environment.GetEnvironmentVariable ("QINIU_ACCESS_KEY");  
