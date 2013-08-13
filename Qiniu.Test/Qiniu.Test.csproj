@@ -69,9 +69,4 @@
     <Folder Include="IO\Resumable\" />
     <Folder Include="TestHelper\" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>

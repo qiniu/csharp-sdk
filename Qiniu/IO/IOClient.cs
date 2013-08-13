@@ -50,7 +50,7 @@ namespace Qiniu.IO
         public PutRet PutFile(string upToken, string key, string localFile, PutExtra extra)
         {
 			if (System.IO.File.Exists (localFile)) {
-				new Exception (string.Format ("{0} does't exist", localFile));
+				new Exception (string.Format ("{0} does not exist", localFile));
 			}
             PutRet ret;
 			key = key.ToUrlEncode ();
@@ -69,6 +69,18 @@ namespace Qiniu.IO
                 return ret;
             }
         }
+		/// <summary>
+		/// Puts the file without key.
+		/// </summary>
+		/// <returns>The file without key.</returns>
+		/// <param name="upToken">Up token.</param>
+		/// <param name="localFile">Local file.</param>
+		/// <param name="extra">Extra.</param>
+		public PutRet PutFileWithoutKey(string upToken,string localFile,PutExtra extra)
+		{
+			return PutFile (upToken, string.Empty, localFile, extra);
+
+		}
 
         /// <summary>
         /// 

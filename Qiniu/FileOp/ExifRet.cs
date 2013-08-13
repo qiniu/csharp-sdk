@@ -1,55 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Script.Serialization;
 using Qiniu.RPC;
+using Newtonsoft.Json;
 
 namespace Qiniu.FileOp
 {
-    public class ExifValType
-    {
-        public string val { get; set; }
-        public int type { get; set; }
-    }
+	public class ExifValType
+	{
+		public string val { get; set; }
 
-    public class ExifRet : CallRet
-    {
-        private Dictionary<string, ExifValType> dict;
+		public int type { get; set; }
+	}
 
-        public ExifValType this[string key]
-        {
-            get
-            {
-                return dict[key];
-            }
-        }
+	public class ExifRet : CallRet
+	{
+		private Dictionary<string, ExifValType> dict;
 
-        public ExifRet(CallRet ret)
+		public ExifValType this [string key] {
+			get {
+				return dict [key];
+			}
+		}
+
+		public ExifRet (CallRet ret)
             : base(ret)
-        {
-            if (!String.IsNullOrEmpty(Response))
-            {
-                try
-                {
-                    Unmarshal(Response);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                    this.Exception = e;
-                }
-            }
-        }
+		{
+			if (!String.IsNullOrEmpty (Response)) {
+				try {
+					Unmarshal (Response);
+				} catch (Exception e) {
+					Console.WriteLine (e.ToString ());
+					this.Exception = e;
+				}
+			}
+		}
 
-        private void Unmarshal(string json)
-        {
-            var jss = new JavaScriptSerializer();
-            dict = jss.Deserialize<Dictionary<string, ExifValType>>(json);
-        }
+		private void Unmarshal (string json)
+		{
+			dict = JsonConvert.DeserializeObject<Dictionary<string,ExifValType>> (json);
+		}
 
-        public override string ToString()
-        {
-            var jss = new JavaScriptSerializer();
-            return jss.Serialize(dict);
-        }
-    }
+		public override string ToString ()
+		{
+			try {
+				return JsonConvert.SerializeObject (dict).ToString ();
+			} catch {
+				return string.Empty;
+			}
+		}
+	}
 }

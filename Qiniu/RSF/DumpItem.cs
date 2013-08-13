@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+
 namespace Qiniu.RSF
 {
 	/// <summary>
@@ -10,6 +11,7 @@ namespace Qiniu.RSF
 	public class DumpItem
 	{
 		Int64 fSize;
+
 		/// <summary>
 		/// 文件大小.
 		/// </summary>
@@ -18,13 +20,13 @@ namespace Qiniu.RSF
 			get {
 				return fSize;
 			}
-            set
-            {
-                fSize = value;
-            }
+			set {
+				fSize = value;
+			}
 		}
 
 		Int64 putTime;
+
 		/// <summary>
 		/// 修改时间.
 		/// </summary>
@@ -33,13 +35,13 @@ namespace Qiniu.RSF
 			get {
 				return putTime;
 			}
-            set
-            {
-                putTime = value;
-            }
+			set {
+				putTime = value;
+			}
 		}
 
 		string key;
+
 		/// <summary>
 		/// 文件名.
 		/// </summary>
@@ -48,13 +50,13 @@ namespace Qiniu.RSF
 			get {
 				return key;
 			}
-            set
-            {
-                key = value;
-            }
+			set {
+				key = value;
+			}
 		}
 
 		string hash;
+
 		/// <summary>
 		/// Gets a value indicating whether this instance hash.
 		/// </summary>
@@ -63,12 +65,13 @@ namespace Qiniu.RSF
 			get {
 				return hash;
 			}
-            set {
-                hash = value;
-            }
+			set {
+				hash = value;
+			}
 		}
 
 		string mime;
+
 		/// <summary>
 		/// Gets the MIME.
 		/// </summary>
@@ -77,24 +80,22 @@ namespace Qiniu.RSF
 			get {
 				return mime;
 			}
-            set
-            {
-                mime = value;
-            }
+			set {
+				mime = value;
+			}
 		}
 
 		string endUser;
+
 		public string EndUser {
 			get {
 				return endUser;
 			}
-            set
-            {
-                endUser = value;
-            }
+			set {
+				endUser = value;
+			}
 		}
 	}
-
 
 	/// <summary>
 	/// Fetch 返回结果.
@@ -103,6 +104,7 @@ namespace Qiniu.RSF
 	public class DumpRet
 	{
 		string marker;
+
 		/// <summary>
 		/// fetch 定位符
 		/// </summary>
@@ -115,7 +117,9 @@ namespace Qiniu.RSF
 				marker = value;
 			}
 		}
+
 		List<DumpItem> items;
+
 		/// <summary>
 		/// The items.
 		/// </summary>
@@ -128,7 +132,6 @@ namespace Qiniu.RSF
 				items = value;
 			}
 		}
-
 	}
 }
 
