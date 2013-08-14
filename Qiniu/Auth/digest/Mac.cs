@@ -7,19 +7,28 @@ using Qiniu.Util;
 namespace Qiniu.Auth.digest
 {
 	/// <summary>
-	/// Message Authentication Code
+	/// 七牛消息认证(Message Authentication)
 	/// </summary>
 	public class Mac
 	{
-		string accessKey;
+		
+		private string accessKey;
 
+		/// <summary>
+		/// Gets or sets the access key.
+		/// </summary>
+		/// <value>The access key.</value>
 		public string AccessKey {
 			get { return accessKey; }
 			set { accessKey = value; }
 		}
 
-		byte[] secretKey;
+		private byte[] secretKey;
 
+		/// <summary>
+		/// Gets the secret key.
+		/// </summary>
+		/// <value>The secret key.</value>
 		public byte[] SecretKey {
 			get { return secretKey; }
 		}

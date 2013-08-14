@@ -12,24 +12,24 @@ namespace Qiniu.RS
 	/// <summary>
 	/// 文件管理操作
 	/// </summary>
-	public class FileHandle
+	public enum FileHandle
 	{
 		/// <summary>
 		/// 查看
 		/// </summary>
-		public const string STAT = "stat";
+		STAT = 0,
 		/// <summary>
-		/// 移动
+		/// 移动move
 		/// </summary>
-		public const string MOVE = "move";
+		MOVE,
 		/// <summary>
-		/// 复制
+		/// 复制copy
 		/// </summary>
-		public const string COPY = "copy";
+		COPY,
 		/// <summary>
-		/// 删除
+		/// 删除delete
 		/// </summary>
-		public const string DELETE = "delete";
+		DELETE
 	}
 
 	/// <summary>
@@ -38,6 +38,8 @@ namespace Qiniu.RS
 	/// </summary>
 	public class RSClient :QiniuAuthClient
 	{
+		private static string[] OPS = new string[] { "stat", "move", "copy", "delet" };
+
 		public RSClient (Mac mac=null)
             : base(mac)
 		{
@@ -49,12 +51,12 @@ namespace Qiniu.RS
 		/// <param name="op"></param>
 		/// <param name="scope"></param>
 		/// <returns></returns>
-		private CallRet op (string op, EntryPath scope)
+		private CallRet op (FileHandle op, EntryPath scope)
 		{
 			string url = string.Format ("{0}/{1}/{2}",
-			                                    Config.RS_HOST,
-			                                    op,
-			                                    Base64URLSafe.Encode (scope.URI));
+			                            Config.RS_HOST,
+			                            OPS [(int)op],
+			                            Base64URLSafe.Encode (scope.URI));
 			return Call (url);
 		}
 
@@ -64,13 +66,13 @@ namespace Qiniu.RS
 		/// <param name="op"></param>
 		/// <param name="pair"></param>
 		/// <returns></returns>
-		private CallRet op2 (string op, EntryPathPair pair)
+		private CallRet op2 (FileHandle op, EntryPathPair pair)
 		{
 			string url = string.Format ("{0}/{1}/{2}/{3}",
-			                                    Config.RS_HOST,
-			                                    op,
-			                                    Base64URLSafe.Encode (pair.URISrc),
-			                                    Base64URLSafe.Encode (pair.URIDest));
+			                            Config.RS_HOST,
+			                            OPS [(int)op],
+			                            Base64URLSafe.Encode (pair.URISrc),
+			                            Base64URLSafe.Encode (pair.URIDest));
 			return Call (url);
 		}
 
@@ -129,18 +131,18 @@ namespace Qiniu.RS
 		/// <param name="opName">操作名</param>
 		/// <param name="keys">操作对象keys</param>
 		/// <returns>Request Body</returns>
-		private string getBatchOp_1 (string opName, EntryPath[] keys)
+		private string getBatchOp_1 (FileHandle op, EntryPath[] keys)
 		{
 			if (keys.Length < 1)
 				return string.Empty;
 			StringBuilder sb = new StringBuilder ();
 			for (int i = 0; i < keys.Length - 1; i++) {
 				string item = string.Format ("op=/{0}/{1}&",
-				                                        opName, 
-				                                        Base64URLSafe.Encode (keys [i].URI));
+				                             OPS [(int)op], 
+				                             Base64URLSafe.Encode (keys [i].URI));
 				sb.Append (item);
 			}
-			string litem = string.Format ("op=/{0}/{1}", opName, Base64URLSafe.Encode (keys [keys.Length - 1].URI));
+			string litem = string.Format ("op=/{0}/{1}", OPS [(int)op], Base64URLSafe.Encode (keys [keys.Length - 1].URI));
 			return sb.Append (litem).ToString ();
 		}
 
@@ -150,20 +152,21 @@ namespace Qiniu.RS
 		/// <param name="opName"></param>
 		/// <param name="keys"></param>
 		/// <returns></returns>
-		private string getBatchOp_2 (string opName, EntryPathPair[] keys)
+		private string getBatchOp_2 (FileHandle op, EntryPathPair[] keys)
 		{
 			if (keys.Length < 1)
 				return string.Empty;
 			StringBuilder sb = new StringBuilder ();
 			for (int i = 0; i < keys.Length - 1; i++) {
-				string item = string.Format ("op=/{0}/{1}/{2}&", opName,
-				                                        Base64URLSafe.Encode (keys [i].URISrc),
-				                                        Base64URLSafe.Encode (keys [i].URIDest));
+				string item = string.Format ("op=/{0}/{1}/{2}&", 
+				                             OPS [(int)op],
+				                             Base64URLSafe.Encode (keys [i].URISrc),
+				                             Base64URLSafe.Encode (keys [i].URIDest));
 				sb.Append (item);
 			}
-			string litem = string.Format ("op=/{0}/{1}/{2}", opName,
-			                                      Base64URLSafe.Encode (keys [keys.Length - 1].URISrc),
-			                                      Base64URLSafe.Encode (keys [keys.Length - 1].URIDest));
+			string litem = string.Format ("op=/{0}/{1}/{2}", OPS [(int)op],
+			                              Base64URLSafe.Encode (keys [keys.Length - 1].URISrc),
+			                              Base64URLSafe.Encode (keys [keys.Length - 1].URIDest));
 			return sb.Append (litem).ToString ();
 		}
 

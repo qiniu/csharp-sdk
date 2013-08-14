@@ -45,13 +45,22 @@
 	/// </summary>
 	public class EntryPathPair
 	{
-		EntryPath src;
-		EntryPath dest;
+		private EntryPath src;
+		private EntryPath dest;
 
 		private void _entryPathPair (string bucketSrc, string keySrc, string bucketDest, string keyDest)
 		{
 			this.src = new EntryPath (bucketSrc, keySrc);
 			this.dest = new EntryPath (bucketDest, keyDest);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Qiniu.RS.EntryPathPair"/> class.
+		/// </summary>
+		public EntryPathPair (EntryPath src, EntryPath des)
+		{
+			this.src = src;
+			this.dest = des;
 		}
 
 		/// <summary>
