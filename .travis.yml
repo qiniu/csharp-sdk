@@ -5,8 +5,8 @@ install:
  - sudo apt-get update && sudo apt-get install nunit mono-gmcs cli-common-dev libgl1-mesa-dev libsdl1.2-dev libopenal-dev
 
 before_script:
-  - export QINIU_ACCESS_KEY="gPhMyVzzbQ_LOjboaVsy7dbCB4JHgyVPonmhT3Dp"
-  - export QINIU_SECRET_KEY="OjY7IMysXu1erRRuWe7gkaiHcD6-JMJ4hXeRPZ1B"
+  - export QINIU_ACCESS_KEY="IFkgYHCdmdNPWNjMMhk9LAV7guz1wpI5Sp5h8ssK"
+  - export QINIU_SECRET_KEY="R6Nlsu6SQwStqhlDv-e4fMGW3qM4ryBspHgdjAFR"
   - export QINIU_TEST_BUCKET="icattlecoder3"
   - export QINIU_TEST_DOMAIN="qiniuphotos.qiniudn.com" 
 
