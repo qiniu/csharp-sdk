@@ -48,8 +48,8 @@ namespace Qiniu.IO
         /// <param name="extra"></param>
         public PutRet PutFile(string upToken, string key, string localFile, PutExtra extra)
         {
-			if (System.IO.File.Exists (localFile)) {
-				new Exception (string.Format ("{0} does not exist", localFile));
+			if (!System.IO.File.Exists (localFile)) {
+				throw new Exception (string.Format ("{0} does not exist", localFile));
 			}
             PutRet ret;
 		
