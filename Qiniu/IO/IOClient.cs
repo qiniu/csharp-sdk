@@ -5,7 +5,6 @@ using Qiniu.Conf;
 using Qiniu.Auth;
 using Qiniu.RPC;
 using Qiniu.Util;
-using Qiniu.IO.Resumable;
 using System.Collections.Specialized;
 
 namespace Qiniu.IO
@@ -53,7 +52,7 @@ namespace Qiniu.IO
 				new Exception (string.Format ("{0} does not exist", localFile));
 			}
             PutRet ret;
-			key = key.ToUrlEncode ();
+		
             NameValueCollection formData = getFormData(upToken, key, extra);
             try
             {
