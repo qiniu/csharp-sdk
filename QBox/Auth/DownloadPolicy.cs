@@ -10,16 +10,17 @@ namespace QBox.Auth
 {
     public class DownloadPolicy
     {
+        private static readonly DateTime begin = new DateTime(1970, 1, 1);
+
         public string Pattern { get; set; }
         public long Deadline { get; set; }
 
-        public DownloadPolicy(string pattern, long expires)
+        public DownloadPolicy(string pattern, long expiresInSeconds)
         {
             Pattern = pattern;
-            DateTime begin = new DateTime(1970, 1, 1);
-            DateTime now = DateTime.Now;
-            TimeSpan interval = new TimeSpan(now.Ticks - begin.Ticks);
-            Deadline = (long)interval.TotalSeconds + expires;
+            DateTime now = DateTime.UtcNow;
+            TimeSpan interval = now - begin;
+            Deadline = (long)interval.TotalSeconds + expiresInSeconds;
         }
 
         public string Marshal()
