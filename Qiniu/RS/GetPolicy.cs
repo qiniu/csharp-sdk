@@ -15,10 +15,8 @@ namespace Qiniu.RS
 			if (mac == null) {
 				mac = new Mac (Config.ACCESS_KEY, Config.Encoding.GetBytes (Config.SECRET_KEY));
 			}
-			DateTime begin = new DateTime (1970, 1, 1);
-			DateTime now = DateTime.Now;
-			TimeSpan interval = new TimeSpan (now.Ticks - begin.Ticks);
-			UInt32 deadline = (UInt32)interval.TotalSeconds + expires;
+
+			UInt32 deadline = (UInt32)((DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000 + expires);
 			if (baseUrl.Contains ('?')) {
 				baseUrl += "&e=";
 			} else {
