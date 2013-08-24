@@ -17,7 +17,7 @@ namespace QBox.Auth
         {
             Pattern = pattern;
             DateTime begin = new DateTime(1970, 1, 1);
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             TimeSpan interval = new TimeSpan(now.Ticks - begin.Ticks);
             Deadline = (long)interval.TotalSeconds + expires;
         }
