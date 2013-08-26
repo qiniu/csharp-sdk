@@ -1,15 +1,15 @@
 ## CHANGE LOG
 
-### v2.4.0
+### v6.0.0
 
-2013-02-19
+2013-07-30 #issue[17](https://github.com/qiniu/csharp-sdk/pull/17)
 
-Issue [#10](https://github.com/qiniu/csharp-sdk/pull/10):
-
-- QBox.Auth.AuthPolicy 增加成员：CallbackBodyType, Escape, AsyncOps, ReturnBody
-- DownloadToken支持：增加 QBox.Auth.DownloadPolicy 类
-- 增加 PutAuth 支持：增加 QBox.Auth.PutAuthClient 类
-- 非兼容调整：QBox.RS.Client 改名为 QBox.RPC.Client
-- 简易断点续上传支持: 增加 QBox.RS.ResumablePut 类
-- hotfix: 修复了 Base64 编码不支持中文的情况（QBox/Util）
-
+- 开发环境支持Xamarin,Mono
+- 增加tools,包含Json库，nunit.framework.dll
+- 移植单元测试,由原VisulStudio支持变换为Nunit Framework支持
+- QBox命名空间更新为Qiniu
+- 遵循 [Qiniu API SDKSpec 6.0](https://github.com/qiniu/sdkspec/tree/v6.0.0)
+- 增加 RSF 支持：增加 Qiniu.RSF.RSFClient 类
+- 增加 RS批量操作
+- 引用第三方JSON库,[JSON.NET](json.codeplex.com)
+- 大文件断点并行上传支持: 增加 Qiniu.IO.Resumable.ResumablePut 类

@@ -2,5 +2,8 @@
 *.swp
 *.suo
 
+test-results
+csharp-sdk.userprefs
+
 bin
 obj
