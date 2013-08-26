@@ -2,8 +2,8 @@
 title: CSharp SDK
 ---
 
+
 此 Charp SDK 适用于.net framework>4.0版本，基于 [七牛云存储官方API](http://docs.qiniu.com/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
->
 
 目录
 ----
@@ -51,11 +51,11 @@ title: CSharp SDK
 
 DLL引用方式:
 	
-	下载DLL文件，右键<项目>-<引用>文件夹，在弹出的菜单中点击"添加引用"选项后弹出"添加引用"对话框，选择”浏览"选项卡后选中下载的QBox.DLL文件,点击确定	
+	下载DLL文件，右键<项目>-<引用>文件夹，在弹出的菜单中点击"添加引用"选项后弹出"添加引用"对话框，选择”浏览"Qiniu.DLL文件,点击确定	
 
 项目引用方式：
 
-	下载项目文件，右键解决方案，在弹出的菜单中点击"添加"->"现有项目"，然后在弹出的对话框中选择"QBox.csproj"文件，点击确定。接下来与DLL引用方式类似，在"添加引用”对话框选择"项目"选项卡后选中QBox项目即可。
+	下载项目文件，右键解决方案，在弹出的菜单中点击"添加"->"现有项目"，然后在弹出的对话框中选择 Qiniu.csproj"文件，点击确定。接下来与DLL引用方式类似，在"添加引用”对话框选择"项目"选项卡后选中Qiniu项目即可。
 
 其它:
 
@@ -65,6 +65,7 @@ DLL引用方式:
 <a name=setup-key></a>
 ### 2.1 配置密钥
 
+
 要接入七牛云存储，您需要拥有一对有效的 Access Key 和 Secret Key 用来进行签名认证。可以通过如下步骤获得：
 
 1. [开通七牛开发者帐号](https://portal.qiniu.com/signup)
@@ -73,11 +74,9 @@ DLL引用方式:
 在获取到 Access Key 和 Secret Key 之后，您可以在您的程序中调用如下两行代码进行初始化对接, 要确保`ACCESS_KEY` 和 `SECRET_KEY` 在<u>调用所有七牛API服务之前均已赋值</u>：
 
 ```c#
-
 using Qiniu.Conf;
 qiniu.conf.ACCESS_KEY = "<YOUR_APP_ACCESS_KEY>"
 qiniu.conf.SECRET_KEY = "<YOUR_APP_SECRET_KEY>"
-
 ```
 
 <a name=rs-api></a>
@@ -141,14 +140,12 @@ public class EntryPathPair
 	//     bucketSrc+":"+keySrc
 	public string URISrc { get; }
 }
-
 ```
 
 <a name=rs-stat></a>
 ### 3.1 查看单个文件属性信息
 
 ```c#
-
 //example
 using Qiniu.RS
 
@@ -346,9 +343,7 @@ public static void BatchDelete(string bucket, string[] keys)
 资源列表接口允许用户列出空间下的所有文件信息。使用资源列表接口如果引入Qiniu.RSF命名空间。
 
 ```c#
-using Qiniu.RSF;
-```
-```c#
+	using Qiniu.RSF;
 	RSFClient client = new RSFClient();
 	client.listPrifix("<bucketName>", "<prefix>", "<marker>", 500);
 ```
@@ -379,10 +374,8 @@ public static void List (string bucket)
 uptoken是一个字符串，作为http协议Header的一部分（Authorization字段）发送到我们七牛的服务端，表示这个http请求是经过认证的。
 
 ```c#
-
 PutPolicy put = new PutPolicy(bucketName);
 put.Token();
-
 ```
     
 <a name=upload></a>
@@ -397,7 +390,6 @@ put.Token();
 上传本地文件
 
 ```c#
-
 /// <summary>
 /// 上传文件测试
 /// </summary>
@@ -434,7 +426,6 @@ public static void PutFile(string bucket, string key, string fname)
 上传本地文件
 
 ```c#
-
 public static void ResumablePutFile(string bucket, string key, string fname)
 {
 	Console.WriteLine("\n===> ResumablePutFile {0}:{1} fname:{2}", bucket, key, fname);
@@ -467,7 +458,6 @@ ResumablePut采用分快上传，各快之间采用并行上传,通过注册事�
 ```c#
 public event EventHandler<PutNotifyEvent> Notify;
 public event EventHandler<PutNotifyErrorEvent> NotifyErr;
-
 ```
 
 <a name=io-download></a>
@@ -502,7 +492,6 @@ public static void MakeGetToken(string domain, string key)
 	string baseUrl = GetPolicy.MakeBaseUrl(domain, key);
 	string private_url = GetPolicy.MakeRequest(baseUrl);
 }
-
 ```
 
 <a name=fop-api></a>
@@ -519,7 +508,6 @@ using Qiniu.FileOp;
 ### 6.1.1 查看图像属性
 
 ```c#
-
 	string domain = "domain";
 	string key = key;
 	Console.WriteLine("\n===> FileOp.ImageInfo");
@@ -541,14 +529,12 @@ using Qiniu.FileOp;
 	{
 		Console.WriteLine("Failed to ImageInfo");
 	}
-
 ```
 
 <a name=fop-exif></a>
 ### 6.1.2 查看图片EXIF信息
 
 ```C#
-
 	string exifURL = Exif.MakeRequest(url);
 	ExifRet exifRet = Exif.Call(exifURL);
 	if (exifRet.OK)
@@ -561,7 +547,6 @@ using Qiniu.FileOp;
 	{
 	    Console.WriteLine("Failed to ImageExif");
 	}
-
 ```
 
 
@@ -569,19 +554,16 @@ using Qiniu.FileOp;
 ### 6.1.3 生成图片预览
 
 ```c#
-
 	ImageView imageView = new ImageView { Mode = 0, Width = 200, Height = 200, Quality = 90, Format = "gif" };
 	string viewUrl = imageView.MakeRequest(url);
 	viewUrl = GetPolicy.MakeRequest(viewUrl);
 	Console.WriteLine("ImageViewURL:" + viewUrl);
-
 ```
 
 <a name=fop-image-mogr></a>
 ### 6.1.4 图片高级处理(缩略、裁剪、旋转、转化)
 
 ```c#
-
 	ImageMogrify imageMogr = new ImageMogrify
 	{
 		Thumbnail = "!50x50r",
@@ -594,21 +576,18 @@ using Qiniu.FileOp;
 	string mogrUrl = imageMogr.MakeRequest(url);
 	mogrUrl = GetPolicy.MakeRequest(mogrUrl);
 	Console.WriteLine("ImageMogrifyURL:" + mogrUrl);
-
 ```
 
 <a name=fop-image-watermark></a>
 ### 6.1.5 图像水印接口
 
 ```c#
-
 	//文字水印
 	WaterMarker marker = new TextWaterMarker("hello,qiniu cloud!","","red");
 	string MarkerUrl = marker.MakeRequest(url);
 	//图片水印
 	marker = new ImageWaterMarker("http://www.b1.qiniudn.com/images/logo-2.png");
 	MarkerUrl = marker.MakeRequest(url);
-
 ```
 
 <a name=contribution></a>
