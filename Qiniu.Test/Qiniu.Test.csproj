@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{95DC2A77-2344-4315-9F6F-334CC928459C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Qiniu.Test</RootNamespace>
+    <AssemblyName>Qiniu.Test</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\tools\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QiniuTestBase.cs" />
+    <Compile Include="IO\IOClientTest.cs" />
+    <Compile Include="RS\RSClientTest.cs" />
+    <Compile Include="RSF\RSFClientTest.cs" />
+    <Compile Include="FileOp\ExifTest.cs" />
+    <Compile Include="FileOp\ImageInfoTest.cs" />
+    <Compile Include="FileOp\ImageMogrifyTest.cs" />
+    <Compile Include="FileOp\ImageViewTest.cs" />
+    <Compile Include="FileOp\ImageWaterMarkerTest.cs" />
+    <Compile Include="FileOp\TextWaterMarkerTest.cs" />
+    <Compile Include="Auth\PutPolicy.cs" />
+    <Compile Include="IO\Resumable\ResumablePutTest.cs" />
+    <Compile Include="TestHelper\IOHelper.cs" />
+    <Compile Include="TestHelper\RSHelper.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Qiniu\Qiniu.csproj">
+      <Project>{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}</Project>
+      <Name>Qiniu</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\" />
+    <Folder Include="RS\" />
+    <Folder Include="RSF\" />
+    <Folder Include="FileOp\" />
+    <Folder Include="Auth\" />
+    <Folder Include="IO\Resumable\" />
+    <Folder Include="TestHelper\" />
+  </ItemGroup>
+</Project>

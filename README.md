@@ -6,7 +6,7 @@
 
 ## 使用
 
-参考文档：[七牛云存储 C# SDK 使用指南](http://docs.qiniutek.com/v2/sdk/csharp/)
+参考文档：[七牛云存储 C# SDK 使用指南](http://docs.qiniu.com/v2/sdk/csharp/)
 
 ## 贡献代码
 
