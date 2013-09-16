@@ -20,7 +20,7 @@
 		/// 文件key
 		/// </summary>
 		public string Key {
-			get { return System.Web.HttpUtility.UrlEncode (key); }
+			get { return key; }
 		}
 
 		private string uri;
