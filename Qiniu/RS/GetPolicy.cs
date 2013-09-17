@@ -29,7 +29,7 @@ namespace Qiniu.RS
 
 		public static string MakeBaseUrl (string domain, string key)
 		{
-			return string.Format ("http://{0}/{1}", domain, System.Web.HttpUtility.UrlEncode (key));
+			return string.Format ("http://{0}/{1}", domain, key);
 		}
 	}
 }
