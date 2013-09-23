@@ -40,7 +40,7 @@ namespace Qiniu.RS
 		public Entry (CallRet ret)
             : base(ret)
 		{
-			if (OK && string.IsNullOrEmpty (Response)) {
+			if (OK && !string.IsNullOrEmpty (Response)) {
 				try {
 					Unmarshal (Response);
 				} catch (Exception e) {
