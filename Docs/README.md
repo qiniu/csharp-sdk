@@ -418,7 +418,7 @@ public static void PutFile(string bucket, string key, string fname)
 
 为防止在上传较大文件时发生GUI界面出现假死现像，c# SDK的内部被设计为异步上传模式，您可以通过注册client的PutFinished事件获取上传结果。该事件无论上传是否会成功，都会被触发。
 
-
+**注意： key必须采用utf8编码，如使用非utf8编码访问七牛云存储将反馈错误**
 
 <a name=resumable-io-upload></a>
 ### 5.2.2 断点续上传
@@ -475,6 +475,8 @@ public event EventHandler<PutNotifyErrorEvent> NotifyErr;
 	[GET] http://<domain>/<key>
 
 其中<domain>可以到[七牛云存储开发者自助网站](https://portal.qiniu.com/)绑定, 域名可以使用自己一级域名的或者是由七牛提供的二级域名(`<bucket>.qiniudn.com`)。注意，尖括号不是必需，代表替换项。
+
+**注意： key必须采用utf8编码，如使用非utf8编码访问七牛云存储将反馈错误**
 
 <a name=private-download></a>
 #### 5.3.2 私有资源下载
