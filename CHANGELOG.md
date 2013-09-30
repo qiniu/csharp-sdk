@@ -1,5 +1,12 @@
 ## CHANGE LOG
 
+### v6.0.1
+
+2013-09-28 #issue[28](https://github.com/qiniu/csharp-sdk/pull/28)
+
+- 修复Qiniu.RS.Entry实例化时的逻辑判断错误
+- 修复断点续传时会自动对key做urlEncode导致key不一致的错误
+
 ### v6.0.0
 
 2013-07-30 #issue[17](https://github.com/qiniu/csharp-sdk/pull/17)
