@@ -19,15 +19,25 @@ namespace Qiniu.IO.Resumable
 		private const int blockMashk = (1 << blockBits) - 1;
 		private static int BLOCKSIZE = 4 * 1024 * 1024;
 		private const string UNDEFINED_KEY = "?";
+
 		#region 记录总文件大小,用于计算上传百分比
+
 		private long fsize;
 		private float chunks;
 		private float uploadedChunks = 0;
+
 		#endregion
+
 		/// <summary>
 		/// 上传完成事件
 		/// </summary>
 		public event EventHandler<CallRet> PutFinished;
+
+		/// <summary>
+		/// 上传Failure事件
+		/// </summary>
+		public event EventHandler<CallRet> PutFailure;
+
 		/// <summary>
 		/// 进度提示事件
 		/// </summary>
@@ -71,7 +81,7 @@ namespace Qiniu.IO.Resumable
 		/// <param name="upToken">上传Token</param>
 		/// <param name="key">key</param>
 		/// <param name="localFile">本地文件名</param>
-		public void PutFile (string upToken, string localFile, string key)
+		public CallRet PutFile (string upToken, string localFile, string key)
 		{
 			PutAuthClient client = new PutAuthClient (upToken);
 			using (FileStream fs = File.OpenRead(localFile)) {
@@ -80,8 +90,7 @@ namespace Qiniu.IO.Resumable
 				chunks = fsize / extra.chunkSize + 1;
 				extra.Progresses = new BlkputRet[block_cnt];
 				//并行上传
-				Parallel.For (0, block_cnt, (i) =>
-				{
+				Parallel.For (0, block_cnt, (i) => {
 					int readLen = BLOCKSIZE;
 					if ((i + 1) * BLOCKSIZE > fsize)
 						readLen = (int)(fsize - i * BLOCKSIZE);
@@ -89,27 +98,34 @@ namespace Qiniu.IO.Resumable
 					lock (fs) {
 						fs.Seek (i * BLOCKSIZE, SeekOrigin.Begin);
 						fs.Read (byteBuf, 0, readLen);
+					
 						BlkputRet blkRet = ResumableBlockPut (client, byteBuf, i, readLen);
+					
 						if (blkRet == null) {
 							extra.OnNotifyErr (new PutNotifyErrorEvent (i, readLen, "Make Block Error"));
 						} else {
 							extra.OnNotify (new PutNotifyEvent (i, readLen, extra.Progresses [i]));
-						}                            
-					}
+						}
+					}                            
 				});
 				if (string.IsNullOrEmpty (key)) {
 					key = UNDEFINED_KEY;
 				}
 				CallRet ret = Mkfile (client, key, fs.Length);
-				if (Progress != null) {
-					Progress (1.0f);
+				if (ret.OK) {
+					if (Progress != null) {
+						Progress (1.0f);
+					}
+					if (PutFinished != null) {
+						PutFinished (this, ret);
+					}
+				} else {
+					if (PutFailure != null) {
+						PutFailure (this, ret);
+					}
 				}
-				if (PutFinished != null) {
-					PutFinished (this, ret);
-				}
-                   
+				return ret;
 			}
-           
 		}
 
 		/// <summary>
@@ -147,8 +163,9 @@ namespace Qiniu.IO.Resumable
 				}
 			}
 			#endregion
+
 			#region PutBlock
-			while (extra.Progresses[blkIdex].offset < blkSize) {                
+			while (extra.Progresses [blkIdex].offset < blkSize) {                
 				bodyLength = (chunkSize < (blkSize - extra.Progresses [blkIdex].offset)) ? chunkSize : (int)(blkSize - extra.Progresses [blkIdex].offset);
 				byte[] chunk = new byte[bodyLength];
 				Array.Copy (body, extra.Progresses [blkIdex].offset, chunk, 0, bodyLength);
@@ -194,17 +211,23 @@ namespace Qiniu.IO.Resumable
 
 		private CallRet Mkfile (Client client, string key, long fsize)
 		{
-			EntryPath entry = new EntryPath (extra.Bucket, key);
-			string url = string.Format ("{0}/rs-mkfile/{1}/fsize/{2}/", Config.UP_HOST, entry.Base64EncodedURI, fsize);
+			StringBuilder urlBuilder = new StringBuilder ();
+
+			urlBuilder.AppendFormat ("{0}/mkfile/{1}/key/{2}", Config.UP_HOST, fsize, key.ToBase64URLSafe ());
 			if (!string.IsNullOrEmpty (extra.MimeType)) {
-				url += (string.Format ("/mimeType/{0}", extra.MimeType.ToBase64URLSafe ()));
+				urlBuilder.AppendFormat ("/mimeType/{0}", extra.MimeType.ToBase64URLSafe ());
 			}
 			if (!string.IsNullOrEmpty (extra.CustomMeta)) {
-				url += (string.Format ("/meta/{0}", extra.CustomMeta.ToBase64URLSafe ()));
+				urlBuilder.AppendFormat ("/meta/{0}", extra.CustomMeta.ToBase64URLSafe ());
 			}
-			if (!string.IsNullOrEmpty (extra.CallbackParams)) {
-				url += (string.Format ("/params/{0}", extra.CallbackParams.ToBase64URLSafe ()));
+			if (extra.CallbackParams != null && extra.CallbackParams.Count > 0) {
+				StringBuilder sb = new StringBuilder ();
+				foreach (string _key in extra.CallbackParams.Keys) {
+					sb.AppendFormat ("/{0}/{1}", _key, extra.CallbackParams [_key].ToBase64URLSafe ());
+				}
+				urlBuilder.Append (sb.ToString ());
 			}
+
 			int proCount = extra.Progresses.Length;
 			using (Stream body = new MemoryStream()) {
 				for (int i = 0; i < proCount; i++) {
@@ -215,7 +238,7 @@ namespace Qiniu.IO.Resumable
 					}
 				}
 				body.Seek (0, SeekOrigin.Begin);
-				return client.CallWithBinary (url, "text/plain", body, body.Length);
+				return client.CallWithBinary (urlBuilder.ToString (), "text/plain", body, body.Length);
 			}
 		}
 
