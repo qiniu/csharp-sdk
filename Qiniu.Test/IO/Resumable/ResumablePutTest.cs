@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
 using NUnit.Framework;
 using Qiniu.IO.Resumable;
@@ -25,6 +26,9 @@ namespace Qiniu.Test.IO.Resumable
 			Settings putSetting = new Settings(); // TODO: 初始化为适当的值
 			string key=NewKey;
             ResumablePutExtra extra = new ResumablePutExtra();
+			NameValueCollection nc = new NameValueCollection ();
+			nc.Add("x:username","qiniu");
+			extra.CallbackParams = nc;
             extra.Notify += new EventHandler<PutNotifyEvent>(extra_Notify);
             extra.NotifyErr += new EventHandler<PutNotifyErrorEvent>(extra_NotifyErr);
             extra.Bucket = Bucket;
@@ -39,7 +43,7 @@ namespace Qiniu.Test.IO.Resumable
 					RSHelper.RSDel (Bucket, key);
 				}
 			});
-			target.PutFile (upToken, file.FileName, key);
+			CallRet ret =target.PutFile (upToken, file.FileName, key);
 
 			//Action a = new Action (() =>
 			//{
