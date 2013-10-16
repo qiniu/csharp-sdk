@@ -32,12 +32,10 @@ namespace Qiniu.IO.Resumable
 		/// 上传完成事件
 		/// </summary>
 		public event EventHandler<CallRet> PutFinished;
-
 		/// <summary>
 		/// 上传Failure事件
 		/// </summary>
 		public event EventHandler<CallRet> PutFailure;
-
 		/// <summary>
 		/// 进度提示事件
 		/// </summary>
@@ -98,15 +96,15 @@ namespace Qiniu.IO.Resumable
 					lock (fs) {
 						fs.Seek (i * BLOCKSIZE, SeekOrigin.Begin);
 						fs.Read (byteBuf, 0, readLen);
+					}
+					BlkputRet blkRet = ResumableBlockPut (client, byteBuf, i, readLen);
 					
-						BlkputRet blkRet = ResumableBlockPut (client, byteBuf, i, readLen);
-					
-						if (blkRet == null) {
-							extra.OnNotifyErr (new PutNotifyErrorEvent (i, readLen, "Make Block Error"));
-						} else {
-							extra.OnNotify (new PutNotifyEvent (i, readLen, extra.Progresses [i]));
-						}
-					}                            
+					if (blkRet == null) {
+						extra.OnNotifyErr (new PutNotifyErrorEvent (i, readLen, "Make Block Error"));
+					} else {
+						extra.OnNotify (new PutNotifyEvent (i, readLen, extra.Progresses [i]));
+					}
+					                           
 				});
 				if (string.IsNullOrEmpty (key)) {
 					key = UNDEFINED_KEY;
