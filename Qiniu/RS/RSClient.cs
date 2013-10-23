@@ -38,7 +38,7 @@ namespace Qiniu.RS
 	/// </summary>
 	public class RSClient :QiniuAuthClient
 	{
-		private static string[] OPS = new string[] { "stat", "move", "copy", "delet" };
+		private static string[] OPS = new string[] { "stat", "move", "copy", "delete" };
 
 		public RSClient (Mac mac=null)
             : base(mac)

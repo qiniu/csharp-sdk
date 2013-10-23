@@ -96,10 +96,8 @@ namespace Qiniu.RS
 		public PutPolicy (string scope, UInt32 expires=3600)
 		{
 			Scope = scope;
-			DateTime begin = new DateTime (1970, 1, 1);
-			DateTime now = DateTime.Now;
-			TimeSpan interval = new TimeSpan (now.Ticks - begin.Ticks);
-			Expires = (UInt32)interval.TotalSeconds + expires;
+			UInt32 deadline = (UInt32)((DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000 + expires);
+			Expires = deadline;
 		}
 
 		/// <summary>
