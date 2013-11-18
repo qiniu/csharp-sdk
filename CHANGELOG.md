@@ -1,5 +1,11 @@
 ## CHANGE LOG
 
+### v6.0.2
+
+2013-11-18 #issue[38](https://github.com/qiniu/csharp-sdk/pull/38)
+
+- 向PutPolicy类中添加pfop等有关的字段,添加callbody格式验证，fixed returnUrl，callbackUrl不能同时指定的特性，fixed returnUrl,returnBody需要同时指定或不指定特性。添加putPolicy 的JSON字符串的单元测试
+
 ### v6.0.1
 
 2013-09-28 #issue[28](https://github.com/qiniu/csharp-sdk/pull/28)

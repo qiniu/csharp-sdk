@@ -195,7 +195,7 @@ namespace Qiniu.RS
 			}
 			if (string.IsNullOrEmpty (callBackUrl) ^ string.IsNullOrEmpty (callBackBody)) {
 				throw new Exception ("CallBackUrl and CallBackBody error");
-			} else {
+			} else if(!string.IsNullOrEmpty(callBackUrl)) {
 				try{
 					JsonConvert.DeserializeObject(callBackBody);
 				}catch(Exception e){
