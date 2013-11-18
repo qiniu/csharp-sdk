@@ -18,8 +18,15 @@ namespace Qiniu.RS
 		private string returnUrl;
 		private string returnBody;
 		private string asyncOps;
+		private string saveKey;
+		private int insertOnly;
+		private int detectMime;
+		private long fsizeLimit;
+		private string persistentOps;
+		private string persistentNotifyUrl;
 		private string endUser;
 		private UInt64 expires = 3600;
+		private UInt64 deadline = 0;
 
 		/// <summary>
 		/// 一般指文件要上传到的目标存储空间（Bucket）。若为”Bucket”，表示限定只能传到该Bucket（仅限于新增文件）；若为”Bucket:Key”，表示限定特定的文件，可修改该文件。
@@ -88,16 +95,93 @@ namespace Qiniu.RS
 		/// 定义 uploadToken 的失效时间，Unix时间戳，精确到秒，缺省为 3600 秒
 		/// </summary>
 		[JsonProperty("deadline")]
-		public UInt64 Expires {
-			get { return expires;  }
-			set { expires = value; }
+		public UInt64 Deadline {
+			get { return deadline;  }
 		}
 
+		/// <summary>
+		/// 可选, Gets or sets the save key.
+		/// </summary>
+		/// <value>The save key.</value>
+		[JsonProperty("saveKey")]
+		public string SaveKey {
+			get {
+				return saveKey;
+			}
+			set{
+				saveKey = value; 
+			}
+		}
+
+		/// <summary>
+		/// 可选。 若非0, 即使Scope为 Bucket:Key 的形式也是insert only.
+		/// </summary>
+		/// <value>The insert only.</value>
+		[JsonProperty("insertOnly")]
+		public int InsertOnly {
+			get {
+				return insertOnly;
+			}
+			set{ 
+				insertOnly = value;
+			}
+		}
+
+		/// <summary>
+		/// 可选。若非0, 则服务端根据内容自动确定 MimeType */
+		/// </summary>
+		/// <value>The detect MIME.</value>
+		[JsonProperty("detectMime")]
+		public int DetectMime {
+			get {
+				return detectMime;
+			}
+			set{
+				detectMime = value; 
+			}
+		}
+
+		/// <summary>
+		/// 可选, Gets or sets the fsize limit.
+		/// </summary>
+		/// <value>The fsize limit.</value>
+		[JsonProperty("fsizeLimit")]
+		public long FsizeLimit {
+			get {
+				return fsizeLimit;
+			}
+			set{ 
+				fsizeLimit = value;
+			}
+		}
+
+		/// <summary>
+		/// 音视频转码持久化完成后，七牛的服务器会向用户发送处理结果通知。这里指定的url就是用于接收通知的接口。设置了`persistentOps`,则需要同时设置此字段
+		/// </summary>
+		[JsonProperty("persistentNotifyUrl")]
+		public string PersistentNotifyUrl {
+			get { return persistentNotifyUrl;  }
+			set { persistentNotifyUrl = value; }
+		}
+
+		/// <summary>
+		/// 可指定音视频文件上传完成后，需要进行的转码持久化操作。asyncOps的处理结果保存在缓存当中，有可能失效。而persistentOps的处理结果以文件形式保存在bucket中，体验更佳。[数据处理(持久化)](http://docs.qiniu.com/api/persistent-ops.html
+		/// </summary>
+		[JsonProperty("persistentOps")]
+		public string PersistentOps {
+			get { return persistentOps;  }
+			set { persistentOps = value; }
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Qiniu.RS.PutPolicy"/> class.
+		/// </summary>
+		/// <param name="scope">Scope.</param>
+		/// <param name="expires">Expires.</param>
 		public PutPolicy (string scope, UInt32 expires=3600)
 		{
 			Scope = scope;
-			UInt32 deadline = (UInt32)((DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000 + expires);
-			Expires = deadline;
+			this.expires = expires;
 		}
 
 		/// <summary>
@@ -106,12 +190,39 @@ namespace Qiniu.RS
 		/// <returns></returns>
 		public string Token (Mac mac=null)
 		{
+			if (string.IsNullOrEmpty (persistentOps) ^ string.IsNullOrEmpty (persistentNotifyUrl)) {
+				throw new Exception ("PersistentOps and PersistentNotifyUrl error");
+			}
+			if (string.IsNullOrEmpty (callBackUrl) ^ string.IsNullOrEmpty (callBackBody)) {
+				throw new Exception ("CallBackUrl and CallBackBody error");
+			} else {
+				try{
+					JsonConvert.DeserializeObject(callBackBody);
+				}catch(Exception e){
+					throw new Exception("callBackBody format failed");
+				}
+			}
+			if (string.IsNullOrEmpty (returnUrl) ^ string.IsNullOrEmpty (returnBody)) {
+				throw new Exception ("returnUrl and returnBody error");
+			} 
+			if (!string.IsNullOrEmpty (returnUrl) && !string.IsNullOrEmpty (callBackUrl)) {
+				throw new Exception ("returnUrl and callBackUrl error");
+			}
 			if (mac == null) {
 				mac = new Mac (Config.ACCESS_KEY, Config.Encoding.GetBytes (Config.SECRET_KEY));
 			}
-			string flag = QiniuJsonHelper.JsonEncode (this); 
+			this.deadline = (UInt32)((DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000 + (long)expires);
+			string flag = this.ToString (); 
 			return mac.SignWithData (Config.Encoding.GetBytes (flag));
+		}
 
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="Qiniu.RS.PutPolicy"/> in json formmat.
+		/// </summary>
+		/// <returns>A <see cref="System.String"/> that represents the current <see cref="Qiniu.RS.PutPolicy"/>.</returns>
+		public override string ToString ()
+		{
+			return QiniuJsonHelper.JsonEncode (this);
 		}
 	}
 }

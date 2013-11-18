@@ -11,6 +11,74 @@ namespace Qiniu.Test.IO
 	public class IOClientTest:QiniuTestBase
 	{
 
+		[Test]
+		public void PutPolicyTest(){
+			PutPolicy policy = new PutPolicy ("lskjd:lskd");
+			policy.CallBackUrl = "callbackUrl.com";
+			policy.ReturnUrl = "returnUrl.com";
+			bool exp = false;
+			try{
+				policy.Token ();
+			}catch{
+				exp = true;
+				Assert.IsTrue (true, "PutPolicyTest Failure");
+			}
+			Assert.IsTrue (exp, "PutPolicyTest Failure");
+			exp = false;
+
+
+			policy = new PutPolicy ("bucket");
+			policy.CallBackUrl = "callbackUrl.com";
+			try{
+				policy.Token ();
+			}catch{
+				exp = true;
+				Assert.IsTrue (true, "PutPolicyTest Failure");
+			}
+			Assert.IsTrue (exp, "PutPolicyTest Failure");
+			exp = false;
+
+			policy = new PutPolicy ("lskjd:lskd");
+			policy.ReturnUrl = "returnUrl.com";
+			try{
+				policy.Token ();
+			}catch{
+				exp = true;
+				Assert.IsTrue (true, "PutPolicyTest Failure");
+			}
+			Assert.IsTrue (exp, "PutPolicyTest Failure");
+			exp = false;
+
+			policy = new PutPolicy ("lskjd:lskd");
+			policy.CallBackUrl = "callbackUrl.com";
+			policy.CallBackBody = "asdf";
+			try{
+				policy.Token ();
+			}catch{
+				exp = true;
+				Assert.IsTrue (true, "PutPolicyTest Failure");
+			}
+			Assert.IsTrue (exp, "PutPolicyTest Failure");
+
+			policy = new PutPolicy("bucket");
+			policy.AsyncOps="";
+			policy.CallBackBody="{\"uid\":123}";
+			policy.CallBackUrl="www.qiniu.com";
+			policy.DetectMime = 1;
+			policy.FsizeLimit=4096;
+			policy.InsertOnly = 1;
+			policy.PersistentNotifyUrl="www.yourdomain.com/persistentNotifyUrl";
+			policy.PersistentOps = "avthumb/m3u8/preset/video_16x9_440k";
+			try {
+				string result = policy.ToString();
+				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"{\\\"uid\\\":123}\",\"asyncOps\":\"\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\"}";
+				Assert.IsTrue(result==expect,"PutPolicyTest Failure");
+			} catch (Exception ee){
+				Assert.IsTrue (false, "PutPolicyTest Failure");
+			}	
+
+		}
+
 		/// <summary>
 		///PutFile 的测试
 		///</summary>
