@@ -195,13 +195,7 @@ namespace Qiniu.RS
 			}
 			if (string.IsNullOrEmpty (callBackUrl) ^ string.IsNullOrEmpty (callBackBody)) {
 				throw new Exception ("CallBackUrl and CallBackBody error");
-			} else if(!string.IsNullOrEmpty(callBackUrl)) {
-				try{
-					JsonConvert.DeserializeObject(callBackBody);
-				}catch(Exception e){
-					throw new Exception("callBackBody format failed");
-				}
-			}
+			} 
 			if (string.IsNullOrEmpty (returnUrl) ^ string.IsNullOrEmpty (returnBody)) {
 				throw new Exception ("returnUrl and returnBody error");
 			} 

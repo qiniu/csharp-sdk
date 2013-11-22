@@ -49,17 +49,6 @@ namespace Qiniu.Test.IO
 			Assert.IsTrue (exp, "PutPolicyTest Failure");
 			exp = false;
 
-			policy = new PutPolicy ("lskjd:lskd");
-			policy.CallBackUrl = "callbackUrl.com";
-			policy.CallBackBody = "asdf";
-			try{
-				policy.Token ();
-			}catch{
-				exp = true;
-				Assert.IsTrue (true, "PutPolicyTest Failure");
-			}
-			Assert.IsTrue (exp, "PutPolicyTest Failure");
-
 			policy = new PutPolicy("bucket");
 			policy.AsyncOps="";
 			policy.CallBackBody="{\"uid\":123}";
