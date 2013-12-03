@@ -196,9 +196,6 @@ namespace Qiniu.RS
 			if (string.IsNullOrEmpty (callBackUrl) ^ string.IsNullOrEmpty (callBackBody)) {
 				throw new Exception ("CallBackUrl and CallBackBody error");
 			} 
-			if (string.IsNullOrEmpty (returnUrl) ^ string.IsNullOrEmpty (returnBody)) {
-				throw new Exception ("returnUrl and returnBody error");
-			} 
 			if (!string.IsNullOrEmpty (returnUrl) && !string.IsNullOrEmpty (callBackUrl)) {
 				throw new Exception ("returnUrl and callBackUrl error");
 			}
