@@ -29,6 +29,8 @@ namespace Qiniu.Conf
 		/// 七牛资源列表服务器地址.
 		/// </summary>
 		public static string RSF_HOST = "http://rsf.Qbox.me";
+
+		public static string PREFETCH_HOST = "http://iovip.qbox.me";
 		#endregion
 		/// <summary>
 		/// 七牛SDK对所有的字节编码采用utf-8形式 .
@@ -46,6 +48,7 @@ namespace Qiniu.Conf
 			RS_HOST = System.Configuration.ConfigurationManager.AppSettings ["RS_HOST"];
 			UP_HOST = System.Configuration.ConfigurationManager.AppSettings ["UP_HOST"];
 			RSF_HOST = System.Configuration.ConfigurationManager.AppSettings ["RSF_HOST"];
+			PREFETCH_HOST = System.Configuration.ConfigurationManager.AppSettings ["PREFETCH_HOST"];
 		}
 	}
 }
