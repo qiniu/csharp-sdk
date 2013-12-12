@@ -5,7 +5,7 @@ using Qiniu.Auth;
 using Qiniu.Conf;
 using Qiniu.RPC;
 using Qiniu.RS;
-namespace Qiniu.RSF
+namespace Qiniu.PreFetch
 {
 	/// <summary>
 	/// RS Fetch 
