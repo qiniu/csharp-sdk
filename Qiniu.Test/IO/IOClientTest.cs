@@ -73,8 +73,7 @@ namespace Qiniu.Test.IO
 			extra.Crc32 = 123;
 			extra.CheckCrc = CheckCrcType.CHECK;
 			extra.Params = new System.Collections.Generic.Dictionary<string, string> ();
-			extra.Scope = Bucket;
-			PutPolicy put = new PutPolicy (extra.Scope);
+			PutPolicy put = new PutPolicy (Bucket);
 			TmpFIle file = new TmpFIle (1024 * 10);
 			target.PutFinished += new EventHandler<PutRet> ((o,e) => {
 				file.Del ();
@@ -105,8 +104,7 @@ namespace Qiniu.Test.IO
 			extra.Crc32 = 123;
 			extra.CheckCrc = CheckCrcType.CHECK;
 			extra.Params = new System.Collections.Generic.Dictionary<string, string> ();
-			extra.Scope = Bucket;
-			PutPolicy put = new PutPolicy (extra.Scope);
+			PutPolicy put = new PutPolicy (Bucket);
 			TmpFIle file = new TmpFIle (1024 * 10);
 			target.PutFinished += new EventHandler<PutRet> ((o,e) => {
 				file.Del ();
@@ -133,8 +131,7 @@ namespace Qiniu.Test.IO
 			extra.Crc32 = 123;
 			extra.CheckCrc = CheckCrcType.CHECK;
 			extra.Params = new System.Collections.Generic.Dictionary<string, string>();
-			extra.Scope = Bucket;
-			PutPolicy put = new PutPolicy(extra.Scope);
+			PutPolicy put = new PutPolicy(Bucket);
 			target.PutFinished += new EventHandler<PutRet> ((o,e) => {
 				if (e.OK) {
 					RSHelper.RSDel (Bucket, key);

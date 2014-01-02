@@ -31,10 +31,9 @@ namespace Qiniu.Test.IO.Resumable
 			extra.CallbackParams = nc;
             extra.Notify += new EventHandler<PutNotifyEvent>(extra_Notify);
             extra.NotifyErr += new EventHandler<PutNotifyErrorEvent>(extra_NotifyErr);
-            extra.Bucket = Bucket;
             ResumablePut target = new ResumablePut(putSetting, extra); // TODO: 初始化为适当的值
-			Console.WriteLine ("extra.Bucket:"+extra.Bucket);
-            string upToken = new PutPolicy(extra.Bucket).Token(new Qiniu.Auth.digest.Mac());
+			Console.WriteLine ("extra.Bucket:"+Bucket);
+            string upToken = new PutPolicy(Bucket).Token(new Qiniu.Auth.digest.Mac());
             target.Progress += new Action<float>(target_Progress);
 			TmpFIle file=new TmpFIle(1024*1024*4);
 			target.PutFinished += new EventHandler<CallRet> ((o,e) => {
