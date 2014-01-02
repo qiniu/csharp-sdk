@@ -27,9 +27,7 @@ namespace Qiniu.Test
 			//PrintLn(key);
 			PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值
 			extra.MimeType = "text/plain";
-			extra.Scope = bucket;
-			PutPolicy put = new PutPolicy(extra.Scope);
-
+			PutPolicy put = new PutPolicy(bucket);
 			List<string> newKeys=new List<string>();
 			for (int i=0; i<num; i++) {
 				key = "csharp" + Guid.NewGuid ().ToString ();

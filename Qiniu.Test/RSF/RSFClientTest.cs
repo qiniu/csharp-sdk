@@ -36,29 +36,7 @@ namespace Qiniu.Test.RSF
 				RSHelper.RSDel (Bucket, k);
 			}
 		}
-		/*
-		/// <summary>
-		///Next 的测试
-		///</summary>
-		[Test]
-		public void NextTest()
-		{
-			RSFClient target = new RSFClient(Bucket); // TODO: 初始化为适当的值
-			target.Init();
-			target.Marker = string.Empty;
-			target.Prefix = string.Empty;
-			target.Limit = 1000;
-			List<DumpItem> actual;
-			int count = 0;  
-			actual = target.Next();
-			while (actual != null)
-			{
-				count += actual.Count;
-				actual = target.Next();
-			}
-			Assert.IsTrue(count >= 3, "ListPrefixTest Failure");
-		}
-		*/
+		
 		/// <summary>
 		///ListPrefix 的测试
 		///</summary>

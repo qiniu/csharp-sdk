@@ -72,7 +72,6 @@ namespace Qiniu.IO.Resumable
 	{
 		//key format as: "x:var"
 		public NameValueCollection CallbackParams;
-		public string Bucket;
 		public string CustomMeta;
 		public string MimeType;
 		public int chunkSize;

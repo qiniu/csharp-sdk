@@ -74,6 +74,7 @@
     <Compile Include="Util\QiniuJsonHelper.cs" />
     <Compile Include="Util\StreamEx.cs" />
     <Compile Include="Util\StringEx.cs" />
+    <Compile Include="PreFetch\PreFetchClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -97,5 +98,8 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="PreFetch\" />
   </ItemGroup>
 </Project>

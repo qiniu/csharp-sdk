@@ -1,51 +1,46 @@
 ---
-title: C# SDK
+layout: docs
+title: C# SDK 使用指南
 ---
 
 # C# SDK 使用指南
 
 此 C# SDK 适用于.net framework>4.0版本，基于 [七牛云存储官方API](http://docs.qiniu.com/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
-目录
-----
-- [1. 安装](#install)
-- [2. 初始化](#setup)
-	- [2.1 配置密钥](#setup-key)
-- [3. 资源管理接口](#rs-api)
-	- [3.1 查看单个文件属性信息](#rs-stat)
-	- [3.2 复制单个文件](#rs-copy)
-	- [3.3 移动单个文件](#rs-move)
-	- [3.4 删除单个文件](#rs-delete)
-	- [3.5 批量操作](#batch)
-		- [3.5.1 批量获取文件属性信息](#batch-stat)
-		- [3.5.2 批量复制文件](#batch-copy)
-		- [3.5.3 批量移动文件](#batch-move)
-		- [3.5.4 批量删除文件](#batch-delete)
-- [4. 资源列表](#rsf-api)
-- [5. 上传下载接口](#get-and-put-api)
-	- [5.1 上传授权](#token)
-		- [5.1.1 生成uptoken](#make-uptoken)
-	- [5.2 文件上传](#upload)
-		- [5.2.1 普通上传](#io-upload)
-		- [5.2.2 断点续上传](#resumable-io-upload)
-	- [5.3 文件下载](#io-download)
-		- [5.3.1 公有资源下载](#public-download)
-		- [5.3.2 私有资源下载](#private-download)
-- [6. 数据处理接口](#fop-api)
-	- [6.1 图像](#fop-image)
-		- [6.1.1 查看图像属性](#fop-image-info)
-		- [6.1.2 查看图片EXIF信息](#fop-exif)
-		- [6.1.3 生成图片预览](#fop-image-view)
-		- [6.1.4 图片高级处理(缩略、裁剪、旋转、转化)](#fop-image-mogr)
-		- [6.1.5 图像水印接口](#fop-image-watermarker)
-- [7. 贡献代码](#contribution)
-- [8. 许可证](#license)
-
-
-----
+- [安装](#install)
+- [初始化](#setup)
+	- [配置密钥](#setup-key)
+- [资源管理接口](#rs-api)
+	- [查看单个文件属性信息](#rs-stat)
+	- [复制单个文件](#rs-copy)
+	- [移动单个文件](#rs-move)
+	- [删除单个文件](#rs-delete)
+	- [批量操作](#batch)
+		- [批量获取文件属性信息](#batch-stat)
+		- [批量复制文件](#batch-copy)
+		- [批量移动文件](#batch-move)
+		- [批量删除文件](#batch-delete)
+- [资源列表](#rsf-api)
+- [上传下载接口](#get-and-put-api)
+	- [上传策略](#putpolicy)
+	- [ 文件上传](#upload)
+		- [普通上传](#io-upload)
+		- [断点续上传](#resumable-io-upload)
+	- [文件下载](#io-download)
+		- [公有资源下载](#public-download)
+		- [私有资源下载](#private-download)
+- [数据处理接口](#fop-api)
+	- [图像](#fop-image)
+		- [查看图像属性](#fop-image-info)
+		- [查看图片EXIF信息](#fop-exif)
+		- [生成图片预览](#fop-image-view)
+		- [图片高级处理(缩略、裁剪、旋转、转化)](#fop-image-mogr)
+		- [图像水印接口](#fop-image-watermark)
+- [贡献代码](#contribution)
+- [许可证](#license)
 
 <a name=install></a>
-## 1. 安装
+##  安装
 下载:
 
 	git clone http://github.com/qiniu/csharp-sdk
@@ -64,8 +59,9 @@ DLL引用方式:
 项目地址：[http://json.codeplex.com](http://json.codeplex.com)。
 
 <a name=setup-key></a>
-### 2.1 配置密钥
+### 配置密钥
 
+服务端使用。
 
 要接入七牛云存储，您需要拥有一对有效的 Access Key 和 Secret Key 用来进行签名认证。可以通过如下步骤获得：
 
@@ -80,8 +76,27 @@ qiniu.conf.ACCESS_KEY = "<YOUR_APP_ACCESS_KEY>"
 qiniu.conf.SECRET_KEY = "<YOUR_APP_SECRET_KEY>"
 ```
 
+或者，编译配置文件app.conf或者web.conf等文件，添加以下配置项：
+
+``` xml
+<appSettings>
+    <add key="USER_AGENT" value="" />
+    <add key="ACCESS_KEY" value="" />
+    <add key="SECRET_KEY" value="" />
+    <add key="RS_HOST" value="" />
+    <add key="UP_HOST" value="" />
+    <add key="RSF_HOST" value="" />
+    <add key="PREFETCH_HOST" value="" />
+  </appSettings>
+ ```
+
+添加完成后，在程序启动的时候调用`Qiniu.Conf.Config.Init()`进行初始化。
+
 <a name=rs-api></a>
-## 3. 资源管理接口
+## 资源管理接口
+
+服务端使用。
+
 基本的数据结构定义：
 
 ```c#
@@ -144,7 +159,7 @@ public class EntryPathPair
 ```
 
 <a name=rs-stat></a>
-### 3.1 查看单个文件属性信息
+### 查看单个文件属性信息
 
 ```c#
 //example
@@ -156,7 +171,7 @@ using Qiniu.RS
 /// <param name="bucket">七牛云存储空间名</param>
 /// <param name="key">文件key</param>
 public static void Stat(string bucket, string key)
-{	
+{
     RSClient client = new RSClient();
     Entry entry = client.Stat(new EntryPath(bucket, key));
     if (entry.OK)
@@ -175,7 +190,7 @@ public static void Stat(string bucket, string key)
 ```
 
 <a name=rs-copy></a>
-### 3.2 复制单个文件
+### 复制单个文件
 
 ```c#
 //example
@@ -203,7 +218,7 @@ public static void Copy(string bucketSrc, string keySrc, string bucketDest, stri
 ```
 
 <a name=rs-move></a>
-### 3.3 移动单个文件
+### 移动单个文件
 
 ```c#
 //example
@@ -234,7 +249,7 @@ public static void Move(string bucketSrc, string keySrc, string bucketDest, stri
 ```
 
 <a name=rs-delete></a>
-### 3.4 删除单个文件
+### 删除单个文件
 
 ```C#
 //example
@@ -261,10 +276,10 @@ public static void Delete(string bucket, string key)
 ```
 
 <a name=batch></a>
-### 3.5 批量操作
+### 批量操作
 当您需要一次性进行多个操作时, 可以使用批量操作.
 <a name=batch-stat></a>
-#### 3.5.1 批量获取文件属性信息
+#### 批量获取文件属性信息
 
 ```C#
 //example
@@ -283,7 +298,7 @@ public static void BatchStat(string bucket, string[] keys)
 ```
 
 <a name=batch-copy></a>
-#### 3.5.2 批量复制文件
+#### 批量复制文件
 
 ```C#
 //example
@@ -302,7 +317,7 @@ public static void BatchCopy(string bucket, string[] keys)
 ```
 
 <a name=batch-move></a>
-#### 3.5.3 批量移动文件
+#### 批量移动文件
 
 ```c#
 //example
@@ -321,7 +336,7 @@ public static void BatchMove(string bucket, string[] keys)
 ```
 
 <a name=batch-delete></a>
-#### 3.5.4 批量删除文件
+#### 批量删除文件
 
 ```c#
 //example
@@ -340,7 +355,10 @@ public static void BatchDelete(string bucket, string[] keys)
 ```
 
 <a name=rsf-api></a>
-## 4. 资源列表
+## 资源列表
+
+服务端使用。
+
 资源列表接口允许用户列出空间下的所有文件信息。使用资源列表接口如果引入Qiniu.RSF命名空间。
 
 ```c#
@@ -366,26 +384,31 @@ public static void List (string bucket)
 ```
 
 <a name=get-and-put-api></a>
-## 5. 上传下载接口
+## 上传下载接口
 
-<a name=token></a>
-### 5.1 上传下载授权
-<a name=make-uptoken></a>
-#### 5.1.1 上传授权uptoken
-uptoken是一个字符串，作为http协议Header的一部分（Authorization字段）发送到我们七牛的服务端，表示这个http请求是经过认证的。
+服务端或客户端使用。
+
+<a name=putpolicy></a>
+### 上传策略
+
+PutPolicy类用于定制上传策略，关于上传策略完整的说明，请参考[上传策略（PutPolicy）](http://developer.qiniu.com/docs/v6/api/reference/security/put-policy.html)。
+
+uptoken 实际上是用 AccessKey/SecretKey对上传策略进行数字签名的字符串,用于上传接口。
 
 ```c#
+string bucketName = "test";
 PutPolicy put = new PutPolicy(bucketName);
-put.Token();
+string uptoken = put.Token();
 ```
+
     
 <a name=upload></a>
-### 5.2 文件上传
+### 文件上传
 **注意**：如果您只是想要上传已存在您电脑本地或者是服务器上的文件到七牛云存储，可以直接使用七牛提供的 [qrsync](/tools/qrsync.html/) 上传工具。
 文件上传有两种方式，一种是以普通方式直传文件，简称普通上传，另一种方式是断点续上传，断点续上传在网络条件很一般的情况下也能有出色的上传速度，而且对大文件的传输非常友好。
 
 <a name=io-upload></a>
-### 5.2.1 普通上传
+### 普通上传
 普通上传的接口在 `qiniu.io` 里，如下：
 
 上传本地文件
@@ -400,7 +423,7 @@ put.Token();
 public static void PutFile(string bucket, string key, string fname)
 {
 	var policy = new PutPolicy(bucket, 3600);
-	string upToken = policy.Token();	   
+	string upToken = policy.Token();
 	PutExtra extra = new PutExtra { Bucket = bucket };
 	IOClient client = new IOClient();
 	client.PutFinished += new EventHandler<PutRet>((o, ret) => {
@@ -413,18 +436,16 @@ public static void PutFile(string bucket, string key, string fname)
 			Console.WriteLine("Failed to PutFile");
 		}
 	});
-	client.PutFile(upToken, key, fname, extra);	
+	client.PutFile(upToken, key, fname, extra);
 }
 ```
-
-为防止在上传较大文件时发生GUI界面出现假死现像，c# SDK的内部被设计为异步上传模式，您可以通过注册client的PutFinished事件获取上传结果。该事件无论上传是否会成功，都会被触发。
 
 **注意： key必须采用utf8编码，如使用非utf8编码访问七牛云存储将反馈错误**
 
 <a name=resumable-io-upload></a>
-### 5.2.2 断点续上传
+### 断点续上传
 
-上传本地文件
+上传本地文件,示例如下:
 
 ```c#
 public static void ResumablePutFile(string bucket, string key, string fname)
@@ -462,7 +483,7 @@ public event EventHandler<PutNotifyErrorEvent> NotifyErr;
 ```
 
 <a name=io-download></a>
-### 5.3 文件下载
+### 文件下载
 七牛云存储上的资源下载分为 公有资源下载 和 私有资源下载 。
 
 私有（private）是 Bucket（空间）的一个属性，一个私有 Bucket 中的资源为私有资源，私有资源不可匿名下载。
@@ -470,7 +491,7 @@ public event EventHandler<PutNotifyErrorEvent> NotifyErr;
 新创建的空间（Bucket）缺省为私有，也可以将某个 Bucket 设为公有，公有 Bucket 中的资源为公有资源，公有资源可以匿名下载。
 
 <a name=public-download></a>
-#### 5.3.1 公有资源下载
+#### 公有资源下载
 如果在给bucket绑定了域名的话，可以通过以下地址访问。
 
 	[GET] http://<domain>/<key>
@@ -480,7 +501,7 @@ public event EventHandler<PutNotifyErrorEvent> NotifyErr;
 **注意： key必须采用utf8编码，如使用非utf8编码访问七牛云存储将反馈错误**
 
 <a name=private-download></a>
-#### 5.3.2 私有资源下载
+#### 私有资源下载
 私有资源必须通过临时下载授权凭证(downloadToken)下载，如下：
 
 	[GET] http://<domain>/<key>?e=<deadline>&token=<downloadToken>
@@ -498,7 +519,10 @@ public static void MakeGetToken(string domain, string key)
 ```
 
 <a name=fop-api></a>
-## 6. 数据处理接口
+## 数据处理接口
+
+服务端或客户端使用。
+
 七牛支持在云端对图像, 视频, 音频等富媒体进行个性化处理。使用数据处理接口需要引入Qiniu.FileOp命名空间。
 
 ```c#
@@ -506,9 +530,9 @@ using Qiniu.FileOp;
 ```
 
 <a name=fop-image></a>
-### 6.1 图像
+### 图像
 <a name=fop-image-info></a>
-### 6.1.1 查看图像属性
+### 查看图像属性
 
 ```c#
 	string domain = "domain";
@@ -535,7 +559,7 @@ using Qiniu.FileOp;
 ```
 
 <a name=fop-exif></a>
-### 6.1.2 查看图片EXIF信息
+### 查看图片EXIF信息
 
 ```C#
 	string exifURL = Exif.MakeRequest(url);
@@ -554,7 +578,7 @@ using Qiniu.FileOp;
 
 
 <a name=fop-image-view></a>
-### 6.1.3 生成图片预览
+### 生成图片预览
 
 ```c#
 	ImageView imageView = new ImageView { Mode = 0, Width = 200, Height = 200, Quality = 90, Format = "gif" };
@@ -564,7 +588,7 @@ using Qiniu.FileOp;
 ```
 
 <a name=fop-image-mogr></a>
-### 6.1.4 图片高级处理(缩略、裁剪、旋转、转化)
+### 图片高级处理(缩略、裁剪、旋转、转化)
 
 ```c#
 	ImageMogrify imageMogr = new ImageMogrify
@@ -582,7 +606,7 @@ using Qiniu.FileOp;
 ```
 
 <a name=fop-image-watermark></a>
-### 6.1.5 图像水印接口
+### 图像水印接口
 
 ```c#
 	//文字水印
@@ -594,7 +618,7 @@ using Qiniu.FileOp;
 ```
 
 <a name=contribution></a>
-## 7. 贡献代码
+## 贡献代码
 
 1. Fork
 2. 创建您的特性分支 (`git checkout -b my-new-feature`)
@@ -603,7 +627,7 @@ using Qiniu.FileOp;
 5. 然后到 github 网站的该 `git` 远程仓库的 `my-new-feature` 分支下发起 Pull Request
 
 <a name=license></a>
-## 8. 许可证
+## 许可证
 
 Copyright (c) 2013 qiniu.com
 

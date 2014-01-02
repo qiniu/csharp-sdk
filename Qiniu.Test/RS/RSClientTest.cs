@@ -38,6 +38,7 @@ namespace Qiniu.Test.RS
 		{
 			RSClient target = new RSClient();
 			//YES
+		
 			EntryPath scope = new EntryPath(Bucket, tmpKeys[0]); 
 			Entry actual;
 			actual = target.Stat(scope);
