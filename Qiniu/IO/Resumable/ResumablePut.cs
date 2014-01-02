@@ -210,8 +210,10 @@ namespace Qiniu.IO.Resumable
 		private CallRet Mkfile (Client client, string key, long fsize)
 		{
 			StringBuilder urlBuilder = new StringBuilder ();
-
-			urlBuilder.AppendFormat ("{0}/mkfile/{1}/key/{2}", Config.UP_HOST, fsize, key.ToBase64URLSafe ());
+			urlBuilder.AppendFormat ("{0}/mkfile/{1}", Config.UP_HOST, fsize);
+			if (key != null) {
+				urlBuilder.AppendFormat ("/key/{0}",key.ToBase64URLSafe ());
+			}
 			if (!string.IsNullOrEmpty (extra.MimeType)) {
 				urlBuilder.AppendFormat ("/mimeType/{0}", extra.MimeType.ToBase64URLSafe ());
 			}

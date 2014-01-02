@@ -38,7 +38,9 @@ namespace Qiniu.Test.RS
 		{
 			RSClient target = new RSClient();
 			//YES
-			EntryPath scope = new EntryPath(Bucket, tmpKeys[0]); 
+		
+//			EntryPath scope = new EntryPath(Bucket, tmpKeys[0]); 
+			EntryPath scope = new EntryPath ("wangming", "bucketMgr.md");
 			Entry actual;
 			actual = target.Stat(scope);
 			Assert.IsTrue(actual.OK, "StatTest Failure");

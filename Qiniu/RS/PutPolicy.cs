@@ -21,6 +21,7 @@ namespace Qiniu.RS
 		private string saveKey;
 		private int insertOnly;
 		private int detectMime;
+        private string mimeLimit;
 		private long fsizeLimit;
 		private string persistentOps;
 		private string persistentNotifyUrl;
@@ -140,6 +141,27 @@ namespace Qiniu.RS
 				detectMime = value; 
 			}
 		}
+
+        /// <summary>
+        /// 限定用户上传的文件类型
+        /// 指定本字段值，七牛服务器会侦测文件内容以判断MimeType，再用判断值跟指定值进行匹配，匹配成功则允许上传，匹配失败返回400状态码
+        /// 示例:
+        ///1. “image/*“表示只允许上传图片类型
+        ///2. “image/jpeg;image/png”表示只允许上传jpg和png类型的图片
+        /// </summary>
+        /// <value>The detect MIME.</value>
+        [JsonProperty("mimeLimit")]
+        public string MimeLimit
+        {
+            get
+            {
+                return mimeLimit;
+            }
+            set
+            {
+                mimeLimit = value;
+            }
+        }
 
 		/// <summary>
 		/// 可选, Gets or sets the fsize limit.
