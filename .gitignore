@@ -3,6 +3,7 @@
 *.suo
 
 test-results
+Qiniu.LocalTest
 csharp-sdk.userprefs
 
 bin
