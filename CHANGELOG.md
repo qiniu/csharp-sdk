@@ -1,5 +1,11 @@
 ## CHANGE LOG
 
+### v6.0.3
+
+2014-01-06 #issue[40](https://github.com/qiniu/csharp-sdk/pull/40)
+
+- 添加pfop请求(DO)及状态查询接口(QueryPfopStatus)
+
 ### v6.0.2
 
 2013-11-18 #issue[38](https://github.com/qiniu/csharp-sdk/pull/38)

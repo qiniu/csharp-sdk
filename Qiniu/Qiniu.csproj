@@ -75,6 +75,7 @@
     <Compile Include="Util\StreamEx.cs" />
     <Compile Include="Util\StringEx.cs" />
     <Compile Include="PreFetch\PreFetchClient.cs" />
+    <Compile Include="RS\Pfop.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
