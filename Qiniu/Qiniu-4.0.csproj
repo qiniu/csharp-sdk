@@ -40,7 +40,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Auth\QiniuAuthClient.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="FileOp\Exif.cs" />
     <Compile Include="FileOp\ExifRet.cs" />
     <Compile Include="FileOp\FileOpClient.cs" />
