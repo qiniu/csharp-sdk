@@ -9,12 +9,12 @@ test:
 	#for Linux
 	#3.5
 	xbuild csharp-sdk.3.5.sln;
-	cp Qiniu/bin/Debug/3.5/Qiniu.dll bin/Qiniu.3.5.dll
+	cp Qiniu/bin/Debug/3.5/Qiniu.3.5.dll bin/
 	cp Qiniu.Test/bin/Debug/3.5/Qiniu.Test.dll bin/Qiniu.3.5.Test.dll
 	nunit-console bin/Qiniu.3.5.Test.dll
 
 	#4.0
 	xbuild csharp-sdk.4.0.sln;
-	cp Qiniu/bin/Debug/4.0/Qiniu.dll bin/Qiniu.4.0.dll
+	cp Qiniu/bin/Debug/4.0/Qiniu.4.0.dll bin/
 	cp Qiniu.Test/bin/Debug/4.0/Qiniu.Test.dll bin/Qiniu.4.0.Test.dll
 	nunit-console bin/Qiniu.4.0.Test.dll
