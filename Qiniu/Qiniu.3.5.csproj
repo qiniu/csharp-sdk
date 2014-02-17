@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Qiniu</RootNamespace>
-    <AssemblyName>Qiniu</AssemblyName>
+    <AssemblyName>Qiniu.3.5</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
