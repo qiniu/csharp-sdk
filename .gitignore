@@ -2,6 +2,7 @@
 *.swp
 *.suo
 
+TestResult.xml
 test-results
 Qiniu.LocalTest
 *.userprefs
