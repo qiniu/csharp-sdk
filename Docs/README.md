@@ -498,7 +498,7 @@ public event EventHandler<PutNotifyErrorEvent> NotifyErr;
 
 其中<domain>是bucket所对应的域名。七牛云存储为每一个bucket提供一个默认域名。默认域名可以到[七牛云存储开发者平台](https://portal.qiniu.com/)中，空间设置的域名设置一节查询。用户也可以将自有的域名绑定到bucket上，用户可以通过自有域名访问七牛云存储。
 
-**注意： key必须采用utf8编码，如使用非utf8编码访问七牛云存储将反馈错误**
+**注意： key必须采用utf8编码，如使用非utf8编码访问七牛云存储将返回错误**
 
 <a name=private-download></a>
 #### 私有资源下载
