@@ -10,7 +10,7 @@ namespace Qiniu.Util
 		/// </summary>
 		/// <param name="str"></param>
 		/// <returns></returns>
-		public static Stream ToStream (this string str)
+		public static Stream ToStream (string str)
 		{
 			Stream s = new MemoryStream (Conf.Config.Encoding.GetBytes (str));
 			return s;

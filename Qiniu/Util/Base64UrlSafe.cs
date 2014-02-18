@@ -20,7 +20,7 @@ namespace Qiniu.Util
 		/// </summary>
 		/// <param name="str"></param>
 		/// <returns></returns>
-		public static string ToBase64URLSafe (this string str)
+		public static string ToBase64URLSafe (string str)
 		{
 			return Encode (str);
 		}
