@@ -1,28 +1,23 @@
 ## CHANGE LOG
 
-### v6.0.3
+### v6.1.0
 
-2014-01-06 #issue[40](https://github.com/qiniu/csharp-sdk/pull/40)
+2014-02-18 issue #[37](https://github.com/qiniu/csharp-sdk/pull/37)
 
 - 添加pfop请求(DO)及状态查询接口(QueryPfopStatus)
 - 添加NET2.0、NET3.5、NET4.0支持
-
-### v6.0.2
-
-2013-11-18 #issue[38](https://github.com/qiniu/csharp-sdk/pull/38)
-
 - 向PutPolicy类中添加pfop等有关的字段,添加callbody格式验证，fixed returnUrl，callbackUrl不能同时指定的特性，fixed returnUrl,returnBody需要同时指定或不指定特性。添加putPolicy 的JSON字符串的单元测试
 
 ### v6.0.1
 
-2013-09-28 #issue[28](https://github.com/qiniu/csharp-sdk/pull/28)
+2013-09-28 issue #[28](https://github.com/qiniu/csharp-sdk/pull/28)
 
 - 修复Qiniu.RS.Entry实例化时的逻辑判断错误
 - 修复断点续传时会自动对key做urlEncode导致key不一致的错误
 
 ### v6.0.0
 
-2013-07-30 #issue[17](https://github.com/qiniu/csharp-sdk/pull/17)
+2013-07-30 issue #[17](https://github.com/qiniu/csharp-sdk/pull/17)
 
 - 开发环境支持Xamarin,Mono
 - 增加tools,包含Json库，nunit.framework.dll
