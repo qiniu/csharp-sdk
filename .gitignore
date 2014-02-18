@@ -2,8 +2,10 @@
 *.swp
 *.suo
 
+TestResult.xml
 test-results
-csharp-sdk.userprefs
+Qiniu.LocalTest
+*.userprefs
 
 bin
 obj

@@ -38,7 +38,7 @@ namespace Qiniu.RS
 	/// </summary>
 	public class RSClient :QiniuAuthClient
 	{
-		private static string[] OPS = new string[] { "stat", "move", "copy", "delet" };
+		private static string[] OPS = new string[] { "stat", "move", "copy", "delete" };
 
 		public RSClient (Mac mac=null)
             : base(mac)
@@ -170,10 +170,10 @@ namespace Qiniu.RS
 			return sb.Append (litem).ToString ();
 		}
 
-		private CallRet batch (string requestBody)
-		{
-			return CallWithBinary (Conf.Config.RS_HOST + "/batch", "application/x-www-form-urlencoded", requestBody.ToStream (), requestBody.Length);
-		}
+        private CallRet batch(string requestBody)
+        {
+            return CallWithBinary(Conf.Config.RS_HOST + "/batch", "application/x-www-form-urlencoded", StreamEx.ToStream(requestBody), requestBody.Length);
+        }	
 
 		/// <summary>
 		/// 批操作：文件信息查看

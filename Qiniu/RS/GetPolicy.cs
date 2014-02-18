@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Qiniu.Auth.digest;
 using Qiniu.Conf;
 
@@ -17,7 +16,7 @@ namespace Qiniu.RS
 			}
 
 			UInt32 deadline = (UInt32)((DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000 + expires);
-			if (baseUrl.Contains ('?')) {
+			if (baseUrl.Contains ("?")) {
 				baseUrl += "&e=";
 			} else {
 				baseUrl += "?e=";

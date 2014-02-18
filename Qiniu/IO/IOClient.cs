@@ -19,26 +19,29 @@ namespace Qiniu.IO
         /// </summary>
         public event EventHandler<PutRet> PutFinished;
 
-		private static NameValueCollection getFormData(string upToken, string key, PutExtra extra)
-		{
-			NameValueCollection formData = new NameValueCollection();
-			formData["token"] = upToken;
-			formData["key"] = key;
-			if (extra != null && extra.Params != null)
-			{
-				if (extra.CheckCrc == CheckCrcType.CHECK_AUTO)
-				{
-					formData["crc32"] = extra.Crc32.ToString();
-				}
-				foreach (KeyValuePair<string, string> pair in extra.Params)
-				{
-					formData[pair.Key] = pair.Value;
-				}
-			}
-			return formData;
-		}
+        private static NameValueCollection getFormData(string upToken, string key, PutExtra extra)
+        {
+            NameValueCollection formData = new NameValueCollection();
+            formData["token"] = upToken;
+            formData["key"] = key;
+            if (extra != null)
+            {
+                if (extra.CheckCrc == CheckCrcType.CHECK_AUTO)
+                {
+                    formData["crc32"] = extra.Crc32.ToString();
+                }
+                if (extra.Params != null)
+                {
+                    foreach (KeyValuePair<string, string> pair in extra.Params)
+                    {
+                        formData[pair.Key] = pair.Value;
+                    }
+                }
+            }
+            return formData;
+        }
 
-        
+
         /// <summary>
         /// 上传文件
         /// </summary>
@@ -48,38 +51,38 @@ namespace Qiniu.IO
         /// <param name="extra"></param>
         public PutRet PutFile(string upToken, string key, string localFile, PutExtra extra)
         {
-			if (!System.IO.File.Exists (localFile)) {
-				throw new Exception (string.Format ("{0} does not exist", localFile));
-			}
+            if (!System.IO.File.Exists(localFile))
+            {
+                throw new Exception(string.Format("{0} does not exist", localFile));
+            }
             PutRet ret;
-		
+
             NameValueCollection formData = getFormData(upToken, key, extra);
             try
             {
                 CallRet callRet = MultiPart.MultiPost(Config.UP_HOST, formData, localFile);
                 ret = new PutRet(callRet);
-				onPutFinished(ret);
+                onPutFinished(ret);
                 return ret;
             }
             catch (Exception e)
             {
                 ret = new PutRet(new CallRet(HttpStatusCode.BadRequest, e));
-				onPutFinished(ret);
+                onPutFinished(ret);
                 return ret;
             }
         }
-		/// <summary>
-		/// Puts the file without key.
-		/// </summary>
-		/// <returns>The file without key.</returns>
-		/// <param name="upToken">Up token.</param>
-		/// <param name="localFile">Local file.</param>
-		/// <param name="extra">Extra.</param>
-		public PutRet PutFileWithoutKey(string upToken,string localFile,PutExtra extra)
-		{
-			return PutFile (upToken, string.Empty, localFile, extra);
-
-		}
+        /// <summary>
+        /// Puts the file without key.
+        /// </summary>
+        /// <returns>The file without key.</returns>
+        /// <param name="upToken">Up token.</param>
+        /// <param name="localFile">Local file.</param>
+        /// <param name="extra">Extra.</param>
+        public PutRet PutFileWithoutKey(string upToken, string localFile, PutExtra extra)
+        {
+            return PutFile(upToken, string.Empty, localFile, extra);
+        }
 
         /// <summary>
         /// 
@@ -90,26 +93,26 @@ namespace Qiniu.IO
         /// <param name="extra">Extra.</param>
         public PutRet Put(string upToken, string key, System.IO.Stream putStream, PutExtra extra)
         {
-			if (!putStream.CanRead) {
-				throw new Exception ("read put Stream error");
-			}
+            if (!putStream.CanRead)
+            {
+                throw new Exception("read put Stream error");
+            }
             PutRet ret;
             NameValueCollection formData = getFormData(upToken, key, extra);
             try
             {
-
-				CallRet callRet = MultiPart.MultiPost(Config.UP_HOST, formData, putStream);
+                CallRet callRet = MultiPart.MultiPost(Config.UP_HOST, formData, putStream);
                 ret = new PutRet(callRet);
-				onPutFinished(ret);
+                onPutFinished(ret);
                 return ret;
             }
             catch (Exception e)
             {
                 ret = new PutRet(new CallRet(HttpStatusCode.BadRequest, e));
-				onPutFinished(ret);
+                onPutFinished(ret);
                 return ret;
-            } 
-		}
+            }
+        }
 
         protected void onPutFinished(PutRet ret)
         {

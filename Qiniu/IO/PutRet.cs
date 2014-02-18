@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Qiniu.RPC;
 using Newtonsoft.Json;
 
@@ -31,18 +30,21 @@ namespace Qiniu.IO
 			}
 		}
 
-		private void Unmarshal (string json)
-		{
-			try {
-				var dict = JsonConvert.DeserializeObject<Dictionary<string,dynamic>> (json);
-				object tmp;
-				if (dict.TryGetValue ("hash", out tmp))
-					Hash = (string)dict ["hash"];
-				if (dict.TryGetValue ("key", out tmp))
-					key = (string)dict ["key"];
-			} catch (Exception e) {
-				throw e;
-			}
-		}
+        private void Unmarshal(string json)
+        {
+            try
+            {
+                Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                object tmp;
+                if (dict.TryGetValue("hash", out tmp))
+                    Hash = (string)tmp;
+                if (dict.TryGetValue("key", out tmp))
+                    key = (string)tmp;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }	
 	}
 }

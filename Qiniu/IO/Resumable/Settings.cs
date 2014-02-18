@@ -9,7 +9,7 @@ namespace Qiniu.IO.Resumable
 		int chunkSize;
 
 		/// <summary>
-		/// chunk大小,默认为256kb
+		/// chunk大小,默认为4MB;
 		/// </summary>
 		public int ChunkSize {
 			get { return chunkSize; }
@@ -29,9 +29,9 @@ namespace Qiniu.IO.Resumable
 		/// <summary>
 		/// 构造函数
 		/// </summary>
-		/// <param name="chunkSize">chunk大小,默认为256kb</param>
+		/// <param name="chunkSize">chunk大小,默认为4MB</param>
 		/// <param name="tryTimes">失败重试次数,默认为3</param>
-		public Settings (int chunkSize=1 << 18, int tryTimes=3)
+		public Settings (int chunkSize=1 << 22, int tryTimes=3)
 		{
 			this.chunkSize = chunkSize;
 			this.tryTimes = tryTimes; 

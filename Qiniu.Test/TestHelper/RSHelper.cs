@@ -27,13 +27,11 @@ namespace Qiniu.Test
 			//PrintLn(key);
 			PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值
 			extra.MimeType = "text/plain";
-			extra.Scope = bucket;
-			PutPolicy put = new PutPolicy(extra.Scope);
-
+			PutPolicy put = new PutPolicy(bucket);
 			List<string> newKeys=new List<string>();
 			for (int i=0; i<num; i++) {
 				key = "csharp" + Guid.NewGuid ().ToString ();
-				PutRet ret = target.Put (put.Token (), key, "Hello, Qiniu Cloud!".ToStream (), extra);
+				PutRet ret = target.Put (put.Token (), key,StreamEx.ToStream("Hello, Qiniu Cloud!"), extra);
 				if (ret.OK) {
 					newKeys.Add (key);
 				}

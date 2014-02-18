@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 
 namespace Qiniu.IO.Resumable
 {
@@ -69,8 +70,8 @@ namespace Qiniu.IO.Resumable
 	/// </summary>
 	public class ResumablePutExtra
 	{
-		public string CallbackParams;
-		public string Bucket;
+		//key format as: "x:var"
+		public NameValueCollection CallbackParams;
 		public string CustomMeta;
 		public string MimeType;
 		public int chunkSize;

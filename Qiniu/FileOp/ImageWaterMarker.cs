@@ -21,7 +21,7 @@ namespace Qiniu.FileOp
 			if (string.IsNullOrEmpty (imageUrl)) {
 				throw new Exception ("Water Marker Image Url Error");
 			}            
-			sb.Append ("/image/" + imageUrl.ToBase64URLSafe ());
+			sb.Append ("/image/" + Base64URLSafe.ToBase64URLSafe(imageUrl));
 			sb.Append ("/dissolve/" + dissolve);
 			sb.Append ("/gravity/" + Gravitys [(int)gravity]);
 			sb.Append ("/dx/" + dx);
