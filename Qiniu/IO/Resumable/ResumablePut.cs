@@ -97,7 +97,7 @@ namespace Qiniu.IO.Resumable
                 chunks = fsize / extra.chunkSize + 1;
                 extra.Progresses = new BlkputRet[block_cnt];
                 //并行上传
-#if NET35
+#if NET35||NET20
                 for (int i = 0; i < block_cnt; i++)
                 {
 #elif  NET40
@@ -112,8 +112,8 @@ namespace Qiniu.IO.Resumable
                     lock (fs)
                     {
 #endif
-                        fs.Seek(i * BLOCKSIZE, SeekOrigin.Begin);
-                        fs.Read(byteBuf, 0, readLen);
+                    fs.Seek(i * BLOCKSIZE, SeekOrigin.Begin);
+                    fs.Read(byteBuf, 0, readLen);
 #if NET40
                     }
 #endif
@@ -127,7 +127,7 @@ namespace Qiniu.IO.Resumable
                     {
                         extra.OnNotify(new PutNotifyEvent(i, readLen, extra.Progresses[i]));
                     }
-#if NET35
+#if NET35||NET20
                 }
 #elif NET40
                     });
@@ -237,7 +237,7 @@ namespace Qiniu.IO.Resumable
             CallRet callRet = client.CallWithBinary(url, "application/octet-stream", new MemoryStream(firstChunk), firstChunk.Length);
             if (callRet.OK)
             {
-                return callRet.Response.ToObject<BlkputRet>();
+                return QiniuJsonHelper.ToObject<BlkputRet>(callRet.Response);
             }
             return null;
         }
@@ -248,7 +248,7 @@ namespace Qiniu.IO.Resumable
             CallRet callRet = client.CallWithBinary(url, "application/octet-stream", body, length);
             if (callRet.OK)
             {
-                return callRet.Response.ToObject<BlkputRet>();
+                return  QiniuJsonHelper.ToObject<BlkputRet>(callRet.Response);
             }
             return null;
         }
@@ -259,22 +259,22 @@ namespace Qiniu.IO.Resumable
             urlBuilder.AppendFormat("{0}/mkfile/{1}", Config.UP_HOST, fsize);
             if (key != null)
             {
-                urlBuilder.AppendFormat("/key/{0}", key.ToBase64URLSafe());
+                urlBuilder.AppendFormat("/key/{0}", Base64URLSafe.ToBase64URLSafe(key));
             }
             if (!string.IsNullOrEmpty(extra.MimeType))
             {
-                urlBuilder.AppendFormat("/mimeType/{0}", extra.MimeType.ToBase64URLSafe());
+                urlBuilder.AppendFormat("/mimeType/{0}", Base64URLSafe.ToBase64URLSafe(extra.MimeType));
             }
             if (!string.IsNullOrEmpty(extra.CustomMeta))
             {
-                urlBuilder.AppendFormat("/meta/{0}", extra.CustomMeta.ToBase64URLSafe());
+                urlBuilder.AppendFormat("/meta/{0}", Base64URLSafe.ToBase64URLSafe(extra.CustomMeta));
             }
             if (extra.CallbackParams != null && extra.CallbackParams.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
                 foreach (string _key in extra.CallbackParams.Keys)
                 {
-                    sb.AppendFormat("/{0}/{1}", _key, extra.CallbackParams[_key].ToBase64URLSafe());
+                    sb.AppendFormat("/{0}/{1}", _key, Base64URLSafe.ToBase64URLSafe(extra.CallbackParams[_key]));
                 }
                 urlBuilder.Append(sb.ToString());
             }

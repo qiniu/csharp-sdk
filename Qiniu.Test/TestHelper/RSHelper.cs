@@ -31,7 +31,7 @@ namespace Qiniu.Test
 			List<string> newKeys=new List<string>();
 			for (int i=0; i<num; i++) {
 				key = "csharp" + Guid.NewGuid ().ToString ();
-				PutRet ret = target.Put (put.Token (), key, "Hello, Qiniu Cloud!".ToStream (), extra);
+				PutRet ret = target.Put (put.Token (), key,StreamEx.ToStream("Hello, Qiniu Cloud!"), extra);
 				if (ret.OK) {
 					newKeys.Add (key);
 				}

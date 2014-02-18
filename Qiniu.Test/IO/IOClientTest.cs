@@ -120,29 +120,31 @@ namespace Qiniu.Test.IO
 			Assert.IsTrue (ret.OK, "PutFileTest Failure");
 
 		}
-		[Test]
-		public void PutTest()
-		{
-			IOClient target = new IOClient(); 
-			string key = NewKey;
-			PrintLn(key);
-			PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值
-			extra.MimeType = "text/plain";
-			extra.Crc32 = 123;
-			extra.CheckCrc = CheckCrcType.CHECK;
-			extra.Params = new System.Collections.Generic.Dictionary<string, string>();
-			PutPolicy put = new PutPolicy(Bucket);
-			target.PutFinished += new EventHandler<PutRet> ((o,e) => {
-				if (e.OK) {
-					RSHelper.RSDel (Bucket, key);
-				}
-			});
-			string token = put.Token ();
-			PutRet ret = target.Put(put.Token(), key, "Hello, Qiniu Cloud!".ToStream(), extra);
-		
-			Assert.IsTrue(ret.OK, "PutFileTest Failure");
+        [Test]
+        public void PutTest()
+        {
+            IOClient target = new IOClient();
+            string key = NewKey;
+            PrintLn(key);
+            PutExtra extra = new PutExtra(); // TODO: 初始化为适当的值
+            extra.MimeType = "text/plain";
+            extra.Crc32 = 123;
+            extra.CheckCrc = CheckCrcType.CHECK;
+            extra.Params = new System.Collections.Generic.Dictionary<string, string>();
+            PutPolicy put = new PutPolicy(Bucket);
+            target.PutFinished += new EventHandler<PutRet>((o, e) =>
+            {
+                if (e.OK)
+                {
+                    RSHelper.RSDel(Bucket, key);
+                }
+            });
+            string token = put.Token();
+            PutRet ret = target.Put(put.Token(), key, StreamEx.ToStream("Hello, Qiniu Cloud!"), extra);
 
-		}
+            Assert.IsTrue(ret.OK, "PutFileTest Failure");
+
+        }
 		[Test]
 		public void PutWithoutKeyTest()
 		{

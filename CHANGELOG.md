@@ -5,6 +5,7 @@
 2014-01-06 #issue[40](https://github.com/qiniu/csharp-sdk/pull/40)
 
 - 添加pfop请求(DO)及状态查询接口(QueryPfopStatus)
+- 添加NET2.0、NET3.5、NET4.0支持
 
 ### v6.0.2
 

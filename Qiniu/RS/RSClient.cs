@@ -170,10 +170,10 @@ namespace Qiniu.RS
 			return sb.Append (litem).ToString ();
 		}
 
-		private CallRet batch (string requestBody)
-		{
-			return CallWithBinary (Conf.Config.RS_HOST + "/batch", "application/x-www-form-urlencoded", requestBody.ToStream (), requestBody.Length);
-		}
+        private CallRet batch(string requestBody)
+        {
+            return CallWithBinary(Conf.Config.RS_HOST + "/batch", "application/x-www-form-urlencoded", StreamEx.ToStream(requestBody), requestBody.Length);
+        }	
 
 		/// <summary>
 		/// 批操作：文件信息查看

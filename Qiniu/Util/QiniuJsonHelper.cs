@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 
+
 namespace Qiniu.Util
 {
 	public static class QiniuJsonHelper
@@ -11,7 +12,7 @@ namespace Qiniu.Util
 			return JsonConvert.SerializeObject (obj, setting);
 		}
 
-		public static T ToObject<T> (this string value)
+		public static T ToObject<T> (string value)
 		{
 			return JsonConvert.DeserializeObject<T> (value);
 		}

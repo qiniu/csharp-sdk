@@ -7,11 +7,11 @@ test:
 	#mono --debug /Library/Frameworks/Mono.framework/Versions/3.2.0/lib/mono/4.5/nunit-console.exe bin/Qiniu.Test.dll
 
 	#for Linux
-	#3.5
-	xbuild csharp-sdk.3.5.sln;
-	cp Qiniu/bin/Debug/3.5/Qiniu.3.5.dll bin/
-	cp Qiniu.Test/bin/Debug/3.5/Qiniu.Test.dll bin/Qiniu.3.5.Test.dll
-	nunit-console bin/Qiniu.3.5.Test.dll
+	#2.0||3.5
+	xbuild csharp-sdk.2.0.sln;
+	cp Qiniu/bin/Debug/2.0/Qiniu.2.0.dll bin/
+	cp Qiniu.Test/bin/Debug/2.0/Qiniu.Test.dll bin/Qiniu.2.0.Test.dll
+	nunit-console bin/Qiniu.2.0.Test.dll
 
 	#4.0
 	xbuild csharp-sdk.4.0.sln;
