@@ -66,22 +66,16 @@ namespace Qiniu.IO.Resumable
         }
 
         /// <summary>
-        /// Allow cache put result
-        /// </summary>
-        public bool AllowCache = true;
-
-        /// <summary>
         /// 断点续传类
         /// </summary>
         /// <param name="putSetting"></param>
         /// <param name="extra"></param>
         /// <param name="allowcache">true:允许上传结果在本地保存，这样当网络失去连接而再次重新上传时，对已经上传成功的快不需要再次上传</param>
-        public ResumablePut(Settings putSetting, ResumablePutExtra extra,bool allowcache = true)
+        public ResumablePut(Settings putSetting, ResumablePutExtra extra)
         {
             extra.chunkSize = putSetting.ChunkSize;
             this.putSetting = putSetting;
             this.extra = extra;
-            this.AllowCache = allowcache;
         }
 
         /// <summary>
@@ -96,13 +90,7 @@ namespace Qiniu.IO.Resumable
             {
                 throw new Exception(string.Format("{0} does not exist", localFile));
             }
-            string puttedFile = string.Empty;
-            Dictionary<int, BlkputRet> puttedBlk = new Dictionary<int, BlkputRet>();
-            if (this.AllowCache)
-            {
-                puttedFile = ResumbalePutHelper.GetPutHistroryFile(localFile);
-                puttedBlk = ResumbalePutHelper.GetHistory(puttedFile);
-            }
+            
             PutAuthClient client = new PutAuthClient(upToken);
             CallRet ret;
             using (FileStream fs = File.OpenRead(localFile))
@@ -114,13 +102,6 @@ namespace Qiniu.IO.Resumable
                 //并行上传
                 for (int i = 0; i < block_cnt; i++)
                 {
-
-                    if (this.AllowCache && puttedBlk != null && puttedBlk.ContainsKey(i) && puttedBlk[i] != null)
-                    {
-                        Console.WriteLine(string.Format("block{0} has putted", i));
-                        extra.Progresses[i] = puttedBlk[i];
-                        continue;
-                    }
                     int readLen = BLOCKSIZE;
                     if ((long)(i + 1) * BLOCKSIZE > fsize)
                         readLen = (int)(fsize - (long)i * BLOCKSIZE);
@@ -135,10 +116,6 @@ namespace Qiniu.IO.Resumable
                     }
                     else
                     {
-                        if (this.AllowCache)
-                        {
-                            ResumbalePutHelper.Append(puttedFile, i, blkRet);
-                        }
                         extra.OnNotify(new PutNotifyEvent(i, readLen, extra.Progresses[i]));
                     }
                 }
