@@ -53,7 +53,6 @@
     <Compile Include="IO\PutExtra.cs" />
     <Compile Include="IO\PutRet.cs" />
     <Compile Include="IO\Resumable\ResumablePutExtra.cs" />
-    <Compile Include="IO\Resumable\ResumablePutHelper.cs" />
     <Compile Include="IO\Resumable\Settings.cs" />
     <Compile Include="RS\GetPolicy.cs" />
     <Compile Include="RS\PutPolicy.cs" />

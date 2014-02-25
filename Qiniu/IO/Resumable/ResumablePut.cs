@@ -70,7 +70,6 @@ namespace Qiniu.IO.Resumable
         /// </summary>
         /// <param name="putSetting"></param>
         /// <param name="extra"></param>
-        /// <param name="allowcache">true:允许上传结果在本地保存，这样当网络失去连接而再次重新上传时，对已经上传成功的快不需要再次上传</param>
         public ResumablePut(Settings putSetting, ResumablePutExtra extra)
         {
             extra.chunkSize = putSetting.ChunkSize;
