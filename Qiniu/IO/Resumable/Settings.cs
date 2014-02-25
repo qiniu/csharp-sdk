@@ -33,7 +33,8 @@ namespace Qiniu.IO.Resumable
 		/// <param name="tryTimes">失败重试次数,默认为3</param>
 		public Settings (int chunkSize=1 << 22, int tryTimes=3)
 		{
-			this.chunkSize = chunkSize;
+            //取消chunk
+            this.chunkSize = 1 << 22;
 			this.tryTimes = tryTimes; 
 		}
 	}

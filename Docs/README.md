@@ -424,7 +424,7 @@ public static void PutFile(string bucket, string key, string fname)
 {
 	var policy = new PutPolicy(bucket, 3600);
 	string upToken = policy.Token();
-	PutExtra extra = new PutExtra { Bucket = bucket };
+	PutExtra extra = new PutExtra();
 	IOClient client = new IOClient();
 	client.PutFinished += new EventHandler<PutRet>((o, ret) => {
 		if (ret.OK)

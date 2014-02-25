@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 #if NET40
@@ -65,15 +66,22 @@ namespace Qiniu.IO.Resumable
         }
 
         /// <summary>
+        /// Allow cache put result
+        /// </summary>
+        public bool AllowCache = true;
+
+        /// <summary>
         /// 断点续传类
         /// </summary>
         /// <param name="putSetting"></param>
         /// <param name="extra"></param>
-        public ResumablePut(Settings putSetting, ResumablePutExtra extra)
+        /// <param name="allowcache">true:允许上传结果在本地保存，这样当网络失去连接而再次重新上传时，对已经上传成功的快不需要再次上传</param>
+        public ResumablePut(Settings putSetting, ResumablePutExtra extra,bool allowcache = true)
         {
             extra.chunkSize = putSetting.ChunkSize;
             this.putSetting = putSetting;
             this.extra = extra;
+            this.AllowCache = allowcache;
         }
 
         /// <summary>
@@ -88,6 +96,13 @@ namespace Qiniu.IO.Resumable
             {
                 throw new Exception(string.Format("{0} does not exist", localFile));
             }
+            string puttedFile = string.Empty;
+            Dictionary<int, BlkputRet> puttedBlk = new Dictionary<int, BlkputRet>();
+            if (this.AllowCache)
+            {
+                puttedFile = ResumbalePutHelper.GetPutHistroryFile(localFile);
+                puttedBlk = ResumbalePutHelper.GetHistory(puttedFile);
+            }
             PutAuthClient client = new PutAuthClient(upToken);
             CallRet ret;
             using (FileStream fs = File.OpenRead(localFile))
@@ -97,26 +112,21 @@ namespace Qiniu.IO.Resumable
                 chunks = fsize / extra.chunkSize + 1;
                 extra.Progresses = new BlkputRet[block_cnt];
                 //并行上传
-#if NET35||NET20
                 for (int i = 0; i < block_cnt; i++)
                 {
-#elif  NET40
-                Parallel.For(0, block_cnt, (i) =>{
-#endif
 
-                    int readLen = BLOCKSIZE;
-                    if ((i + 1) * BLOCKSIZE > fsize)
-                        readLen = (int)(fsize - i * BLOCKSIZE);
-                    byte[] byteBuf = new byte[readLen];
-#if NET40
-                    lock (fs)
+                    if (this.AllowCache && puttedBlk != null && puttedBlk.ContainsKey(i) && puttedBlk[i] != null)
                     {
-#endif
-                    fs.Seek(i * BLOCKSIZE, SeekOrigin.Begin);
-                    fs.Read(byteBuf, 0, readLen);
-#if NET40
+                        Console.WriteLine(string.Format("block{0} has putted", i));
+                        extra.Progresses[i] = puttedBlk[i];
+                        continue;
                     }
-#endif
+                    int readLen = BLOCKSIZE;
+                    if ((long)(i + 1) * BLOCKSIZE > fsize)
+                        readLen = (int)(fsize - (long)i * BLOCKSIZE);
+                    byte[] byteBuf = new byte[readLen];
+                    fs.Seek((long)i * BLOCKSIZE, SeekOrigin.Begin);
+                    fs.Read(byteBuf, 0, readLen);
                     //并行上传BLOCK
                     BlkputRet blkRet = ResumableBlockPut(client, byteBuf, i, readLen);
                     if (blkRet == null)
@@ -125,13 +135,13 @@ namespace Qiniu.IO.Resumable
                     }
                     else
                     {
+                        if (this.AllowCache)
+                        {
+                            ResumbalePutHelper.Append(puttedFile, i, blkRet);
+                        }
                         extra.OnNotify(new PutNotifyEvent(i, readLen, extra.Progresses[i]));
                     }
-#if NET35||NET20
                 }
-#elif NET40
-                    });
-#endif
                 ret = Mkfile(client, key, fs.Length);
             }
             if (ret.OK)
@@ -181,13 +191,26 @@ namespace Qiniu.IO.Resumable
                 uint crc32 = CRC32.CheckSumBytes(firstChunk);
                 for (int i = 0; i < putSetting.TryTimes; i++)
                 {
-                    extra.Progresses[blkIdex] = Mkblock(client, firstChunk, body.Length);
+                    try
+                    {
+                        extra.Progresses[blkIdex] = Mkblock(client, firstChunk, body.Length);
+                    }
+                    catch (Exception ee)
+                    {
+                        if (i == (putSetting.TryTimes - 1))
+                        {
+                            throw ee;
+                        }
+                        System.Threading.Thread.Sleep(1000);
+                        continue;
+                    }
                     if (extra.Progresses[blkIdex] == null || crc32 != extra.Progresses[blkIdex].crc32)
                     {
                         if (i == (putSetting.TryTimes - 1))
                         {
                             return null;
                         }
+                        System.Threading.Thread.Sleep(1000);
                         continue;
                     }
                     else
@@ -199,37 +222,9 @@ namespace Qiniu.IO.Resumable
             }
             #endregion
 
-            #region PutBlock
-            while (extra.Progresses[blkIdex].offset < blkSize)
-            {
-                bodyLength = (chunkSize < (blkSize - extra.Progresses[blkIdex].offset)) ? chunkSize : (int)(blkSize - extra.Progresses[blkIdex].offset);
-                byte[] chunk = new byte[bodyLength];
-                Array.Copy(body, extra.Progresses[blkIdex].offset, chunk, 0, bodyLength);
-                for (int i = 0; i < putSetting.TryTimes; i++)
-                {
-                    extra.Progresses[blkIdex] = BlockPut(client, extra.Progresses[blkIdex], new MemoryStream(chunk), bodyLength);
-                    if (extra.Progresses[blkIdex] == null)
-                    {
-                        if (i == (putSetting.TryTimes - 1))
-                        {
-                            return null;
-                        }
-                        continue;
-                    }
-                    else
-                    {
-                        uploadedChunks++;
-                        if (Progress != null)
-                        {
-                            Progress((float)uploadedChunks / chunks);
-                        }
-                        break;
-                    }
-                }
-            }
-            #endregion
             return extra.Progresses[blkIdex];
         }
+
 
         private BlkputRet Mkblock(Client client, byte[] firstChunk, long blkSize)
         {
@@ -238,17 +233,6 @@ namespace Qiniu.IO.Resumable
             if (callRet.OK)
             {
                 return QiniuJsonHelper.ToObject<BlkputRet>(callRet.Response);
-            }
-            return null;
-        }
-
-        private BlkputRet BlockPut(Client client, BlkputRet ret, Stream body, long length)
-        {
-            string url = string.Format("{0}/bput/{1}/{2}", Config.UP_HOST, ret.ctx, ret.offset);
-            CallRet callRet = client.CallWithBinary(url, "application/octet-stream", body, length);
-            if (callRet.OK)
-            {
-                return  QiniuJsonHelper.ToObject<BlkputRet>(callRet.Response);
             }
             return null;
         }
