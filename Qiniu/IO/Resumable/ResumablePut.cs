@@ -22,14 +22,6 @@ namespace Qiniu.IO.Resumable
         private const int blockMashk = (1 << blockBits) - 1;
         private static int BLOCKSIZE = 4 * 1024 * 1024;
 
-        #region 记录总文件大小,用于计算上传百分比
-
-        private long fsize;
-        private float chunks;
-        private float uploadedChunks = 0;
-
-        #endregion
-
         /// <summary>
         /// 上传完成事件
         /// </summary>
@@ -38,10 +30,6 @@ namespace Qiniu.IO.Resumable
         /// 上传Failure事件
         /// </summary>
         public event EventHandler<CallRet> PutFailure;
-        /// <summary>
-        /// 进度提示事件
-        /// </summary>
-        public event Action<float> Progress;
 
         Settings putSetting;
 
@@ -72,7 +60,6 @@ namespace Qiniu.IO.Resumable
         /// <param name="extra"></param>
         public ResumablePut(Settings putSetting, ResumablePutExtra extra)
         {
-            extra.chunkSize = putSetting.ChunkSize;
             this.putSetting = putSetting;
             this.extra = extra;
         }
@@ -95,19 +82,17 @@ namespace Qiniu.IO.Resumable
             using (FileStream fs = File.OpenRead(localFile))
             {
                 int block_cnt = block_count(fs.Length);
-                fsize = fs.Length;
-                chunks = fsize / extra.chunkSize + 1;
+                long fsize = fs.Length;
                 extra.Progresses = new BlkputRet[block_cnt];
-                //并行上传
                 byte[] byteBuf = new byte[BLOCKSIZE];
                 int readLen = BLOCKSIZE;
                 for (int i = 0; i < block_cnt; i++)
                 {
-                    if ((long)(i + 1) * BLOCKSIZE > fsize)
+                    if (i == (block_cnt - 1)) { 
                         readLen = (int)(fsize - (long)i * BLOCKSIZE);
+                    }
                     fs.Seek((long)i * BLOCKSIZE, SeekOrigin.Begin);
                     fs.Read(byteBuf, 0, readLen);
-                    //并行上传BLOCK
                     BlkputRet blkRet = ResumableBlockPut(client, byteBuf, i, readLen);
                     if (blkRet == null)
                     {
@@ -118,14 +103,10 @@ namespace Qiniu.IO.Resumable
                         extra.OnNotify(new PutNotifyEvent(i, readLen, extra.Progresses[i]));
                     }
                 }
-                ret = Mkfile(client, key, fs.Length);
+                ret = Mkfile(client, key, fsize);
             }
             if (ret.OK)
             {
-                if (Progress != null)
-                {
-                    Progress(1.0f);
-                }
                 if (PutFinished != null)
                 {
                     PutFinished(this, ret);
@@ -141,63 +122,43 @@ namespace Qiniu.IO.Resumable
             return ret;
         }
 
-
-        /// <summary>
-        /// 百分比进度提示
-        /// </summary>
-        private void progress()
-        {
-            uploadedChunks++;
-            if (Progress != null)
-            {
-                Progress((float)uploadedChunks / chunks);
-            }
-        }
-
         private BlkputRet ResumableBlockPut(Client client, byte[] body, int blkIdex, int blkSize)
         {
-            int bodyLength;
-            int chunkSize = extra.chunkSize;
             #region Mkblock
-            if (extra.Progresses[blkIdex] == null)
+            uint crc32 = CRC32.CheckSumBytes(body, blkSize);
+            for (int i = 0; i < putSetting.TryTimes; i++)
             {
-				uint crc32 = CRC32.CheckSumBytes(body,blkSize);
-                for (int i = 0; i < putSetting.TryTimes; i++)
+                try
                 {
-                    try
+                    extra.Progresses[blkIdex] = Mkblock(client, body, blkSize);
+                }
+                catch (Exception ee)
+                {
+                    if (i == (putSetting.TryTimes - 1))
                     {
-                        extra.Progresses[blkIdex] = Mkblock(client, body, blkSize);
+                        throw ee;
                     }
-                    catch (Exception ee)
+                    System.Threading.Thread.Sleep(1000);
+                    continue;
+                }
+                if (extra.Progresses[blkIdex] == null || crc32 != extra.Progresses[blkIdex].crc32)
+                {
+                    if (i == (putSetting.TryTimes - 1))
                     {
-                        if (i == (putSetting.TryTimes - 1))
-                        {
-                            throw ee;
-                        }
-                        System.Threading.Thread.Sleep(1000);
-                        continue;
+                        return null;
                     }
-                    if (extra.Progresses[blkIdex] == null || crc32 != extra.Progresses[blkIdex].crc32)
-                    {
-                        if (i == (putSetting.TryTimes - 1))
-                        {
-                            return null;
-                        }
-                        System.Threading.Thread.Sleep(1000);
-                        continue;
-                    }
-                    else
-                    {
-                        progress();
-                        break;
-                    }
+                    System.Threading.Thread.Sleep(1000);
+                    continue;
+                }
+                else
+                {
+                    break;
                 }
             }
             #endregion
 
             return extra.Progresses[blkIdex];
-        }
-
+        } 
 
         private BlkputRet Mkblock(Client client, byte[] firstChunk, int blkSize)
         {

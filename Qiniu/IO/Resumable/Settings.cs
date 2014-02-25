@@ -6,14 +6,13 @@ namespace Qiniu.IO.Resumable
 	/// </summary>
 	public class Settings
 	{
-		int chunkSize;
-
 		/// <summary>
 		/// chunk大小,默认为4MB;
+        /// 兼容保留
 		/// </summary>
 		public int ChunkSize {
-			get { return chunkSize; }
-			set { chunkSize = value; }
+			get;
+			set;
 		}
 
 		int tryTimes;
@@ -33,8 +32,8 @@ namespace Qiniu.IO.Resumable
 		/// <param name="tryTimes">失败重试次数,默认为3</param>
 		public Settings (int chunkSize=1 << 22, int tryTimes=3)
 		{
-            //取消chunk
-            this.chunkSize = 1 << 22;
+            //chunkSize 已经删除，兼容保留
+
 			this.tryTimes = tryTimes; 
 		}
 	}
