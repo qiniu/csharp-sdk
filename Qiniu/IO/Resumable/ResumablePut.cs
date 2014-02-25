@@ -99,12 +99,12 @@ namespace Qiniu.IO.Resumable
                 chunks = fsize / extra.chunkSize + 1;
                 extra.Progresses = new BlkputRet[block_cnt];
                 //并行上传
+                byte[] byteBuf = new byte[BLOCKSIZE];
+                int readLen = BLOCKSIZE;
                 for (int i = 0; i < block_cnt; i++)
                 {
-                    int readLen = BLOCKSIZE;
                     if ((long)(i + 1) * BLOCKSIZE > fsize)
                         readLen = (int)(fsize - (long)i * BLOCKSIZE);
-                    byte[] byteBuf = new byte[readLen];
                     fs.Seek((long)i * BLOCKSIZE, SeekOrigin.Begin);
                     fs.Read(byteBuf, 0, readLen);
                     //并行上传BLOCK
@@ -161,15 +161,12 @@ namespace Qiniu.IO.Resumable
             #region Mkblock
             if (extra.Progresses[blkIdex] == null)
             {
-                bodyLength = chunkSize < blkSize ? chunkSize : blkSize;
-                byte[] firstChunk = new byte[bodyLength];
-                Array.Copy(body, 0, firstChunk, 0, bodyLength);
-                uint crc32 = CRC32.CheckSumBytes(firstChunk);
+				uint crc32 = CRC32.CheckSumBytes(body,blkSize);
                 for (int i = 0; i < putSetting.TryTimes; i++)
                 {
                     try
                     {
-                        extra.Progresses[blkIdex] = Mkblock(client, firstChunk, body.Length);
+                        extra.Progresses[blkIdex] = Mkblock(client, body, blkSize);
                     }
                     catch (Exception ee)
                     {
@@ -202,10 +199,11 @@ namespace Qiniu.IO.Resumable
         }
 
 
-        private BlkputRet Mkblock(Client client, byte[] firstChunk, long blkSize)
+        private BlkputRet Mkblock(Client client, byte[] firstChunk, int blkSize)
         {
             string url = string.Format("{0}/mkblk/{1}", Config.UP_HOST, blkSize);
-            CallRet callRet = client.CallWithBinary(url, "application/octet-stream", new MemoryStream(firstChunk), firstChunk.Length);
+            
+            CallRet callRet = client.CallWithBinary(url, "application/octet-stream",new MemoryStream(firstChunk, 0, blkSize),blkSize);
             if (callRet.OK)
             {
                 return QiniuJsonHelper.ToObject<BlkputRet>(callRet.Response);

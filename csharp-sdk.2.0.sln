@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.2.0", "Qiniu\Qiniu.2.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.2.0.Test", "Qiniu.Test\Qiniu.2.0.Test.csproj", "{95DC2A77-2344-4315-9F6F-334CC928459C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.Demo", "Demo\Qiniu.Demo\Qiniu.Demo.csproj", "{6684C419-1723-4792-A567-7F1D821B6DFA}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = csharp-sdk.vsmdi
@@ -42,6 +44,16 @@ Global
 		{95DC2A77-2344-4315-9F6F-334CC928459C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{95DC2A77-2344-4315-9F6F-334CC928459C}.Release|x86.ActiveCfg = Release|Any CPU
 		{95DC2A77-2344-4315-9F6F-334CC928459C}.Release|x86.Build.0 = Release|Any CPU
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Debug|x86.ActiveCfg = Debug|x86
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Debug|x86.Build.0 = Debug|x86
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Release|Any CPU.ActiveCfg = Release|x86
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Release|Mixed Platforms.Build.0 = Release|x86
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Release|x86.ActiveCfg = Release|x86
+		{6684C419-1723-4792-A567-7F1D821B6DFA}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
