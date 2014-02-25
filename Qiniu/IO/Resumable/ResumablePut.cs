@@ -66,15 +66,22 @@ namespace Qiniu.IO.Resumable
         }
 
         /// <summary>
+        /// Allow cache put result
+        /// </summary>
+        public bool AllowCache = true;
+
+        /// <summary>
         /// 断点续传类
         /// </summary>
         /// <param name="putSetting"></param>
         /// <param name="extra"></param>
-        public ResumablePut(Settings putSetting, ResumablePutExtra extra)
+        /// <param name="allowcache">true:允许上传结果在本地保存，这样当网络失去连接而再次重新上传时，对已经上传成功的快不需要再次上传</param>
+        public ResumablePut(Settings putSetting, ResumablePutExtra extra,bool allowcache = true)
         {
             extra.chunkSize = putSetting.ChunkSize;
             this.putSetting = putSetting;
             this.extra = extra;
+            this.AllowCache = allowcache;
         }
 
         /// <summary>
@@ -89,12 +96,13 @@ namespace Qiniu.IO.Resumable
             {
                 throw new Exception(string.Format("{0} does not exist", localFile));
             }
-			string puttedFile = string.Empty;
-			Dictionary<int,BlkputRet> puttedBlk = new Dictionary<int, BlkputRet> ();
-			if (extra.AllowCahce) {
-				puttedFile = ResumbalePutHelper.GetPutHistroryFile (localFile);
-				puttedBlk = ResumbalePutHelper.GetHistory (puttedFile);
-			}
+            string puttedFile = string.Empty;
+            Dictionary<int, BlkputRet> puttedBlk = new Dictionary<int, BlkputRet>();
+            if (this.AllowCache)
+            {
+                puttedFile = ResumbalePutHelper.GetPutHistroryFile(localFile);
+                puttedBlk = ResumbalePutHelper.GetHistory(puttedFile);
+            }
             PutAuthClient client = new PutAuthClient(upToken);
             CallRet ret;
             using (FileStream fs = File.OpenRead(localFile))
@@ -107,7 +115,7 @@ namespace Qiniu.IO.Resumable
                 for (int i = 0; i < block_cnt; i++)
                 {
 
-                    if (extra.AllowCahce && puttedBlk != null && puttedBlk.ContainsKey(i) && puttedBlk[i] != null)
+                    if (this.AllowCache && puttedBlk != null && puttedBlk.ContainsKey(i) && puttedBlk[i] != null)
                     {
                         Console.WriteLine(string.Format("block{0} has putted", i));
                         extra.Progresses[i] = puttedBlk[i];
@@ -117,7 +125,7 @@ namespace Qiniu.IO.Resumable
                     if ((long)(i + 1) * BLOCKSIZE > fsize)
                         readLen = (int)(fsize - (long)i * BLOCKSIZE);
                     byte[] byteBuf = new byte[readLen];
-                    fs.Seek((long)i* BLOCKSIZE, SeekOrigin.Begin);
+                    fs.Seek((long)i * BLOCKSIZE, SeekOrigin.Begin);
                     fs.Read(byteBuf, 0, readLen);
                     //并行上传BLOCK
                     BlkputRet blkRet = ResumableBlockPut(client, byteBuf, i, readLen);
@@ -127,15 +135,15 @@ namespace Qiniu.IO.Resumable
                     }
                     else
                     {
-						if (extra.AllowCahce)
-						{
-							ResumbalePutHelper.Append (puttedFile, i, blkRet);
-						}
+                        if (this.AllowCache)
+                        {
+                            ResumbalePutHelper.Append(puttedFile, i, blkRet);
+                        }
                         extra.OnNotify(new PutNotifyEvent(i, readLen, extra.Progresses[i]));
                     }
                 }
                 ret = Mkfile(client, key, fs.Length);
-            } 
+            }
             if (ret.OK)
             {
                 if (Progress != null)
@@ -195,7 +203,7 @@ namespace Qiniu.IO.Resumable
                         }
                         System.Threading.Thread.Sleep(1000);
                         continue;
-                    } 
+                    }
                     if (extra.Progresses[blkIdex] == null || crc32 != extra.Progresses[blkIdex].crc32)
                     {
                         if (i == (putSetting.TryTimes - 1))
@@ -216,7 +224,7 @@ namespace Qiniu.IO.Resumable
 
             return extra.Progresses[blkIdex];
         }
-        
+
 
         private BlkputRet Mkblock(Client client, byte[] firstChunk, long blkSize)
         {
