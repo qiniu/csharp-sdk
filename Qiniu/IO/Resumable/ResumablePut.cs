@@ -89,10 +89,12 @@ namespace Qiniu.IO.Resumable
             {
                 throw new Exception(string.Format("{0} does not exist", localFile));
             }
-
-            string puttedFile = ResumbalePutHelper.GetPutHistroryFile(localFile);
-            Dictionary<int,BlkputRet> puttedBlk = ResumbalePutHelper.GetHistory(puttedFile);
-
+			string puttedFile = string.Empty;
+			Dictionary<int,BlkputRet> puttedBlk = new Dictionary<int, BlkputRet> ();
+			if (extra.AllowCahce) {
+				puttedFile = ResumbalePutHelper.GetPutHistroryFile (localFile);
+				puttedBlk = ResumbalePutHelper.GetHistory (puttedFile);
+			}
             PutAuthClient client = new PutAuthClient(upToken);
             CallRet ret;
             using (FileStream fs = File.OpenRead(localFile))
@@ -104,17 +106,18 @@ namespace Qiniu.IO.Resumable
                 //并行上传
                 for (int i = 0; i < block_cnt; i++)
                 {
-                    if (puttedBlk != null && puttedBlk.ContainsKey(i) && puttedBlk[i] != null)
+
+                    if (extra.AllowCahce && puttedBlk != null && puttedBlk.ContainsKey(i) && puttedBlk[i] != null)
                     {
                         Console.WriteLine(string.Format("block{0} has putted", i));
                         extra.Progresses[i] = puttedBlk[i];
                         continue;
                     }
                     int readLen = BLOCKSIZE;
-                    if ((i + 1) * BLOCKSIZE > fsize)
-                        readLen = (int)(fsize - i * BLOCKSIZE);
+                    if ((long)(i + 1) * BLOCKSIZE > fsize)
+                        readLen = (int)(fsize - (long)i * BLOCKSIZE);
                     byte[] byteBuf = new byte[readLen];
-                    fs.Seek(i * BLOCKSIZE, SeekOrigin.Begin);
+                    fs.Seek((long)i* BLOCKSIZE, SeekOrigin.Begin);
                     fs.Read(byteBuf, 0, readLen);
                     //并行上传BLOCK
                     BlkputRet blkRet = ResumableBlockPut(client, byteBuf, i, readLen);
@@ -124,7 +127,10 @@ namespace Qiniu.IO.Resumable
                     }
                     else
                     {
-                        ResumbalePutHelper.Append(puttedFile, i, blkRet);
+						if (extra.AllowCahce)
+						{
+							ResumbalePutHelper.Append (puttedFile, i, blkRet);
+						}
                         extra.OnNotify(new PutNotifyEvent(i, readLen, extra.Progresses[i]));
                     }
                 }
@@ -187,6 +193,7 @@ namespace Qiniu.IO.Resumable
                         {
                             throw ee;
                         }
+                        System.Threading.Thread.Sleep(1000);
                         continue;
                     } 
                     if (extra.Progresses[blkIdex] == null || crc32 != extra.Progresses[blkIdex].crc32)
@@ -195,6 +202,7 @@ namespace Qiniu.IO.Resumable
                         {
                             return null;
                         }
+                        System.Threading.Thread.Sleep(1000);
                         continue;
                     }
                     else
@@ -205,6 +213,7 @@ namespace Qiniu.IO.Resumable
                 }
             }
             #endregion
+
             return extra.Progresses[blkIdex];
         }
         
