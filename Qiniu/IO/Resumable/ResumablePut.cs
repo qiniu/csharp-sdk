@@ -88,7 +88,7 @@ namespace Qiniu.IO.Resumable
                 int readLen = BLOCKSIZE;
                 for (int i = 0; i < block_cnt; i++)
                 {
-                    if (i == (block_cnt - 1)) { 
+                    if (i == block_cnt - 1) { 
                         readLen = (int)(fsize - (long)i * BLOCKSIZE);
                     }
                     fs.Seek((long)i * BLOCKSIZE, SeekOrigin.Begin);
