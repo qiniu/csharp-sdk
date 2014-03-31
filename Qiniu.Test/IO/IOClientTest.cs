@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using NUnit.Framework;
 using Qiniu.IO;
 using Qiniu.RS;
@@ -89,6 +90,48 @@ namespace Qiniu.Test.IO
 			Assert.IsTrue (ret.OK, "PutFileTest Failure");
 
 		}
+
+		[Test]
+		public void AsyncPutFileTest()
+		{
+
+			ManualResetEvent allDone = new ManualResetEvent (false);
+			IOClient target = new IOClient(); 
+			string key = NewKey;
+			PrintLn (key);
+			PutExtra extra = new PutExtra (); // TODO: 初始化为适当的值
+			extra.MimeType = "text/plain";
+			extra.Crc32 = 123;
+			extra.CheckCrc = CheckCrcType.CHECK;
+			extra.Params = new System.Collections.Generic.Dictionary<string, string> ();
+			PutPolicy put = new PutPolicy (Bucket);
+			TmpFIle file = new TmpFIle (1024 * 10);
+
+			bool result = false;
+			target.PutProgressChanged+= (object sender, PutProgressEventArgs e) => {
+				Console.WriteLine(e.Percentage);
+			};
+			target.PutFailed+= (object sender, PutFailedEventArgs e) => {
+				Console.Write(e.Error.ToString());
+				file.Del ();
+				allDone.Set();
+			};
+			target.PutFinished += (object sender, PutRet e) => {
+				result = true;
+				file.Del ();
+				RSHelper.RSDel (Bucket, file.FileName);
+				allDone.Set();
+			};
+
+			target.AsyncPutFile(put.Token (), file.FileName, file.FileName, extra);
+
+			allDone.WaitOne ();
+
+			//error params
+			Assert.IsTrue (result, "PutFileTest Failure");
+
+		}
+
 		/// <summary>
 		///PutFile 的测试
 		///</summary>
@@ -148,7 +191,6 @@ namespace Qiniu.Test.IO
 		[Test]
 		public void PutWithoutKeyTest()
 		{
-
 
 		}
 	}
