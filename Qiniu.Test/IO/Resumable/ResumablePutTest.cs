@@ -34,7 +34,6 @@ namespace Qiniu.Test.IO.Resumable
             ResumablePut target = new ResumablePut(putSetting, extra); // TODO: 初始化为适当的值
 			Console.WriteLine ("extra.Bucket:"+Bucket);
             string upToken = new PutPolicy(Bucket).Token(new Qiniu.Auth.digest.Mac());
-            target.Progress += new Action<float>(target_Progress);
 			TmpFIle file=new TmpFIle(1024*1024*4);
 			target.PutFinished += new EventHandler<CallRet> ((o,e) => {
 				file.Del ();
@@ -62,13 +61,6 @@ namespace Qiniu.Test.IO.Resumable
             PrintLn(e.BlkIdx.ToString());
             PrintLn(e.BlkSize.ToString());
             PrintLn(e.Ret.offset.ToString());
-        }
-        void target_Progress(float obj)
-        {            
-            if (obj > 0.999999)
-            {
-                PrintLn((obj * 100).ToString() + "%");
-            }
         }
     }
 }

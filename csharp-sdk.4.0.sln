@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{65603FA4-DDC3-4FD7-ADA3-7BCC2161A247}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu", "Qiniu\Qiniu.4.0.csproj", "{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.4.0", "Qiniu\Qiniu.4.0.csproj", "{AD4EA9D1-11C2-4BF6-8A06-72A966BC1B80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.Test", "Qiniu.Test\Qiniu.4.0.Test.csproj", "{95DC2A77-2344-4315-9F6F-334CC928459C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.4.0.Test", "Qiniu.Test\Qiniu.4.0.Test.csproj", "{95DC2A77-2344-4315-9F6F-334CC928459C}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution

@@ -13,6 +13,6 @@ namespace Qiniu.IO.Resumable
 		[JsonProperty("crc32")]
 		public UInt32 crc32;
 		[JsonProperty("offset")]
-		public UInt32 offset;
+		public ulong offset;
 	}
 }

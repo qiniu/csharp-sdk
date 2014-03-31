@@ -424,18 +424,8 @@ public static void PutFile(string bucket, string key, string fname)
 {
 	var policy = new PutPolicy(bucket, 3600);
 	string upToken = policy.Token();
-	PutExtra extra = new PutExtra { Bucket = bucket };
+	PutExtra extra = new PutExtra();
 	IOClient client = new IOClient();
-	client.PutFinished += new EventHandler<PutRet>((o, ret) => {
-		if (ret.OK)
-		{
-			Console.WriteLine("Hash: " + ret.Hash);
-		}
-		else
-		{
-			Console.WriteLine("Failed to PutFile");
-		}
-	});
 	client.PutFile(upToken, key, fname, extra);
 }
 ```
@@ -457,20 +447,6 @@ public static void ResumablePutFile(string bucket, string key, string fname)
 	ResumablePutExtra extra = new ResumablePutExtra();
 	extra.Bucket = bucket;
 	ResumablePut client = new ResumablePut(setting, extra);
-	client.Progress += new Action<float>((p) => {
-	    Console.WriteLine("当前进度:{0}%", p * 100);
-
-	});
-	client.PutFinished += new EventHandler<CallRet>((o, ret) => {
-	    if (ret.OK)
-	    {
-			Console.WriteLine("上传成功:{0}",ret.Response);
-	    }
-	    else
-	    {
-			Console.WriteLine("上传失败:{0}", ret.Response);
-	    }
-	});
 	client.PutFile(upToken, fname, Guid.NewGuid().ToString());
 }
 ```

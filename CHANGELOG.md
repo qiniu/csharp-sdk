@@ -1,5 +1,12 @@
 ## CHANGE LOG
 
+
+### v6.1.1
+2014-02-25 issue [#42](https://github.com/qiniu/csharp-sdk/pull/42)
+
+- 简化断点续上传，删除bput逻辑
+- 修复bug：>2.5GB文件上传失败
+
 ### v6.1.0
 
 2014-02-18 issue [#37](https://github.com/qiniu/csharp-sdk/pull/37)
