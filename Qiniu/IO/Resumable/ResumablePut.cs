@@ -16,26 +16,6 @@ using Qiniu.Util;
 namespace Qiniu.IO.Resumable
 {
 
-
-//	interface class resuablePut
-	internal class reumbalePutProgress{
-		long successSent;
-
-		long bytesSent;
-
-		public long BytesSent {
-			set {
-				bytesSent = value;
-			}
-		}
-
-		long total;
-		public event EventHandler<PutProgressEventArgs> PutProgressChanged;
-		public void IncressProgress(long inc){
-			this.bytesSent += inc;
-		}
-	}
-
     /// <summary>
     /// 异步并行断点上传类
     /// </summary>
