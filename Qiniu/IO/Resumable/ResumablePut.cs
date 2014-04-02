@@ -116,6 +116,7 @@ namespace Qiniu.IO.Resumable
                     if (blkRet == null)
                     {
                         extra.OnNotifyErr(new PutNotifyErrorEvent(i, readLen, "Make Block Error"));
+						return null;
                     }
                     else
                     {
@@ -174,6 +175,7 @@ namespace Qiniu.IO.Resumable
 						allDone.Reset ();
 						if (blkRet == null) {
 							extra.OnNotifyErr (new PutNotifyErrorEvent (i, readLen, "Make Block Error"));
+							return ;
 						} else {
 							extra.OnNotify (new PutNotifyEvent (i, readLen, extra.Progresses [i]));
 						}
