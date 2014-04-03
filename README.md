@@ -20,7 +20,7 @@
 
 ## 许可证
 
-Copyright (c) 2012 qiniutek.com
+Copyright (c) 2014 qiniu.com
 
 基于 MIT 协议发布:
 
