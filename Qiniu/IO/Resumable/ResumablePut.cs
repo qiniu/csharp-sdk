@@ -3,7 +3,7 @@ using System.Net;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading;	
+using System.Threading;
 #if NET40
 using System.Threading.Tasks;
 #endif
@@ -15,40 +15,49 @@ using Qiniu.Util;
 
 namespace Qiniu.IO.Resumable
 {
-
     /// <summary>
     /// 异步并行断点上传类
     /// </summary>
     public class ResumablePut
     {
-		private static ManualResetEvent allDone = new ManualResetEvent(false);
+        class CountBox
+        {
+            public long Count;
+			public int lastPer;
+            public CountBox()
+            {
+                this.Count = 0;
+            }
+        }
 
-		#region
-		/// <summary>
-		/// Occurs when upload progress changed when call AsyncPutFile
-		/// </summary>
-		public event EventHandler<PutProgressEventArgs> PutProgressChanged;
+        #region
+        /// <summary>
+        /// Occurs when upload progress changed when call AsyncPutFile
+        /// </summary>
+        public event EventHandler<PutProgressEventArgs> PutProgressChanged;
 
-		protected void onPutProgressChanged(object sender,PutProgressEventArgs percentage){
-			if(this.PutProgressChanged!=null){
-				this.PutProgressChanged (sender, percentage);
-			}
-		}
+        protected void onPutProgressChanged(object sender, PutProgressEventArgs percentage)
+        {
+            if (this.PutProgressChanged != null)
+            {
+                this.PutProgressChanged(sender, percentage);
+            }
+        }
 
-		#endregion
+        #endregion
 
         private const int blockBits = 22;
-		private static int BLOCKSIZE = 1 << blockBits;
-		private readonly static int blockMashk = BLOCKSIZE - 1;
+        private readonly static int BLOCKSIZE = 1 << blockBits;
+        private readonly static int blockMashk = BLOCKSIZE - 1;
 
         /// <summary>
         /// 上传完成事件
         /// </summary>
-		public event EventHandler<CallRet> PutFinished;
+        public event EventHandler<CallRet> PutFinished;
         /// <summary>
         /// 上传Failure事件
         /// </summary>
-		public event EventHandler<CallRet> PutFailed;
+        public event EventHandler<CallRet> PutFailed;
 
         Settings putSetting;
 
@@ -71,6 +80,8 @@ namespace Qiniu.IO.Resumable
             get { return extra; }
             set { extra = value; }
         }
+
+        private object putCntLocker = new object();
 
         /// <summary>
         /// 断点续传类
@@ -95,7 +106,7 @@ namespace Qiniu.IO.Resumable
             {
                 throw new Exception(string.Format("{0} does not exist", localFile));
             }
-            
+
             PutAuthClient client = new PutAuthClient(upToken);
             CallRet ret;
             using (FileStream fs = File.OpenRead(localFile))
@@ -105,9 +116,11 @@ namespace Qiniu.IO.Resumable
                 extra.Progresses = new BlkputRet[block_cnt];
                 byte[] byteBuf = new byte[BLOCKSIZE];
                 int readLen = BLOCKSIZE;
+
                 for (int i = 0; i < block_cnt; i++)
                 {
-                    if (i == block_cnt - 1) { 
+                    if (i == block_cnt - 1)
+                    {
                         readLen = (int)(fsize - (long)i * BLOCKSIZE);
                     }
                     fs.Seek((long)i * BLOCKSIZE, SeekOrigin.Begin);
@@ -116,7 +129,7 @@ namespace Qiniu.IO.Resumable
                     if (blkRet == null)
                     {
                         extra.OnNotifyErr(new PutNotifyErrorEvent(i, readLen, "Make Block Error"));
-						return null;
+                        return null;
                     }
                     else
                     {
@@ -134,126 +147,197 @@ namespace Qiniu.IO.Resumable
             }
             else
             {
-				if (PutFailed != null)
+                if (PutFailed != null)
                 {
-					PutFailed(this, ret);
+                    PutFailed(this, ret);
                 }
             }
             return ret;
         }
 
-		/// <summary>
-		/// 上传文件
-		/// </summary>
-		/// <param name="upToken">上传Token</param>
-		/// <param name="key">key</param>
-		/// <param name="localFile">本地文件名</param>
-		public void AsyncPutFile(string upToken, string localFile, string key)
-		{
-			if (!File.Exists (localFile)) {
-				throw new Exception (string.Format ("{0} does not exist", localFile));
-			}
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="upToken">上传Token</param>
+        /// <param name="key">key</param>
+        /// <param name="localFile">本地文件名</param>
+        public void AsyncPutFile(string upToken, string localFile, string key)
+        {
+            if (!File.Exists(localFile))
+            {
+                throw new Exception(string.Format("{0} does not exist", localFile));
+            }
 
-			Action<int> action = (nonuse) => {
-				PutAuthClient client = new PutAuthClient (upToken);
-				CallRet ret;
-				using (FileStream fs = File.OpenRead (localFile)) {
-					upToken = "UpToken " + upToken;
-					int block_cnt = block_count (fs.Length);
-					long fsize = fs.Length;
-					extra.Progresses = new BlkputRet[block_cnt];
-					byte[] byteBuf = new byte[BLOCKSIZE];
-					int readLen = BLOCKSIZE;
-					for (int i = 0; i < block_cnt; i++) {
-						if (i == block_cnt - 1) { 
-							readLen = (int)(fsize - (long)i * BLOCKSIZE);
-							byteBuf = new byte[readLen];
-						}
-						fs.Seek ((long)i * BLOCKSIZE, SeekOrigin.Begin);
-						fs.Read (byteBuf, 0, readLen);
-						BlkputRet blkRet = AsyncResumableBlockPut (upToken, byteBuf, i, readLen, fsize);
-						allDone.Reset ();
-						if (blkRet == null) {
-							extra.OnNotifyErr (new PutNotifyErrorEvent (i, readLen, "Make Block Error"));
-							return ;
-						} else {
-							extra.OnNotify (new PutNotifyEvent (i, readLen, extra.Progresses [i]));
-						}
-					}
-					ret = Mkfile (client, key, fsize);
-				}
-				if (ret.OK) {
-					if (PutFinished != null) {
-						PutFinished (this, ret);
-					}
-				} else {
-					if (PutFailed != null) {
-						PutFailed (this, ret);
-					}
-				}
-			};
-			action.BeginInvoke(0,null,null);
-		}
+            Action<int> action = (nonuse) =>
+            {
+                PutAuthClient client = new PutAuthClient(upToken);
+                CallRet ret;
+                using (FileStream fs = File.OpenRead(localFile))
+                {
+                    upToken = "UpToken " + upToken;
+                    int block_cnt = block_count(fs.Length);
+                    long fsize = fs.Length;
+                    extra.Progresses = new BlkputRet[block_cnt];
+                    int readLen = BLOCKSIZE;
+                    CountBox putted = new CountBox();
+#if NET40
+                    int cur = 0;
+                    object curLocker = new object();
+                    uint workernum = this.putSetting.WorkerCount > block_cnt ? (uint)block_cnt : this.putSetting.WorkerCount ;
+					ManualResetEvent[] doneEvents = new ManualResetEvent[workernum];
+					for (int i = 0; i < workernum; i++)
+                    {
+                        doneEvents[i] = new ManualResetEvent(false);
+                    }
 
-		private BlkputRet AsyncResumableBlockPut(string uptoken, byte[] body,int blkIdex,int blkSize,long filesize){
-			#region Mkblock
+                    System.Threading.Tasks.Parallel.ForEach(doneEvents, (state) =>
+                    {
+                        byte[] Buf = new byte[BLOCKSIZE];
+                        int lcur = 0;
+                        while (cur < block_cnt)
+                        {
+                            lock (curLocker)
+                            {
+                                lcur = cur;
+                                cur++;
+                            }
+                            if (lcur == block_cnt - 1)
+                            {
+                                readLen = (int)(fsize - (long)lcur * BLOCKSIZE);
+                                Buf = new byte[readLen];
+                            }
+                            lock (fs)
+                            {
+                                fs.Seek((long)lcur * BLOCKSIZE, SeekOrigin.Begin);
+                                fs.Read(Buf, 0, readLen);
+                            }
+                            BlkputRet blkRet = AsyncResumableBlockPut(upToken, Buf, lcur, readLen, fsize, putted);
+                            if (blkRet == null)
+                            {
+                                extra.OnNotifyErr(new PutNotifyErrorEvent(lcur, readLen, "Make Block Error"));
+                                return;
+                            }
+                            else
+                            {
+                                extra.OnNotify(new PutNotifyEvent(lcur, readLen, extra.Progresses[lcur]));
+                            }
+                        }
+                        state.Set();
+                    });
+                    EventWaitHandle.WaitAll(doneEvents);
+#endif
+#if NET20
+                    byte[] byteBuf = new byte[BLOCKSIZE];
+                    for (int i = 0; i < block_cnt; i++) {
+                        if (i == block_cnt - 1) { 
+                            readLen = (int)(fsize - (long)i * BLOCKSIZE);
+                            byteBuf = new byte[readLen];
+                        }
+                        fs.Seek ((long)i * BLOCKSIZE, SeekOrigin.Begin);
+                        fs.Read (byteBuf, 0, readLen);
+                        BlkputRet blkRet = AsyncResumableBlockPut(upToken, byteBuf, i, readLen, fsize, putted);
+                        if (blkRet == null) {
+                            extra.OnNotifyErr (new PutNotifyErrorEvent (i, readLen, "Make Block Error"));
+                            return;
+                        } else {
+                            extra.OnNotify (new PutNotifyEvent (i, readLen, extra.Progresses [i]));
+                        }
+                    }
+#endif
+                    ret = Mkfile(client, key, fsize);
+                }
+                if (ret.OK)
+                {
+                    if (PutFinished != null)
+                    {
+                        PutFinished(this, ret);
+                    }
+                }
+                else
+                {
+                    if (PutFailed != null)
+                    {
+                        PutFailed(this, ret);
+                    }
+                }
+            };
+            action.BeginInvoke(0, null, null);
+        }
 
-			long bytesSent = blkIdex*blkSize;
-			uint crc32 = CRC32.CheckSumBytes(body, blkSize);
-			for (int i = 0; i < putSetting.TryTimes; i++)
-			{
-				bool needretry=false;
-				try
-				{
-					using(WebClient wc=new WebClient())
-					{
-						wc.Headers.Add("Authorization",uptoken);
-						wc.UploadDataCompleted += (object sender, UploadDataCompletedEventArgs e) => 
-						{
-							//Error happens, need retry
-							if(e.Error!=null){
-								needretry = true;
-							} else {
-								extra.Progresses[blkIdex] = QiniuJsonHelper.ToObject<BlkputRet>(Encoding.UTF8.GetString(e.Result));
-							}
-							allDone.Set();
-						};
-						wc.UploadProgressChanged += (sender, e) => {
-							//e.BytesSent
-							bytesSent = bytesSent + e.BytesSent;
-							int per = (int)(100*bytesSent/filesize);
-							onPutProgressChanged(this,new PutProgressEventArgs(per));
-						};
-						Mkblock(wc,body,blkSize);
-					}
-				}
-				catch (Exception ee)
-				{
-					if (i == (putSetting.TryTimes - 1))
-					{
-						throw ee;
-					}
-					System.Threading.Thread.Sleep(1000);
-					needretry = true;
-				}
-				allDone.WaitOne();
-				if(needretry){continue;}
-				if (extra.Progresses[blkIdex] == null || crc32 != extra.Progresses[blkIdex].crc32)
-				{
-					if (i == (putSetting.TryTimes - 1)) { return null; }
-					System.Threading.Thread.Sleep(1000);
-					continue;
-				}
-				else
-				{
-					break;
-				}
-			}
-			#endregion
+        private BlkputRet AsyncResumableBlockPut(string uptoken, byte[] body, int blkIdex, int blkSize, long filesize, CountBox putted)
+        {
+            #region Mkblock
+            ManualResetEvent done = new ManualResetEvent(false);
+            uint crc32 = CRC32.CheckSumBytes(body, blkSize);
+            for (int i = 0; i < putSetting.TryTimes; i++)
+            {
+                bool needretry = false;
+                try
+                {
+                    using (WebClient wc = new WebClient())
+                    {
+                        wc.Headers.Add("Authorization", uptoken);
+                        wc.UploadDataCompleted += (object sender, UploadDataCompletedEventArgs e) =>
+                        {
+                            //Error happens, need retry
+                            if (e.Error != null)
+                            {
+                                needretry = true;
+                            }
+                            else
+                            {
+                                extra.Progresses[blkIdex] = QiniuJsonHelper.ToObject<BlkputRet>(Encoding.UTF8.GetString(e.Result));
+                            }
+                            done.Set();
+                        };
+                        if (i == 0)
+                        {
+                            long last = 0;
+                            wc.UploadProgressChanged += (sender, e) =>
+                            {
+                                int per;
+                                lock (putCntLocker)
+                                {
+                                    putted.Count += (e.BytesSent - last);
+                                    last = e.BytesSent;
+                                    per = (int)(100 * putted.Count / filesize);
+                                }
+								if(per != putted.lastPer){
+                                	onPutProgressChanged(this, new PutProgressEventArgs(per));
+									putted.lastPer = per;
+								}
+                            };
+                        }
+                        Mkblock(wc, body, blkSize);
+                    }
+                }
+                catch (Exception ee)
+                {
+                    if (i == (putSetting.TryTimes - 1))
+                    {
+                        throw ee;
+                    }
+                    System.Threading.Thread.Sleep(1000);
+                    needretry = true;
+                }
+                done.WaitOne();
+                if (needretry) { continue; }
+                if (extra.Progresses[blkIdex] == null || crc32 != extra.Progresses[blkIdex].crc32)
+                {
+                    if (i == (putSetting.TryTimes - 1)) { return null; }
+                    System.Threading.Thread.Sleep(1000);
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            #endregion
 
-			return extra.Progresses[blkIdex];
+            return extra.Progresses[blkIdex];
 
-		}
+        }
 
         private BlkputRet ResumableBlockPut(Client client, byte[] body, int blkIdex, int blkSize)
         {
@@ -292,20 +376,21 @@ namespace Qiniu.IO.Resumable
             #endregion
 
             return extra.Progresses[blkIdex];
-        } 
+        }
 
 
-		private void Mkblock(WebClient client,byte[]  firstChunk,int blkSize){
+        private void Mkblock(WebClient client, byte[] firstChunk, int blkSize)
+        {
             string url = string.Format("{0}/mkblk/{1}", Config.UP_HOST, blkSize);
-			client.Headers.Add ("Content-Type", "application/octet-stream");
-			client.UploadDataAsync (new Uri (url), "POST",firstChunk);
-		}
+            client.Headers.Add("Content-Type", "application/octet-stream");
+            client.UploadDataAsync(new Uri(url), "POST", firstChunk);
+        }
 
         private BlkputRet Mkblock(Client client, byte[] firstChunk, int blkSize)
         {
             string url = string.Format("{0}/mkblk/{1}", Config.UP_HOST, blkSize);
-            
-            CallRet callRet = client.CallWithBinary(url, "application/octet-stream",new MemoryStream(firstChunk, 0, blkSize),blkSize);
+
+            CallRet callRet = client.CallWithBinary(url, "application/octet-stream", new MemoryStream(firstChunk, 0, blkSize), blkSize);
             if (callRet.OK)
             {
                 return QiniuJsonHelper.ToObject<BlkputRet>(callRet.Response);
@@ -362,3 +447,4 @@ namespace Qiniu.IO.Resumable
         }
     }
 }
+
