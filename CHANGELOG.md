@@ -1,11 +1,9 @@
 ## CHANGE LOG
 
-
 ### v6.1.1
-2014-02-25 issue [#42](https://github.com/qiniu/csharp-sdk/pull/42)
-
-- 简化断点续上传，删除bput逻辑
-- 修复bug：>2.5GB文件上传失败
+2014-04-28 issue [#45](https://github.com/qiniu/csharp-sdk/pull/45)
+- [#41] [#42] 简化断点续上传，删除bput逻辑, 修复bug：>2.5GB文件上传失败
+- [#38] [#40] pfop 支持
 
 ### v6.1.0
 
