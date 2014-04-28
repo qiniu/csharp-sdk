@@ -50,10 +50,10 @@ namespace Qiniu.Util
 			return ~crc;
 		}
 
-		public static UInt32 CheckSumBytes (byte[] data)
+		public static UInt32 CheckSumBytes (byte[] data,int length)
 		{
 			CRC32 crc = new CRC32 ();
-			crc.Write (data, 0, data.Length);
+			crc.Write (data, 0, length);
 			return crc.Sum32 ();
 		}
 

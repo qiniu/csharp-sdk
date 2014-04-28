@@ -58,6 +58,8 @@ DLL引用方式:
 	C# SDK引用了第三方的开源项目 Json.NET,因此，您需要在项目中引用它
 项目地址：[http://json.codeplex.com](http://json.codeplex.com)。
 
+<a name=setup></a>
+## 初始化
 <a name=setup-key></a>
 ### 配置密钥
 
@@ -424,18 +426,8 @@ public static void PutFile(string bucket, string key, string fname)
 {
 	var policy = new PutPolicy(bucket, 3600);
 	string upToken = policy.Token();
-	PutExtra extra = new PutExtra { Bucket = bucket };
+	PutExtra extra = new PutExtra ();
 	IOClient client = new IOClient();
-	client.PutFinished += new EventHandler<PutRet>((o, ret) => {
-		if (ret.OK)
-		{
-			Console.WriteLine("Hash: " + ret.Hash);
-		}
-		else
-		{
-			Console.WriteLine("Failed to PutFile");
-		}
-	});
 	client.PutFile(upToken, key, fname, extra);
 }
 ```
@@ -455,27 +447,12 @@ public static void ResumablePutFile(string bucket, string key, string fname)
 	string upToken = policy.Token();
 	Settings setting = new Settings();
 	ResumablePutExtra extra = new ResumablePutExtra();
-	extra.Bucket = bucket;
 	ResumablePut client = new ResumablePut(setting, extra);
-	client.Progress += new Action<float>((p) => {
-	    Console.WriteLine("当前进度:{0}%", p * 100);
-
-	});
-	client.PutFinished += new EventHandler<CallRet>((o, ret) => {
-	    if (ret.OK)
-	    {
-			Console.WriteLine("上传成功:{0}",ret.Response);
-	    }
-	    else
-	    {
-			Console.WriteLine("上传失败:{0}", ret.Response);
-	    }
-	});
 	client.PutFile(upToken, fname, Guid.NewGuid().ToString());
 }
 ```
 
-ResumablePut采用分快上传，各快之间采用并行上传,通过注册事件Progress可以获取当前文件上传进度，同时您也可以通过注册ResumablePutExtra以下两个事件监听当前上传进度以及成功情况：
+ResumablePut采用分快上传，各快之间采用并行上传,可以通过注册ResumablePutExtra以下两个事件监听当前上传进度以及成功情况：
 
 ```c#
 public event EventHandler<PutNotifyEvent> Notify;
@@ -498,7 +475,7 @@ public event EventHandler<PutNotifyErrorEvent> NotifyErr;
 
 其中<domain>是bucket所对应的域名。七牛云存储为每一个bucket提供一个默认域名。默认域名可以到[七牛云存储开发者平台](https://portal.qiniu.com/)中，空间设置的域名设置一节查询。用户也可以将自有的域名绑定到bucket上，用户可以通过自有域名访问七牛云存储。
 
-**注意： key必须采用utf8编码，如使用非utf8编码访问七牛云存储将反馈错误**
+**注意： key必须采用utf8编码，如使用非utf8编码访问七牛云存储将返回错误**
 
 <a name=private-download></a>
 #### 私有资源下载
