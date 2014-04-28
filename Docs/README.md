@@ -58,6 +58,8 @@ DLL引用方式:
 	C# SDK引用了第三方的开源项目 Json.NET,因此，您需要在项目中引用它
 项目地址：[http://json.codeplex.com](http://json.codeplex.com)。
 
+<a name=setup></a>
+## 初始化
 <a name=setup-key></a>
 ### 配置密钥
 
@@ -424,7 +426,7 @@ public static void PutFile(string bucket, string key, string fname)
 {
 	var policy = new PutPolicy(bucket, 3600);
 	string upToken = policy.Token();
-	PutExtra extra = new PutExtra();
+	PutExtra extra = new PutExtra ();
 	IOClient client = new IOClient();
 	client.PutFile(upToken, key, fname, extra);
 }
@@ -445,13 +447,12 @@ public static void ResumablePutFile(string bucket, string key, string fname)
 	string upToken = policy.Token();
 	Settings setting = new Settings();
 	ResumablePutExtra extra = new ResumablePutExtra();
-	extra.Bucket = bucket;
 	ResumablePut client = new ResumablePut(setting, extra);
 	client.PutFile(upToken, fname, Guid.NewGuid().ToString());
 }
 ```
 
-ResumablePut采用分快上传，各快之间采用并行上传,通过注册事件Progress可以获取当前文件上传进度，同时您也可以通过注册ResumablePutExtra以下两个事件监听当前上传进度以及成功情况：
+ResumablePut采用分快上传，各快之间采用并行上传,可以通过注册ResumablePutExtra以下两个事件监听当前上传进度以及成功情况：
 
 ```c#
 public event EventHandler<PutNotifyEvent> Notify;
