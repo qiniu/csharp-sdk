@@ -96,6 +96,21 @@ namespace Qiniu.Test.RS
 			Assert.IsTrue(actual.OK, "CopyTest Failure");   
 		}
 
+        [Test]
+        public void FetchTest()
+        {
+            RSClient target = new RSClient();
+            string key = NewKey;
+            EntryPathPair pathPair = new EntryPathPair("", "", Bucket, key);
+            CallRet acturl;
+            acturl = target.Fetch(FileOpUrl, pathPair);
+            if (acturl.OK)
+            {
+                RSHelper.RSDel(Bucket, key);
+            }
+            Assert.IsTrue(acturl.OK, "FetchTest Failure");
+        }
+
 		/// <summary>
 		///BatchStat 的测试
 		///</summary>
