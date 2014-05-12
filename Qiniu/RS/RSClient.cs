@@ -29,16 +29,20 @@ namespace Qiniu.RS
 		/// <summary>
 		/// 删除delete
 		/// </summary>
-		DELETE
+		DELETE,
+        /// <summary>
+        /// 抓取资源fetch
+        /// </summary>
+        FETCH
 	}
 
 	/// <summary>
-	/// 资源存储客户端，提供对文件的查看（stat），移动(move)，复制（copy）,删除（delete）操作
+    /// 资源存储客户端，提供对文件的查看（stat），移动(move)，复制（copy）,删除（delete）, 抓取资源(fetch) 操作
 	/// 以及与这些操作对应的批量操作
 	/// </summary>
 	public class RSClient :QiniuAuthClient
 	{
-		private static string[] OPS = new string[] { "stat", "move", "copy", "delete" };
+		private static string[] OPS = new string[] { "stat", "move", "copy", "delete", "fetch" };
 
 		public RSClient (Mac mac=null)
             : base(mac)
@@ -75,6 +79,16 @@ namespace Qiniu.RS
 			                            Base64URLSafe.Encode (pair.URIDest));
 			return Call (url);
 		}
+
+        private CallRet opFetch(FileHandle op, string fromUrl, EntryPathPair pari)
+        {
+            string url = string.Format("{0}/{1}/{2}/to/{3}",
+                                        Config.RS_HOST,
+                                        OPS[(int)op],
+                                        Base64URLSafe.Encode(fromUrl),
+                                        Base64URLSafe.Encode(pari.URIDest));
+            return Call(url);
+        }
 
 		/// <summary>
 		/// 文件信息查看
@@ -124,6 +138,17 @@ namespace Qiniu.RS
 		{
 			return op2 (FileHandle.COPY, pathPair);
 		}
+
+        /// <summary>
+        /// 抓取资源
+        /// </summary>
+        /// <param name="fromUrl">需要抓取的文件URL</param>
+        /// <param name="pathPair">标准EntryPathPai对应, 可不输入source bucket及source key</param>
+        /// <returns>见<see cref="CallRet">CallRet</see></returns>
+        public CallRet Fetch(string fromUrl, EntryPathPair pathPair)
+        {
+            return opFetch (FileHandle.FETCH, fromUrl, pathPair);
+        }
 
 		/// <summary>
 		/// 获取一元批操作http request Body

@@ -30,5 +30,24 @@ namespace Qiniu.RS
 		{
 			return string.Format ("http://{0}/{1}", domain, key);
 		}
+
+        public static string MakeSaveasUrl(string baseUrl, string saveBucket, string saveKey, Mac mac = null)
+        {
+            if (mac == null)
+            {
+                mac = new Mac(Config.ACCESS_KEY, Config.Encoding.GetBytes(Config.SECRET_KEY));
+            }
+
+            baseUrl = baseUrl.Replace(@"http://", "").Replace(@"https://", "");
+
+            string encodedEntryURI = Util.Base64URLSafe.ToBase64URLSafe(saveBucket + ":" + saveKey);
+
+            string url = baseUrl + "|saveas/" + encodedEntryURI;
+
+            string sign = mac.Sign(Conf.Config.Encoding.GetBytes(url));
+
+            return string.Format("http://{0}/sign/{1}", url, sign);
+
+        }
 	}
 }

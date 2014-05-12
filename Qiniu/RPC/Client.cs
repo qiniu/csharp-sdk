@@ -49,6 +49,38 @@ namespace Qiniu.RPC
 			}
 		}
 
+        /// <summary>
+        /// 调用Get方法, 比如有saveas功能(管道)的地址可以用Get来调用
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="isNeedAuth">需要验证权限</param>
+        /// <param name="dontEscape">取消escape Url</param>
+        /// <returns></returns>
+        public CallRet Get(string url, bool isNeedAuth = false, bool dontEscape = false)
+        {
+            Console.WriteLine("Client.Get ==> URL: " + url);
+            try
+            {
+                var newUrl = new Uri(url, dontEscape);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(newUrl);
+                request.UserAgent = Conf.Config.USER_AGENT;
+                request.Method = "GET";
+                if (isNeedAuth)
+                {
+                    SetAuth(request, null);
+                }
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+                {
+                    return HandleResult(response);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return new CallRet(HttpStatusCode.BadRequest, e);
+            }
+        }
+
 		public static CallRet HandleResult (HttpWebResponse response)
 		{
 			HttpStatusCode statusCode = response.StatusCode;
