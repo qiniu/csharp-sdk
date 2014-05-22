@@ -95,7 +95,7 @@ namespace Qiniu.RSF
 		/// <param name='limit'>
 		/// Limit.
 		/// </param>
-		public DumpRet ListPrefix (string bucketName, string prefix="", string markerIn="")
+		public DumpRet ListPrefix (string bucketName, string limit, string prefix="", string markerIn="")
 		{
 			string url = Config.RSF_HOST + string.Format ("/list?bucket={0}", bucketName);// + bucketName + 
 			if (!string.IsNullOrEmpty (markerIn)) {
