@@ -1,7 +1,7 @@
 ﻿using System;
 using Qiniu.Auth.digest;
 using Qiniu.Conf;
-
+using System.Net;
 namespace Qiniu.RS
 {
 	/// <summary>
@@ -28,6 +28,7 @@ namespace Qiniu.RS
 
 		public static string MakeBaseUrl (string domain, string key)
 		{
+			key = Uri.EscapeUriString (key);
 			return string.Format ("http://{0}/{1}", domain, key);
 		}
 	}
