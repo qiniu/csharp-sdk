@@ -95,7 +95,7 @@ namespace Qiniu.RSF
 		/// <param name='limit'>
 		/// Limit.
 		/// </param>
-		public DumpRet ListPrefix (string bucketName, string prefix="", string markerIn="")
+		public DumpRet ListPrefix (string bucketName, int limit=0, string prefix="", string markerIn="")
 		{
 			string url = Config.RSF_HOST + string.Format ("/list?bucket={0}", bucketName);// + bucketName + 
 			if (!string.IsNullOrEmpty (markerIn)) {
@@ -104,7 +104,8 @@ namespace Qiniu.RSF
 			if (!string.IsNullOrEmpty (prefix)) {
 				url += string.Format ("&prefix={0}", prefix);
 			}
-			if (this.limit > 0) {
+            if (limit > 0)
+            {
 				url += string.Format ("&limit={0}", limit);
 			}
 			for (int i = 0; i < RETRY_TIME; i++) {
@@ -151,7 +152,7 @@ namespace Qiniu.RSF
 				return null;
 			}
 			try {
-				DumpRet ret = ListPrefix (this.bucketName, this.prefix, this.marker);
+				DumpRet ret = ListPrefix (this.bucketName,this.limit, this.prefix, this.marker);
 				if (ret.Items.Count == 0) {
 					end = true;
 					return null;
