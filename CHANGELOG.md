@@ -1,5 +1,11 @@
 ## CHANGE LOG
 
+### v6.1.2
+2014-05-30 [#51](https://github.com/qiniu/csharp-sdk/pull/51)
+- [#46] nuget 安装文档
+- [#48] url key escape for make base url
+- [#50] limit args for listprefix
+
 ### v6.1.1
 2014-04-28 issue [#45](https://github.com/qiniu/csharp-sdk/pull/45)
 - [#41] [#42] 简化断点续上传，删除bput逻辑, 修复bug：>2.5GB文件上传失败
