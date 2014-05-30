@@ -41,12 +41,17 @@ title: C# SDK 使用指南
 
 <a name=install></a>
 ##  安装
-下载:
+
+NuGet安装方式：
+
+	如果您的Visual Studio没有安装NuGet，请先[安装](http://docs.nuget.org/docs/start-here/installing-nuget)它,然后在项目中添加引用，使用NuGet管理程序包，在其中搜索qiniu即可。
+
+源码下载:
 
 	git clone http://github.com/qiniu/csharp-sdk
 
 DLL引用方式:
-	
+
 	下载DLL文件，右键<项目>-<引用>文件夹，在弹出的菜单中点击"添加引用"选项后弹出"添加引用"对话框，选择”浏览"Qiniu.DLL文件,点击确定	
 
 项目引用方式：
@@ -55,7 +60,7 @@ DLL引用方式:
 
 其它:
 
-	C# SDK引用了第三方的开源项目 Json.NET,因此，您需要在项目中引用它
+	C# SDK引用了第三方的开源项目 Json.NET,因此，您需要在项目中引用它(如果使用NuGet管理dll，刚不需要手工加载Json.NET)
 项目地址：[http://json.codeplex.com](http://json.codeplex.com)。
 
 <a name=setup></a>
