@@ -24,7 +24,7 @@ namespace Qiniu.Conf
         /// <summary>
         /// 七牛资源上传服务器地址.
         /// </summary>
-        public static string UP_HOST = "http://up.qiniu.com";
+        public static string UP_HOST = "http://upload.qiniu.com";
         /// <summary>
         /// 七牛资源列表服务器地址.
         /// </summary>
