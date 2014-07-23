@@ -56,7 +56,7 @@ namespace Qiniu.Conf
         }
         private static string getUa()
         {
-            return 'QiniuCsharp/'+ VERSION + " (" + Environment.OSVersion.Version.ToString() + "; )";
+            return "QiniuCsharp/"+ VERSION + " (" + Environment.OSVersion.Version.ToString() + "; )";
         }
     }
 }
