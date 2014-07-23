@@ -24,6 +24,7 @@ namespace Qiniu.RS
 		private long fsizeLimit;
 		private string persistentOps;
 		private string persistentNotifyUrl;
+		private string persistentPipeline;
 		private string endUser;
 		private UInt64 expires = 3600;
 		private UInt64 deadline = 0;
