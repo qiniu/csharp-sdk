@@ -40,7 +40,6 @@ namespace Qiniu.Test.IO
 
 
 			policy = new PutPolicy("bucket");
-			policy.AsyncOps="";
 			policy.CallBackBody="uid=123";
 			policy.CallBackUrl="www.qiniu.com";
 			policy.DetectMime = 1;
@@ -50,11 +49,11 @@ namespace Qiniu.Test.IO
 			policy.PersistentOps = "avthumb/m3u8/preset/video_16x9_440k";
 			try {
 				string result = policy.ToString();
-				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"asyncOps\":\"\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\"}";
+				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\"}";
 				Assert.IsTrue(result==expect,"PutPolicyTest Failure");
 			} catch (Exception ee){
 				Assert.IsTrue (false, "PutPolicyTest Failure");
-			}	
+			}
 
 		}
 
@@ -65,7 +64,7 @@ namespace Qiniu.Test.IO
 		public void PutFileTest()
 		{
 
-			IOClient target = new IOClient(); 
+			IOClient target = new IOClient();
 			string key = NewKey;
 			PrintLn (key);
 			PutExtra extra = new PutExtra (); // TODO: 初始化为适当的值
@@ -96,7 +95,7 @@ namespace Qiniu.Test.IO
 		public void PutFileWithoutKeyTest()
 		{
 
-			IOClient target = new IOClient(); 
+			IOClient target = new IOClient();
 			string key = NewKey;
 			PrintLn (key);
 			PutExtra extra = new PutExtra (); // TODO: 初始化为适当的值
