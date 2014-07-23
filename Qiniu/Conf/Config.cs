@@ -5,7 +5,9 @@ namespace Qiniu.Conf
 {
     public class Config
     {
-        public static string USER_AGENT = "qiniu csharp-sdk v6.0.0";
+        public static string VERSION = "6.1.4";
+
+        public static string USER_AGENT = getUa();
         #region 帐户信息
         /// <summary>
         /// 七牛提供的公钥，用于识别用户
@@ -51,6 +53,10 @@ namespace Qiniu.Conf
             UP_HOST = System.Configuration.ConfigurationManager.AppSettings["UP_HOST"];
             RSF_HOST = System.Configuration.ConfigurationManager.AppSettings["RSF_HOST"];
             PREFETCH_HOST = System.Configuration.ConfigurationManager.AppSettings["PREFETCH_HOST"];
+        }
+        private static string getUa()
+        {
+            return 'QiniuCsharp/'+ VERSION + " (" + Environment.OSVersion.Version.ToString() + "; )";
         }
     }
 }
