@@ -190,7 +190,7 @@ namespace Qiniu.RS
 		/// 可指定音视频文件上传后处理的队列，不指定时在公共队列中。persistentOps的处理结果以文件形式保存在bucket中，体验更佳。[数据处理(持久化)](http://docs.qiniu.com/api/persistent-ops.html
 		/// </summary>
 		[JsonProperty("persistentPipeline")]
-		public string persistentPipeline {
+		public string PersistentPipeline {
 			get { return persistentPipeline;  }
 			set { persistentPipeline = value; }
 		}
