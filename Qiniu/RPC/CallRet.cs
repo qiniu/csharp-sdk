@@ -31,5 +31,7 @@ namespace Qiniu.RPC
 			Exception = ret.Exception;
 			Response = ret.Response;
 		}
+
+		public CallRet(){}
 	}
 }

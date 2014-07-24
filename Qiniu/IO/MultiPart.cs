@@ -9,8 +9,34 @@ using Qiniu.RPC;
 
 namespace Qiniu.IO
 {
-	static class MultiPart
+	class MultiPart
 	{
+
+		#region Events
+		/// <summary>
+		/// Occurs when upload progress changed when call AsyncMultiPost
+		/// </summary>
+		public event EventHandler<UploadProgressChangedEventArgs> UploadProgressChanged ;
+
+		protected void onUploadProgressChanged(object sender,UploadProgressChangedEventArgs e){
+			if (this.UploadProgressChanged != null) {
+				this.UploadProgressChanged (sender, e);
+			}
+		}
+
+		/// <summary>
+		/// Occurs when upload completed when call AsyncMultiPost
+		/// </summary>
+		public event EventHandler<UploadDataCompletedEventArgs> UploadCompleted;
+
+		protected void onUploadCompleted(object sender,UploadDataCompletedEventArgs e){
+			if (this.UploadCompleted != null) {
+				this.UploadCompleted (sender, e);
+			}
+		}
+
+		#endregion
+
 		public static Encoding encoding = Config.Encoding;
 
 		public static string RandomBoundary ()
@@ -23,7 +49,7 @@ namespace Qiniu.IO
 			return "multipart/form-data; boundary=" + boundary;
 		}
 
-		private static Stream GetPostStream (Stream putStream, string fileName, NameValueCollection formData, string boundary)
+		private Stream GetPostStream (Stream putStream, string fileName, NameValueCollection formData, string boundary)
 		{
 			Stream postDataStream = new System.IO.MemoryStream ();
 
@@ -65,7 +91,7 @@ namespace Qiniu.IO
  
 		}
 
-		private static Stream GetPostStream (string filePath, NameValueCollection formData, string boundary)
+		private Stream GetPostStream (string filePath, NameValueCollection formData, string boundary)
 		{
 			Stream postDataStream = new System.IO.MemoryStream ();
 
@@ -106,7 +132,7 @@ namespace Qiniu.IO
 			return postDataStream;
 		}
 
-		public static CallRet MultiPost (string url, NameValueCollection formData, string fileName)
+		public CallRet MultiPost (string url, NameValueCollection formData, string fileName)
 		{
 			string boundary = RandomBoundary ();
 			System.Net.WebRequest webRequest = System.Net.WebRequest.Create (url);
@@ -142,7 +168,36 @@ namespace Qiniu.IO
 			}            
 		}
 
-		public static CallRet MultiPost (string url, NameValueCollection formData, System.IO.Stream inputStream)
+		/// <summary>
+		/// Asyncs the multi post.DO NOT USING IT TO UPLOAD BIG FILE!!! IT WILL USE HUGE OF MEMORY!!!
+		/// </summary>
+		/// <param name="url">URL.</param>
+		/// <param name="formData">Form data.</param>
+		/// <param name="inputStream">Input stream.</param>
+		public void AsyncMultiPost (string url, NameValueCollection formData, string filename){ 
+
+			FileInfo fileInfo = new FileInfo (filename);
+
+			string boundary = RandomBoundary ();
+			using (FileStream fileStream = fileInfo.OpenRead())
+			using (WebClient client = new WebClient ())
+			using (Stream postDataStream = GetPostStream (fileStream, formData ["key"], formData, boundary)) {
+				client.Headers.Add ("Content-Type", "multipart/form-data; boundary=" + boundary);
+				byte[] hugeBuffer = new byte[postDataStream.Length];
+				postDataStream.Seek (0, SeekOrigin.Begin);
+				postDataStream.Read (hugeBuffer, 0, (int)postDataStream.Length);
+
+				client.UploadProgressChanged += new UploadProgressChangedEventHandler ((sender, e) => {
+					onUploadProgressChanged(sender,e);
+				});
+				client.UploadDataCompleted += new UploadDataCompletedEventHandler ((sender, e) => {
+					onUploadCompleted(sender,e);
+				});
+				client.UploadDataAsync (new Uri(url), "POST", hugeBuffer);
+			}	
+		}
+
+		public CallRet MultiPost (string url, NameValueCollection formData, System.IO.Stream inputStream)
 		{
 			string boundary = RandomBoundary ();
 			System.Net.WebRequest webRequest = System.Net.WebRequest.Create (url);
@@ -151,6 +206,7 @@ namespace Qiniu.IO
 			webRequest.ContentType = "multipart/form-data; boundary=" + boundary;
 		
 			Stream postDataStream = GetPostStream (inputStream, formData ["key"], formData, boundary);
+
 			webRequest.ContentLength = postDataStream.Length;
 			Stream reqStream = webRequest.GetRequestStream ();
 			postDataStream.Position = 0;

@@ -35,6 +35,26 @@ namespace Qiniu.IO.Resumable
             //chunkSize 已经删除，兼容保留
 
 			this.tryTimes = tryTimes; 
+			this.workerCount = 1;
+		}
+
+		uint workerCount;
+		/// <summary>
+		/// Gets or sets the worker count.
+		/// </summary>
+		/// <value>The worker count.</value>
+		public uint WorkerCount {
+			get {
+				return workerCount;
+			}
+			set {
+				workerCount = value;
+				if (this.workerCount == 0) {
+					this.workerCount = 1;
+				} else if (this.workerCount > 32) {
+					this.workerCount = 32;
+				}
+			}
 		}
 	}
 }
