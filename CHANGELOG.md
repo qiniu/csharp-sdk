@@ -1,5 +1,13 @@
 ## CHANGE LOG
 
+### v6.1.4
+2014-07-24 [#55](https://github.com/qiniu/csharp-sdk/pull/55)
+- [#54] 调整上传user agent，更新put policy
+
+### v6.1.3
+2014-07-10 [#53](https://github.com/qiniu/csharp-sdk/pull/53)
+- [#52] 调整上传host
+
 ### v6.1.2
 2014-05-30 [#51](https://github.com/qiniu/csharp-sdk/pull/51)
 - [#46] nuget 安装文档

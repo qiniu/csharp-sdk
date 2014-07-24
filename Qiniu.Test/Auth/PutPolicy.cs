@@ -22,7 +22,7 @@ namespace Qiniu.Test.FileOp
 		public void MakeRequestTest()
 		{
 			string actual;
-			FileOpUrl = "http://icattlecoder-private.qiniudn.com/img.jpg?download/avialkjdf" + StringEx.ToUrlEncode("橛苛要工苛") ;
+			FileOpUrl = "http://private-res.qiniudn.com/gogopher.jpg??download/avialkjdf" + StringEx.ToUrlEncode("橛苛要工苛") ;
 
 			actual = GetPolicy.MakeRequest(FileOpUrl);
 			//System.Diagnostics.Process.Start(actual);
