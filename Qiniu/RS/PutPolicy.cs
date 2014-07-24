@@ -17,7 +17,6 @@ namespace Qiniu.RS
 		private string callBackBody;
 		private string returnUrl;
 		private string returnBody;
-		private string asyncOps;
 		private string saveKey;
 		private int insertOnly;
 		private int detectMime;
@@ -25,6 +24,7 @@ namespace Qiniu.RS
 		private long fsizeLimit;
 		private string persistentOps;
 		private string persistentNotifyUrl;
+		private string persistentPipeline;
 		private string endUser;
 		private UInt64 expires = 3600;
 		private UInt64 deadline = 0;
@@ -67,20 +67,11 @@ namespace Qiniu.RS
 
 		/// <summary>
 		/// 文件上传成功后，自定义从 Qiniu-Cloud-Server 最终返回給终端 App-Client 的数据。支持 魔法变量，不可与 callbackBody 同时使用。
-		/// </summary>    
+		/// </summary>
 		[JsonProperty("returnBody")]
 		public string ReturnBody {
 			get { return returnBody;  }
 			set { returnBody = value; }
-		}
-
-		/// <summary>
-		/// 指定文件（图片/音频/视频）上传成功后异步地执行指定的预转操作。每个预转指令是一个API规格字符串，多个预转指令可以使用分号“;”隔开
-		/// </summary>
-		[JsonProperty("asyncOps")]
-		public string AsyncOps {
-			get { return asyncOps; }
-			set { asyncOps = value; }
 		}
 
 		/// <summary>
@@ -110,7 +101,7 @@ namespace Qiniu.RS
 				return saveKey;
 			}
 			set{
-				saveKey = value; 
+				saveKey = value;
 			}
 		}
 
@@ -123,7 +114,7 @@ namespace Qiniu.RS
 			get {
 				return insertOnly;
 			}
-			set{ 
+			set{
 				insertOnly = value;
 			}
 		}
@@ -138,7 +129,7 @@ namespace Qiniu.RS
 				return detectMime;
 			}
 			set{
-				detectMime = value; 
+				detectMime = value;
 			}
 		}
 
@@ -172,7 +163,7 @@ namespace Qiniu.RS
 			get {
 				return fsizeLimit;
 			}
-			set{ 
+			set{
 				fsizeLimit = value;
 			}
 		}
@@ -187,12 +178,21 @@ namespace Qiniu.RS
 		}
 
 		/// <summary>
-		/// 可指定音视频文件上传完成后，需要进行的转码持久化操作。asyncOps的处理结果保存在缓存当中，有可能失效。而persistentOps的处理结果以文件形式保存在bucket中，体验更佳。[数据处理(持久化)](http://docs.qiniu.com/api/persistent-ops.html
+		/// 可指定音视频文件上传完成后，需要进行的转码持久化操作。persistentOps的处理结果以文件形式保存在bucket中，体验更佳。[数据处理(持久化)](http://docs.qiniu.com/api/persistent-ops.html
 		/// </summary>
 		[JsonProperty("persistentOps")]
 		public string PersistentOps {
 			get { return persistentOps;  }
 			set { persistentOps = value; }
+		}
+
+		// <summary>
+		/// 可指定音视频文件上传后处理的队列，不指定时在公共队列中。persistentOps的处理结果以文件形式保存在bucket中，体验更佳。[数据处理(持久化)](http://docs.qiniu.com/api/persistent-ops.html
+		/// </summary>
+		[JsonProperty("persistentPipeline")]
+		public string PersistentPipeline {
+			get { return persistentPipeline;  }
+			set { persistentPipeline = value; }
 		}
 
 		/// <summary>
@@ -217,7 +217,7 @@ namespace Qiniu.RS
 			}
 			if (string.IsNullOrEmpty (callBackUrl) ^ string.IsNullOrEmpty (callBackBody)) {
 				throw new Exception ("CallBackUrl and CallBackBody error");
-			} 
+			}
 			if (!string.IsNullOrEmpty (returnUrl) && !string.IsNullOrEmpty (callBackUrl)) {
 				throw new Exception ("returnUrl and callBackUrl error");
 			}
@@ -225,7 +225,7 @@ namespace Qiniu.RS
 				mac = new Mac (Config.ACCESS_KEY, Config.Encoding.GetBytes (Config.SECRET_KEY));
 			}
 			this.deadline = (UInt32)((DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000 + (long)expires);
-			string flag = this.ToString (); 
+			string flag = this.ToString ();
 			return mac.SignWithData (Config.Encoding.GetBytes (flag));
 		}
 
