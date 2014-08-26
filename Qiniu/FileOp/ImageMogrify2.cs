@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Qiniu.FileOp
 {
-	public class ImageMogrify
+	public class ImageMogrify2
 	{
 		public bool AutoOrient { get; set; }
 

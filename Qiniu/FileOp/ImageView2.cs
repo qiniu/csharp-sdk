@@ -2,7 +2,7 @@
 
 namespace Qiniu.FileOp
 {
-	public class ImageView
+	public class ImageView2
 	{
 		/// <summary>
 		/// 缩略模式
