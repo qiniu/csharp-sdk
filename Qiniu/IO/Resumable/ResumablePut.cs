@@ -112,6 +112,51 @@ namespace Qiniu.IO.Resumable
                     PutFinished(this, ret);
                 }
             }
+            if ((int)ret.StatusCode % 100 == 5 || (int)ret.StatusCode == 406 || (int)ret.StatusCode == 701)
+            {
+                using (FileStream fs = File.OpenRead(localFile))
+                {
+                    int block_cnt = block_count(fs.Length);
+                    long fsize = fs.Length;
+                    extra.Progresses = new BlkputRet[block_cnt];
+                    byte[] byteBuf = new byte[BLOCKSIZE];
+                    int readLen = BLOCKSIZE;
+                    for (int i = 0; i < block_cnt; i++)
+                    {
+                        if (i == block_cnt - 1)
+                        {
+                            readLen = (int)(fsize - (long)i * BLOCKSIZE);
+                        }
+                        fs.Seek((long)i * BLOCKSIZE, SeekOrigin.Begin);
+                        fs.Read(byteBuf, 0, readLen);
+                        BlkputRet blkRet = ResumableBlockPut(client, byteBuf, i, readLen);
+                        if (blkRet == null)
+                        {
+                            extra.OnNotifyErr(new PutNotifyErrorEvent(i, readLen, "Make Block Error"));
+                        }
+                        else
+                        {
+                            extra.OnNotify(new PutNotifyEvent(i, readLen, extra.Progresses[i]));
+                        }
+                    }
+                    ret = Mkfile(client, key, fsize);
+                }
+                if (ret.OK)
+                {
+                    if (PutFinished != null)
+                    {
+                        PutFinished(this, ret);
+                    }
+                }
+                else
+                {
+                    if (PutFailure != null)
+                    {
+                        PutFailure(this, ret);
+                    }
+                }
+                return ret;
+            }
             else
             {
                 if (PutFailure != null)

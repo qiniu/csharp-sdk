@@ -63,6 +63,14 @@ namespace Qiniu.IO
                 CallRet callRet = MultiPart.MultiPost(Config.UP_HOST, formData, localFile);
                 ret = new PutRet(callRet);
                 onPutFinished(ret);
+                if ((int)ret.StatusCode % 100 == 5 || (int)ret.StatusCode == 406 || (int)ret.StatusCode == 701)
+                {
+
+                    CallRet callRet1 = MultiPart.MultiPost(Config.UP_HOST, formData, localFile);
+                    ret = new PutRet(callRet);
+                    onPutFinished(ret);
+                    return ret;
+                }
                 return ret;
             }
             catch (Exception e)
