@@ -80,13 +80,13 @@ namespace Qiniu.RS
 			return Call(url);
 		}
 
-		private CallRet opFetch(FileHandle op, string fromUrl, EntryPathPair pari)
+		private CallRet opFetch(FileHandle op, string fromUrl, EntryPath entryPath)
 		{
 			string url = string.Format("{0}/{1}/{2}/to/{3}",
 										Config.RS_HOST,
 										OPS[(int)op],
 										Base64URLSafe.Encode(fromUrl),
-										Base64URLSafe.Encode(pari.URIDest));
+										Base64URLSafe.Encode(entryPath.URI));
 			return Call (url);
 		}
 
@@ -143,11 +143,11 @@ namespace Qiniu.RS
 		/// 抓取资源
 		/// </summary>
 		/// <param name="fromUrl">需要抓取的文件URL</param>
-		/// <param name="pathPair">标准EntryPathPai对应, 可不输入source bucket及source key</param>
+		/// <param name="entryPath">目标entryPath</param>
 		/// <returns>见<see cref="CallRet">CallRet</see></returns>
-		public CallRet Fetch(string fromUrl, EntryPathPair pathPair)
+		public CallRet Fetch(string fromUrl, EntryPath entryPath)
 		{
-			return opFetch(FileHandle.FETCH, fromUrl, pathPair);
+			return opFetch(FileHandle.FETCH, fromUrl, entryPath);
 		}
 
 		/// <summary>
