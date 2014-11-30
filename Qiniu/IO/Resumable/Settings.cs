@@ -18,7 +18,7 @@ namespace Qiniu.IO.Resumable
 		int tryTimes;
 
 		/// <summary>
-		/// 失败重试次数,默认为3
+		/// 失败重试次数,默认为5
 		/// </summary>
 		public int TryTimes {
 			get { return tryTimes; }
@@ -29,8 +29,8 @@ namespace Qiniu.IO.Resumable
 		/// 构造函数
 		/// </summary>
 		/// <param name="chunkSize">chunk大小,默认为4MB</param>
-		/// <param name="tryTimes">失败重试次数,默认为3</param>
-		public Settings (int chunkSize=1 << 22, int tryTimes=3)
+		/// <param name="tryTimes">失败重试次数,默认为5</param>
+		public Settings (int chunkSize=1 << 22, int tryTimes=5)
 		{
             //chunkSize 已经删除，兼容保留
 
