@@ -5,7 +5,7 @@ namespace Qiniu.Conf
 {
     public class Config
     {
-        public static string VERSION = "6.1.4";
+        public static string VERSION = "6.1.5";
 
         public static string USER_AGENT = getUa();
         #region 帐户信息
