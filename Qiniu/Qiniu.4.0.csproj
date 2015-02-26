@@ -56,6 +56,7 @@
     <Compile Include="IO\Resumable\Settings.cs" />
     <Compile Include="RS\GetPolicy.cs" />
     <Compile Include="RS\PutPolicy.cs" />
+    <Compile Include="PFOP\Mkzip.cs" />
     <Compile Include="FileOp\ImageInfoRet.cs" />
     <Compile Include="FileOp\ImageInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
