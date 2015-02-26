@@ -5,7 +5,7 @@ namespace Qiniu.Conf
 {
     public class Config
     {
-        public static string VERSION = "6.1.4";
+        public static string VERSION = "6.1.5";
 
         public static string USER_AGENT = getUa();
         #region 帐户信息
@@ -26,7 +26,7 @@ namespace Qiniu.Conf
         /// <summary>
         /// 七牛资源上传服务器地址.
         /// </summary>
-        public static string UP_HOST = "http://upload.qiniu.com";
+        public static string UP_HOST = "http://up.qiniu.com";
         /// <summary>
         /// 七牛资源列表服务器地址.
         /// </summary>
@@ -44,15 +44,36 @@ namespace Qiniu.Conf
         /// <summary>
         /// 初始化七牛帐户、请求地址等信息，不应在客户端调用。
         /// </summary>
-        public static void Init()
+         public static void Init()
         {
-            USER_AGENT = System.Configuration.ConfigurationManager.AppSettings["USER_AGENT"];
-            ACCESS_KEY = System.Configuration.ConfigurationManager.AppSettings["ACCESS_KEY"];
-            SECRET_KEY = System.Configuration.ConfigurationManager.AppSettings["SECRET_KEY"];
-            RS_HOST = System.Configuration.ConfigurationManager.AppSettings["RS_HOST"];
-            UP_HOST = System.Configuration.ConfigurationManager.AppSettings["UP_HOST"];
-            RSF_HOST = System.Configuration.ConfigurationManager.AppSettings["RSF_HOST"];
-            PREFETCH_HOST = System.Configuration.ConfigurationManager.AppSettings["PREFETCH_HOST"];
+            if (System.Configuration.ConfigurationManager.AppSettings["USER_AGENT"] != null) 
+            {
+                USER_AGENT = System.Configuration.ConfigurationManager.AppSettings["USER_AGENT"];
+            }
+            if (System.Configuration.ConfigurationManager.AppSettings["ACCESS_KEY"] != null)
+            {
+                ACCESS_KEY = System.Configuration.ConfigurationManager.AppSettings["ACCESS_KEY"];   
+            }
+            if (System.Configuration.ConfigurationManager.AppSettings["SECRET_KEY"] != null)
+            {
+                SECRET_KEY = System.Configuration.ConfigurationManager.AppSettings["SECRET_KEY"];  
+            }
+            if (System.Configuration.ConfigurationManager.AppSettings["RS_HOST"] != null)
+            {
+                RS_HOST = System.Configuration.ConfigurationManager.AppSettings["RS_HOST"];  
+            }
+            if (System.Configuration.ConfigurationManager.AppSettings["UP_HOST"] != null)
+            {
+                UP_HOST = System.Configuration.ConfigurationManager.AppSettings["UP_HOST"];   
+            }
+            if (System.Configuration.ConfigurationManager.AppSettings["RSF_HOST"] != null)
+            {
+                RSF_HOST = System.Configuration.ConfigurationManager.AppSettings["RSF_HOST"];  
+            }
+            if (System.Configuration.ConfigurationManager.AppSettings["PREFETCH_HOST"] != null)
+            {
+                PREFETCH_HOST = System.Configuration.ConfigurationManager.AppSettings["PREFETCH_HOST"];
+            }
         }
         private static string getUa()
         {
