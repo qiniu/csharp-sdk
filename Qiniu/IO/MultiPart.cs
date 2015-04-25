@@ -106,12 +106,16 @@ namespace Qiniu.IO
 			return postDataStream;
 		}
 
-		public static CallRet MultiPost (string url, NameValueCollection formData, string fileName)
+		public static CallRet MultiPost (string url, NameValueCollection formData, string fileName,IWebProxy proxy=null)
 		{
 			string boundary = RandomBoundary ();
-			System.Net.WebRequest webRequest = System.Net.WebRequest.Create (url);
+			WebRequest webRequest = WebRequest.Create (url);
 
 			webRequest.Method = "POST";
+		    if (proxy != null)
+		    {
+		        webRequest.Proxy = proxy;
+		    }
 			webRequest.ContentType = "multipart/form-data; boundary=" + boundary;
 			FileInfo fileInfo = new FileInfo (fileName);
 
@@ -142,10 +146,15 @@ namespace Qiniu.IO
 			}            
 		}
 
-		public static CallRet MultiPost (string url, NameValueCollection formData, System.IO.Stream inputStream)
+		public static CallRet MultiPost (string url, NameValueCollection formData, System.IO.Stream inputStream,IWebProxy proxy=null)
 		{
 			string boundary = RandomBoundary ();
-			System.Net.WebRequest webRequest = System.Net.WebRequest.Create (url);
+			WebRequest webRequest = WebRequest.Create (url);
+
+		    if (proxy != null)
+		    {
+		        webRequest.Proxy = proxy;
+		    }
 
 			webRequest.Method = "POST";
 			webRequest.ContentType = "multipart/form-data; boundary=" + boundary;

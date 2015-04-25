@@ -41,6 +41,11 @@ namespace Qiniu.IO
             return formData;
         }
 
+        /// <summary>
+        /// 设置连接代理
+        /// </summary>
+        public IWebProxy Proxy { get; set; }
+
 
         /// <summary>
         /// 上传文件
@@ -60,7 +65,7 @@ namespace Qiniu.IO
             NameValueCollection formData = getFormData(upToken, key, extra);
             try
             {
-                CallRet callRet = MultiPart.MultiPost(Config.UP_HOST, formData, localFile);
+                CallRet callRet = MultiPart.MultiPost(Config.UP_HOST, formData, localFile, this.Proxy);
                 ret = new PutRet(callRet);
                 onPutFinished(ret);
                 return ret;
