@@ -113,7 +113,7 @@ namespace Qiniu.RSF
 				if (ret.OK) {
 					return JsonConvert.DeserializeObject<DumpRet> (ret.Response);
 				} else {
-					throw new Exception (string.Format ("listPrefix fail ===> {0}", ret.Exception.Message));
+                    continue;
 				}
 			}
 			return null;
