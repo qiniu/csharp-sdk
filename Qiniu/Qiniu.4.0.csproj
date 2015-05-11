@@ -40,6 +40,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Auth\QiniuAuthClient.cs" />
+    <Compile Include="Conf\ConfigInfo.cs" />
+    <Compile Include="Conf\ConfigurationSectionHandler.cs" />
+    <Compile Include="Conf\QiniuConfig.cs" />
+    <Compile Include="Conf\QiniuConfiguration.cs" />
     <Compile Include="FileOp\Exif.cs" />
     <Compile Include="FileOp\ExifRet.cs" />
     <Compile Include="FileOp\FileOpClient.cs" />
@@ -87,6 +91,7 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\tools\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

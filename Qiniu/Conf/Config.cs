@@ -12,11 +12,11 @@ namespace Qiniu.Conf
         /// <summary>
         /// 七牛提供的公钥，用于识别用户
         /// </summary>
-        public static string ACCESS_KEY = "<Please apply your access key>";
+        public static string ACCESS_KEY = "";
         /// <summary>
         /// 七牛提供的秘钥，不要在客户端初始化该变量
         /// </summary>
-        public static string SECRET_KEY = "<Dont send your secret key to anyone>";
+        public static string SECRET_KEY = "";
         #endregion
         #region 七牛服务器地址
         /// <summary>
@@ -35,6 +35,9 @@ namespace Qiniu.Conf
         public static string PREFETCH_HOST = "http://iovip.qbox.me";
 
         public static string API_HOST = "http://api.qiniu.com";
+
+        public static string DN_HOST = "";
+
         #endregion
         /// <summary>
         /// 七牛SDK对所有的字节编码采用utf-8形式 .
@@ -44,40 +47,22 @@ namespace Qiniu.Conf
         /// <summary>
         /// 初始化七牛帐户、请求地址等信息，不应在客户端调用。
         /// </summary>
-         public static void Init()
+        public static void Init()
         {
-            if (System.Configuration.ConfigurationManager.AppSettings["USER_AGENT"] != null) 
-            {
-                USER_AGENT = System.Configuration.ConfigurationManager.AppSettings["USER_AGENT"];
-            }
-            if (System.Configuration.ConfigurationManager.AppSettings["ACCESS_KEY"] != null)
-            {
-                ACCESS_KEY = System.Configuration.ConfigurationManager.AppSettings["ACCESS_KEY"];   
-            }
-            if (System.Configuration.ConfigurationManager.AppSettings["SECRET_KEY"] != null)
-            {
-                SECRET_KEY = System.Configuration.ConfigurationManager.AppSettings["SECRET_KEY"];  
-            }
-            if (System.Configuration.ConfigurationManager.AppSettings["RS_HOST"] != null)
-            {
-                RS_HOST = System.Configuration.ConfigurationManager.AppSettings["RS_HOST"];  
-            }
-            if (System.Configuration.ConfigurationManager.AppSettings["UP_HOST"] != null)
-            {
-                UP_HOST = System.Configuration.ConfigurationManager.AppSettings["UP_HOST"];   
-            }
-            if (System.Configuration.ConfigurationManager.AppSettings["RSF_HOST"] != null)
-            {
-                RSF_HOST = System.Configuration.ConfigurationManager.AppSettings["RSF_HOST"];  
-            }
-            if (System.Configuration.ConfigurationManager.AppSettings["PREFETCH_HOST"] != null)
-            {
-                PREFETCH_HOST = System.Configuration.ConfigurationManager.AppSettings["PREFETCH_HOST"];
-            }
+            var qiniuConfig = ZY.Storage.QiniuConfig.QiniuStorageConfig.Info;
+
+            //USER_AGENT = qiniuConfig.USER_AGENT; //useragent暂不修改
+            ACCESS_KEY = qiniuConfig.ACCESS_KEY;
+            SECRET_KEY = qiniuConfig.SECRET_KEY;
+            RS_HOST = qiniuConfig.RS_HOST;
+            UP_HOST = qiniuConfig.UP_HOST;
+            RSF_HOST = qiniuConfig.RSF_HOST;
+            PREFETCH_HOST = qiniuConfig.PREFETCH_HOST;
+            DN_HOST = qiniuConfig.DN_HOST;
         }
         private static string getUa()
         {
-            return "QiniuCsharp/"+ VERSION + " (" + Environment.OSVersion.Version.ToString() + "; )";
+            return "QiniuCsharp/" + VERSION + " (" + Environment.OSVersion.Version.ToString() + "; )";
         }
     }
 }
