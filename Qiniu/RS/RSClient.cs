@@ -83,7 +83,7 @@ namespace Qiniu.RS
 		private CallRet opFetch(FileHandle op, string fromUrl, EntryPath entryPath)
 		{
 			string url = string.Format("{0}/{1}/{2}/to/{3}",
-										Config.RS_HOST,
+										Config.PREFETCH_HOST,
 										OPS[(int)op],
 										Base64URLSafe.Encode(fromUrl),
 										Base64URLSafe.Encode(entryPath.URI));
