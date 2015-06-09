@@ -96,8 +96,7 @@ namespace Qiniu.Test.IO
 		{
 
 			IOClient target = new IOClient();
-			string key = NewKey;
-			PrintLn (key);
+
 			PutExtra extra = new PutExtra (); // TODO: 初始化为适当的值
 			extra.MimeType = "text/plain";
 			extra.Crc32 = 123;
@@ -114,6 +113,7 @@ namespace Qiniu.Test.IO
 
 			PutRet ret = target.PutFileWithoutKey (put.Token (),file.FileName, extra);
 
+			Assert.AreEqual (ret.Hash, ret.key, "expected key equal to hash");
 			//error params
 			//target.PutFile("error", "error", "error", null);
 			Assert.IsTrue (ret.OK, "PutFileTest Failure");
