@@ -201,7 +201,7 @@ namespace Qiniu.RS
 		/// 上传成功后，七牛云向App-Server发送回调通知时的 Host 值，仅当同时设置了 callbackUrl 时有效。
 		/// </summary>
 		[JsonProperty("callbackHost")]
-		public string callbackHost {
+		public string CallbackHost {
 			get { return callbackHost;  }
 			set { callbackHost = value; }
 		}
@@ -209,7 +209,7 @@ namespace Qiniu.RS
 		/// 上传成功后，七牛云向App-Server发送回调通知callbackBody的Content-Type，默认为application/x-www-form-urlencoded，也可设置为application/json。
 		/// </summary>
 		[JsonProperty("callbackBodyType")]
-		public string callbackBodyType {
+		public string CallbackBodyType {
 			get { return callbackBodyType;  }
 			set { callbackBodyType = value; }
 		}
@@ -217,7 +217,7 @@ namespace Qiniu.RS
 		/// 是否启用fetchKey上传模式，0为关闭，1为启用；具体见fetchKey上传模式。
 		/// </summary>
 		[JsonProperty("callbackFetchKey")]
-		public int callbackFetchKey {
+		public int CallbackFetchKey {
 			get {
 				return callbackFetchKey;
 			}
