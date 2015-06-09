@@ -23,7 +23,9 @@ namespace Qiniu.IO
         {
             NameValueCollection formData = new NameValueCollection();
             formData["token"] = upToken;
-            formData["key"] = key;
+            if (string.Empty != key) {
+                formData["key"] = key;
+            }
             if (extra != null)
             {
                 if (extra.CheckCrc == CheckCrcType.CHECK_AUTO)
