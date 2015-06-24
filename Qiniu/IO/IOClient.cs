@@ -23,7 +23,7 @@ namespace Qiniu.IO
         {
             NameValueCollection formData = new NameValueCollection();
             formData["token"] = upToken;
-            if (string.Empty != key) {
+            if (key!=null) {
                 formData["key"] = key;
             }
             if (extra != null)
@@ -83,7 +83,7 @@ namespace Qiniu.IO
         /// <param name="extra">Extra.</param>
         public PutRet PutFileWithoutKey(string upToken, string localFile, PutExtra extra)
         {
-            return PutFile(upToken, string.Empty, localFile, extra);
+            return PutFile(upToken, null, localFile, extra);
         }
 
         /// <summary>
