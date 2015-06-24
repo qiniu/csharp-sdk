@@ -21,9 +21,9 @@ namespace Qiniu.Test.IO
 				policy.Token ();
 			}catch{
 				exp = true;
-				Assert.IsTrue (true, "PutPolicyTest Failure");
+				Assert.IsTrue (true, "PutPolicyTest Failure1");
 			}
-			Assert.IsTrue (exp, "PutPolicyTest Failure");
+			Assert.IsTrue (exp, "PutPolicyTest Failure2");
 			exp = false;
 
 
@@ -33,9 +33,9 @@ namespace Qiniu.Test.IO
 				policy.Token ();
 			}catch{
 				exp = true;
-				Assert.IsTrue (true, "PutPolicyTest Failure");
+				Assert.IsTrue (true, "PutPolicyTest Failure3");
 			}
-			Assert.IsTrue (exp, "PutPolicyTest Failure");
+			Assert.IsTrue (exp, "PutPolicyTest Failure4");
 			exp = false;
 
 
@@ -47,12 +47,16 @@ namespace Qiniu.Test.IO
 			policy.InsertOnly = 1;
 			policy.PersistentNotifyUrl="www.yourdomain.com/persistentNotifyUrl";
 			policy.PersistentOps = "avthumb/m3u8/preset/video_16x9_440k";
+			policy.CallbackHost = "180.97.211.38";
+            policy.CallbackFetchKey = 0;
+            policy.CallbackBodyType = "application/json";
 			try {
 				string result = policy.ToString();
-				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\"}";
-				Assert.IsTrue(result==expect,"PutPolicyTest Failure");
+				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\",\"callbackHost\":\"180.97.211.38\",\"callbackBodyType\":\"application/json\",\"callbackFetchKey\":0}";
+				//Assert.IsTrue(result==expect,"PutPolicyTest Failure5");
+				Assert.AreEqual(result, expect);
 			} catch (Exception ee){
-				Assert.IsTrue (false, "PutPolicyTest Failure");
+				Assert.IsTrue (false, ee.Message.ToString());
 			}
 
 		}

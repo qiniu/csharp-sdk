@@ -28,6 +28,9 @@ namespace Qiniu.RS
 		private string endUser;
 		private UInt64 expires = 3600;
 		private UInt64 deadline = 0;
+		private string callbackHost;
+		private string callbackBodyType;
+		private int callbackFetchKey;
 
 		/// <summary>
 		/// 一般指文件要上传到的目标存储空间（Bucket）。若为”Bucket”，表示限定只能传到该Bucket（仅限于新增文件）；若为”Bucket:Key”，表示限定特定的文件，可修改该文件。
@@ -193,6 +196,36 @@ namespace Qiniu.RS
 		public string PersistentPipeline {
 			get { return persistentPipeline;  }
 			set { persistentPipeline = value; }
+		}
+
+		// <summary>
+		///上传成功后，七牛云向App-Server发送回调通知时的 Host 值，仅当同时设置了 callbackUrl 时有效。
+		/// </summary>
+		[JsonProperty("callbackHost")]
+		public string CallbackHost
+		{
+			get { return callbackHost; }
+			set { callbackHost = value; }
+		}
+
+		// <summary>
+		///上传成功后，七牛云向App-Server发送回调通知callbackBody的Content-Type，默认为application/x-www-form-urlencoded，也可设置为application/json。
+		/// </summary>
+		[JsonProperty("callbackBodyType")]
+		public string CallbackBodyType
+		{
+			get { return callbackBodyType; }
+			set { callbackBodyType = value; }
+		}
+
+		// <summary>
+		///是否启用fetchKey上传模式，0为关闭，1为启用；具体见fetchKey上传模式。
+		/// </summary>
+		[JsonProperty("callbackFetchKey")]
+		public int CallbackFetchKey
+		{
+			get { return callbackFetchKey; }
+			set { callbackFetchKey = value; }
 		}
 
 		/// <summary>
