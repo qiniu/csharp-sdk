@@ -22,6 +22,7 @@ namespace Qiniu.RS
 		private int detectMime;
         private string mimeLimit;
 		private long fsizeLimit;
+		private long fsizeMin;
 		private string persistentOps;
 		private string persistentNotifyUrl;
 		private string persistentPipeline;
@@ -168,6 +169,20 @@ namespace Qiniu.RS
 			}
 			set{
 				fsizeLimit = value;
+			}
+		}
+
+		/// <summary>
+		/// 可选, Gets or sets the fsize limit.
+		/// </summary>
+		/// <value>限定上传文件大小最小值.</value>
+		[JsonProperty("fsizeMin")]
+		public long FsizeMin {
+			get {
+				return fsizeMin;
+			}
+			set{
+				fsizeMin = value;
 			}
 		}
 

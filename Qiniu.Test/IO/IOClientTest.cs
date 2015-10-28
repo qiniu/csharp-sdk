@@ -44,6 +44,7 @@ namespace Qiniu.Test.IO
 			policy.CallBackUrl="www.qiniu.com";
 			policy.DetectMime = 1;
 			policy.FsizeLimit=4096;
+			policy.FsizeMin=0;
 			policy.InsertOnly = 1;
 			policy.PersistentNotifyUrl="www.yourdomain.com/persistentNotifyUrl";
 			policy.PersistentOps = "avthumb/m3u8/preset/video_16x9_440k";
@@ -52,7 +53,7 @@ namespace Qiniu.Test.IO
             policy.CallbackBodyType = "application/json";
 			try {
 				string result = policy.ToString();
-				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\",\"callbackHost\":\"180.97.211.38\",\"callbackBodyType\":\"application/json\",\"callbackFetchKey\":0}";
+				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"fsizeMin\":0,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\",\"callbackHost\":\"180.97.211.38\",\"callbackBodyType\":\"application/json\",\"callbackFetchKey\":0}";
 				//Assert.IsTrue(result==expect,"PutPolicyTest Failure5");
 				Assert.AreEqual(result, expect);
 			} catch (Exception ee){
