@@ -79,7 +79,7 @@ namespace Qiniu.RS
                 sb.Append(";");
                 sb.Append(fops[i]);
             }
-            String fopString = Qiniu.Util.StringEx.ToUrlEncode(sb.ToString());
+            string fopString = Qiniu.Util.StringEx.ToUrlEncode(sb.ToString());
             string body = string.Format("bucket={0}&key={1}&fops={2}&notifyURL={3}&force={4}&pipeline={5}", entry.Bucket, StringEx.ToUrlEncode(entry.Key), fopString, notifyURL.ToString(), force, pipleline);
             CallRet ret = CallWithBinary(Config.API_HOST + "/pfop/", "application/x-www-form-urlencoded",StreamEx.ToStream(body), body.Length);
 
