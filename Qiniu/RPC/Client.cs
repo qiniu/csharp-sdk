@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using Qiniu.Conf;
 
 namespace Qiniu.RPC
 {
@@ -36,6 +37,7 @@ namespace Qiniu.RPC
 				request.Method = "POST";
 				request.ContentType = contentType;
 				request.ContentLength = length;
+			    request.Timeout = Config.HTTP_REQUEST_TIMEOUT;
 				SetAuth (request, body);
 				using (Stream requestStream = request.GetRequestStream()) {
 					Util.IO.CopyN (requestStream, body, length);
