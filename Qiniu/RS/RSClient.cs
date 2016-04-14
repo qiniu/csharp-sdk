@@ -80,6 +80,24 @@ namespace Qiniu.RS
 			return Call(url);
 		}
 
+
+		/// <summary>
+        /// </summary>
+        /// <param name="op"></param>
+        /// <param name="pair"></param>
+        /// <param name="force"></param>
+        /// <returns></returns>
+        private CallRet op2(FileHandle op, EntryPathPair pair, bool force)
+        {
+
+            string url = string.Format("{0}/{1}/{2}/{3}/force/{4}",
+                                        Config.RS_HOST,
+                                        OPS[(int)op],
+                                        Base64URLSafe.Encode(pair.URISrc),
+                                        Base64URLSafe.Encode(pair.URIDest), force);
+            return Call(url);
+        }
+
 		private CallRet opFetch(FileHandle op, string fromUrl, EntryPath entryPath)
 		{
 			string url = string.Format("{0}/{1}/{2}/to/{3}",
@@ -126,6 +144,21 @@ namespace Qiniu.RS
 			return op2 (FileHandle.MOVE, pathPair);
 		}
 
+
+		/// <summary>
+        /// 移动文件
+        /// </summary>
+        /// <param name="bucketSrc">文件所属的源空间名称</param>
+        /// <param name="keySrc">源key</param>
+        /// <param name="bucketDest">目标空间名称</param>
+        /// <param name="keyDest">目标key</param>
+        /// <param name="force">强制覆盖</param>
+        /// <returns>见<see cref="CallRet">CallRet</see></returns>
+        public CallRet Move(EntryPathPair pathPair, bool force)
+        {
+            return op2(FileHandle.MOVE, pathPair, force);
+        }
+
 		/// <summary>
 		/// 复制
 		/// </summary>
@@ -138,6 +171,22 @@ namespace Qiniu.RS
 		{
 			return op2 (FileHandle.COPY, pathPair);
 		}
+
+		/// <summary>
+        /// 复制
+        /// </summary>
+        /// <param name="bucketSrc">文件所属的空间名称</param>
+        /// <param name="keySrc">需要复制的文件key</param>
+        /// <param name="bucketDest">复制至目标空间</param>
+        /// <param name="keyDest">复制的副本文件key</param>
+        /// <param name="force">复制是否强制覆盖目标文件</param>
+        /// <returns>见<see cref="CallRet">CallRet</see></returns>
+        public CallRet Copy(EntryPathPair pathPair, bool force)
+        {
+
+            return op2(FileHandle.COPY, pathPair, force);
+
+        }
 
 		/// <summary>
 		/// 抓取资源
@@ -195,6 +244,33 @@ namespace Qiniu.RS
 			return sb.Append (litem).ToString ();
 		}
 
+		/// <summary>
+        /// 
+        /// </summary>
+        /// <param name="op"></param>
+        /// <param name="keys"></param>
+        /// <param name="force"></param>
+        /// <returns></returns>
+        private string getBatchOp_2(FileHandle op, EntryPathPair[] keys, bool force)
+        {
+            if (keys.Length < 1)
+                return string.Empty;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < keys.Length - 1; i++)
+            {
+                string item = string.Format("op=/{0}/{1}/{2}/force/{3}/&",
+                                             OPS[(int)op],
+                                             Base64URLSafe.Encode(keys[i].URISrc),
+                                             Base64URLSafe.Encode(keys[i].URIDest), force);
+                sb.Append(item);
+            }
+            string litem = string.Format("op=/{0}/{1}/{2}/force/{3}", OPS[(int)op],
+                                          Base64URLSafe.Encode(keys[keys.Length - 1].URISrc),
+                                          Base64URLSafe.Encode(keys[keys.Length - 1].URIDest), force);
+            return sb.Append(litem).ToString();
+        }
+
+
         private CallRet batch(string requestBody)
         {
             return CallWithBinary(Conf.Config.RS_HOST + "/batch", "application/x-www-form-urlencoded", StreamEx.ToStream(requestBody), requestBody.Length);
@@ -242,6 +318,18 @@ namespace Qiniu.RS
 		}
 
 		/// <summary>
+        /// batch
+        /// </summary>
+        /// <param name="entryPathPairs"></param>
+        /// <param name="force"></param>
+        /// <returns></returns>
+        public CallRet BatchMove(EntryPathPair[] entryPathPairs, bool force)
+        {
+            string requestBody = getBatchOp_2(FileHandle.MOVE, entryPathPairs, force);
+            return batch(requestBody);
+        }
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="bucket"></param>
@@ -252,6 +340,18 @@ namespace Qiniu.RS
 			return batch (requestBody);
 		}
 
+		/// <summary>
+        /// 批量复制
+        /// </summary>
+        /// <param name="entryPathPari"></param>
+        /// <param name="force"></param>
+        /// <returns></returns>
+        public CallRet BatchCopy(EntryPathPair[] entryPathPari, bool force)
+        {
+            string requestBody = getBatchOp_2(FileHandle.COPY, entryPathPari, force);
+            return batch(requestBody);
+        }
+		
 		/// <summary>
 		/// 批量删除
 		/// </summary>
