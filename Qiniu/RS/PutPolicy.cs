@@ -32,6 +32,7 @@ namespace Qiniu.RS
 		private string callbackHost;
 		private string callbackBodyType;
 		private int callbackFetchKey;
+        	private int deleteAfterDays;
 
 		/// <summary>
 		/// 一般指文件要上传到的目标存储空间（Bucket）。若为”Bucket”，表示限定只能传到该Bucket（仅限于新增文件）；若为”Bucket:Key”，表示限定特定的文件，可修改该文件。
@@ -137,26 +138,26 @@ namespace Qiniu.RS
 			}
 		}
 
-        /// <summary>
-        /// 限定用户上传的文件类型
-        /// 指定本字段值，七牛服务器会侦测文件内容以判断MimeType，再用判断值跟指定值进行匹配，匹配成功则允许上传，匹配失败返回400状态码
-        /// 示例:
-        ///1. “image/*“表示只允许上传图片类型
-        ///2. “image/jpeg;image/png”表示只允许上传jpg和png类型的图片
-        /// </summary>
-        /// <value>The detect MIME.</value>
-        [JsonProperty("mimeLimit")]
-        public string MimeLimit
-        {
-            get
-            {
-                return mimeLimit;
-            }
-            set
-            {
-                mimeLimit = value;
-            }
-        }
+	        /// <summary>
+	        /// 限定用户上传的文件类型
+	        /// 指定本字段值，七牛服务器会侦测文件内容以判断MimeType，再用判断值跟指定值进行匹配，匹配成功则允许上传，匹配失败返回400状态码
+	        /// 示例:
+	        ///1. “image/*“表示只允许上传图片类型
+	        ///2. “image/jpeg;image/png”表示只允许上传jpg和png类型的图片
+	        /// </summary>
+	        /// <value>The detect MIME.</value>
+	        [JsonProperty("mimeLimit")]
+	        public string MimeLimit
+	        {
+	            get
+	            {
+	                return mimeLimit;
+	            }
+	            set
+	            {
+	                mimeLimit = value;
+	            }
+	        }
 
 		/// <summary>
 		/// 可选, Gets or sets the fsize limit.
@@ -243,6 +244,15 @@ namespace Qiniu.RS
 			set { callbackFetchKey = value; }
 		}
 
+
+		/// <summary>
+	        /// 文件在多少天后被删除，七牛将文件上传时间与指定的deleteAfterDays天数相加，得到的时间入到后一天的午夜(CST,中国标准时间)，从而得到文件删除开始时间。例如文件在2015年1月1日上午10:00 CST上传，指定deleteAfterDays为3天，那么会在2015年1月5日00:00 CST之后当天内删除文件
+	        /// </summary>
+	        public int DeleteAfterDays
+	        {
+	            get { return deleteAfterDays; }
+	            set { deleteAfterDays = value; }
+	        }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Qiniu.RS.PutPolicy"/> class.
 		/// </summary>
