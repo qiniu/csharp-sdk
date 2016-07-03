@@ -16,7 +16,11 @@ namespace Qiniu.Util
         /// <returns></returns>
 		public static string ToUrlEncode (string value)
 		{
-			return System.Web.HttpUtility.UrlEncode (value);
-		}
+#if !ABOVE45
+            return System.Web.HttpUtility.UrlEncode (value);
+#else
+		    return System.Net.WebUtility.UrlEncode(value);
+#endif
+        }
 	}
 }

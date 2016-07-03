@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 using Qiniu.Auth;
 using Qiniu.Conf;
 using Qiniu.RPC;
 using Qiniu.Util;
+#if ABOVE45
+using System.Net.Http;
+using System.Threading.Tasks;
+#endif
 
 namespace Qiniu.RS
 {
@@ -53,11 +58,12 @@ namespace Qiniu.RS
     /// POST /pfop/ HTTP/1.1
     /// Host: api.qiniu.com  
     /// Content-Type: application/x-www-form-urlencoded  
-    /// Authorization: <AccessToken>  
-    /// bucket=<bucket>&key=<key>&fops=<fop1>;<fop2>...<fopN>&notifyURL=<persistentNotifyUrl>
+    /// Authorization: &lt;AccessToken>  
+    /// bucket=&lt;bucket>&amp;key=&lt;key>&amp;fops=&lt;fop1>;&lt;fop2>...&lt;fopN>&amp;notifyURL=&lt;persistentNotifyUrl>
     /// </summary>
     public class Pfop : QiniuAuthClient
     {
+#if !ABOVE45
         /// <summary>
         /// 请求持久化
         /// </summary>
@@ -118,5 +124,65 @@ namespace Qiniu.RS
                 throw new Exception(ret.Response);
             }
         }
+#else
+        public async Task<string> DoAsync(EntryPath entry, string[] fops, Uri notifyURL, string pipleline, int force = 0)
+        {
+            if (fops.Length < 1 || entry == null || string.IsNullOrEmpty(entry.Bucket) || notifyURL == null || !notifyURL.IsAbsoluteUri)
+            {
+                throw new Exception("params error");
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.Append(fops[0]);
+
+            for (int i = 1; i < fops.Length; ++i)
+            {
+                sb.Append(";");
+                sb.Append(fops[i]);
+            }
+
+            // FormUrlEncodedContent 自带 UrlEncode
+            var content = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "bucket", entry.Bucket },
+                { "key", entry.Key },
+                { "fops", sb.ToString() },
+                { "notifyURL", notifyURL.ToString() },
+                { "force", force.ToString() },
+                { "pipeline", pipleline }
+            });
+
+            CallRet ret = await CallWithBinaryAsync(Config.API_HOST + "/pfop/", content);
+
+            if (ret.OK)
+            {
+                try
+                {
+                    PersistentId pid = JsonConvert.DeserializeObject<PersistentId>(ret.Response);
+                    return pid.persistentId;
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+            else
+            {
+                throw new Exception(ret.Response);
+            }
+        }
+
+        public async Task<string> QueryPfopStatusAsync(string persistentId)
+        {
+            CallRet ret = await CallAsync(string.Format("{0}/status/get/prefop?id={1}", Config.API_HOST, persistentId));
+            if (ret.OK)
+            {
+                return ret.Response;
+            }
+            else
+            {
+                throw new Exception(ret.Response);
+            }
+        }
+#endif
     }
 }

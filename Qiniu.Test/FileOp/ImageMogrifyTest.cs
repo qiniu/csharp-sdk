@@ -1,23 +1,34 @@
 ﻿using System;
 using Qiniu.FileOp;
 using Qiniu.RS;
+#if NET20 || NET40
 using NUnit.Framework;
+#else
+using Xunit;
+using System.Threading.Tasks;
+#endif
 
 namespace Qiniu.Test.FileOp
 {
-    
-    
+
+
     /// <summary>
     ///这是 ImageMogrifyTest 的测试类，旨在
     ///包含所有 ImageMogrifyTest 单元测试
     ///</summary>
+#if NET20 || NET40
     [TestFixture]
-	public class ImageMogrifyTest:QiniuTestBase
+#endif
+    public class ImageMogrifyTest:QiniuTestBase
     {
         /// <summary>
         ///MakeRequest 的测试
         ///</summary>
-        [Test]
+#if NET20 || NET40
+		[Test]
+#else
+        [Fact]
+#endif
         public void MakeRequestTest()
         {
             ImageMogrify target = new ImageMogrify
@@ -32,7 +43,11 @@ namespace Qiniu.Test.FileOp
             string mogrUrl = target.MakeRequest(FileOpUrl);
             //System.Diagnostics.Process.Start(mogrUrl);
             PrintLn(mogrUrl);
-            Assert.IsTrue(!string.IsNullOrEmpty(mogrUrl), "ImageMogrifyTest MakeRequestTest Failure");
+#if NET20 || NET40
+		    Assert.IsTrue(!string.IsNullOrEmpty(mogrUrl), "ImageMogrifyTest MakeRequestTest Failure");
+#else
+            Assert.True(!string.IsNullOrEmpty(mogrUrl), "ImageMogrifyTest MakeRequestTest Failure");
+#endif
         }
-    }
+}
 }

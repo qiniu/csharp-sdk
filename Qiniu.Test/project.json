@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable"
+  },
+
+  "title": "Qiniu Test for .NET Core",
+
+  "testRunner": "xunit",
+
+  "dependencies": {
+    "Qiniu": {
+      "target": "project"
+    }
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        },
+        "NETStandard.Library": "1.6.0",
+        "dotnet-test-xunit": "2.2.0-*",
+        "xunit": "2.2.0-*"
+      }
+    }
+  }
+}

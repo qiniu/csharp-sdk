@@ -1,7 +1,11 @@
-﻿using System;
-using System.Net;
-using System.IO;
+﻿using System.IO;
 using Qiniu.RPC;
+#if ABOVE45
+using System.Net.Http;
+using System.Threading.Tasks;
+#else
+using System.Net;
+#endif
 
 namespace Qiniu.Auth
 {
@@ -13,16 +17,24 @@ namespace Qiniu.Auth
 		{
 			UpToken = upToken;
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="request"></param>
-		/// <param name="body"></param>
-		public override void SetAuth (HttpWebRequest request, Stream body)
+#if !ABOVE45
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="body"></param>
+        public override void SetAuth (HttpWebRequest request, Stream body)
 		{
 			string authHead = "UpToken " + UpToken;
 			request.Headers.Add ("Authorization", authHead);
 		}
-	}
+#else
+        public override Task SetAuth(HttpRequestMessage request)
+        {
+            string authHead = "UpToken " + UpToken;
+            request.Headers.Add("Authorization", authHead);
+            return base.SetAuth(request);
+        }
+#endif
+    }
 }

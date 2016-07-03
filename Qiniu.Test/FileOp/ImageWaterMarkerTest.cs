@@ -1,23 +1,33 @@
 ﻿using System;
 using Qiniu.FileOp;
 using Qiniu.RS;
+#if NET20 || NET40
 using NUnit.Framework;
+#else
+using Xunit;
+#endif
 
 namespace Qiniu.Test.FileOp
 {
-    
-    
+
+
     /// <summary>
     ///这是 ImageWaterMarkerTest 的测试类，旨在
     ///包含所有 ImageWaterMarkerTest 单元测试
     ///</summary>
+#if NET20 || NET40
     //[TestFixture]
+#endif
     public class ImageWaterMarkerTest:QiniuTestBase
     {
         /// <summary>
         ///MakeRequest 的测试
         ///</summary>
+#if NET20 || NET40
         //[Test]
+#else
+        //[Fact]
+#endif
         public void MakeRequestTest()
         {
             string imageUrl = "http://www.b1.qiniudn.com/images/logo-2.png"; // TODO: 初始化为适当的值
@@ -29,8 +39,12 @@ namespace Qiniu.Test.FileOp
             actual = GetPolicy.MakeRequest(actual);
             //System.Diagnostics.Process.Start(actual);
             PrintLn(actual);
+#if NET20 || NET40
             Assert.IsTrue(!string.IsNullOrEmpty(actual), "ImageWaterMarkerTest MakeRequestTest Failure");
-           
+#else
+            Assert.True(!string.IsNullOrEmpty(actual), "ImageWaterMarkerTest MakeRequestTest Failure");
+#endif
+
         }
     }
 }

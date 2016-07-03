@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using Qiniu.RS;
 using Qiniu.IO;
 using Qiniu.Util;
 using Qiniu.RPC;
+#if NET20 || NET40
+using NUnit.Framework;
+#else
+using Xunit;
+using System.Threading.Tasks;
+#endif
 
 namespace Qiniu.Test
 {
@@ -13,6 +18,8 @@ namespace Qiniu.Test
 		public RSHelper ()
 		{
 		}
+
+#if NET20 || NET40
 		public static void RSDel(string bucket,string key)
 		{
 			RSClient target = new RSClient(); // TODO: 初始化为适当的值
@@ -20,8 +27,22 @@ namespace Qiniu.Test
 			CallRet actual;
 			actual = target.Delete(scope);			   
 		}
-		public static List<string> RSPut(string bucket,int num)
-		{
+#else
+        public static async Task RSDel(string bucket, string key)
+        {
+            RSClient target = new RSClient(); // TODO: 初始化为适当的值
+            EntryPath scope = new EntryPath(bucket, key); // TODO: 初始化为适当的值       
+            CallRet actual;
+            actual = await target.DeleteAsync(scope);
+        }
+#endif
+
+#if NET20 || NET40
+        public static List<string> RSPut(string bucket,int num)
+#else
+        public static async Task<List<string>> RSPut(string bucket, int num)
+#endif
+        {
 			IOClient target = new IOClient(); 
 			string key = "csharp" + Guid.NewGuid().ToString();
 			//PrintLn(key);
@@ -31,8 +52,12 @@ namespace Qiniu.Test
 			List<string> newKeys=new List<string>();
 			for (int i=0; i<num; i++) {
 				key = "csharp" + Guid.NewGuid ().ToString ();
+#if NET20 || NET40
 				PutRet ret = target.Put (put.Token (), key,StreamEx.ToStream("Hello, Qiniu Cloud!"), extra);
-				if (ret.OK) {
+#else
+                PutRet ret = await target.PutAsync(put.Token(), key, StreamEx.ToStream("Hello, Qiniu Cloud!"), extra);
+#endif
+                if (ret.OK) {
 					newKeys.Add (key);
 				}
 			

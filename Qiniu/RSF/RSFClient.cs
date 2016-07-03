@@ -4,6 +4,9 @@ using Newtonsoft.Json;
 using Qiniu.Auth;
 using Qiniu.Conf;
 using Qiniu.RPC;
+#if ABOVE45
+using System.Threading.Tasks;
+#endif
 
 namespace Qiniu.RSF
 {
@@ -77,24 +80,25 @@ namespace Qiniu.RSF
 			this.bucketName = bucketName;
 		}
 
-		/// <summary>
-		/// The origin Fetch interface,we recomment to use Next().
-		/// </summary>
-		/// <returns>
-		/// Dump
-		/// </returns>
-		/// <param name='bucketName'>
-		/// Bucket name.
-		/// </param>
-		/// <param name='prefix'>
-		/// Prefix.
-		/// </param>
-		/// <param name='markerIn'>
-		/// Marker in.
-		/// </param>
-		/// <param name='limit'>
-		/// Limit.
-		/// </param>
+#if !ABOVE45
+        /// <summary>
+        /// The origin Fetch interface,we recomment to use Next().
+        /// </summary>
+        /// <returns>
+        /// Dump
+        /// </returns>
+        /// <param name='bucketName'>
+        /// Bucket name.
+        /// </param>
+        /// <param name='prefix'>
+        /// Prefix.
+        /// </param>
+        /// <param name='markerIn'>
+        /// Marker in.
+        /// </param>
+        /// <param name='limit'>
+        /// Limit.
+        /// </param>
         public DumpRet ListPrefix(string bucketName, string prefix = "", string markerIn = "", int limit = 0)
 		{
 			string url = Config.RSF_HOST + string.Format ("/list?bucket={0}", bucketName);// + bucketName + 
@@ -118,35 +122,67 @@ namespace Qiniu.RSF
 			}
 			return null;
 		}
+#else
+        public async Task<DumpRet> ListPrefixAsync(string bucketName, string prefix = "", string markerIn = "", int limit = 0)
+        {
+            string url = Config.RSF_HOST + string.Format("/list?bucket={0}", bucketName);// + bucketName + 
+            if (!string.IsNullOrEmpty(markerIn))
+            {
+                url += string.Format("&marker={0}", markerIn);
+            }
+            if (!string.IsNullOrEmpty(prefix))
+            {
+                url += string.Format("&prefix={0}", prefix);
+            }
+            if (limit > 0)
+            {
+                url += string.Format("&limit={0}", limit);
+            }
+            for (int i = 0; i < RETRY_TIME; i++)
+            {
+                CallRet ret = await CallAsync(url);
+                if (ret.OK)
+                {
+                    return JsonConvert.DeserializeObject<DumpRet>(ret.Response);
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            return null;
+        }
+#endif
 
-		/// <summary>
-		/// call this func before invoke Next()
-		/// </summary>
-		public void Init ()
+        /// <summary>
+        /// call this func before invoke Next()
+        /// </summary>
+        public void Init ()
 		{
 			end = false;
 			this.marker = string.Empty;
 		}
 
-		/// <summary>
-		/// Next.
-		/// <example>
-		/// <code>
-		/// public static void List (string bucket)
-		///{
-		///     RSF.RSFClient rsf = new Qiniu.RSF.RSFClient(bucket);
-		///     rsf.Prefix = "test";
-		///     rsf.Limit = 100;
-		///     List<DumpItem> items;
-		///     while ((items=rsf.Next())!=null)
-		///     {                
-		///      //todo
-		///     }
-		///}s
-		/// </code>
-		/// </example>
-		/// </summary>
-		public List<DumpItem> Next ()
+#if !ABOVE45
+        /// <summary>
+        /// Next.
+        /// <example>
+        /// <code>
+        /// public static void List (string bucket)
+        ///{
+        ///     RSF.RSFClient rsf = new Qiniu.RSF.RSFClient(bucket);
+        ///     rsf.Prefix = "test";
+        ///     rsf.Limit = 100;
+        ///     List&lt;DumpItem> items;
+        ///     while ((items=rsf.Next())!=null)
+        ///     {                
+        ///      //todo
+        ///     }
+        ///}s
+        /// </code>
+        /// </example>
+        /// </summary>
+        public List<DumpItem> Next ()
 		{
 			if (end) {
 				return null;
@@ -165,6 +201,50 @@ namespace Qiniu.RSF
 				throw e;
 			}
 		}
-	}
+#else
+        /// <summary>
+        /// Next.
+        /// <example>
+        /// <code>
+        /// public static async void List (string bucket)
+        ///{
+        ///     RSF.RSFClient rsf = new Qiniu.RSF.RSFClient(bucket);
+        ///     rsf.Prefix = "test";
+        ///     rsf.Limit = 100;
+        ///     List&lt;DumpItem&gt; items;
+        ///     while ((items = await rsf.NextAsync())!=null)
+        ///     {                
+        ///      //todo
+        ///     }
+        ///}s
+        /// </code>
+        /// </example>
+        /// </summary>
+        public async Task<List<DumpItem>> NextAsync()
+        {
+            if (end)
+            {
+                return null;
+            }
+            try
+            {
+                DumpRet ret = await ListPrefixAsync(this.bucketName, this.prefix, this.marker, this.limit);
+                if (ret.Items.Count == 0)
+                {
+                    end = true;
+                    return null;
+                }
+                this.marker = ret.Marker;
+                if (this.marker == null)
+                    end = true;
+                return ret.Items;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+#endif
+    }
 }
 
