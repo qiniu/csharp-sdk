@@ -1,0 +1,74 @@
+﻿{
+  "authors": [ "qiniu" ],
+  "description": "Qiniu Cloud Storage SDK for .NET",
+  "copyright": "Copyright © 2012, Qiniu. All rights reserved.",
+  "version": "6.2.2-*",
+
+  "name": "Qiniu",
+
+  "buildOptions": {
+    "debugType": "portable"
+  },
+
+  "packOptions": {
+    "projectUrl": "https://github.com/qiniu/csharp-sdk",
+    "licenseUrl": "http://www.opensource.org/licenses/MIT",
+    "iconUrl": "http://assets.qiniu.com/qiniu-55x41.png",
+    "tags": [ "Qiniu", "netcore" ],
+    "releaseNotes": "Adding support of .NET Core",
+    "files": [ "qiniu.json" ]
+  },
+
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Collections.Specialized": "4.0.1",
+        "Microsoft.DotNet.InternalAbstractions": "1.0.0",
+        "Microsoft.Extensions.Configuration.Json": "1.0.0"
+      },
+      "imports": [
+        "dnxcore50"
+      ],
+      "buildOptions": {
+        "define": [
+          "ABOVE45"
+        ]
+      }
+    },
+
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Net.Http": "4.0.0"
+      },
+      "dependencies": {
+        "Microsoft.DotNet.InternalAbstractions": "1.0.0",
+        "Microsoft.Extensions.Configuration.Json": "1.0.0"
+      },
+
+      "buildOptions": {
+        "define": [
+          "ABOVE45"
+        ]
+      }
+    },
+
+    "net40": {
+      "frameworkAssemblies": {
+        "System.Configuration": "4.0.0",
+        "System.Web": "4.0.0"
+      }
+    },
+
+    "net20": {
+      "frameworkAssemblies": {
+        "System.Configuration": "2.0.0",
+        "System.Web": "2.0.0"
+      }
+    }
+  }
+}

@@ -21,15 +21,21 @@ namespace Qiniu.Test
 		{
 			if (init)
 				return;
-				
-			//for make test
 
-			Config.ACCESS_KEY = System.Environment.GetEnvironmentVariable ("QINIU_ACCESS_KEY");  
+            //for make test
+#if NET20 || NET40
+            Config.ACCESS_KEY = System.Environment.GetEnvironmentVariable ("QINIU_ACCESS_KEY");  
 			Config.SECRET_KEY = System.Environment.GetEnvironmentVariable ("QINIU_SECRET_KEY");  
 			Bucket =System.Environment.GetEnvironmentVariable ("QINIU_TEST_BUCKET");   
 			DOMAIN =System.Environment.GetEnvironmentVariable ("QINIU_TEST_DOMAIN"); 
+#else
+            Config.ACCESS_KEY = "QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm";
+		    Config.SECRET_KEY = "Bxckh6FA-Fbs9Yt3i3cbKVK22UPBmAOHJcL95pGz";
+            Bucket = "csharpsdk";
+            DOMAIN = "csharpsdk.qiniudn.com";
+#endif
 
-			init = true;
+            init = true;
 		}
 
 		public QiniuTestBase()

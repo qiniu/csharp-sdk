@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Text;
+#if ABOVE45
+using Microsoft.Extensions.Configuration;
+using Microsoft.DotNet.InternalAbstractions;
+#endif
 
 namespace Qiniu.Conf
 {
@@ -46,6 +50,7 @@ namespace Qiniu.Conf
         /// </summary>
          public static void Init()
         {
+#if !ABOVE45
             if (System.Configuration.ConfigurationManager.AppSettings["USER_AGENT"] != null) 
             {
                 USER_AGENT = System.Configuration.ConfigurationManager.AppSettings["USER_AGENT"];
@@ -74,10 +79,46 @@ namespace Qiniu.Conf
             {
                 PREFETCH_HOST = System.Configuration.ConfigurationManager.AppSettings["PREFETCH_HOST"];
             }
+#else
+            var configuration = new ConfigurationBuilder().AddJsonFile("qiniu.json", optional: true).Build();
+            var qiniu = configuration.GetSection("qiniu");
+            if (!string.IsNullOrEmpty(qiniu["USER_AGENT"]))
+            {
+                USER_AGENT = qiniu["USER_AGENT"];
+            }
+            if (!string.IsNullOrEmpty(qiniu["ACCESS_KEY"]))
+            {
+                ACCESS_KEY = qiniu["ACCESS_KEY"];
+            }
+            if (!string.IsNullOrEmpty(qiniu["SECRET_KEY"]))
+            {
+                SECRET_KEY = qiniu["SECRET_KEY"];
+            }
+            if (!string.IsNullOrEmpty(qiniu["RS_HOST"]))
+            {
+                RS_HOST = qiniu["RS_HOST"];
+            }
+            if (!string.IsNullOrEmpty(qiniu["UP_HOST"]))
+            {
+                UP_HOST = qiniu["UP_HOST"];
+            }
+            if (!string.IsNullOrEmpty(qiniu["RSF_HOST"]))
+            {
+                RSF_HOST = qiniu["RSF_HOST"];
+            }
+            if (!string.IsNullOrEmpty(qiniu["PREFETCH_HOST"]))
+            {
+                PREFETCH_HOST = qiniu["PREFETCH_HOST"];
+            }
+#endif
         }
         private static string getUa()
         {
-            return "QiniuCsharp/"+ VERSION + " (" + Environment.OSVersion.Version.ToString() + "; )";
+#if !ABOVE45
+            return "QiniuCsharp/" + VERSION + " (" + Environment.OSVersion.Version.ToString() + "; )";
+#else
+            return $"QiniuCSharp/{VERSION} ({RuntimeEnvironment.OperatingSystem} {RuntimeEnvironment.OperatingSystemVersion}; )";
+#endif
         }
     }
 }

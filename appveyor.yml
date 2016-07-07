@@ -1,0 +1,14 @@
+os: Visual Studio 2015
+version: Build {build}
+
+build_script:
+  # dotnet info
+  - ps: dotnet --info
+  # Run dotnet test 
+  - ps: dotnet restore
+  - ps: dotnet --verbose build Qiniu\project.json
+  - ps: dotnet --verbose build Qiniu.Test\project.json
+
+test: off
+test_script: 
+  - ps: dotnet test Qiniu.Test\project.json

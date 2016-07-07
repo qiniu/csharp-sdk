@@ -3,6 +3,9 @@ using System.IO;
 using System.Security.Cryptography;
 using Qiniu.Conf;
 using Qiniu.Util;
+#if ABOVE45
+using System.Net.Http;
+#endif
 
 namespace Qiniu.Auth.digest
 {
@@ -78,13 +81,14 @@ namespace Qiniu.Auth.digest
 			return string.Format ("{0}:{1}:{2}", this.accessKey, _sign (Config.Encoding.GetBytes (data)), data);
 		}
 
-		/// <summary>
-		/// SignRequest
-		/// </summary>
-		/// <param name="request"></param>
-		/// <param name="body"></param>
-		/// <returns></returns>
-		public string SignRequest (System.Net.HttpWebRequest request, byte[] body)
+#if !ABOVE45
+        /// <summary>
+        /// SignRequest
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        public string SignRequest (System.Net.HttpWebRequest request, byte[] body)
 		{
 			Uri u = request.Address;
 			using (HMACSHA1 hmac = new HMACSHA1(secretKey)) {
@@ -102,5 +106,34 @@ namespace Qiniu.Auth.digest
 				}
 			}
 		}
-	}
+#else
+        /// <summary>
+        /// SignRequest
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        public string SignRequest(HttpRequestMessage request, byte[] body)
+        {
+            Uri u = request.RequestUri;
+            using (HMACSHA1 hmac = new HMACSHA1(secretKey))
+            {
+                string pathAndQuery = u.PathAndQuery;
+                byte[] pathAndQueryBytes = Config.Encoding.GetBytes(pathAndQuery);
+                using (MemoryStream buffer = new MemoryStream())
+                {
+                    buffer.Write(pathAndQueryBytes, 0, pathAndQueryBytes.Length);
+                    buffer.WriteByte((byte)'\n');
+                    if (body.Length > 0)
+                    {
+                        buffer.Write(body, 0, body.Length);
+                    }
+                    byte[] digest = hmac.ComputeHash(buffer.ToArray());
+                    string digestBase64 = Base64URLSafe.Encode(digest);
+                    return this.accessKey + ":" + digestBase64;
+                }
+            }
+        }
+#endif
+    }
 }

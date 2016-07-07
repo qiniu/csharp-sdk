@@ -1,0 +1,11 @@
+﻿{
+  "qiniu": {
+    "USER_AGENT": "",
+    "ACCESS_KEY": "",
+    "SECRET_KEY": "",
+    "RS_HOST": "",
+    "UP_HOST": "",
+    "RSF_HOST": "",
+    "PREFETCH_HOST": ""
+  } 
+}

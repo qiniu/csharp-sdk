@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+#if !NET20
 using System.Linq;
+#endif
 using System.Text;
 
 namespace Qiniu.IO
@@ -61,7 +63,11 @@ namespace Qiniu.IO
         {
             using (FileStream fs = File.OpenRead(this.fileName))
             {
+#if !NET20
                 fs.CopyTo(body);
+#else
+                Qiniu.Util.IO.Copy(body, fs);
+#endif
                 return fs.Length;
             }           
         }

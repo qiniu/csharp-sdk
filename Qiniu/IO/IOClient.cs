@@ -6,6 +6,9 @@ using Qiniu.Auth;
 using Qiniu.RPC;
 using Qiniu.Util;
 using System.Collections.Specialized;
+#if ABOVE45
+using System.Threading.Tasks;
+#endif
 
 namespace Qiniu.IO
 {
@@ -48,7 +51,7 @@ namespace Qiniu.IO
         /// </summary>
         public IWebProxy Proxy { get; set; }
 
-
+#if !ABOVE45
         /// <summary>
         /// 上传文件
         /// </summary>
@@ -120,6 +123,79 @@ namespace Qiniu.IO
                 return ret;
             }
         }
+#else
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="upToken"></param>
+        /// <param name="key"></param>h
+        /// <param name="localFile"></param>
+        /// <param name="extra"></param>
+        public async Task<PutRet> PutFileAsync(string upToken, string key, string localFile, PutExtra extra)
+        {
+            if (!System.IO.File.Exists(localFile))
+            {
+                throw new Exception(string.Format("{0} does not exist", localFile));
+            }
+            PutRet ret;
+
+            NameValueCollection formData = getFormData(upToken, key, extra);
+            try
+            {
+                CallRet callRet = await MultiPart.MultiPostAsync(Config.UP_HOST, formData, localFile, this.Proxy);
+                ret = new PutRet(callRet);
+                onPutFinished(ret);
+                return ret;
+            }
+            catch (Exception e)
+            {
+                ret = new PutRet(new CallRet(HttpStatusCode.BadRequest, e));
+                onPutFinished(ret);
+                return ret;
+            }
+        }
+        /// <summary>
+        /// Puts the file without key.
+        /// </summary>
+        /// <returns>The file without key.</returns>
+        /// <param name="upToken">Up token.</param>
+        /// <param name="localFile">Local file.</param>
+        /// <param name="extra">Extra.</param>
+        public async Task<PutRet> PutFileWithoutKeyAsync(string upToken, string localFile, PutExtra extra)
+        {
+            return await PutFileAsync(upToken, null, localFile, extra);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="upToken">Up token.</param>
+        /// <param name="key">Key.</param>
+        /// <param name="putStream">Put stream.</param>
+        /// <param name="extra">Extra.</param>
+        public async Task<PutRet> PutAsync(string upToken, string key, System.IO.Stream putStream, PutExtra extra)
+        {
+            if (!putStream.CanRead)
+            {
+                throw new Exception("read put Stream error");
+            }
+            PutRet ret;
+            NameValueCollection formData = getFormData(upToken, key, extra);
+            try
+            {
+                CallRet callRet = await MultiPart.MultiPostAsync(Config.UP_HOST, formData, putStream);
+                ret = new PutRet(callRet);
+                onPutFinished(ret);
+                return ret;
+            }
+            catch (Exception e)
+            {
+                ret = new PutRet(new CallRet(HttpStatusCode.BadRequest, e));
+                onPutFinished(ret);
+                return ret;
+            }
+        }
+#endif
 
         protected void onPutFinished(PutRet ret)
         {

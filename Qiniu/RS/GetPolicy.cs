@@ -1,7 +1,7 @@
 ﻿using System;
 using Qiniu.Auth.digest;
 using Qiniu.Conf;
-using System.Net;
+
 namespace Qiniu.RS
 {
 	/// <summary>

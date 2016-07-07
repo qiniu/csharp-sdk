@@ -6,6 +6,11 @@ using System.Net;
 using System.Text;
 using Qiniu.Conf;
 using Qiniu.RPC;
+#if ABOVE45
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+#endif
 
 namespace Qiniu.IO
 {
@@ -13,6 +18,7 @@ namespace Qiniu.IO
 	{
 		public static Encoding encoding = Config.Encoding;
 
+#if !ABOVE45
 		public static string RandomBoundary ()
 		{
 			return String.Format ("----------{0:N}", Guid.NewGuid ());
@@ -23,7 +29,7 @@ namespace Qiniu.IO
 			return "multipart/form-data; boundary=" + boundary;
 		}
 
-		private static Stream GetPostStream (Stream putStream, string fileName, NameValueCollection formData, string boundary)
+        private static Stream GetPostStream (Stream putStream, string fileName, NameValueCollection formData, string boundary)
 		{
 			Stream postDataStream = new System.IO.MemoryStream ();
 
@@ -39,7 +45,7 @@ namespace Qiniu.IO
 			}
 
 			//adding file,Stream data
-			#region adding file data
+        #region adding file data
            
 			string fileHeaderTemplate = Environment.NewLine + "--" + boundary + Environment.NewLine +
 				"Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"" +
@@ -53,19 +59,42 @@ namespace Qiniu.IO
 			while ((bytesRead = putStream.Read(buffer, 0, buffer.Length)) != 0) {
 				postDataStream.Write (buffer, 0, bytesRead);
 			}
-			putStream.Close ();
-			#endregion
+            putStream.Close ();
+        #endregion
 
-			#region adding end
-			byte[] endBoundaryBytes = System.Text.Encoding.UTF8.GetBytes (Environment.NewLine + "--" + boundary + "--" + Environment.NewLine);
+        #region adding end
+            byte[] endBoundaryBytes = System.Text.Encoding.UTF8.GetBytes (Environment.NewLine + "--" + boundary + "--" + Environment.NewLine);
 			postDataStream.Write (endBoundaryBytes, 0, endBoundaryBytes.Length);
-			#endregion
+        #endregion
 
 			return postDataStream;
  
 		}
+#else
+        private static HttpContent GetPostContent(Stream inputStream, string fileName, NameValueCollection formData)
+        {
+            var content = new MultipartFormDataContent();
 
-		private static Stream GetPostStream (string filePath, NameValueCollection formData, string boundary)
+            #region adding form data
+            foreach (string key in formData.Keys)
+            {
+                var value = new StringContent(formData[key]);
+                value.Headers.ContentType = null;
+                content.Add(value, key);
+            }
+            #endregion
+
+            #region adding file data
+            var file = new StreamContent(inputStream);
+            file.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            content.Add(file, "file", fileName);
+            #endregion
+
+            return content;
+        }
+#endif
+
+        private static Stream GetPostStream (string filePath, NameValueCollection formData, string boundary)
 		{
 			Stream postDataStream = new System.IO.MemoryStream ();
 
@@ -81,7 +110,7 @@ namespace Qiniu.IO
 			}
 
 			//adding file data
-			#region adding file data
+#region adding file data
 			FileInfo fileInfo = new FileInfo (filePath);
 			string fileHeaderTemplate = Environment.NewLine + "--" + boundary + Environment.NewLine +
 				"Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"" +
@@ -95,17 +124,22 @@ namespace Qiniu.IO
 			while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0) {
 				postDataStream.Write (buffer, 0, bytesRead);
 			}
-			fileStream.Close ();
-			#endregion
+#if !ABOVE45
+            fileStream.Close ();
+#else
+            fileStream.Dispose();
+#endif
+#endregion
 
-			#region adding end
-			byte[] endBoundaryBytes = System.Text.Encoding.UTF8.GetBytes (Environment.NewLine + "--" + boundary + "--" + Environment.NewLine);
+#region adding end
+            byte[] endBoundaryBytes = System.Text.Encoding.UTF8.GetBytes (Environment.NewLine + "--" + boundary + "--" + Environment.NewLine);
 			postDataStream.Write (endBoundaryBytes, 0, endBoundaryBytes.Length);
-			#endregion
+#endregion
 
 			return postDataStream;
 		}
 
+#if !ABOVE45
 		public static CallRet MultiPost (string url, NameValueCollection formData, string fileName,IWebProxy proxy=null)
 		{
 			string boundary = RandomBoundary ();
@@ -183,5 +217,71 @@ namespace Qiniu.IO
 				return new CallRet (HttpStatusCode.BadRequest, e);
 			}            
 		}
-	}
+#else
+        public static async Task<CallRet> MultiPostAsync(string url, NameValueCollection formData, string fileName, IWebProxy proxy = null)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            {
+                using (var handler = new HttpClientHandler())
+                {
+                    if (proxy != null)
+                    {
+                        handler.Proxy = proxy;
+                    }
+                    using (var client = new HttpClient(handler))
+                    {
+                        FileInfo fileInfo = new FileInfo(fileName);
+
+                        using (FileStream fileStream = fileInfo.OpenRead())
+                        {
+                            request.Content = GetPostContent(fileStream, fileName, formData);
+
+                            try
+                            {
+                                var response = await client.SendAsync(request);
+                                return await RPC.Client.HandleResultAsync(response);
+
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.ToString());
+                                return new CallRet(HttpStatusCode.BadRequest, e);
+                            }
+                        }
+                    }
+                        
+                }
+            }
+        }
+
+        public static async Task<CallRet> MultiPostAsync(string url, NameValueCollection formData, System.IO.Stream inputStream, IWebProxy proxy = null)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            {
+                using (var handler = new HttpClientHandler())
+                {
+                    if (proxy != null)
+                    {
+                        handler.Proxy = proxy;
+                    }
+                    using (var client = new HttpClient(handler))
+                    {
+                        request.Content = GetPostContent(inputStream, formData["key"], formData);
+                        
+                        try
+                        {
+                            var response = await client.SendAsync(request);
+                            return await RPC.Client.HandleResultAsync(response);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.ToString());
+                            return new CallRet(HttpStatusCode.BadRequest, e);
+                        }
+                    }
+                }
+            }
+        }
+#endif
+    }
 }

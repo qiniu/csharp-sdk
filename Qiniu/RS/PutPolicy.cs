@@ -205,8 +205,8 @@ namespace Qiniu.RS
 			set { persistentOps = value; }
 		}
 
-		// <summary>
-		/// 可指定音视频文件上传后处理的队列，不指定时在公共队列中。persistentOps的处理结果以文件形式保存在bucket中，体验更佳。[数据处理(持久化)](http://docs.qiniu.com/api/persistent-ops.html
+		/// <summary>
+		/// 可指定音视频文件上传后处理的队列，不指定时在公共队列中。persistentOps的处理结果以文件形式保存在bucket中，体验更佳。[数据处理(持久化)](http://docs.qiniu.com/api/persistent-ops.html)
 		/// </summary>
 		[JsonProperty("persistentPipeline")]
 		public string PersistentPipeline {
@@ -214,7 +214,7 @@ namespace Qiniu.RS
 			set { persistentPipeline = value; }
 		}
 
-		// <summary>
+		/// <summary>
 		///上传成功后，七牛云向App-Server发送回调通知时的 Host 值，仅当同时设置了 callbackUrl 时有效。
 		/// </summary>
 		[JsonProperty("callbackHost")]
@@ -224,7 +224,7 @@ namespace Qiniu.RS
 			set { callbackHost = value; }
 		}
 
-		// <summary>
+		/// <summary>
 		///上传成功后，七牛云向App-Server发送回调通知callbackBody的Content-Type，默认为application/x-www-form-urlencoded，也可设置为application/json。
 		/// </summary>
 		[JsonProperty("callbackBodyType")]
@@ -234,7 +234,7 @@ namespace Qiniu.RS
 			set { callbackBodyType = value; }
 		}
 
-		// <summary>
+		/// <summary>
 		///是否启用fetchKey上传模式，0为关闭，1为启用；具体见fetchKey上传模式。
 		/// </summary>
 		[JsonProperty("callbackFetchKey")]
