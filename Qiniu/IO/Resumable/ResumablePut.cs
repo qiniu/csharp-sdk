@@ -77,6 +77,8 @@ namespace Qiniu.IO.Resumable
                 throw new Exception(string.Format("{0} does not exist", localFile));
             }
             
+            string fname = Path.GetFileName(localFile);
+
             PutAuthClient client = new PutAuthClient(upToken);
             CallRet ret;
             using (FileStream fs = File.OpenRead(localFile))
@@ -103,7 +105,7 @@ namespace Qiniu.IO.Resumable
                         extra.OnNotify(new PutNotifyEvent(i, readLen, extra.Progresses[i]));
                     }
                 }
-                ret = Mkfile(client, key, fsize);
+                ret = Mkfile(client, key, fsize,fname);
             }
             if (ret.OK)
             {
@@ -172,13 +174,17 @@ namespace Qiniu.IO.Resumable
             return null;
         }
 
-        private CallRet Mkfile(Client client, string key, long fsize)
+        private CallRet Mkfile(Client client, string key, long fsize, string fname)
         {
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.AppendFormat("{0}/mkfile/{1}", Config.UP_HOST, fsize);
             if (key != null)
             {
                 urlBuilder.AppendFormat("/key/{0}", Base64URLSafe.ToBase64URLSafe(key));
+            }
+            if (fname != null)
+            {
+                urlBuilder.AppendFormat("/fname/{0}", Base64URLSafe.ToBase64URLSafe(fname));
             }
             if (!string.IsNullOrEmpty(extra.MimeType))
             {
