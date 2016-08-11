@@ -245,14 +245,16 @@ namespace Qiniu.RS
 		}
 
 
-		/// <summary>
-	        /// 文件在多少天后被删除，七牛将文件上传时间与指定的deleteAfterDays天数相加，得到的时间入到后一天的午夜(CST,中国标准时间)，从而得到文件删除开始时间。例如文件在2015年1月1日上午10:00 CST上传，指定deleteAfterDays为3天，那么会在2015年1月5日00:00 CST之后当天内删除文件
-	        /// </summary>
-	        public int DeleteAfterDays
-	        {
-	            get { return deleteAfterDays; }
-	            set { deleteAfterDays = value; }
-	        }
+        /// <summary>
+        /// 文件在多少天后被删除，七牛将文件上传时间与指定的deleteAfterDays天数相加，得到的时间入到后一天的午夜(CST,中国标准时间)，从而得到文件删除开始时间。例如文件在2015年1月1日上午10:00 CST上传，指定deleteAfterDays为3天，那么会在2015年1月5日00:00 CST之后当天内删除文件
+        /// </summary>
+        [JsonProperty("deleteAfterDays")]
+        public int DeleteAfterDays
+	    {
+	        get { return deleteAfterDays; }
+	        set { deleteAfterDays = value; }
+	    }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Qiniu.RS.PutPolicy"/> class.
 		/// </summary>
