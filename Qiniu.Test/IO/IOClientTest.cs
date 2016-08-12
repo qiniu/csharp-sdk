@@ -53,9 +53,9 @@ namespace Qiniu.Test.IO
             policy.CallbackBodyType = "application/json";
 			try {
 				string result = policy.ToString();
-				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"fsizeMin\":0,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\",\"callbackHost\":\"180.97.211.38\",\"callbackBodyType\":\"application/json\",\"callbackFetchKey\":0}";
+				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"fsizeMin\":0,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\",\"callbackHost\":\"180.97.211.38\",\"callbackBodyType\":\"application/json\",\"callbackFetchKey\":0,\"deleteAfterDays\":0}";
 				//Assert.IsTrue(result==expect,"PutPolicyTest Failure5");
-				Assert.AreEqual(result, expect);
+				Assert.AreEqual(expect, result);
 			} catch (Exception ee){
 				Assert.IsTrue (false, ee.Message.ToString());
 			}
