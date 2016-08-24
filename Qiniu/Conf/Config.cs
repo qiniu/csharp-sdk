@@ -35,6 +35,12 @@ namespace Qiniu.Conf
         public static string PREFETCH_HOST = "http://iovip.qbox.me";
 
         public static string API_HOST = "http://api.qiniu.com";
+
+        /// <summary>
+        /// Http Reqeust timeout, default is 600000(10 mins).
+        /// </summary>
+        public static int HTTP_REQUEST_TIMEOUT = 600000;
+
         #endregion
         /// <summary>
         /// 七牛SDK对所有的字节编码采用utf-8形式 .
@@ -73,6 +79,10 @@ namespace Qiniu.Conf
             if (System.Configuration.ConfigurationManager.AppSettings["PREFETCH_HOST"] != null)
             {
                 PREFETCH_HOST = System.Configuration.ConfigurationManager.AppSettings["PREFETCH_HOST"];
+            }
+            if (System.Configuration.ConfigurationManager.AppSettings["HTTP_REQUEST_TIMEOUT"] != null)
+            {
+                int.TryParse(System.Configuration.ConfigurationManager.AppSettings["HTTP_REQUEST_TIMEOUT"], out HTTP_REQUEST_TIMEOUT);
             }
         }
         private static string getUa()

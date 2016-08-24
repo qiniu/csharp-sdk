@@ -97,7 +97,7 @@ namespace Qiniu.RS
             }
             else
             {
-                throw new Exception(ret.Response);
+                throw new Exception(ret.Response, ret.Exception);
             }
         }
 
