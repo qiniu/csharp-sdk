@@ -112,13 +112,13 @@ move/copy支持force参数，另请参阅[资源复制的force参数](http://dev
 
 C# SDK的总体框架如下图
 
-![SDK diagram](docs/imgs/SDKdg.png)
+![SDK diagram](Docs/imgs/SDKdg.png)
 
 主要包含Auth、PutPolicy、Storage、Http、Processing等模块
 
 ######Auth
 
-![Auth](docs/imgs/Auth.png)
+![Auth](Docs/imgs/Auth.png)
 
 得到上传/管理/下载凭证。
 
@@ -126,7 +126,7 @@ C# SDK的总体框架如下图
 
 ######PutPolicy
 
-![PutPolicy](docs/imgs/PutPolicy.png)
+![PutPolicy](Docs/imgs/PutPolicy.png)
 
 上传策略，主要是一些参数设置。
 
@@ -134,19 +134,19 @@ C# SDK的总体框架如下图
 
 ######HttpManager
 
-![HttpManager](docs/imgs/HttpManager.png)
+![HttpManager](Docs/imgs/HttpManager.png)
 
 HttpManager模块负责HTTP请求与响应。
 
 ######BucketManager
 
-![BucketManager](docs/imgs/BucketManager.png)
+![BucketManager](Docs/imgs/BucketManager.png)
 
 BucketManager模块支持对空间文件的各种操作，如stat,copy,move等，支持批量操作(batch)。
 
 ######UploadManager
 
-![UploadManager](docs/imgs/UploadManager.png)
+![UploadManager](Docs/imgs/UploadManager.png)
 
 上传管理器：可以通过该上传管理器自动判断上传的内容是采用表单上传还是分片上传。
 
@@ -156,19 +156,19 @@ BucketManager模块支持对空间文件的各种操作，如stat,copy,move等�
 
 ######FormUploader
 
-![FormUploader](docs/imgs/FormUploader.png)
+![FormUploader](Docs/imgs/FormUploader.png)
 
 以表单的方式上传文件/字节数据/数据流
 
 ######ResumeUploader
 
-![ResumeUploader](docs/imgs/ResumeUploader.png)
+![ResumeUploader](Docs/imgs/ResumeUploader.png)
 
 文件分片上传，支持文件/数据流
 
 ######Pfop
 
-![pfop](docs/imgs/pfop.png)
+![pfop](Docs/imgs/pfop.png)
 
 持久化，可以配合上传使用，比如上传complete事件触发数据处理。
 
