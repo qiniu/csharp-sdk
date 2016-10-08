@@ -1,5 +1,5 @@
-﻿
-using System.Text;
+﻿using System.Text;
+
 namespace Qiniu.Util
 {
     public class Auth

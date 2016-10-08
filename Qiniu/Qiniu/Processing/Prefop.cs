@@ -1,7 +1,7 @@
-﻿
-using Qiniu.Common;
+﻿using Qiniu.Common;
 using Qiniu.Http;
 using Qiniu.Util;
+
 namespace Qiniu.Processing
 {
     public class Prefop

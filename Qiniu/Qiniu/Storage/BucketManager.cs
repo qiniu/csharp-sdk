@@ -4,7 +4,6 @@ using Qiniu.Http;
 using Qiniu.Storage.Model;
 using Qiniu.Util;
 using System.Collections.Generic;
-using System.Net;
 using System.Text;
 
 namespace Qiniu.Storage

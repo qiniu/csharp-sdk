@@ -16,8 +16,8 @@ namespace Qiniu
             frmUploadFile();
             Console.ReadKey();
         }
-
-		// 使用UploadManager上传文件
+        
+        // 使用UploadManager上传文件
         public static void mgrUploadFile()
         {
             UploadManager target = new UploadManager();
@@ -39,8 +39,8 @@ namespace Qiniu
 
             Console.WriteLine();
         }
-
-		// 使用UploadManager上传文件流
+        
+        // 使用UploadManager上传文件流
         public static void mgrUploadStream()
         {
             UploadManager target = new UploadManager();
@@ -63,8 +63,8 @@ namespace Qiniu
 
             Console.WriteLine();
         }
-
-		// 使用FormUploader上传数据
+        
+        // 使用FormUploader上传数据
         public static void frmUploadData()
         {
             Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
@@ -86,8 +86,8 @@ namespace Qiniu
 
             Console.WriteLine();
         }
-
-		// 使用FormUploader上传文件
+        
+        // 使用FormUploader上传文件
         public static void frmUploadFile()
         {
             Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);

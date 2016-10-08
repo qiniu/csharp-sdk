@@ -1,5 +1,4 @@
-﻿using Qiniu.Util;
-using System;
+﻿using System;
 using System.IO;
 
 namespace Qiniu.Storage.Persistent

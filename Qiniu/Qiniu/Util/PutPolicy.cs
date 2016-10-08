@@ -1,6 +1,6 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+
 namespace Qiniu.Util
 {
     [JsonObject(MemberSerialization.OptIn)]
