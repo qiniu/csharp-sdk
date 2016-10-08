@@ -4,7 +4,7 @@
 
 * 这个[C# SDK](https://github.com/qiniu/csharp-sdk)是最新版本，不同于之前版本(旧版本仍然可用)，推荐使用最新版本。
 
-* 我们准备了一份编译好的打包文件(Qiniu.dll，.NET4.0)，点此[链接](https://github.com/qiniu/csharp-sdk/build/csharp_sdk_latest.zip)下载。
+* 我们准备了一份编译好的打包文件(Qiniu.dll，.NET4.0)，点此[链接](https://github.com/qiniu/csharp-sdk/blob/master/build/csharp_sdk_latest.zip)下载。
 
 ###使用准备
 
