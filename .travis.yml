@@ -11,5 +11,4 @@ before_script:
   - export QINIU_TEST_DOMAIN="csharpsdk.qiniudn.com"
 
 script:
- - make
  - make test

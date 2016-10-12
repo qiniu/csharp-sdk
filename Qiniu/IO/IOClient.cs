@@ -23,7 +23,9 @@ namespace Qiniu.IO
         {
             NameValueCollection formData = new NameValueCollection();
             formData["token"] = upToken;
-            formData["key"] = key;
+            if (key!=null) {
+                formData["key"] = key;
+            }
             if (extra != null)
             {
                 if (extra.CheckCrc == CheckCrcType.CHECK_AUTO)
@@ -40,6 +42,11 @@ namespace Qiniu.IO
             }
             return formData;
         }
+
+        /// <summary>
+        /// 设置连接代理
+        /// </summary>
+        public IWebProxy Proxy { get; set; }
 
 
         /// <summary>
@@ -60,7 +67,7 @@ namespace Qiniu.IO
             NameValueCollection formData = getFormData(upToken, key, extra);
             try
             {
-                CallRet callRet = MultiPart.MultiPost(Config.UP_HOST, formData, localFile);
+                CallRet callRet = MultiPart.MultiPost(Config.UP_HOST, formData, localFile, this.Proxy);
                 ret = new PutRet(callRet);
                 onPutFinished(ret);
                 return ret;
@@ -81,7 +88,7 @@ namespace Qiniu.IO
         /// <param name="extra">Extra.</param>
         public PutRet PutFileWithoutKey(string upToken, string localFile, PutExtra extra)
         {
-            return PutFile(upToken, string.Empty, localFile, extra);
+            return PutFile(upToken, null, localFile, extra);
         }
 
         /// <summary>

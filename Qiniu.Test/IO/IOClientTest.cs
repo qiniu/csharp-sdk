@@ -21,9 +21,9 @@ namespace Qiniu.Test.IO
 				policy.Token ();
 			}catch{
 				exp = true;
-				Assert.IsTrue (true, "PutPolicyTest Failure");
+				Assert.IsTrue (true, "PutPolicyTest Failure1");
 			}
-			Assert.IsTrue (exp, "PutPolicyTest Failure");
+			Assert.IsTrue (exp, "PutPolicyTest Failure2");
 			exp = false;
 
 
@@ -33,9 +33,9 @@ namespace Qiniu.Test.IO
 				policy.Token ();
 			}catch{
 				exp = true;
-				Assert.IsTrue (true, "PutPolicyTest Failure");
+				Assert.IsTrue (true, "PutPolicyTest Failure3");
 			}
-			Assert.IsTrue (exp, "PutPolicyTest Failure");
+			Assert.IsTrue (exp, "PutPolicyTest Failure4");
 			exp = false;
 
 
@@ -44,15 +44,20 @@ namespace Qiniu.Test.IO
 			policy.CallBackUrl="www.qiniu.com";
 			policy.DetectMime = 1;
 			policy.FsizeLimit=4096;
+			policy.FsizeMin=0;
 			policy.InsertOnly = 1;
 			policy.PersistentNotifyUrl="www.yourdomain.com/persistentNotifyUrl";
 			policy.PersistentOps = "avthumb/m3u8/preset/video_16x9_440k";
+			policy.CallbackHost = "180.97.211.38";
+            policy.CallbackFetchKey = 0;
+            policy.CallbackBodyType = "application/json";
 			try {
 				string result = policy.ToString();
-				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\"}";
-				Assert.IsTrue(result==expect,"PutPolicyTest Failure");
+				string expect = "{\"scope\":\"bucket\",\"callBackUrl\":\"www.qiniu.com\",\"callBackBody\":\"uid=123\",\"deadline\":0,\"insertOnly\":1,\"detectMime\":1,\"fsizeLimit\":4096,\"fsizeMin\":0,\"persistentNotifyUrl\":\"www.yourdomain.com/persistentNotifyUrl\",\"persistentOps\":\"avthumb/m3u8/preset/video_16x9_440k\",\"callbackHost\":\"180.97.211.38\",\"callbackBodyType\":\"application/json\",\"callbackFetchKey\":0,\"deleteAfterDays\":0}";
+				//Assert.IsTrue(result==expect,"PutPolicyTest Failure5");
+				Assert.AreEqual(expect, result);
 			} catch (Exception ee){
-				Assert.IsTrue (false, "PutPolicyTest Failure");
+				Assert.IsTrue (false, ee.Message.ToString());
 			}
 
 		}
@@ -96,8 +101,7 @@ namespace Qiniu.Test.IO
 		{
 
 			IOClient target = new IOClient();
-			string key = NewKey;
-			PrintLn (key);
+
 			PutExtra extra = new PutExtra (); // TODO: 初始化为适当的值
 			extra.MimeType = "text/plain";
 			extra.Crc32 = 123;
@@ -114,6 +118,7 @@ namespace Qiniu.Test.IO
 
 			PutRet ret = target.PutFileWithoutKey (put.Token (),file.FileName, extra);
 
+			Assert.AreEqual (ret.Hash, ret.key, "expected key equal to hash");
 			//error params
 			//target.PutFile("error", "error", "error", null);
 			Assert.IsTrue (ret.OK, "PutFileTest Failure");

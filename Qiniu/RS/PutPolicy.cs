@@ -22,12 +22,17 @@ namespace Qiniu.RS
 		private int detectMime;
         private string mimeLimit;
 		private long fsizeLimit;
+		private long fsizeMin;
 		private string persistentOps;
 		private string persistentNotifyUrl;
 		private string persistentPipeline;
 		private string endUser;
 		private UInt64 expires = 3600;
 		private UInt64 deadline = 0;
+		private string callbackHost;
+		private string callbackBodyType;
+		private int callbackFetchKey;
+        	private int deleteAfterDays;
 
 		/// <summary>
 		/// 一般指文件要上传到的目标存储空间（Bucket）。若为”Bucket”，表示限定只能传到该Bucket（仅限于新增文件）；若为”Bucket:Key”，表示限定特定的文件，可修改该文件。
@@ -133,26 +138,26 @@ namespace Qiniu.RS
 			}
 		}
 
-        /// <summary>
-        /// 限定用户上传的文件类型
-        /// 指定本字段值，七牛服务器会侦测文件内容以判断MimeType，再用判断值跟指定值进行匹配，匹配成功则允许上传，匹配失败返回400状态码
-        /// 示例:
-        ///1. “image/*“表示只允许上传图片类型
-        ///2. “image/jpeg;image/png”表示只允许上传jpg和png类型的图片
-        /// </summary>
-        /// <value>The detect MIME.</value>
-        [JsonProperty("mimeLimit")]
-        public string MimeLimit
-        {
-            get
-            {
-                return mimeLimit;
-            }
-            set
-            {
-                mimeLimit = value;
-            }
-        }
+	        /// <summary>
+	        /// 限定用户上传的文件类型
+	        /// 指定本字段值，七牛服务器会侦测文件内容以判断MimeType，再用判断值跟指定值进行匹配，匹配成功则允许上传，匹配失败返回400状态码
+	        /// 示例:
+	        ///1. “image/*“表示只允许上传图片类型
+	        ///2. “image/jpeg;image/png”表示只允许上传jpg和png类型的图片
+	        /// </summary>
+	        /// <value>The detect MIME.</value>
+	        [JsonProperty("mimeLimit")]
+	        public string MimeLimit
+	        {
+	            get
+	            {
+	                return mimeLimit;
+	            }
+	            set
+	            {
+	                mimeLimit = value;
+	            }
+	        }
 
 		/// <summary>
 		/// 可选, Gets or sets the fsize limit.
@@ -165,6 +170,20 @@ namespace Qiniu.RS
 			}
 			set{
 				fsizeLimit = value;
+			}
+		}
+
+		/// <summary>
+		/// 可选, Gets or sets the fsize limit.
+		/// </summary>
+		/// <value>限定上传文件大小最小值.</value>
+		[JsonProperty("fsizeMin")]
+		public long FsizeMin {
+			get {
+				return fsizeMin;
+			}
+			set{
+				fsizeMin = value;
 			}
 		}
 
@@ -194,6 +213,47 @@ namespace Qiniu.RS
 			get { return persistentPipeline;  }
 			set { persistentPipeline = value; }
 		}
+
+		// <summary>
+		///上传成功后，七牛云向App-Server发送回调通知时的 Host 值，仅当同时设置了 callbackUrl 时有效。
+		/// </summary>
+		[JsonProperty("callbackHost")]
+		public string CallbackHost
+		{
+			get { return callbackHost; }
+			set { callbackHost = value; }
+		}
+
+		// <summary>
+		///上传成功后，七牛云向App-Server发送回调通知callbackBody的Content-Type，默认为application/x-www-form-urlencoded，也可设置为application/json。
+		/// </summary>
+		[JsonProperty("callbackBodyType")]
+		public string CallbackBodyType
+		{
+			get { return callbackBodyType; }
+			set { callbackBodyType = value; }
+		}
+
+		// <summary>
+		///是否启用fetchKey上传模式，0为关闭，1为启用；具体见fetchKey上传模式。
+		/// </summary>
+		[JsonProperty("callbackFetchKey")]
+		public int CallbackFetchKey
+		{
+			get { return callbackFetchKey; }
+			set { callbackFetchKey = value; }
+		}
+
+
+        /// <summary>
+        /// 文件在多少天后被删除，七牛将文件上传时间与指定的deleteAfterDays天数相加，得到的时间入到后一天的午夜(CST,中国标准时间)，从而得到文件删除开始时间。例如文件在2015年1月1日上午10:00 CST上传，指定deleteAfterDays为3天，那么会在2015年1月5日00:00 CST之后当天内删除文件
+        /// </summary>
+        [JsonProperty("deleteAfterDays")]
+        public int DeleteAfterDays
+	    {
+	        get { return deleteAfterDays; }
+	        set { deleteAfterDays = value; }
+	    }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Qiniu.RS.PutPolicy"/> class.

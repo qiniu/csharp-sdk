@@ -65,7 +65,7 @@ namespace Qiniu.RS
         /// <param name="fops"></param>
         /// <param name="notifyURL"></param>
         /// <returns></returns>
-        public string Do(EntryPath entry, string[] fops, Uri notifyURL)
+        public string Do(EntryPath entry, string[] fops, Uri notifyURL,string pipleline,int force=0)
         {
             if (fops.Length < 1 || entry == null || string.IsNullOrEmpty(entry.Bucket) || notifyURL == null || !notifyURL.IsAbsoluteUri)
             {
@@ -80,8 +80,7 @@ namespace Qiniu.RS
                 sb.Append(fops[i]);
             }
 
-            string body = string.Format("bucket={0}&key={1}&fops={2}&notifyURL={3}", entry.Bucket, StringEx.ToUrlEncode(entry.Key), sb.ToString(), notifyURL.ToString());
-
+            string body = string.Format("bucket={0}&key={1}&fops={2}&notifyURL={3}&force={4}&pipeline={5}", entry.Bucket, StringEx.ToUrlEncode(entry.Key), Qiniu.Util.StringEx.ToUrlEncode(sb.ToString()), notifyURL.ToString(), force, pipleline);
             CallRet ret = CallWithBinary(Config.API_HOST + "/pfop/", "application/x-www-form-urlencoded",StreamEx.ToStream(body), body.Length);
 
             if (ret.OK)
