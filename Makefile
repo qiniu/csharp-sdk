@@ -5,3 +5,5 @@ test:
 
 	# 2.0
 	xbuild csharp-sdk.2.0.sln;
+	# 4.0
+	#xbuild csharp-sdk.sln
