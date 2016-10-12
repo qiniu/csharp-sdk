@@ -1,0 +1,14 @@
+language: c
+
+# Make sure build dependencies are installed.
+install:
+ - sudo apt-get update && sudo apt-get install nunit mono-gmcs cli-common-dev libgl1-mesa-dev libsdl1.2-dev libopenal-dev
+
+before_script:
+  - export QINIU_ACCESS_KEY=QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm
+  - export QINIU_SECRET_KEY=Bxckh6FA-Fbs9Yt3i3cbKVK22UPBmAOHJcL95pGz
+  - export QINIU_TEST_BUCKET="csharpsdk"
+  - export QINIU_TEST_DOMAIN="csharpsdk.qiniudn.com"
+
+script:
+ - make test
