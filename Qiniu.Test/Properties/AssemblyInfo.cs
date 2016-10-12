@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("QiniuTest")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Qiniu Cloud Storage C# SDK Test")]
+[assembly: AssemblyDescription("Qiniu Cloud Storage C# SDK Test")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("QiniuTest")]
+[assembly: AssemblyCompany("QINIU")]
+[assembly: AssemblyProduct("Qiniu.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

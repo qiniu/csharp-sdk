@@ -1,49 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu", "Qiniu\Qiniu.csproj", "{E5A764FD-FC95-4B51-BB10-9A807ED25652}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9BF6C711-82A1-424B-8962-2DD7B2A10C4D}"
-	ProjectSection(SolutionItems) = preProject
-		Performance1.psess = Performance1.psess
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QiniuTest", "..\QiniuTest\QiniuTest.csproj", "{353CEFE0-58AF-4049-998B-336CE1212F1E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.Test", "Qiniu.Test\Qiniu.Test.csproj", "{353CEFE0-58AF-4049-998B-336CE1212F1E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
 		Release|Mixed Platforms = Release|Mixed Platforms
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Debug|x86.ActiveCfg = Debug|x86
-		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Debug|x86.Build.0 = Debug|x86
+		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Release|Mixed Platforms.Build.0 = Release|x86
-		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Release|x86.ActiveCfg = Release|x86
-		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Release|x86.Build.0 = Release|x86
+		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E5A764FD-FC95-4B51-BB10-9A807ED25652}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{353CEFE0-58AF-4049-998B-336CE1212F1E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
