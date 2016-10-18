@@ -9,13 +9,12 @@ namespace QiniuDemo
         {
             Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
 
-            string bucket = "TARGET_BUCKET";
-            string saveKey = "SAVE_KEY";
-            string localFile = "LOCAL_FILE";
+            // 加上过期参数，使用?e=<UnixTimestamp>
+            string rawUrl = "RAW_URL" + "?e=1482207600"; 
+            string token = Auth.createDownloadToken(rawUrl, mac);
+            string accUrl = rawUrl + "&token=" + token;
 
-            //TODO
-			// PutPolicy.fops
+            System.Console.WriteLine(accUrl);
         }
-
     }
 }
