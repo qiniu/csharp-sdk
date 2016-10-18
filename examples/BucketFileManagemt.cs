@@ -89,7 +89,20 @@ namespace QiniuDemo
 
         }
 
+        public static void batch()
+        {
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
 
+            // 批量操作类似于
+            // op=<op1>&op=<op2>&op=<op3>...
+            string batchOps = "BATCH_OPS";
+            BucketManager bm = new BucketManager(mac);
+            HttpResult result = bm.batch(batchOps);
+            // 或者
+            //string[] batch_ops={"<op1>","<op2>","<op3>",...};
+            //bm.batch(batch_ops);
 
+            System.Console.WriteLine(result.Response);
+        }
     }
 }

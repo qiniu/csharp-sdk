@@ -29,6 +29,5 @@ namespace QiniuDemo
             
             ru.uploadFile();
         }
-
     }
 }
