@@ -86,7 +86,25 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 #####生成下载链接
 
-直接调用Auth.createDownloadToken
+生成授权下载链接 `ACC_URL = RAW_URL+Expire+Token`
+
+比如原始链接 `RAW_URL = http://example.com/file/1.jpg`
+
+加上过期时间戳(Expire)后 `http://example.com/file/1.jpg?e=1476783956`
+
+然后Auth生成Token拼接上去 `http://example.com/file/1.jpg?e=1476783956&token=<TOKEN>`
+
+示例代码
+
+	using Qiniu.Util;
+	// AK = "ACCESS_KEY"
+	// SK = "SECRET_KEY"
+	// 加上过期参数，使用?e=<UnixTimestamp>
+	// rawURL = "RAW_URL" + "?e=1482207600"; 
+	Mac mac = new Mac(AK,SK);
+	string token = Auth.createDownloadToken(rawUrl, mac);
+	string signedURL = rawURL + "&token=" + token;
+
 
 ####空间资源管理
 
