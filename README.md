@@ -1,4 +1,8 @@
-##C# SDK 使用指南
+# Qiniu Resource (Cloud) Storage SDK for C# #
+
+[![Build Status](https://api.travis-ci.org/qiniu/csharp-sdk.png?branch=v7)](https://travis-ci.org/qiniu/csharp-sdk)
+
+##关于
 
 此 C# SDK 适用于.NET Framework 2.0以上版本，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
@@ -82,7 +86,25 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 #####生成下载链接
 
-直接调用Auth.createDownloadToken
+生成授权下载链接 `ACC_URL = RAW_URL+Expire+Token`
+
+比如原始链接 `RAW_URL = http://example.com/file/1.jpg`
+
+加上过期时间戳(Expire)后 `http://example.com/file/1.jpg?e=1476783956`
+
+然后Auth生成Token拼接上去 `http://example.com/file/1.jpg?e=1476783956&token=<TOKEN>`
+
+示例代码
+
+	using Qiniu.Util;
+	// AK = "ACCESS_KEY"
+	// SK = "SECRET_KEY"
+	// 加上过期参数，使用?e=<UnixTimestamp>
+	// rawURL = "RAW_URL" + "?e=1482207600"; 
+	Mac mac = new Mac(AK,SK);
+	string token = Auth.createDownloadToken(rawUrl, mac);
+	string signedURL = rawURL + "&token=" + token;
+
 
 ####空间资源管理
 
