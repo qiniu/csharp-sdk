@@ -10,16 +10,19 @@ namespace QiniuDemo
             Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
 
             // 加上过期参数，使用?e=<UnixTimestamp>
-            string rawUrl = "RAW_URL" + "?e=1482207600"; 
-            string token = Auth.createDownloadToken(rawUrl, mac);
-			
-			// 生成已授权的链接accUrl,有效期限在?e=时间戳部分
-            string accUrl = rawUrl + "&token=" + token;
+            // 如果rawUrl中已包含?，则改用&e=<UnixTimestamp>
+            string rawUrl = "RAW_URL";
+            string expireAt = "UNIX_TIMESTAMP";
+            string mid = "?e=";
+            if(rawUrl.Contains("?"))
+            {
+                mid = "&e=";
+            }
+            string token = Auth.createDownloadToken(rawUrl + mid + expireAt, mac);
+            string accUrl = rawUrl + mid + expireAt + "&token=" + token;
+            // 接下来可以使用accUrl来下载文件
 
-			// 根据链接访问(下载)文件
-            // ...
-			
-            System.Console.WriteLine(accUrl);
+            System.Console.WriteLine(accUrl);            
         }
     }
 }

@@ -12,7 +12,7 @@ namespace QiniuDemo
         public static string SecretKey;
         private static bool loaded = false;
 
-        public static void load()
+        public static void Load()
         {
             if (!loaded)
             {
@@ -27,7 +27,7 @@ namespace QiniuDemo
         /// 仅在测试时使用，文本文件(cFile)中逐行存放：AK,SK
         /// </summary>
         /// <param name="cFile"></param>
-        public static void LoadFromFile(string cFile="F:\\test.cfg")
+        public static void LoadFromFile(string cFile)
         {
             if (!loaded)
             {
