@@ -80,7 +80,7 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 #####断点续上传
 
-使用ResumeUploader
+使用ResumeUploader,可参考examples/ResumableUpload.cs代码
 
 ####文件下载
 
@@ -99,7 +99,8 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 	using Qiniu.Util;
 	// AK = "ACCESS_KEY"
 	// SK = "SECRET_KEY"
-	// 加上过期参数，使用?e=<UnixTimestamp>
+	// 加上过期参数，使用 ?e=<UnixTimestamp>
+	// 如果rawUrl中已包含?，则改用&e=<UnixTimestamp>
 	// rawURL = "RAW_URL" + "?e=1482207600"; 
 	Mac mac = new Mac(AK,SK);
 	string token = Auth.createDownloadToken(rawUrl, mac);
@@ -119,6 +120,8 @@ batch批处理:
 /batch
 
 op= < op1 > &op= < op2 >...
+
+可参考examples/BucketFileManagemt.cs中的相关代码
 
 #####新特性:force参数
 
