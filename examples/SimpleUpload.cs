@@ -9,7 +9,7 @@ namespace QiniuDemo
         {
             Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
 
-            string bucket = "TARGET_BUCKET";
+            string bucket = "BUCKET";
             string saveKey = "SAVE_KEY";
             string localFile = "LOCAL_FILE";
 
