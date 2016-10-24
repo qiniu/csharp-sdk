@@ -2,13 +2,14 @@
 using Qiniu.Storage;
 using Qiniu.Storage.Model;
 using Qiniu.Http;
+using System.Collections.Generic;
 
 namespace QiniuDemo
 {
     /// <summary>
     /// 空间及空间文件管理
     /// </summary>
-    public class BucketFileManagemt
+    public class BucketFileManagement
     {
 
         /// <summary>
@@ -171,6 +172,71 @@ namespace QiniuDemo
             foreach(string domain in result.Domains)
             {
                 System.Console.WriteLine(domain);
+            }
+        }
+
+        /// <summary>
+        /// 获取空间文件列表
+        /// 
+        /// BucketManager.listFiles(bucket, prefix, marker, limit, delimiter)
+        /// 
+        /// bucket:    目标空间名称
+        /// 
+        /// prefix:    返回指定文件名前缀的文件列表(prefix可设为null)
+        /// 
+        /// marker:    考虑到设置limit后返回的文件列表可能不全(需要重复执行listFiles操作)
+        ///            执行listFiles操作时使用marker标记来追加新的结果
+        ///            特别注意首次执行listFiles操作时marker为null   
+        ///            
+        /// limit:     每次返回结果所包含的文件总数限制(limit<=1000，建议值100) 
+        /// 
+        /// delimiter: 分隔符，比如-或者/等等，可以模拟作为目录结构(参考下述示例)
+        ///            假设指定空间中有2个文件 fakepath/1.txt fakepath/2.txt
+        ///            现设置分隔符delimiter = / 得到返回结果items =[]，commonPrefixes = [fakepath/]
+        ///            然后调整prefix = fakepath/ delimiter = null 得到所需结果items = [1.txt,2.txt]
+        ///            于是可以在本地先创建一个目录fakepath,然后在该目录下写入items中的文件  
+        ///            
+        /// </summary>
+        public static void listFiles()
+        {
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            string bucket = "BUCKET";
+            string marker = ""; // 首次请求时marker必须为空
+            string prefix = null; // 按文件名前缀保留搜索结果
+            string delimiter = null; // 目录分割字符(比如"/")
+            int limit = 100; // 最大值1000
+
+            BucketManager bm = new BucketManager(mac);
+            List<FileDesc> items = new List<FileDesc>();
+            List<string> commonPrefixes = new List<string>();
+
+            do
+            {
+                ListFilesResult result = bm.listFiles(bucket, prefix, marker, limit, delimiter);
+                
+                marker = result.Marker;
+                
+                if (result.Items != null)
+                {
+                    items.AddRange(result.Items);
+                }
+
+                if (result.CommonPrefixes != null)
+                {
+                    commonPrefixes.AddRange(result.CommonPrefixes);
+                }
+
+            } while (!string.IsNullOrEmpty(marker));
+
+            foreach (string cp in commonPrefixes)
+            {
+                System.Console.WriteLine(cp);
+            }
+
+            foreach(var item in items)
+            {
+                System.Console.WriteLine(item.Key);
             }
         }
     }

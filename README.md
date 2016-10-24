@@ -111,7 +111,25 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 #####简单处理
 
-支持stat、copy、move、delete等，具体可参阅BucketManager模块说明。
+支持stat、copy、move、delete,listFiles等，具体可参阅BucketManager模块说明。
+
+######关于获取空间文件列表(listFiles)的说明：
+ 
+    METHOD:    listFiles(bucket, prefix, marker, limit, delimiter)
+	-----------------------------------------------------------------------
+    bucket:    目标空间名称
+    prefix:    返回指定文件名前缀的文件列表(prefix可设为null)
+    marker:    考虑到设置limit后返回的文件列表可能不全(需要重复执行listFiles操作)
+               执行listFiles操作时使用marker标记来追加新的结果
+               特别注意首次执行listFiles操作时marker为null               
+    limit:     每次返回结果所包含的文件总数限制(limit<=1000，建议值100)
+    delimiter: 分隔符，比如-或者/等等，可以模拟作为目录结构(参考下述示例)
+               假设指定空间中有2个文件 fakepath/1.txt fakepath/2.txt
+               现设置delimiter=/ 得到结果items =[]，commonPrefixes = [fakepath/]
+			   调整prefix=fakepath/ delimiter=null 得到所需结果items=[1.txt,2.txt]
+               于是可以在本地先创建一个目录fakepath,然后在该目录下写入items中的文件
+
+
 
 #####批量处理
 
