@@ -24,34 +24,37 @@
             //ResumableUpload.uploadBigFile();
 
             // 空间文件stat
-            //BucketFileManagemt.stat();
+            //BucketFileManagement.stat();
 
             // 删除空间文件
-            //BucketFileManagemt.delete();
+            //BucketFileManagement.delete();
 
             // 复制空间文件
-            //BucketFileManagemt.copy();
+            //BucketFileManagement.copy();
 
             // 移动空间文件
-            //BucketFileManagemt.move();
+            //BucketFileManagement.move();
 
             // 修改空间文件的mimeType
-            //BucketFileManagemt.chgm();
+            //BucketFileManagement.chgm();
 
             // 批量操作
-            //BucketFileManagemt.batch();
+            //BucketFileManagement.batch();
 
             // 取回文件并保存到空间
-            //BucketFileManagemt.fetch();
+            //BucketFileManagement.fetch();
 
             // 镜像资源更新
-            //BucketFileManagemt.prefetch();
+            //BucketFileManagement.prefetch();
 
             // 列举所有bucket
-            //BucketFileManagemt.buckets();
+            //BucketFileManagement.buckets();
 
             // 获取指定bucket的域名
-            //BucketFileManagemt.domains();
+            //BucketFileManagement.domains();
+
+            // 获取空间文件列表
+            // BucketFileManagement.listFiles();
 
             // 文件处理+保存处理结果
             //PfopWithPipeline.pfopAndSave();

@@ -364,6 +364,84 @@ namespace Qiniu.Storage
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// 获取空间文件列表 
+        /// listFiles(bucket, prefix, marker, limit, delimiter)
+        /// 
+        /// bucket:    目标空间名称
+        /// 
+        /// prefix:    返回指定文件名前缀的文件列表(prefix可设为null)
+        /// 
+        /// marker:    考虑到设置limit后返回的文件列表可能不全(需要重复执行listFiles操作)
+        ///            执行listFiles操作时使用marker标记来追加新的结果
+        ///            特别注意首次执行listFiles操作时marker为null
+        ///            
+        /// limit:     每次返回结果所包含的文件总数限制(limit<=1000，建议值100)
+        /// 
+        /// delimiter: 分隔符，比如-或者/等等，可以模拟作为目录结构(参考下述示例)
+        ///            假设指定空间中有2个文件 fakepath/1.txt fakepath/2.txt
+        ///            现设置分隔符delimiter = / 得到返回结果items =[]，commonPrefixes = [fakepath/]
+        ///            然后调整prefix = fakepath/ delimiter = null 得到所需结果items = [1.txt,2.txt]
+        ///            于是可以在本地先创建一个目录fakepath,然后在该目录下写入items中的文件
+        ///            
+        /// </summary>
+        public ListFilesResult listFiles(string bucket,string prefix,string marker,int limit,string delimiter)
+        {
+            ListFilesResult result = null;
+
+            StringBuilder sb = new StringBuilder("bucket=" + bucket);
+            
+            if (!string.IsNullOrEmpty(marker))
+            {
+                sb.Append("&marker=" + marker);
+            }
+
+            if(!string.IsNullOrEmpty(prefix))
+            {
+                sb.Append("&prefix=" + prefix);
+            }
+
+            if(!string.IsNullOrEmpty(delimiter))
+            {
+                sb.Append("&delimiter=" + delimiter);
+            }
+
+            if(limit>1000||limit<1)
+            {
+                sb.Append("&limit=1000");
+            }
+            else
+            {
+                sb.Append("&limit=" + limit);
+            }
+
+            string listFilesUrl = Config.ZONE.RsfHost + "/list?" + sb.ToString();
+            string accessToken = Auth.createManageToken(listFilesUrl, null, mac);
+
+            Dictionary<string, string> listFilesHeaders = new Dictionary<string, string>();
+            listFilesHeaders.Add("Authorization", accessToken);
+
+            CompletionHandler listFilesCompletionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
+            {
+                result = new ListFilesResult();
+                result.Response = response;
+                result.ResponseInfo = respInfo;
+                if (respInfo.isOk())
+                {
+                    ListFilesResponse resp = JsonConvert.DeserializeObject<ListFilesResponse>(response);
+
+                    result.Marker = resp.Marker;
+                    result.Items = resp.Items;
+                    result.CommonPrefixes = resp.CommonPrefixes;
+                }
+            });
+
+            this.mHttpManager.postForm(listFilesUrl, listFilesHeaders, null, listFilesCompletionHandler);
+
+            return result;
+        }
+
         public string statOp(string bucket, string key)
         {
             return string.Format("/stat/{0}", StringUtils.encodedEntry(bucket, key));

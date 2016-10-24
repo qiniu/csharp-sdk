@@ -1,9 +1,7 @@
 # for travis ci
-test:
+#v7build:
 
-	cp packages/Newtonsoft.Json.9.0.1/lib/net20/Newtonsoft.Json.dll bin
+#	cp packages/Newtonsoft.Json.9.0.1/lib/net40/Newtonsoft.Json.dll bin
 
-	# 2.0
-	xbuild csharp-sdk.2.0.sln;
 	# 4.0
-	#xbuild csharp-sdk.sln
+#	xbuild csharp-sdk.sln
