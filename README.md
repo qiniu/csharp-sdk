@@ -46,6 +46,8 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 * [QSunSync](https://github.com/qiniu/QSunSync)
 * [QiniulaLab](https://github.com/qiniu/qiniulab)
 
+您也可以参考官方文档 [C# SDK 使用指南](http://developer.qiniu.com/code/v7/sdk/csharp.html)
+
 ####上传文件
 
 #####上传流程
@@ -54,33 +56,132 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 #####普通上传
 
-使用UploadManager，以下代码示意了如何使用UploadManager来上传一个本地文件
+推荐使用UploadManager，以下代码示意了如何使用UploadManager来上传一个本地文件
 
-            // Let's begin
-            UploadManager mgr = new UploadManager();
-            
-            // PutPolicy            
-            PutPolicy putPolicy = new PutPolicy();
-            putPolicy.Scope = Settings.Bucket;
-            // 上传策略有效时间(建议时间3600秒)
-            putPolicy.SetExpires(3600);
-            // 过期(上传完毕1天后)自动删除
-            putPolicy.DeleteAfterDays = 1;
-            
-            // UploadToken
-            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);            
-            string token = Auth.createUploadToken(putPolicy, mac);
-            
-            string saveKey = "test_UploadManagerUploadFile.png";
-            string localFile = "F:\\test.png";
-            
-            // Do it!
-            mgr.uploadFile(localFile, saveKey, token, null, null);
+	using System;
+	using Qiniu.Util;
+	using Qiniu.Storage;
+	using System.IO;
+
+	namespace ConsoleDemo
+	{
+    	class SimpleUploadDemo
+    	{
+        	public static void Main(string[] args)
+        	{
+            	string AK = "ACCESS_KEY";
+            	string SK = "SECRET_KEY";
+            	// 目标空间名
+            	string bucket = "TARGET_BUCKET";
+            	// 目标文件名
+            	string saveKey = "SAVE_KEY";
+            	// 本地文件
+            	string localFile = "LOCAL_FILE";
+
+            	// 上传策略
+            	PutPolicy putPolicy = new PutPolicy();
+            	// 设置要上传的目标空间
+            	putPolicy.Scope = bucket;
+            	// 上传策略的过期时间(单位:秒)
+            	putPolicy.SetExpires(3600);
+            	// 文件上传完毕后，在多少天后自动被删除
+            	putPolicy.DeleteAfterDays = 1;
+
+            	Mac mac = new Mac(AK,SK); // Use AK & SK here
+            	// 生成上传凭证
+            	string uploadToken = Auth.createUploadToken(putPolicy, mac);
+
+            	UploadOptions uploadOptions = null;
+
+            	// 上传完毕事件处理
+            	UpCompletionHandler uploadCompleted = new UpCompletionHandler(OnUploadCompleted);
+
+				// 方式1：使用UploadManager
+            	//默认设置 Qiniu.Common.Config.PUT_THRESHOLD = 512*1024;
+            	//可以适当修改,UploadManager会根据这个阈值自动选择是否使用分片(Resumable)上传	
+            	UploadManager um = new UploadManager();
+            	um.uploadFile(localFile, saveKey, token, uploadOptions, uploadCompleted);
+
+				// 方式2：使用FormManager
+            	//FormUploader fm = new FormUploader();
+            	//fm.uploadFile(localFile, saveKey, token, uploadOptions, uploadCompleted);
+
+            	Console.ReadKey();
+        	}
+		
+			private static void OnUploadCompleted(string key, ResponseInfo respInfo, string respJson)
+        	{
+            	// respInfo.StatusCode
+            	// respJson是返回的json消息，示例: { "key":"FILE","hash":"HASH","fsize":FILE_SIZE }
+        	}
+    	}
+	}
 
 
 #####断点续上传
 
-使用ResumeUploader,可参考examples/ResumableUpload.cs代码
+使用ResumeUploader,可参考examples/ResumableUpload.cs代码。
+
+	using System;
+	using Qiniu.Util;
+	using Qiniu.Storage;
+	using System.IO;
+
+	namespace ConsoleDemo
+	{
+    	class ResumableUploadDemo
+    	{
+        	public static void Main(string[] args)
+        	{
+            	string AK = "ACCESS_KEY";
+            	string SK = "SECRET_KEY";
+            	string bucket = "TARGET_BUCKET";
+            	string saveKey = "SAVE_KEY";
+            	string localFile = "LOCAL_FILE";
+            	// 上传进度记录保存的目录
+            	string recordPath = "RECORD_PATH";
+            	// 上传进度保存为文件
+            	string recordFile = "RECORD_FILE";
+			
+				UploadOptions uploadOptions = new UploadOptions(
+                	null, // ExtraParams
+                	null, // MimeType
+                	false,  // CheckCrc32
+                	new UpProgressHandler(OnUploadProgressChanged), // 上传进度
+                	null // CancelSignal
+                	);
+
+            	UpCompletionHandler uploadCompleted = new UpCompletionHandler(OnUploadCompleted); // 上传完毕
+			
+            	// 上传时会将当前进度记录写到文件，下次可以“断点续传”
+            	ResumeRecorder rr = new ResumeRecorder(recordPath);
+            	// 开始上传
+            	ResumeUploader ru = new ResumeUploader(
+                	rr,               // 续传记录
+                	recordFile,       // 续传记录文件
+                	localFile,        // 待上传的本地文件
+                	saveKey,          // 要保存的文件名
+                	token,            // 上传凭证
+                	uploadOptions,    // 上传选项(其中包含进度处理)，可为null
+                	uploadCompleted   // 上传完毕事件处理
+                	); 
+				
+            	ru.uploadFile();
+            	Console.ReadKey();
+        	}
+		
+			private static void OnUploadProgressChanged(string key,double percent)
+        	{
+            	// percent = [0(开始)~1.0(完成)]
+        	}
+
+        	private static void OnUploadCompleted(string key,ResponseInfo respInfo,string respJson)
+        	{
+            	// respInfo.StatusCode
+            	// respJson是返回的json消息，示例: { "key":"FILE","hash":"HASH","fsize":FILE_SIZE }
+        	}
+    	}
+	}
 
 ####文件下载
 
@@ -114,22 +215,59 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 支持stat、copy、move、delete,listFiles等，具体可参阅BucketManager模块说明。
 
 ######关于获取空间文件列表(listFiles)的说明：
- 
-    METHOD:    listFiles(bucket, prefix, marker, limit, delimiter)
-	-----------------------------------------------------------------------
-    bucket:    目标空间名称
-    prefix:    返回指定文件名前缀的文件列表(prefix可设为null)
-    marker:    考虑到设置limit后返回的文件列表可能不全(需要重复执行listFiles操作)
-               执行listFiles操作时使用marker标记来追加新的结果
-               特别注意首次执行listFiles操作时marker为null               
-    limit:     每次返回结果所包含的文件总数限制(limit<=1000，建议值100)
-    delimiter: 分隔符，比如-或者/等等，可以模拟作为目录结构(参考下述示例)
-               假设指定空间中有2个文件 fakepath/1.txt fakepath/2.txt
-               现设置delimiter=/ 得到结果items =[]，commonPrefixes = [fakepath/]
-			   调整prefix=fakepath/ delimiter=null 得到所需结果items=[1.txt,2.txt]
-               于是可以在本地先创建一个目录fakepath,然后在该目录下写入items中的文件
+
+在BucketManager类中提供了listFiles方法`listFiles(bucket, prefix, marker, limit, delimiter)`.
+
+该方法返回值中，有以下3个字段需要关注：
+
+| 字段 | 含义 |
+|-----|-----|
+| Marker | 请参阅下述的`marker`参数 |
+| Items  | 返回的结果，其中包括文件名、hash、大小等信息 |
+| CommonPrefixes | 请参阅下述的`delimiter`和`prefix`参数 |
+
+函数参数说明如下：
+
+| 参数 | 含义 |
+|--------|--------|
+|bucket|目标空间名称|
+|prefix|返回指定文件名前缀的文件列表(prefix可设为null)|
+|marker|考虑到设置limit后返回的文件列表可能不全(需要重复执行listFiles操作) 执行listFiles操作时使用marker标记来追加新的结果。**特别注意**首次执行listFiles操作时marker为null|
+|limit|每次返回结果所包含的文件总数限制(limit<=1000，*建议值100*)|
+|delimiter|分隔符，比如-或者/等等，可以模拟作为目录结构(参考下述示例)。假设指定空间中有2个文件 fakepath/1.txt fakepath/2.txt 现设置delimiter=/ 得到结果items =[]，commonPrefixes = [fakepath/]  调整prefix=fakepath/ delimiter=null 得到所需结果items=[1.txt,2.txt] 于是可以在本地先创建一个目录fakepath,然后在该目录下写入items中的文件|
 
 
+以下是一个简单的示例：
+
+	// AK = "ACCESS_KEY"
+	// SK = "SECRET_KEY"
+	Mac mac = new Mac(AK, SK);
+	BucketManager bm = new BucketManager(mac);
+
+	string bucket = "BUCKET"; // 目标空间
+    string marker = ""; // 首次请求时marker必须为空
+    string prefix = null; // 按文件名前缀保留搜索结果
+    string delimiter = null; // 目录分割字符(比如"/")
+    int limit = 100; // 最大值1000
+
+	// 返回结果存储在items中
+	List<FileDesc> items = new List<FileDesc>();
+
+	// 由于limit限制，可能需要执行多次操作
+	// 返回值中Marker字段若非空，则表示文件数超过了limit
+	do
+	{
+		var result = bm.listFiles(bucket, prefix, marker, limit, delimiter);
+		marker = result.Marker;
+		if (result.Items != null)
+		{
+			items.AddRange(result.Items);
+		}
+	} while (!string.IsNullOrEmpty(marker));
+
+	// 在这里处理文件列表items
+
+完整示例及其它更多代码可以参考SDK的[examples目录](https://github.com/qiniu/csharp-sdk/tree/master/examples)
 
 #####批量处理
 
