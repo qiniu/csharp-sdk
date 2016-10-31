@@ -6,10 +6,6 @@
 
 此 C# SDK 适用于.NET Framework 2.0以上版本，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
-* 这个[C# SDK](https://github.com/qiniu/csharp-sdk)是最新版本，不同于之前版本(旧版本仍然可用)，推荐使用最新版本。
-
-* 我们准备了一份编译好的打包文件(Qiniu.dll，.NET4.0)，点此[链接](https://github.com/qiniu/csharp-sdk/blob/master/build/csharp_sdk_latest.zip)下载。
-
 ###使用准备
 
 ####下载安装
@@ -17,6 +13,10 @@
 ######源码下载
 
     git clone https://github.com/qiniu/csharp-sdk
+
+**注意** 
+
+当前最新版本为v7（master与v7同步），另请参考 [v7.0.0 release](https://github.com/qiniu/csharp-sdk/releases/tag/v7.0.0)
 
 ######添加引用
 
@@ -120,7 +120,7 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 #####断点续上传
 
-使用ResumeUploader,可参考examples/ResumableUpload.cs代码。
+实际上也是分片上传，使用ResumeUploader，参考如下示例：
 
 	using System;
 	using Qiniu.Util;
@@ -142,6 +142,9 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
             	string recordPath = "RECORD_PATH";
             	// 上传进度保存为文件
             	string recordFile = "RECORD_FILE";
+				
+				// 设置上传时的分片大小(单位为字节,已默认设置为2MB,不得大于4MB,一般保留默认即可)
+				// Qiniu.Common.CHUNK_SIZE = N_CHUNK_SIZE;
 			
 				UploadOptions uploadOptions = new UploadOptions(
                 	null, // ExtraParams
@@ -183,6 +186,25 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
     	}
 	}
 
+
+**说明**
+
+可以使用UploadManager配合一个阈值(Qiniu.Common.PUT_THRESHOLD)让程序(SDK)自动选择使用简单上传(传适合于小文件)或者分片上传。分片上传/断点续上传使用ResumbaleUploader。
+
+使用此SDK上传文件需要注意：
+
+*关于UpCompletehandler参数*
+1.上传方法(如uploadFile)中包含UploadOptions,UpCompletehandler等参数，可以保持默认(设置null即可)，也可以自行设置
+2.UpCompletehandler是**在上传完成后或者遇到错误(比如网络错误等)触发**，其中会包含一些返回信息，可以在此进行处理
+
+*关于分片上传*
+1.分片上传时，片大小(Qiniu.Common.CHUNK_SIZE)可以在上传之前预先设置
+2.**CHUNK_SIZE不得大于4MB**，默认已设置为2MB(可自行设置为512KB,1MB等)
+3.如果分片(chunk)较小，上传一个chunk的耗时更短，但整个文件需要被切分成更多的chunk
+4.如果chunk设置得太大，上传单个chunk可能会出现连接超时的问题
+5.使用ResumbaleUploader时，**上传不同的文件，请务必使用不同的recordPath/recordFile**，因为断点记录和上传文件是对应的
+
+
 ####文件下载
 
 #####生成下载链接
@@ -194,6 +216,10 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 加上过期时间戳(Expire)后 `http://example.com/file/1.jpg?e=1476783956`
 
 然后Auth生成Token拼接上去 `http://example.com/file/1.jpg?e=1476783956&token=<TOKEN>`
+
+**说明** 
+
+如果原始链接中已包含·?·字符（如`http://xxx/1.jpg?query_what`），后面就不应该再次出现该字符，因此时间戳后缀应该是类似`&e=1476783956`这样的形式，最后的链接可能会是这样子`http://xxx/1.jpg?query_what&e=1476783956&token=<TOKEN>`
 
 示例代码
 
@@ -212,9 +238,9 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 #####简单处理
 
-支持stat、copy、move、delete,listFiles等，具体可参阅BucketManager模块说明。
+支持stat、copy、move、delete,listFiles等，具体可参阅[examples/BucketFileManagemt.cs](https://github.com/qiniu/csharp-sdk/blob/master/examples/BucketFileManagement.cs)代码和BucketManager模块说明。
 
-######关于获取空间文件列表(listFiles)的说明：
+**说明**
 
 在BucketManager类中提供了listFiles方法`listFiles(bucket, prefix, marker, limit, delimiter)`.
 
@@ -275,9 +301,24 @@ batch批处理:
 
 /batch
 
-op= < op1 > &op= < op2 >...
+op=`OP1`&op=`OP2`...
 
-可参考examples/BucketFileManagemt.cs中的相关代码
+如下示例：
+
+    // AK = ACCESS_KEY
+	// SK = SECRET_KEY
+    Mac mac = new Mac(AK, SK);
+    // 批量操作类似于
+    // op=<op1>&op=<op2>&op=<op3>...
+    string batchOps = "BATCH_OPS";
+    BucketManager bm = new BucketManager(mac);
+    HttpResult result = bm.batch(batchOps);
+    // 或者
+    //string[] batch_ops={"<op1>","<op2>","<op3>",...};
+    //bm.batch(batch_ops);
+    //返回结果在这里result.Response
+			
+可参考[examples/BucketManagement.batch()](https://github.com/qiniu/csharp-sdk/blob/master/examples/BucketFileManagement.cs#L129)
 
 #####新特性:force参数
 
