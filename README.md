@@ -193,11 +193,11 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 使用此SDK上传文件需要注意：
 
-*关于UpCompletehandler参数*
+*关于UpCompletionHandler参数*
 
-1.上传方法(如uploadFile)中包含UploadOptions,UpCompletehandler等参数，可以保持默认(设置null即可)，也可以自行设置
+1.上传方法(如uploadFile)中包含UploadOptions,UpCompletionHandler等参数，可以保持默认(设置null即可)，也可以自行设置
 
-2.UpCompletehandler是**在上传完成后或者遇到错误(比如网络错误等)触发**，其中会包含一些返回信息，可以在此进行处理
+2.UpCompletionHandler是**在上传完成后或者遇到错误(比如网络错误等)触发**，其中会包含一些返回信息，可以在此进行处理
 
 *关于分片上传*
 
