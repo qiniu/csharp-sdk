@@ -1,17 +1,24 @@
-﻿
-namespace Qiniu.Http
+﻿namespace Qiniu.Http
 {
+    /// <summary>
+    /// (HTTP请求的)返回消息
+    /// </summary>
     public class HttpResult
     {
-        public ResponseInfo ResponseInfo { set; get; }
-        public string Response { set; get; }
+        /// <summary>
+        /// 状态码 (200表示OK)
+        /// </summary>
+        public int StatusCode { get; set; }
 
-        public HttpResult() { }
+        /// <summary>
+        /// 消息(或错误)文本
+        /// </summary>
+        public string Message { get; set; }
 
-        public HttpResult(ResponseInfo respInfo, string response)
+        public HttpResult()
         {
-            this.ResponseInfo = respInfo;
-            this.Response = response;
+            StatusCode = 0;
+            Message = "";
         }
     }
 }

@@ -1,3 +1,0 @@
-#examples
-
-![CodeMap](CodeMap.png)

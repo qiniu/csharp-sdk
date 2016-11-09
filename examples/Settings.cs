@@ -1,44 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
+using System.IO;
 
-namespace QiniuDemo
+namespace Qiniu.Examples
 {
     public class Settings
     {
-        //see ak sk from https://portal.qiniu.com/user/key
-        public static string AccessKey;
-        public static string SecretKey;
-        private static bool loaded = false;
-
-        public static void Load()
+        public static void Load(string file,out string ak,out string sk)
         {
-            if (!loaded)
+            using (FileStream fs = new FileStream(file, FileMode.Open))
             {
-                AccessKey = "<Your Access Key>";
-                SecretKey = "<Your Secret Key>";
-
-                loaded = true;
-            }
-        }
-
-        /// <summary>
-        /// 仅在测试时使用，文本文件(cFile)中逐行存放：AK,SK
-        /// </summary>
-        /// <param name="cFile"></param>
-        public static void LoadFromFile(string cFile)
-        {
-            if (!loaded)
-            {
-                using (System.IO.StreamReader sr = new System.IO.StreamReader(cFile))
+                using (StreamReader sr = new StreamReader(fs))
                 {
-                    AccessKey = sr.ReadLine();
-                    SecretKey = sr.ReadLine();
-                    sr.Close();
+                    ak = sr.ReadLine();
+                    sk = sr.ReadLine();
                 }
-
-                loaded = true;
             }
         }
     }

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("QINIU")]
-[assembly: AssemblyProduct("Qiniu")]
+[assembly: AssemblyProduct("Examples")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -16,4 +16,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("957cd434-8b12-46ce-980b-09ca26ed340d")]
+[assembly: Guid("60ae7f1d-f522-4d6c-a657-805e26238033")]
