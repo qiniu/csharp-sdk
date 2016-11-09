@@ -48,6 +48,23 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 您也可以参考官方文档 [C# SDK 使用指南](http://developer.qiniu.com/code/v7/sdk/csharp.html)
 
+**注意**
+
+不同的空间(bucket)可能位于不同的机房(区域/Zone)，因此文件管理等操作需要正确配置Zone(位于Qiniu.Common命名空间)，默认配置为"华东机房"，用户可以有以下两种方法配置Zone:
+
+1. 直接配置（ 如果确定机房所在Zone，可以使用此方法）
+
+        // XXX是其中之一: CN_East CN_South CN_North US_North
+		Qiniu.Common.Config.ZONE = Qiniu.Common.Zone.ZONE_XXX();
+
+2. 使用AutoZone自动配置（推荐使用这个方法）
+
+		// AK = ACCESS_KEY
+	    var zoneId = Qiniu.Common.AutoZone.Query(AK,BUCKET);
+	    Qiniu.Common.Config.ConfigZone(zoneId);
+
+示例代码中没有特别指明有关Zone的设置，请特别注意。
+
 ####上传文件
 
 #####上传流程
@@ -56,7 +73,7 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 #####普通上传
 
-推荐使用UploadManager，以下代码示意了如何使用UploadManager来上传一个本地文件
+推荐使用UploadManager，以下代码示意了如何使用UploadManager来上传一个本地文件（请注意Zone设置，下同）：
 
 	using System;
 	using Qiniu.Util;
@@ -86,6 +103,10 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
             	putPolicy.SetExpires(3600);
             	// 文件上传完毕后，在多少天后自动被删除
             	putPolicy.DeleteAfterDays = 1;
+				
+				// 请注意这里的Zone设置(如果不设置，就默认为华东机房)
+				// var zoneId = Qiniu.Common.AutoZone.Query(AK,BUCKET);
+				// Qiniu.Common.Config.ConfigZone(zoneId);
 
             	Mac mac = new Mac(AK,SK); // Use AK & SK here
             	// 生成上传凭证
