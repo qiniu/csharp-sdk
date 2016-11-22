@@ -75,6 +75,10 @@ namespace Qiniu.Storage
         private void upload(HttpFormFile fFile, string key, string token,
             UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
+            // 使用uploadHost -- REMINDME-0
+            // 是否使用CDN(默认：是)
+            string uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
+
             if (uploadOptions == null)
             {
                 uploadOptions = UploadOptions.defaultOptions();
@@ -139,7 +143,9 @@ namespace Qiniu.Storage
              });
 
 
-            //第一次失败后使用备用域名重试一次
+            // [x]第一次失败后使用备用域名重试一次
+            // FIX 2016-11-22 17:11 
+            // 网络错误(网络断开)恢复正常后，重试会出现“流不可读”的错误，因此原域名和重试域名一致
             CompletionHandler fUpCompletionHandler = new CompletionHandler(delegate (ResponseInfo respInfo, string response)
             {
                 Console.WriteLine("form upload result, {0}",respInfo.StatusCode);
@@ -176,8 +182,8 @@ namespace Qiniu.Storage
                         }
                     });
 
-
-                    this.mHttpManager.postMultipartDataForm(Config.ZONE.UploadHost, null, vPostParams, fFile, fUpProgressHandler, retried);
+                    // 使用uploadHost -- REMINDME-1
+                    this.mHttpManager.postMultipartDataForm(uploadHost, null, vPostParams, fFile, fUpProgressHandler, retried);
                 }
                 else
                 {
@@ -205,7 +211,8 @@ namespace Qiniu.Storage
                 }
             });
 
-            this.mHttpManager.postMultipartDataForm(Config.ZONE.UploadHost, null, vPostParams, fFile, fUpProgressHandler, fUpCompletionHandler);
+            // // 使用uploadHost -- REMINDME-2
+            this.mHttpManager.postMultipartDataForm(uploadHost, null, vPostParams, fFile, fUpProgressHandler, fUpCompletionHandler);
         }
     }
 }

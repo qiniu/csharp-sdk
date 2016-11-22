@@ -9,9 +9,11 @@ namespace Qiniu.Common
     /// </summary>
     public class Config
     {
-        // SDK的版本号
-        public const string VERSION = "1.2.0";
+        // SDK的版本号 - 更新至7.0.0.3
+        public const string VERSION = "7.0.0.3";
 
+        // 上传时，是否使用CDN
+        public static bool UploadFromCDN = true;
 
         // 空间所在的区域(Zone)
         public static Zone ZONE = Zone.ZONE_CN_East();
@@ -60,5 +62,16 @@ namespace Qiniu.Common
             }
         }
     
+        /// <summary>
+        /// 自动配置Zone
+        /// </summary>
+        /// <param name="accessKey"></param>
+        /// <param name="bucket"></param>
+        public static void ConfigZoneAuto(string accessKey,string bucket)
+        {
+            ZoneID zoneId = AutoZone.Query(accessKey, bucket);
+            ConfigZone(zoneId);
+        }
+
     }
 }

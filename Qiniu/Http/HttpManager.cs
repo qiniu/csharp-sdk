@@ -86,14 +86,9 @@ namespace Qiniu.Http
             }
             catch(WebException wexp)
             {
-                // 在 HTTP-400 错误情形下HttpWebResponse(上述vWebResp)已经为null值
-                // 需要在此处WebException的wexp.Response中获取真实的Response内容
-                // 2016-08-10, 18:20 FIXED by fengyh (http://fengyh.cn/) 
-                if (wexp.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                    handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
-                }
+                // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
+                HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
+                handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
@@ -171,12 +166,9 @@ namespace Qiniu.Http
             }
             catch (WebException wexp)
             {
-                // FIX-HTTP400E-NullWebResponse 2016-08-17, 14:57 @fengyh
-                if (wexp.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                    handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
-                }
+                // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
+                HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
+                handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
@@ -249,12 +241,9 @@ namespace Qiniu.Http
             }
             catch (WebException wexp)
             {
-                // FIX-HTTP400E-NullWebResponse 2016-08-17, 14:57 @fengyh
-                if (wexp.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                    handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
-                }
+                // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
+                HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
+                handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
@@ -328,12 +317,9 @@ namespace Qiniu.Http
             }
             catch (WebException wexp)
             {
-                // FIX-HTTP400E-NullWebResponse 2016-08-17, 14:57 @fengyh
-                if (wexp.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                    handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
-                }
+                // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
+                HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
+                handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
@@ -485,12 +471,9 @@ namespace Qiniu.Http
             }
             catch (WebException wexp)
             {
-                // FIX-HTTP400E-NullWebResponse 2016-08-17, 14:57 @fengyh
-                if (wexp.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                    handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
-                }
+                // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
+                HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
+                handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
             }
             catch (Exception exp)
             {
