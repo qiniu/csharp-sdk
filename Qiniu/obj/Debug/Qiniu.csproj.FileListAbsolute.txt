@@ -1,5 +1,0 @@
-D:\Studio\VS2015\csharp-sdk\bin\Qiniu.dll
-D:\Studio\VS2015\csharp-sdk\bin\Qiniu.pdb
-D:\Studio\VS2015\csharp-sdk\Qiniu\obj\Debug\Qiniu.csprojResolveAssemblyReference.cache
-D:\Studio\VS2015\csharp-sdk\Qiniu\obj\Debug\Qiniu.dll
-D:\Studio\VS2015\csharp-sdk\Qiniu\obj\Debug\Qiniu.pdb
