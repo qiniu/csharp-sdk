@@ -14,7 +14,7 @@
 
 **注意** 
 
-当前最新版本为v7（master与v7同步），另请参考 [v7.0.0 release](https://github.com/qiniu/csharp-sdk/releases/tag/v7.0.0)
+当前最新版本为v7（master与v7同步），另请参考 [v7.0.0.3 release](https://github.com/qiniu/csharp-sdk/releases/tag/7.0.0.3)
 
 ######添加引用
 
@@ -216,9 +216,10 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 *上传域名*
 
-请设置`UploadFromCDN`参数(true/false),默认true（使用CDN）：
+请设置`UploadFromCDN`参数(true/false，默认为true即使用CDN)：
 
-	Qiniu.Common.Config.UploadFromCDN = false;
+	// 不使用CDN
+	Qiniu.Common.Config.UploadFromCDN = false; 
 
 *关于UpCompletionHandler参数*
 
