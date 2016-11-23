@@ -14,7 +14,7 @@
 
 **注意** 
 
-当前最新版本为v7（master与v7同步），另请参考 [v7.0.0 release](https://github.com/qiniu/csharp-sdk/releases/tag/v7.0.0)
+当前最新版本为v7（master与v7同步），另请参考 [v7.0.0.3 release](https://github.com/qiniu/csharp-sdk/releases/tag/7.0.0.3)
 
 ######添加引用
 
@@ -54,12 +54,14 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
         // XXX是其中之一: CN_East CN_South CN_North US_North
 		Qiniu.Common.Config.ZONE = Qiniu.Common.Zone.ZONE_XXX();
+		
+		// 或者使用ZoneID (CN_East CN_South CN_North US_North)
+		Qiniu.Common.Config.ConfigZone(zoneId);
 
 2. 使用AutoZone自动配置（推荐使用这个方法）
 
-		// AK = ACCESS_KEY
-	    var zoneId = Qiniu.Common.AutoZone.Query(AK,BUCKET);
-	    Qiniu.Common.Config.ConfigZone(zoneId);
+		// AK = ACCESS_KEY	
+		Qiniu.Common.Config.ConfigZoneAuto(AK,BUCKET);
 
 示例代码中没有特别指明有关Zone的设置，请特别注意。
 
@@ -208,9 +210,16 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 **说明**
 
-可以使用UploadManager配合一个阈值(Qiniu.Common.PUT_THRESHOLD)让程序(SDK)自动选择使用简单上传(传适合于小文件)或者分片上传。分片上传/断点续上传使用ResumbaleUploader。
+可以使用UploadManager配合一个阈值(Qiniu.Common.PUT_THRESHOLD)让程序(SDK)自动选择使用简单上传(传适合于小文件)或者分片上传(传适合于大文件或者需要断点续上传)。分片上传/断点续上传使用ResumbaleUploader。
 
 使用此SDK上传文件需要注意：
+
+*上传域名*
+
+请设置`UploadFromCDN`参数(true/false，默认为true即使用CDN)：
+
+	// 不使用CDN
+	Qiniu.Common.Config.UploadFromCDN = false; 
 
 *关于UpCompletionHandler参数*
 

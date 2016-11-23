@@ -234,12 +234,17 @@ namespace Qiniu.Storage
         #region 上传文件
         public void uploadFile()
         {
+            // 使用uploadHost -- REMINDME
+            // 是否使用CDN(默认：是)
+            string uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
+
             try
             {
                 this.fileStream = File.Open(this.filePath, FileMode.Open, FileAccess.Read);
                 this.lastModifyTime = File.GetLastWriteTime(this.filePath).ToFileTime();
                 this.size = this.fileStream.Length;
-                long blockCount = (this.size % Config.BLOCK_SIZE == 0) ? (this.size / Config.BLOCK_SIZE) : (this.size / Config.BLOCK_SIZE + 1);
+                //long blockCount = (this.size % Config.BLOCK_SIZE == 0) ? (this.size / Config.BLOCK_SIZE) : (this.size / Config.BLOCK_SIZE + 1);
+                long blockCount = (this.size - 1) / Config.BLOCK_SIZE + 1;
                 this.contexts = new string[blockCount];
             }
             catch (Exception ex)
@@ -250,7 +255,7 @@ namespace Qiniu.Storage
 
             long offset = recoveryFromResumeRecord();
             this.fileStream.Seek(offset, SeekOrigin.Begin);
-            this.nextTask(offset, 0, Config.ZONE.UpHost);
+            this.nextTask(offset, 0, uploadHost);
         }
         #endregion
 
@@ -260,11 +265,16 @@ namespace Qiniu.Storage
         #region 上传文件流
         public void uploadStream()
         {
+            // 使用uploadHost -- REMINDME
+            // 是否使用CDN(默认：是)
+            string uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
+
             try
             {
                 this.lastModifyTime = DateTime.Now.ToFileTime();
                 this.size = this.fileStream.Length;
-                long blockCount = (this.size % Config.BLOCK_SIZE == 0) ? (this.size / Config.BLOCK_SIZE) : (this.size / Config.BLOCK_SIZE + 1);
+                //long blockCount = (this.size % Config.BLOCK_SIZE == 0) ? (this.size / Config.BLOCK_SIZE) : (this.size / Config.BLOCK_SIZE + 1);
+                long blockCount = (this.size - 1) / Config.BLOCK_SIZE + 1;
                 this.contexts = new string[blockCount];
             }
             catch (Exception ex)
@@ -275,7 +285,7 @@ namespace Qiniu.Storage
 
             long offset = recoveryFromResumeRecord();
             this.fileStream.Seek(offset, SeekOrigin.Begin);
-            this.nextTask(offset, 0, Config.ZONE.UpHost);
+            this.nextTask(offset, 0, uploadHost);
         }
         #endregion
 

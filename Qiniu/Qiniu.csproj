@@ -48,7 +48,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup>    
     <Compile Include="Http\HttpCode.cs" />
     <Compile Include="Http\HttpFileType.cs" />
     <Compile Include="Http\HttpFormFile.cs" />
@@ -57,6 +57,7 @@
     <Compile Include="Storage\Model\CdnRefreshResult.cs" />
     <Compile Include="Common\Config.cs" />
     <Compile Include="Common\Zone.cs" />
+	<Compile Include="Common\ZoneHelper.cs" />
     <Compile Include="Http\CancellationSignal.cs" />
     <Compile Include="Http\CompletionHandler.cs" />
     <Compile Include="Http\HttpResult.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Storage\Model\BucketsResult.cs" />
     <Compile Include="Storage\Model\DomainsResult.cs" />
     <Compile Include="Storage\Model\FetchResult.cs" />
+    <Compile Include="Storage\Model\ListFilesResult.cs" />
     <Compile Include="Storage\Model\StatResult.cs" />
     <Compile Include="Storage\Persistent\KeyGenerator.cs" />
     <Compile Include="Storage\Persistent\ResumeRecord.cs" />
