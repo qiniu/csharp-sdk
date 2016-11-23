@@ -183,6 +183,11 @@ namespace Qiniu.Util
                 sbOps.Append("/acodec/");
                 sbOps.Append(this.AudioCodec);
             }
+            if (!string.IsNullOrWhiteSpace(this.Profile))
+            {
+                sbOps.Append("/audioProfile/");
+                sbOps.Append(this.Profile);
+            }
             if (!string.IsNullOrWhiteSpace(this.SubtitleCodec))
             {
                 sbOps.Append("/scodec/");
@@ -197,11 +202,13 @@ namespace Qiniu.Util
             {
                 sbOps.Append("/ss/");
                 sbOps.Append(this.SeekStart);
+                sbOps.Append("s");
             }
             if (this.Duration.HasValue)
             {
-                sbOps.Append("/d/");
+                sbOps.Append("/t/");
                 sbOps.Append(this.Duration);
+                sbOps.Append("s");
             }
             if (!string.IsNullOrWhiteSpace(this.Resolution))
             {

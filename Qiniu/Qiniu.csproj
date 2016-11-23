@@ -85,7 +85,9 @@
     <Compile Include="Storage\UploadManager.cs" />
     <Compile Include="Storage\UploadOptions.cs" />
     <Compile Include="Storage\UpProgressHandler.cs" />
+    <Compile Include="Util\AudioCodec.cs" />
     <Compile Include="Util\Auth.cs" />
+    <Compile Include="Util\AVThumbFormats.cs" />
     <Compile Include="Util\IPersistentOps.cs" />
     <Compile Include="Util\IPersistentOpsAvthumb.cs" />
     <Compile Include="Util\IPersistentOpsAvthumbForAudio.cs" />
@@ -98,6 +100,7 @@
     <Compile Include="Util\PutPolicy.Extension.cs" />
     <Compile Include="Util\QETag.cs" />
     <Compile Include="Util\StringUtils.cs" />
+    <Compile Include="Util\VideoCodec.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

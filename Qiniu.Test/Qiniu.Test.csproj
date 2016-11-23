@@ -61,6 +61,10 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BucketManagerTest.cs" />
+    <Compile Include="Models\PersistentOpsAvthumbTest.cs" />
+    <Compile Include="PutPolicyExtension.Test.cs" />
+    <Compile Include="PersistentOps.Avthumb.Test.cs" />
+    <Compile Include="Utils\Random.Extension.cs" />
     <Compile Include="ZoneConfigTest.cs" />
     <Compile Include="FormUploaderTest.cs" />
     <Compile Include="HttpManager2Test.cs" />
