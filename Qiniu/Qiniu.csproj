@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\bin\Qiniu.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,7 +49,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>    
+  <ItemGroup>
     <Compile Include="Http\HttpCode.cs" />
     <Compile Include="Http\HttpFileType.cs" />
     <Compile Include="Http\HttpFormFile.cs" />
@@ -57,7 +58,7 @@
     <Compile Include="Storage\Model\CdnRefreshResult.cs" />
     <Compile Include="Common\Config.cs" />
     <Compile Include="Common\Zone.cs" />
-	<Compile Include="Common\ZoneHelper.cs" />
+    <Compile Include="Common\ZoneHelper.cs" />
     <Compile Include="Http\CancellationSignal.cs" />
     <Compile Include="Http\CompletionHandler.cs" />
     <Compile Include="Http\HttpResult.cs" />
@@ -85,9 +86,16 @@
     <Compile Include="Storage\UploadOptions.cs" />
     <Compile Include="Storage\UpProgressHandler.cs" />
     <Compile Include="Util\Auth.cs" />
+    <Compile Include="Util\IPersistentOps.cs" />
+    <Compile Include="Util\IPersistentOpsAvthumb.cs" />
+    <Compile Include="Util\IPersistentOpsAvthumbForAudio.cs" />
+    <Compile Include="Util\IPersistentOpsAvthumbForVideo.cs" />
     <Compile Include="Util\Mac.cs" />
     <Compile Include="Util\CRC32.cs" />
+    <Compile Include="Util\PersistentOps.Avthumb.cs" />
+    <Compile Include="Util\PersistentOps.cs" />
     <Compile Include="Util\PutPolicy.cs" />
+    <Compile Include="Util\PutPolicy.Extension.cs" />
     <Compile Include="Util\QETag.cs" />
     <Compile Include="Util\StringUtils.cs" />
   </ItemGroup>
