@@ -4,7 +4,7 @@ using System;
 namespace Qiniu.Util
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class PutPolicy
+    public class PutPolicy : ICloneable
     {
         [JsonProperty("scope")]
         public string Scope { set; get; }
@@ -42,6 +42,9 @@ namespace Qiniu.Util
 
         [JsonProperty("fsizeLimit")]
         public int? FsizeLimit { set; get; }
+
+        [JsonProperty("fsizeMin")]
+        public int? FsizeMin { set; get; }
         [JsonProperty("detectMime")]
         public int? DetectMime { set; get; }
         [JsonProperty("mimeLimit")]
@@ -55,10 +58,29 @@ namespace Qiniu.Util
             TimeSpan ts = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0));
             this.Deadline = (int)ts.TotalSeconds + expireInSeconds;
         }
-
+        /// <summary>
+        /// 获取此上传策略的Json字符串。
+        /// </summary>
+        /// <returns>此上传策略的Json字符串。</returns>
         public override string ToString()
         {
             return StringUtils.jsonEncode(this);
+        }
+        /// <summary>
+        /// 获取此上传策略的副本。
+        /// </summary>
+        /// <returns>上传策略的副本。</returns>
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+        /// <summary>
+        /// 获取此上传策略的副本。
+        /// </summary>
+        /// <returns>上传策略的副本。</returns>
+        public PutPolicy Clone()
+        {
+            return this.MemberwiseClone() as PutPolicy;
         }
     }
 }
