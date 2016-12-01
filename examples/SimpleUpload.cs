@@ -2,7 +2,7 @@
 using Qiniu.Storage;
 using Qiniu.Http;
 
-namespace QiniuDemo
+namespace CSharpSDKExamples
 {
     public class SimpleUpload
     {
