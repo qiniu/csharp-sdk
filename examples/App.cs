@@ -1,4 +1,4 @@
-﻿namespace QiniuDemo
+﻿namespace CSharpSDKExamples
 {
     /// <summary>
     /// 示例代码中的bucket,saveKey,localFile等请自行设置
@@ -59,7 +59,28 @@
             // 文件处理+保存处理结果
             //PfopWithPipeline.pfopAndSave();
 
-            System.Console.ReadKey();
+            // 数据处理dfop:url
+            //DfopDemo.dfopUrl();
+
+            // 数据处理dfop:data
+            //DfopDemo.dfopData();
+
+            // 融合CDN 缓存刷新
+            //FusionDemo.refresh();
+
+            // 融合CDN 文件预取
+            //FusionDemo.prefetch();
+
+            // 融合CDN 带宽
+            //FusionDemo.bandwidth();
+
+            // 融合CDN 流量
+            //FusionDemo.flux();
+
+            // 融合CDN 日志查询
+            //FusionDemo.loglist();
+
+            System.Console.ReadLine();
         }
     }
 }

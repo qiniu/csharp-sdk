@@ -2,7 +2,7 @@ using Qiniu.Util;
 using Qiniu.Http;
 using Qiniu.Processing;
     
-namespace QiniuDemo
+namespace CSharpSDKExamples
 {
     public class PfopWithPipeline
     { 

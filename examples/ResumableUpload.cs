@@ -3,7 +3,7 @@ using Qiniu.Storage;
 using Qiniu.Storage.Persistent;
 using Qiniu.Http;
 
-namespace QiniuDemo
+namespace CSharpSDKExamples
 {
     public class ResumableUpload
     {

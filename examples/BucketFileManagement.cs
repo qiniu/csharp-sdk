@@ -4,7 +4,7 @@ using Qiniu.Storage.Model;
 using Qiniu.Http;
 using System.Collections.Generic;
 
-namespace QiniuDemo
+namespace CSharpSDKExamples
 {
     /// <summary>
     /// 空间及空间文件管理

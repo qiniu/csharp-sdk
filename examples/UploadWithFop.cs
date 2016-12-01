@@ -1,7 +1,7 @@
 ﻿using Qiniu.Util;
 using Qiniu.Storage;
 
-namespace QiniuDemo
+namespace CSharpSDKExamples
 {
     public class UploadWithFop
     {
