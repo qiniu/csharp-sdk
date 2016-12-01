@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Qiniu Resource (Cloud) Storage SDK for C#")]
-[assembly: AssemblyDescription("Qiniu Resource (Cloud) Storage SDK for C#")]
+[assembly: AssemblyTitle("Qiniu (Storage) C# SDK v7.1.0.0 (.NET4.0)")]
+[assembly: AssemblyDescription("Qiniu (Storage) C# SDK v7.1.0.0 (.NET4.0)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("QINIU")]
-[assembly: AssemblyProduct("Qiniu Resource (Cloud) Storage SDK for C#")]
+[assembly: AssemblyProduct("Qiniu (Storage) C# SDK v7.1.0.0 (.NET4.0)")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("7.1.0.0")]
+[assembly: AssemblyFileVersion("7.1.0.0")]

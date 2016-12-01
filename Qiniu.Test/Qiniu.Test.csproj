@@ -61,6 +61,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BucketManagerTest.cs" />
+    <Compile Include="FusionManagerTest.cs" />
     <Compile Include="ZoneConfigTest.cs" />
     <Compile Include="FormUploaderTest.cs" />
     <Compile Include="HttpManager2Test.cs" />

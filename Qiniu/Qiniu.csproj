@@ -48,16 +48,30 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>    
+  <ItemGroup>
+    <Compile Include="Fusion\FusionManager.cs" />
+    <Compile Include="Fusion\Model\BandwidthRequest.cs" />
+    <Compile Include="Fusion\Model\BandwidthResult.cs" />
+    <Compile Include="Fusion\Model\FluxRequest.cs" />
+    <Compile Include="Fusion\Model\FluxResult.cs" />
+    <Compile Include="Fusion\Model\LogListRequest.cs" />
+    <Compile Include="Fusion\Model\LogListResult.cs" />
+    <Compile Include="Fusion\Model\RefreshRequest.cs" />
+    <Compile Include="Fusion\Model\RefreshResult.cs" />
+    <Compile Include="Fusion\Model\PrefetchRequest.cs" />
+    <Compile Include="Fusion\Model\PrefetchResult.cs" />
+    <Compile Include="Fusion\Model\UrlHelper.cs" />
     <Compile Include="Http\HttpCode.cs" />
     <Compile Include="Http\HttpFileType.cs" />
     <Compile Include="Http\HttpFormFile.cs" />
     <Compile Include="Http\HttpManager.cs" />
+    <Compile Include="Processing\Dfop.cs" />
+    <Compile Include="Processing\DfopResult.cs" />
     <Compile Include="Storage\Model\CdnRefreshRequest.cs" />
     <Compile Include="Storage\Model\CdnRefreshResult.cs" />
     <Compile Include="Common\Config.cs" />
     <Compile Include="Common\Zone.cs" />
-	<Compile Include="Common\ZoneHelper.cs" />
+    <Compile Include="Common\ZoneHelper.cs" />
     <Compile Include="Http\CancellationSignal.cs" />
     <Compile Include="Http\CompletionHandler.cs" />
     <Compile Include="Http\HttpResult.cs" />

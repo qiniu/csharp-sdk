@@ -481,6 +481,142 @@ namespace Qiniu.Http
             }
         }
 
+        /// <summary>
+        /// post multi-part data form to remote server
+        /// used to upload data
+        /// </summary>
+        /// <param name="pUrl"></param>
+        /// <param name="pHeaders"></param>
+        /// <param name="httpFormFile"></param>
+        /// <param name="pProgressHandler"></param>
+        /// <param name="pCompletionHandler"></param>
+        public void postMultipartDataRaw(string pUrl, Dictionary<string, string> pHeaders,
+            HttpFormFile pFormFile, ProgressHandler pProgressHandler, CompletionHandler pCompletionHandler)
+        {
+            if (pFormFile == null)
+            {
+                if (pCompletionHandler != null)
+                {
+                    pCompletionHandler(ResponseInfo.fileError(new Exception("no file specified")), "");
+                }
+                return;
+            }
+
+            HttpWebRequest vWebReq = null;
+            HttpWebResponse vWebResp = null;
+            try
+            {
+                vWebReq = (HttpWebRequest)WebRequest.Create(pUrl);
+                vWebReq.ServicePoint.Expect100Continue = false;
+            }
+            catch (Exception ex)
+            {
+                if (pCompletionHandler != null)
+                {
+                    pCompletionHandler(ResponseInfo.invalidRequest(ex.Message), "");
+                }
+                return;
+            }
+
+            try
+            {
+                vWebReq.UserAgent = this.getUserAgent();
+                vWebReq.AllowAutoRedirect = false;
+                vWebReq.Method = "POST";
+
+                //create boundary
+                string formBoundaryStr = this.createFormDataBoundary();
+                string contentType = string.Format("multipart/form-data; boundary={0}", formBoundaryStr);
+                vWebReq.ContentType = contentType;
+                if (pHeaders != null)
+                {
+                    foreach (KeyValuePair<string, string> kvp in pHeaders)
+                    {
+                        if (!kvp.Key.Equals("Content-Type"))
+                        {
+                            vWebReq.Headers.Add(kvp.Key, kvp.Value);
+                        }
+                    }
+                }
+
+                //write post body
+                vWebReq.AllowWriteStreamBuffering = true;
+
+                byte[] formBoundaryBytes = Encoding.UTF8.GetBytes(string.Format("{0}{1}\r\n",
+                    FORM_BOUNDARY_TAG, formBoundaryStr));
+                byte[] formBoundaryEndBytes = Encoding.UTF8.GetBytes(string.Format("\r\n{0}{1}{2}\r\n",
+                    FORM_BOUNDARY_TAG, formBoundaryStr, FORM_BOUNDARY_TAG));
+
+                using (Stream vWebReqStream = vWebReq.GetRequestStream())
+                {
+                    vWebReqStream.Write(formBoundaryBytes, 0, formBoundaryBytes.Length);
+
+                    //write file name
+                    string filename = pFormFile.Filename;
+                    if (string.IsNullOrEmpty(filename))
+                    {
+                        filename = this.createRandomFilename();
+                    }
+                    byte[] filePartTitleData = Encoding.UTF8.GetBytes(
+                                string.Format("Content-Disposition: form-data; name=\"data\"; filename=\"{0}\"\r\n", filename));
+                    vWebReqStream.Write(filePartTitleData, 0, filePartTitleData.Length);
+                    //write content type
+                    string mimeType = FORM_MIME_OCTECT;  //!!!注意这里 @fengyh 2016-08-17 15:00
+                    if (!string.IsNullOrEmpty(pFormFile.ContentType))
+                    {
+                        mimeType = pFormFile.ContentType;
+                    }
+                    byte[] filePartMimeData = Encoding.UTF8.GetBytes(string.Format("Content-Type: {0}\r\n\r\n", mimeType));
+                    vWebReqStream.Write(filePartMimeData, 0, filePartMimeData.Length);
+
+                    //write file data
+                    switch (pFormFile.BodyType)
+                    {
+                        case HttpFileType.FILE_PATH:
+                            try
+                            {
+                                FileStream fs = File.Open(pFormFile.BodyFile, FileMode.Open, FileAccess.Read);
+                                this.writeHttpRequestBody(fs, vWebReqStream);
+                            }
+                            catch (Exception fex)
+                            {
+                                if (pCompletionHandler != null)
+                                {
+                                    pCompletionHandler(ResponseInfo.fileError(fex), "");
+                                }
+                            }
+                            break;
+                        case HttpFileType.FILE_STREAM:
+                            this.writeHttpRequestBody(pFormFile.BodyStream, vWebReqStream);
+                            break;
+                        case HttpFileType.DATA_BYTES:
+                            vWebReqStream.Write(pFormFile.BodyBytes, 0, pFormFile.BodyBytes.Length);
+                            break;
+                        case HttpFileType.DATA_SLICE:
+                            vWebReqStream.Write(pFormFile.BodyBytes, pFormFile.Offset, pFormFile.Count);
+                            break;
+                    }
+
+                    vWebReqStream.Write(formBoundaryEndBytes, 0, formBoundaryEndBytes.Length);
+                    vWebReqStream.Flush();
+                }
+
+                //fire request
+                vWebResp = (HttpWebResponse)vWebReq.GetResponse();
+                handleWebResponse(vWebResp, pCompletionHandler);
+            }
+            catch (WebException wexp)
+            {
+                // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
+                HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
+                handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
+            }
+            catch (Exception exp)
+            {
+                handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+            }
+        }
+
         private void writeHttpRequestBody(Stream fromStream, Stream toStream)
         {
             byte[] buffer = new byte[COPY_BYTES_BUFFER];
@@ -506,42 +642,60 @@ namespace Qiniu.Http
             string error = null;
             string host = null;
             string respData = null;
+            int contentLength = -1;
+            bool recvInvalid = false;
 
-            statusCode = (int)pWebResp.StatusCode;
-            if (pWebResp.Headers != null)
+            if (pWebResp != null)
             {
-                WebHeaderCollection respHeaders = pWebResp.Headers;
-                foreach (string headerName in respHeaders.AllKeys)
-                {
-                    if (headerName.Equals("X-Reqid"))
+                statusCode = (int)pWebResp.StatusCode;
+
+                if (pWebResp.Headers != null)
+                {                   
+                    WebHeaderCollection respHeaders = pWebResp.Headers;
+                    foreach (string headerName in respHeaders.AllKeys)
                     {
-                        reqId = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Log"))
-                    {
-                        xlog = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Via"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Px"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("Fw-Via"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("Host"))
-                    {
-                        host = respHeaders[headerName].ToString();
+                        if (headerName.Equals("X-Reqid"))
+                        {
+                            reqId = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Log"))
+                        {
+                            xlog = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Px"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Fw-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Host"))
+                        {
+                            host = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Content-Length"))
+                        {
+                            contentLength = int.Parse(respHeaders[headerName].ToString());
+                        }
                     }
                 }
 
                 using (StreamReader respStream = new StreamReader(pWebResp.GetResponseStream()))
                 {
                     respData = respStream.ReadToEnd();
+
+                    if (contentLength > 0)
+                    {
+                        if (respData.Length != contentLength)
+                        {
+                            recvInvalid = true;
+                        }
+                    }
                 }
 
                 try
@@ -562,6 +716,21 @@ namespace Qiniu.Http
                     }
                 }
                 catch (Exception) { }
+
+                if (recvInvalid)
+                {
+                    statusCode = -1;
+                    string err = string.Format("response-recv is not complete RECV={0},TOTAL={1} {2}", respData.Length, contentLength, error);
+                    Console.WriteLine(err);
+                    error = err;
+                }
+
+                pWebResp.Close();
+            }
+            else
+            {
+                error = "invalid response";
+                statusCode = -1;
             }
 
             double duration = DateTime.Now.Subtract(startTime).TotalSeconds;
@@ -600,41 +769,58 @@ namespace Qiniu.Http
             string error = null;
             string host = null;
             string respData = null;
+            int contentLength = -1;
+            bool recvInvalid = false;
 
-            if (pWebResp != null && pWebResp.Headers != null)
+            if (pWebResp != null)
             {
-                WebHeaderCollection respHeaders = pWebResp.Headers;
-                foreach (string headerName in respHeaders.AllKeys)
+                if (pWebResp.Headers != null)
                 {
-                    if (headerName.Equals("X-Reqid"))
+                    WebHeaderCollection respHeaders = pWebResp.Headers;
+                    foreach (string headerName in respHeaders.AllKeys)
                     {
-                        reqId = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Log"))
-                    {
-                        xlog = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Via"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("X-Px"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("Fw-Via"))
-                    {
-                        xvia = respHeaders[headerName].ToString();
-                    }
-                    else if (headerName.Equals("Host"))
-                    {
-                        host = respHeaders[headerName].ToString();
+                        if (headerName.Equals("X-Reqid"))
+                        {
+                            reqId = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Log"))
+                        {
+                            xlog = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Px"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Fw-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Host"))
+                        {
+                            host = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Content-Length"))
+                        {
+                            contentLength = int.Parse(respHeaders[headerName].ToString());
+                        }
                     }
                 }
 
                 using (StreamReader respStream = new StreamReader(pWebResp.GetResponseStream()))
                 {
                     respData = respStream.ReadToEnd();
+
+                    if (contentLength > 0)
+                    {
+                        if (respData.Length != contentLength)
+                        {
+                            recvInvalid = true;
+                        }
+                    }
                 }
 
                 try
@@ -655,6 +841,16 @@ namespace Qiniu.Http
                     }
                 }
                 catch (Exception) { }
+
+                if (recvInvalid)
+                {
+                    statusCode = -1;
+                    string err = string.Format("response-recv is not complete RECV={0},TOTAL={1} {2}", respData.Length, contentLength, error);
+                    Console.WriteLine(err);
+                    error = err;
+                }
+
+                pWebResp.Close();
             }
             else
             {

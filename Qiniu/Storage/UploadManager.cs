@@ -40,7 +40,6 @@ namespace Qiniu.Storage
             this.keyGenerator = generator;
         }
 
-
         /// <summary>
         /// 上传字节数据
         /// </summary>
@@ -76,11 +75,23 @@ namespace Qiniu.Storage
             }
             else
             {
+                if (this.resumeRecorder == null)
+                {
+                    string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    this.resumeRecorder = new ResumeRecorder(home);
+                }
+
                 string recorderKey = null;
-                if (this.keyGenerator != null)
+
+                if (this.keyGenerator == null)
+                {
+                    recorderKey = string.Format("qiniu_{0}.resume", Util.StringUtils.md5Hash(key));
+                }
+                else
                 {
                     recorderKey = this.keyGenerator();
                 }
+
                 new ResumeUploader(this.resumeRecorder, recorderKey, stream, key, token, uploadOptions, upCompletionHandler).uploadStream();
             }
         }
@@ -100,6 +111,11 @@ namespace Qiniu.Storage
         {
             try
             {
+                if(upCompletionHandler==null)
+                {
+                    upCompletionHandler = DefaultUpCompletionHandler;
+                }
+
                 long fileSize = 0;
                 FileInfo s = new FileInfo(filePath);
                 fileSize = s.Length;
@@ -111,11 +127,23 @@ namespace Qiniu.Storage
                 }
                 else
                 {
+                    if(this.resumeRecorder==null)
+                    {
+                        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                        this.resumeRecorder = new ResumeRecorder(home);
+                    }
+
                     string recorderKey = null;
-                    if (this.keyGenerator != null)
+
+                    if (this.keyGenerator == null)
+                    {
+                        recorderKey = string.Format("qiniu_{0}.resume", Util.StringUtils.md5Hash(filePath + key));
+                    }
+                    else
                     {
                         recorderKey = this.keyGenerator();
                     }
+
                     new ResumeUploader(this.resumeRecorder, recorderKey, filePath, key, token, uploadOptions, upCompletionHandler).uploadFile();
                 }
             }
@@ -128,5 +156,11 @@ namespace Qiniu.Storage
             }
         }
         #endregion
+
+
+        private void DefaultUpCompletionHandler(string key,ResponseInfo respInfo,string respJson)
+        {
+            Console.WriteLine(string.Format("key={0}\nrespInfo={1}\nresponse={2}", key, respInfo, respJson));
+        }
     }
 }
