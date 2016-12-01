@@ -13,6 +13,7 @@ namespace Qiniu.Storage
     public class FormUploader
     {
         private HttpManager mHttpManager;
+
         public FormUploader()
         {
             this.mHttpManager = new HttpManager();
@@ -75,9 +76,18 @@ namespace Qiniu.Storage
         private void upload(HttpFormFile fFile, string key, string token,
             UploadOptions uploadOptions, UpCompletionHandler upCompletionHandler)
         {
-            // 使用uploadHost -- REMINDME-0
-            // 是否使用CDN(默认：是)
-            string uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
+            string uploadHost = "<UPLOAD_HOST>";
+            string uploadHostRetry = "<UPLOAD_HOST_RETRY>";
+            if(Config.UploadFromCDN)
+            {
+                uploadHost = Config.ZONE.UploadHost;
+                uploadHostRetry = Config.ZONE.UpHost;
+            }
+            else
+            {
+                uploadHost = Config.ZONE.UpHost;
+                uploadHostRetry = Config.ZONE.UploadHost;
+            }
 
             if (uploadOptions == null)
             {
@@ -143,14 +153,21 @@ namespace Qiniu.Storage
              });
 
 
-            // [x]第一次失败后使用备用域名重试一次
-            // FIX 2016-11-22 17:11 
-            // 网络错误(网络断开)恢复正常后，重试会出现“流不可读”的错误，因此原域名和重试域名一致
+            // 第一次失败后使用备用域名重试一次
             CompletionHandler fUpCompletionHandler = new CompletionHandler(delegate (ResponseInfo respInfo, string response)
             {
                 Console.WriteLine("form upload result, {0}",respInfo.StatusCode);
-                if (respInfo.needRetry())
+
+                if (respInfo.needRetry()) // 需要重试
                 {
+                    Console.WriteLine(string.Format("form upload retry"));
+
+                    if (Config.RetryWaitForNext)
+                    {
+                        Console.WriteLine(string.Format("wait for {0} milisecond(s)", Config.RETRY_INTERVAL_MILISEC));
+                        System.Threading.Thread.Sleep(Config.RETRY_INTERVAL_MILISEC);
+                    }
+
                     if (fFile.BodyStream != null)
                     {
                         fFile.BodyStream.Seek(0, SeekOrigin.Begin);
@@ -182,10 +199,10 @@ namespace Qiniu.Storage
                         }
                     });
 
-                    // 使用uploadHost -- REMINDME-1
-                    this.mHttpManager.postMultipartDataForm(uploadHost, null, vPostParams, fFile, fUpProgressHandler, retried);
+                    // 使用UPLOAD_HOST_RETRY重试
+                    this.mHttpManager.postMultipartDataForm(uploadHostRetry, null, vPostParams, fFile, fUpProgressHandler, retried);
                 }
-                else
+                else // 不需要重试
                 {
                     if (respInfo.isOk())
                     {
@@ -211,7 +228,7 @@ namespace Qiniu.Storage
                 }
             });
 
-            // // 使用uploadHost -- REMINDME-2
+            // 使用UPLOAD_HOST上传
             this.mHttpManager.postMultipartDataForm(uploadHost, null, vPostParams, fFile, fUpProgressHandler, fUpCompletionHandler);
         }
     }

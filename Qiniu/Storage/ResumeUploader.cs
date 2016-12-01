@@ -188,7 +188,6 @@ namespace Qiniu.Storage
         #region 发送mkfile请求
         private void makeFile(string upHost, CompletionHandler completionHandler)
         {
-
             string fname = this.key;
             if (!string.IsNullOrEmpty(this.filePath))
             {
@@ -227,15 +226,13 @@ namespace Qiniu.Storage
             this.mHttpManager.postData(url, upHeaders, postBodyData, HttpManager.FORM_MIME_URLENCODED, completionHandler);
         }
         #endregion
-
         /// <summary>
         /// 分片方式上传文件
         /// </summary>
         #region 上传文件
         public void uploadFile()
         {
-            // 使用uploadHost -- REMINDME
-            // 是否使用CDN(默认：是)
+            // 正常上传，使用UPLOAD_HOST
             string uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
 
             try
@@ -265,8 +262,7 @@ namespace Qiniu.Storage
         #region 上传文件流
         public void uploadStream()
         {
-            // 使用uploadHost -- REMINDME
-            // 是否使用CDN(默认：是)
+            // 正常上传，使用UPLOAD_HOST
             string uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
 
             try
@@ -397,13 +393,14 @@ namespace Qiniu.Storage
                         if (respInfo.needRetry() && retried < Config.RETRY_MAX)
                         {
                             Console.WriteLine("mkfile retrying due to {0}...", respInfo.StatusCode);
-                            string upHost2 = Config.ZONE.UploadHost;
-                            nextTask(offset, retried + 1, upHost2);
+                            //string upHost2 = Config.ZONE.UploadHost;
+                            fileStream.Seek(offset, SeekOrigin.Begin);
+                            nextTask(offset, retried + 1, upHost);
                             return;
                         }
                     }
 
-                    Console.WriteLine("mkfile error, upload failed due to {0}",respInfo.StatusCode);
+                    Console.WriteLine("mkfile error, upload failed due to {0}", respInfo.StatusCode);
                     this.upCompletionHandler(key, respInfo, response);
                 }));
                 return;
@@ -415,43 +412,69 @@ namespace Qiniu.Storage
             {
                 double percent = (double)(offset) / this.size;
                 Console.WriteLine("resumable upload progress {0}", percent);
-                if (percent > 0.95)
-                {
-                    percent = 0.95;
-                }
+                // why 0.95
+                //if (percent > 0.95)
+                //{
+                //    percent = 0.95;
+                //}
                 this.uploadOptions.ProgressHandler(this.key, percent);
             });
 
-            CompletionHandler completionHandler = new CompletionHandler(delegate(ResponseInfo respInfo, string response)
+            CompletionHandler completionHandler = new CompletionHandler(delegate (ResponseInfo respInfo, string response)
             {
                 if (offset % Config.BLOCK_SIZE == 0)
                 {
                     Console.WriteLine("mkblk result {0}, offset {1}", respInfo.StatusCode, offset);
-                }else
+                }
+                else
                 {
                     Console.WriteLine("bput result {0}, offset {1}", respInfo.StatusCode, offset);
                 }
+
                 if (!respInfo.isOk())
                 {
                     //如果是701错误，为mkblk的ctx过期
                     if (respInfo.StatusCode == 701)
                     {
-                        nextTask((offset / Config.BLOCK_SIZE) * Config.BLOCK_SIZE, retried, upHost);
+                        Console.WriteLine("mkblk ctx is out of date, re-do upload");
+                        offset = (offset / Config.BLOCK_SIZE) * Config.BLOCK_SIZE;
+                        fileStream.Seek(offset, SeekOrigin.Begin);
+                        nextTask(offset, retried, upHost);
                         return;
                     }
 
                     if (retried >= Config.RETRY_MAX || !respInfo.needRetry())
                     {
+                        Console.WriteLine("retried " + retried + " times, all failed");
                         this.upCompletionHandler(key, respInfo, response);
                         return;
                     }
 
-                    String upHost2 = upHost;
+                    // 下一个任务，使用uploadHost
+                    string uploadHost = upHost;                                  
                     if (respInfo.needRetry())
                     {
-                        upHost2 = Config.ZONE.UploadHost;
+                        Console.WriteLine(string.Format("upload-retry #{0}", retried + 1));
+
+                        if (Config.RetryWaitForNext)
+                        {
+                            Console.WriteLine(string.Format("wait for {0} milisecond(s)", Config.RETRY_INTERVAL_MILISEC));
+                            // 如果需要重试，并且设置了多次重试之间的时间间隔
+                            System.Threading.Thread.Sleep(Config.RETRY_INTERVAL_MILISEC);
+                        }
+
+                        //// 交替使用两个域名重试 
+                        //if (retried % 2 != 0)
+                        //{
+                        //    uploadHost = Config.UploadFromCDN ? Config.ZONE.UploadHost : Config.ZONE.UpHost;
+                        //}
+                        //else
+                        //{
+                        //    uploadHost = Config.UploadFromCDN ? Config.ZONE.UpHost : Config.ZONE.UploadHost;
+                        //}
                     }
-                    nextTask(offset, retried + 1, upHost2);
+                    fileStream.Seek(offset, SeekOrigin.Begin);
+                    nextTask(offset, retried + 1, uploadHost);
                     return;
                 }
 
@@ -459,11 +482,13 @@ namespace Qiniu.Storage
                 string chunkContext = null;
                 if (response == null || string.IsNullOrEmpty(response))
                 {
+                    fileStream.Seek(offset, SeekOrigin.Begin);
                     nextTask(offset, retried + 1, upHost);
                     return;
                 }
 
                 long chunkCrc32 = 0;
+
                 Dictionary<string, string> respDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
                 if (respDict.ContainsKey("ctx"))
                 {
@@ -473,9 +498,14 @@ namespace Qiniu.Storage
                 {
                     chunkCrc32 = Convert.ToInt64(respDict["crc32"]);
                 }
+                //if(respDict.ContainsKey("host"))
+                //{
+                //    upHost = respDict["host"];
+                //}
 
                 if (chunkContext == null || chunkCrc32 != this.crc32)
                 {
+                    fileStream.Seek(offset, SeekOrigin.Begin);
                     nextTask(offset, retried + 1, upHost);
                     return;
                 }

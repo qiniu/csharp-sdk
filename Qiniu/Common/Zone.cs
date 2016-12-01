@@ -42,6 +42,15 @@ namespace Qiniu.Common
         public string UploadHost { set; get; }
 
         /// <summary>
+        /// 默认(华东)
+        /// </summary>
+        /// <returns></returns>
+        public static Zone ZONE_Default()
+        {
+            return ZONE_CN_East();
+        }
+
+        /// <summary>
         /// 华东
         /// xx-(NULL)
         /// </summary>

@@ -61,6 +61,7 @@ namespace Qiniu.Processing
             this.mHttpManager.postForm(pfopUrl, pfopHeaders, pfopParams, pfopCompletionHandler);
             return pfopResult;
         }
+
         public PfopResult pfop(string bucket, string key, string[] fops, string pipeline, string notifyUrl, bool force)
         {
             string newFops = string.Join(";", fops);
