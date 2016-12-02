@@ -14,7 +14,7 @@
 
 **注意** 
 
-当前最新版本为v7（master与v7同步），另请参考 [v7.0.0.3 release](https://github.com/qiniu/csharp-sdk/releases/tag/7.0.0.3)
+当前最新版本为v7（master），另请参考 [v7.0.0.5 release](https://github.com/qiniu/csharp-sdk/releases/tag/v7.0.0.5)
 
 ######添加引用
 
@@ -216,9 +216,8 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 *上传域名*
 
-请设置`UploadFromCDN`参数(true/false，默认为true即使用CDN)：
+请设置`UploadFromCDN`参数(true/false，默认为false即不使用CDN)：
 
-	// 不使用CDN
 	Qiniu.Common.Config.UploadFromCDN = false; 
 
 *关于UpCompletionHandler参数*
@@ -239,6 +238,19 @@ C# SDK引用了第三方的开源项目[Json.NET](http://www.newtonsoft.com/json
 
 5.使用ResumbaleUploader时，**上传不同的文件，请务必使用不同的recordPath/recordFile**，因为断点记录和上传文件是对应的
 
+*关于上传重试*
+
+上传过程中遇到网络异常（如网络突然断开然后恢复），SDK会自动重试，最大重试次数默认5：
+
+	Qiniu.Common.Config.RETRY_MAX = 5
+
+可以设置是否重试等待（一次重试失败后是否等待一段时间后开始下一次重试，默认不开启）
+
+	Qiniu.Common.Config.RetryWaitForNext=true
+
+重试等待间隔（仅当开启重试等待才有效，默认1000ms）
+
+	Qiniu.Common.Config.RETRY_INTERVAL_MILISEC = 1000;
 
 ####文件下载
 
@@ -362,6 +374,120 @@ move/copy支持force参数，另请参阅[资源复制的force参数](http://dev
 ####持久化操作
 
 如：fops = vframe/jpg/offset/1/w/480/h/360/rotate/90 表示视频截图。
+
+####dfop数据处理
+
+使用方法：
+
+`dfop(FOP,URL)` 或者`dfop(FOP,DATA)`
+
+FOP是fop操作字符串，例如"imageInfo"，目前不支持saveas、avvod
+
+URL是资源链接，DATA是资源的字节数据，资源最大为20MB
+
+示例：
+
+```csharp
+string AK = "AccessKey";
+string SK = "SecretKey";
+Mac mac = new Mac(AK,SK);
+Dfop dx = new Dfop(mac);
+
+string fop = "imageInfo";
+string url = "http://www.hello.world.net/images/1.jpg";
+string file = "F:\\images\\1.jpg";
+byte[] data = File.ReadAllBytes(file);
+
+DfopResult result1 = dx.dfop(fops,url);
+DfopResult result2 = dx.dfop(fops,data);
+
+ ```
+
+####Fusion(融合CDN加速)
+
+此模块包括以下几个功能：
+
+* 缓存刷新
+
+* 文件预取
+
+* 流量带宽
+
+* 日志查询
+
+这些功能都包含在`FusionManager`里面，其初始化方式如下：
+
+```csharp
+string AK="ACCESS_KEY";
+string SK="SECRET_KEY";
+Mac mac = new Mac(AK,SK);
+FusionManager fxm = new FusionManager(mac);
+```
+
+#####缓存刷新
+
+```csharp
+string[] urls = new string[] { "URL1", "URL2" };
+string[] dirs = new string[] { "DIR1", "DIR2" };
+RefreshRequest request = new RefreshRequest();
+request.AddUrls(urls);
+request.AddDirs(dirs);
+RefreshResult result = fxm.Refresh(request);
+Console.WriteLine(result);
+```
+
+另请参阅[缓存刷新-接口文档](http://developer.qiniu.com/article/fusion/api/refresh.html)
+
+#####文件预取
+
+```csharp
+string[] urls = new string[] { "URL1", "URL2" };
+PrefetchRequest request = new PrefetchRequest(urls);
+PrefetchResult result = fxm.Prefetch(request);
+Console.WriteLine(result);
+```
+
+另请参阅[文件预取-接口文档](http://developer.qiniu.com/article/fusion/api/refresh.html)
+
+#####流量带宽
+
+带宽查询
+
+```csharp
+BandwidthRequest request = new BandwidthRequest();
+request.StartDate = "START_DATE"; // "2016-09-01"
+request.EndDate = "END_DATE"; // "2016-09-20"
+request.Granularity = "GRANU"; // "day"
+request.Domains = "DOMAIN1;DOMAIN2"; // domains
+BandwidthResult result = fxm.Bandwidth(request);
+Console.WriteLine(result);
+```
+
+流量查询
+
+```csharp
+FluxRequest request = new FluxRequest();
+request.StartDate = "START_DATE"; // "2016-09-01"
+request.EndDate = "END_DATE"; // "2016-09-20"
+request.Granularity = "GRANU"; // "day"
+request.Domains = "DOMAIN1;DOMAIN2"; // domains
+FluxResult result = fxm.Flux(request);
+Console.WriteLine(result);
+```
+
+另请参阅[流量带宽-接口文档](http://developer.qiniu.com/article/fusion/api/traffic-bandwidth.html)
+
+#####日志查询
+
+```csharp
+LogListRequest request = new LogListRequest();
+request.Day = "DAY"; // "2016-09-01"
+request.Domains = "DOMAIN1"; // domains
+LogListResult result = fusionMgr.LogList(request);
+Console.WriteLine(result);
+```
+
+另请参阅[日志查询-接口文档](http://developer.qiniu.com/article/fusion/api/log.html)
 
 ###SDK结构
 
