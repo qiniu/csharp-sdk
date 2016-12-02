@@ -84,7 +84,7 @@ namespace Qiniu.Http
                 vWebResp = (HttpWebResponse)vWebReq.GetResponse();
                 handleWebResponse(vWebResp, pCompletionHandler);
             }
-            catch(WebException wexp)
+            catch (WebException wexp)
             {
                 // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
                 HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
@@ -93,6 +93,71 @@ namespace Qiniu.Http
             catch (Exception exp)
             {
                 handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+            }
+            finally
+            {
+                if(vWebResp!=null)
+                {
+                    vWebResp.Close();
+                    vWebResp = null;
+                }
+
+                if(vWebReq!=null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
+        }
+
+        public void getRaw(string pUrl,RecvDataHandler pRecvDataHandler)
+        {
+            HttpWebRequest vWebReq = null;
+            HttpWebResponse vWebResp = null;
+            try
+            {
+                vWebReq = (HttpWebRequest)WebRequest.Create(pUrl);
+            }
+            catch (Exception ex)
+            {
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.invalidRequest(ex.Message), null);
+                }
+                return;
+            }
+
+            try
+            {
+                vWebReq.AllowAutoRedirect = false;
+                vWebReq.Method = "GET";
+                vWebReq.UserAgent = this.getUserAgent();
+
+                //fire request
+                vWebResp = (HttpWebResponse)vWebReq.GetResponse();
+                handleWebResponse(vWebResp, pRecvDataHandler);
+            }
+            catch (Exception exp)
+            {
+
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.networkError(exp.Message), null);
+                }
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Close();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
             }
         }
 
@@ -174,6 +239,87 @@ namespace Qiniu.Http
             {
                 handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
             }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Close();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// post data from raw
+        /// </summary>
+        /// <param name="pUrl"></param>
+        /// <param name="pHeaders"></param>
+        /// <param name="pRecvDataHandler"></param>
+        public void postFormRaw(string pUrl, Dictionary<string, string> pHeaders, RecvDataHandler pRecvDataHandler)
+        {
+            HttpWebRequest vWebReq = null;
+            HttpWebResponse vWebResp = null;
+            try
+            {
+                vWebReq = (HttpWebRequest)WebRequest.Create(pUrl);
+            }
+            catch (Exception ex)
+            {
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.invalidRequest(ex.Message), null);
+                }
+                return;
+            }
+
+            try
+            {
+                vWebReq.UserAgent = this.getUserAgent();
+                vWebReq.AllowAutoRedirect = false;
+                vWebReq.Method = "POST";
+                vWebReq.ContentType = FORM_MIME_URLENCODED;
+                if (pHeaders != null)
+                {
+                    foreach (KeyValuePair<string, string> kvp in pHeaders)
+                    {
+                        if (!kvp.Key.Equals("Content-Type"))
+                        {
+                            vWebReq.Headers.Add(kvp.Key, kvp.Value);
+                        }
+                    }
+                }
+
+                //fire request
+                vWebResp = (HttpWebResponse)vWebReq.GetResponse();
+                handleWebResponse(vWebResp, pRecvDataHandler);
+            }
+            catch (Exception exp)
+            {
+                if (pRecvDataHandler != null)
+                {
+                    pRecvDataHandler(ResponseInfo.networkError(exp.Message), null);
+                }
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Close();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
         }
 
 
@@ -248,6 +394,20 @@ namespace Qiniu.Http
             catch (Exception exp)
             {
                 handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Close();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
             }
         }
 
@@ -324,6 +484,20 @@ namespace Qiniu.Http
             catch (Exception exp)
             {
                 handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Close();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
             }
         }
 
@@ -479,25 +653,40 @@ namespace Qiniu.Http
             {
                 handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
             }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Close();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
+            }
         }
 
         /// <summary>
         /// post multi-part data form to remote server
-        /// used to upload data
+        /// used to upload file
         /// </summary>
         /// <param name="pUrl"></param>
         /// <param name="pHeaders"></param>
+        /// <param name="pPostParams"></param>
         /// <param name="httpFormFile"></param>
         /// <param name="pProgressHandler"></param>
         /// <param name="pCompletionHandler"></param>
         public void postMultipartDataRaw(string pUrl, Dictionary<string, string> pHeaders,
-            HttpFormFile pFormFile, ProgressHandler pProgressHandler, CompletionHandler pCompletionHandler)
+            HttpFormFile pFormFile, ProgressHandler pProgressHandler, RecvDataHandler pRecvDataHandler)
         {
             if (pFormFile == null)
             {
-                if (pCompletionHandler != null)
+                if (pRecvDataHandler != null)
                 {
-                    pCompletionHandler(ResponseInfo.fileError(new Exception("no file specified")), "");
+                    pRecvDataHandler(ResponseInfo.fileError(new Exception("no file specified")), null);
                 }
                 return;
             }
@@ -511,9 +700,9 @@ namespace Qiniu.Http
             }
             catch (Exception ex)
             {
-                if (pCompletionHandler != null)
+                if (pRecvDataHandler != null)
                 {
-                    pCompletionHandler(ResponseInfo.invalidRequest(ex.Message), "");
+                    pRecvDataHandler(ResponseInfo.invalidRequest(ex.Message), null);
                 }
                 return;
             }
@@ -580,9 +769,9 @@ namespace Qiniu.Http
                             }
                             catch (Exception fex)
                             {
-                                if (pCompletionHandler != null)
+                                if (pRecvDataHandler != null)
                                 {
-                                    pCompletionHandler(ResponseInfo.fileError(fex), "");
+                                    pRecvDataHandler(ResponseInfo.fileError(fex), null);
                                 }
                             }
                             break;
@@ -603,17 +792,28 @@ namespace Qiniu.Http
 
                 //fire request
                 vWebResp = (HttpWebResponse)vWebReq.GetResponse();
-                handleWebResponse(vWebResp, pCompletionHandler);
-            }
-            catch (WebException wexp)
-            {
-                // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
-                HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
-                handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
+                handleWebResponse(vWebResp, pRecvDataHandler);
             }
             catch (Exception exp)
             {
-                handleErrorWebResponse(vWebResp, pCompletionHandler, exp);
+                if(pRecvDataHandler!=null)
+                {
+                    pRecvDataHandler(ResponseInfo.networkError(exp.Message), null);
+                }
+            }
+            finally
+            {
+                if (vWebResp != null)
+                {
+                    vWebResp.Close();
+                    vWebResp = null;
+                }
+
+                if (vWebReq != null)
+                {
+                    vWebReq.Abort();
+                    vWebReq = null;
+                }
             }
         }
 
@@ -643,14 +843,13 @@ namespace Qiniu.Http
             string host = null;
             string respData = null;
             int contentLength = -1;
-            bool recvInvalid = false;
 
             if (pWebResp != null)
             {
                 statusCode = (int)pWebResp.StatusCode;
 
                 if (pWebResp.Headers != null)
-                {                   
+                {
                     WebHeaderCollection respHeaders = pWebResp.Headers;
                     foreach (string headerName in respHeaders.AllKeys)
                     {
@@ -685,47 +884,44 @@ namespace Qiniu.Http
                     }
                 }
 
-                using (StreamReader respStream = new StreamReader(pWebResp.GetResponseStream()))
+                if (contentLength > 0)
                 {
-                    respData = respStream.ReadToEnd();
-
-                    if (contentLength > 0)
+                    Stream ps = pWebResp.GetResponseStream();
+                    byte[] raw = new byte[contentLength];
+                    int bytesRead = 0; // 已读取的字节数
+                    int bytesLeft = contentLength; // 剩余字节数
+                    while (bytesLeft > 0)
                     {
-                        if (respData.Length != contentLength)
+                        bytesRead = ps.Read(raw, contentLength - bytesLeft, bytesLeft);
+                        bytesLeft -= bytesRead;
+                    }
+
+                    respData = Encoding.UTF8.GetString(raw);
+
+                    try
+                    {
+                        /////////////////////////////////////////////////////////////
+                        // 改进Response的error解析, 根据HttpStatusCode
+                        // @fengyh 2016-08-17 18:29
+                        /////////////////////////////////////////////////////////////
+                        if (statusCode != (int)HCODE.OK)
                         {
-                            recvInvalid = true;
+                            bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
+
+                            if (isOtherCode)
+                            {
+                                Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respData);
+                                error = errorDict["error"];
+                            }
                         }
                     }
+                    catch (Exception) { }
                 }
-
-                try
-                {
-                    /////////////////////////////////////////////////////////////
-                    // 改进Response的error解析, 根据HttpStatusCode
-                    // @fengyh 2016-08-17 18:29
-                    /////////////////////////////////////////////////////////////
-                    if (statusCode != (int)HCODE.OK)
-                    {
-                        bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
-
-                        if (isOtherCode)
-                        {
-                            Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respData);
-                            error = errorDict["error"];
-                        }
-                    }
-                }
-                catch (Exception) { }
-
-                if (recvInvalid)
+                else
                 {
                     statusCode = -1;
-                    string err = string.Format("response-recv is not complete RECV={0},TOTAL={1} {2}", respData.Length, contentLength, error);
-                    Console.WriteLine(err);
-                    error = err;
+                    error = "response err";
                 }
-
-                pWebResp.Close();
             }
             else
             {
@@ -770,7 +966,6 @@ namespace Qiniu.Http
             string host = null;
             string respData = null;
             int contentLength = -1;
-            bool recvInvalid = false;
 
             if (pWebResp != null)
             {
@@ -810,47 +1005,44 @@ namespace Qiniu.Http
                     }
                 }
 
-                using (StreamReader respStream = new StreamReader(pWebResp.GetResponseStream()))
+                if (contentLength > 0)
                 {
-                    respData = respStream.ReadToEnd();
-
-                    if (contentLength > 0)
+                    Stream ps = pWebResp.GetResponseStream();
+                    byte[] raw = new byte[contentLength];
+                    int bytesRead = 0; // 已读取的字节数
+                    int bytesLeft = contentLength; // 剩余字节数
+                    while (bytesLeft > 0)
                     {
-                        if (respData.Length != contentLength)
+                        bytesRead = ps.Read(raw, contentLength - bytesLeft, bytesLeft);
+                        bytesLeft -= bytesRead;
+                    }
+
+                    respData = Encoding.UTF8.GetString(raw);
+
+                    try
+                    {
+                        /////////////////////////////////////////////////////////////
+                        // 改进Response的error解析, 根据HttpStatusCode
+                        // @fengyh 2016-08-17 18:29
+                        /////////////////////////////////////////////////////////////
+                        if (statusCode != (int)HCODE.OK)
                         {
-                            recvInvalid = true;
+                            bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
+
+                            if (isOtherCode)
+                            {
+                                Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respData);
+                                error = errorDict["error"];
+                            }
                         }
                     }
+                    catch (Exception) { }
                 }
-
-                try
-                {
-                    /////////////////////////////////////////////////////////////
-                    // 改进Response的error解析, 根据HttpStatusCode
-                    // @fengyh 2016-08-17 18:29
-                    /////////////////////////////////////////////////////////////
-                    if (statusCode != (int)HCODE.OK)
-                    {
-                        bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
-
-                        if (isOtherCode)
-                        {
-                            Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respData);
-                            error = errorDict["error"];
-                        }
-                    }
-                }
-                catch (Exception) { }
-
-                if (recvInvalid)
+                else
                 {
                     statusCode = -1;
-                    string err = string.Format("response-recv is not complete RECV={0},TOTAL={1} {2}", respData.Length, contentLength, error);
-                    Console.WriteLine(err);
-                    error = err;
+                    error = "response err";
                 }
-
-                pWebResp.Close();
             }
             else
             {
@@ -865,6 +1057,105 @@ namespace Qiniu.Http
             }
         }
 
+        private void handleWebResponse(HttpWebResponse pWebResp, RecvDataHandler pRecvDataHandler)
+        {
+            DateTime startTime = DateTime.Now;
+            //check for exception
+            int statusCode = ResponseInfo.NetworkError;
+            string reqId = null;
+            string xlog = null;
+            string ip = null;
+            string xvia = null;
+            string error = null;
+            string host = null;
+            byte[] respData = null;
+            int contentLength = -1;
+
+            if (pWebResp != null)
+            {
+                statusCode = (int)pWebResp.StatusCode;
+
+                if (pWebResp.Headers != null)
+                {
+                    WebHeaderCollection respHeaders = pWebResp.Headers;
+                    foreach (string headerName in respHeaders.AllKeys)
+                    {
+                        if (headerName.Equals("X-Reqid"))
+                        {
+                            reqId = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Log"))
+                        {
+                            xlog = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("X-Px"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Fw-Via"))
+                        {
+                            xvia = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Host"))
+                        {
+                            host = respHeaders[headerName].ToString();
+                        }
+                        else if (headerName.Equals("Content-Length"))
+                        {
+                            contentLength = int.Parse(respHeaders["Content-Length"]);
+                        }
+                    }
+                }
+
+                if (contentLength > 0)
+                {
+                    Stream ps = pWebResp.GetResponseStream();
+                    respData = new byte[contentLength];
+                    int bytesRead = 0; // 已读取的字节数
+                    int bytesLeft = contentLength; // 剩余字节数
+                    while (bytesLeft > 0)
+                    {
+                        bytesRead = ps.Read(respData, contentLength - bytesLeft, bytesLeft);
+                        bytesLeft -= bytesRead;
+                    }
+
+                    try
+                    {
+                        /////////////////////////////////////////////////////////////
+                        // 改进Response的error解析, 根据HttpStatusCode
+                        // @fengyh 2016-08-17 18:29
+                        /////////////////////////////////////////////////////////////
+                        if (statusCode != (int)HCODE.OK)
+                        {
+                            bool isOtherCode = HttpCode.GetErrorMessage(statusCode, out error);
+
+                            if (isOtherCode)
+                            {
+                                string respJson = Encoding.UTF8.GetString(respData);
+                                Dictionary<string, string> errorDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(respJson);
+                                error = errorDict["error"];
+                            }
+                        }
+                    }
+                    catch (Exception) { }
+                }
+                else
+                {
+                    error = "response error";
+                }
+            }
+
+            double duration = DateTime.Now.Subtract(startTime).TotalSeconds;
+            ResponseInfo respInfo = new ResponseInfo(statusCode, reqId, xlog, xvia, host, ip, duration, error);
+            if (pRecvDataHandler != null)
+            {
+                pRecvDataHandler(respInfo, respData);
+            }
+        }
     }
 }
 
