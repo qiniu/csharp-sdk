@@ -32,18 +32,13 @@ namespace Qiniu.Processing
             Dictionary<string, string> dfopHeaders = new Dictionary<string, string>();
             dfopHeaders.Add("Authorization", token);
 
-            CompletionHandler dfopCompletionHandler = new CompletionHandler(delegate (ResponseInfo respInfo, string response)
+            RecvDataHandler dfopRecvDataHandler = new RecvDataHandler(delegate (ResponseInfo respInfo, byte[] respData)
             {
-                if (respInfo.isOk())
-                {
-                    dfopResult = StringUtils.jsonDecode<DfopResult>(response);
-                }
-
                 dfopResult.ResponseInfo = respInfo;
-                dfopResult.Response = response;
+                dfopResult.ResponseData = respData;
             });
 
-            mHttpManager.postForm(dfopUrl, dfopHeaders, null, dfopCompletionHandler);
+            mHttpManager.postFormRaw(dfopUrl, dfopHeaders, dfopRecvDataHandler);
 
             return dfopResult;
         }
@@ -59,18 +54,13 @@ namespace Qiniu.Processing
             Dictionary<string, string> dfopHeaders = new Dictionary<string, string>();
             dfopHeaders.Add("Authorization", token);            
 
-            CompletionHandler dfopCompletionHandler = new CompletionHandler(delegate (ResponseInfo respInfo, string response)
+            RecvDataHandler dfopRecvDataHandler = new RecvDataHandler(delegate (ResponseInfo respInfo, byte[] respData)
             {
-                if (respInfo.isOk())
-                {
-                    dfopResult = StringUtils.jsonDecode<DfopResult>(response);
-                }
-
                 dfopResult.ResponseInfo = respInfo;
-                dfopResult.Response = response;
+                dfopResult.ResponseData = respData;
             });
 
-            mHttpManager.postMultipartDataRaw(dfopUrl, dfopHeaders, dfopData, null, dfopCompletionHandler);
+            mHttpManager.postMultipartDataRaw(dfopUrl, dfopHeaders, dfopData, null, dfopRecvDataHandler);
 
             return dfopResult;
         }
