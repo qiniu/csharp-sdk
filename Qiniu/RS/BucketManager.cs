@@ -31,7 +31,7 @@ namespace Qiniu.RS
         /// <returns></returns>
         public string CreateManageToken(string url)
         {
-            return string.Format("QBox {0}", signature.Sign(url));
+            return CreateManageToken(url, null);
         }
 
         /// <summary>
