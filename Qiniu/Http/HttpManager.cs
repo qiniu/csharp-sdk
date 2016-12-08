@@ -919,8 +919,8 @@ namespace Qiniu.Http
                 }
                 else
                 {
-                    statusCode = -1;
-                    error = "response err";
+                    //statusCode = -1;
+                    //error = "response err";
                 }
             }
             else
