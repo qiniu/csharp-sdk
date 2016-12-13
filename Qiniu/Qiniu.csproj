@@ -54,6 +54,7 @@
     <Compile Include="Fusion\Model\BandwidthResult.cs" />
     <Compile Include="Fusion\Model\FluxRequest.cs" />
     <Compile Include="Fusion\Model\FluxResult.cs" />
+    <Compile Include="Fusion\Model\HotLinkRequest.cs" />
     <Compile Include="Fusion\Model\LogListRequest.cs" />
     <Compile Include="Fusion\Model\LogListResult.cs" />
     <Compile Include="Fusion\Model\RefreshRequest.cs" />
