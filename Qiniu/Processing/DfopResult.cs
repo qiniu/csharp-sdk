@@ -6,8 +6,15 @@ using Qiniu.Http;
 
 namespace Qiniu.Processing
 {
-    public class DfopResult:HttpResult
+    public class DfopResult
     {
-        public DfopResult() { }
+        public ResponseInfo ResponseInfo { get; set; }
+
+        public byte[] ResponseData { get; set; }
+
+        public string Response()
+        {
+            return Encoding.UTF8.GetString(ResponseData);
+        }
     }
 }

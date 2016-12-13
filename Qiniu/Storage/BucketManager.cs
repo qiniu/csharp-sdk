@@ -442,6 +442,25 @@ namespace Qiniu.Storage
             return result;
         }
 
+        public HttpResult updateLifecycle(string bucket,string key,int deleteAfterDays)
+        {
+            HttpResult updateResult = null;
+
+            string updateUrl = string.Format("{0}{1}", Config.ZONE.RsHost, updateLifecycleOp(bucket, key, deleteAfterDays));
+            string accessToken = Auth.createManageToken(updateUrl, null, this.mac);
+            Dictionary<string, string> updateHeaders = new Dictionary<string, string>();
+            updateHeaders.Add("Authorization", accessToken);
+            CompletionHandler updateCompletionHandler = new CompletionHandler(delegate (ResponseInfo respInfo, string response)
+            {
+                updateResult = new HttpResult();
+                updateResult.Response = response;
+                updateResult.ResponseInfo = respInfo;
+            });
+
+            this.mHttpManager.postForm(updateUrl, updateHeaders, null, updateCompletionHandler);
+            return updateResult;
+        }
+
         public string statOp(string bucket, string key)
         {
             return string.Format("/stat/{0}", StringUtils.encodedEntry(bucket, key));
@@ -496,6 +515,11 @@ namespace Qiniu.Storage
         public string prefetchOp(string bucket, string key)
         {
             return string.Format("/prefetch/{0}", StringUtils.encodedEntry(bucket, key));
+        }
+
+        public string updateLifecycleOp(string bucket,string key,int deleteAfterDays)
+        {
+            return string.Format("/deleteAfterDays/{0}/{1}", StringUtils.encodedEntry(bucket, key), deleteAfterDays);
         }
     }
 }

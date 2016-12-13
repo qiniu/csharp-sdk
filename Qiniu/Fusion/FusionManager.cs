@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using Qiniu.Fusion.Model;
 using System.Net;
 using Qiniu.Http;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace Qiniu.Fusion
 {
@@ -206,5 +208,23 @@ namespace Qiniu.Fusion
 
             return result;
         }
+
+        /// <summary>
+        /// 时间戳防盗链
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public string HotLink(HotLinkRequest request)
+        {
+            string RAW = request.RawUrl;
+
+            string key = request.Key;
+            string path = Uri.EscapeUriString(request.Path);
+            string file = request.File;
+            string ts = (int.Parse(request.Timestamp)).ToString("x");
+            string SIGN = StringUtils.md5Hash(key + path + file + ts);            
+
+            return string.Format("{0}&sign={1}&t={2}", RAW, SIGN, ts);
+        }        
     }
 }
