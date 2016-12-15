@@ -55,6 +55,12 @@ namespace Qiniu.Http
             {
                 vWebReq = (HttpWebRequest)WebRequest.Create(pUrl);
             }
+            catch(WebException wexp)
+            {
+                // FIX-HTTP 4xx/5xx Error 2016-11-22, 17:00 @fengyh
+                HttpWebResponse xWebResp = wexp.Response as HttpWebResponse;
+                handleErrorWebResponse(xWebResp, pCompletionHandler, wexp);
+            }
             catch (Exception ex)
             {
                 if (pCompletionHandler != null)
