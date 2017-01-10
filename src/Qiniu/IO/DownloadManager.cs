@@ -30,7 +30,7 @@ namespace Qiniu.IO
         /// </summary>
         /// <param name="url">资源URL</param>
         /// <returns>下载凭证</returns>
-        public string CreateDownloadToken(string url)
+        public string createDownloadToken(string url)
         {
             return signature.sign(url);
         }
@@ -41,7 +41,7 @@ namespace Qiniu.IO
         /// <param name="url">初始链接</param>
         /// <param name="expireInSeconds">下载有效时间(单位:秒)</param>
         /// <returns>包含过期时间的已授权的下载链接</returns>
-        public string CreateSignedUrl(string url, int expireInSeconds = 3600)
+        public string createSignedUrl(string url, int expireInSeconds = 3600)
         {
             string deadline = Util.StringHelper.calcUnixTimestamp(expireInSeconds);
 
@@ -54,7 +54,7 @@ namespace Qiniu.IO
             {
                 sb.AppendFormat("?e={0}", deadline);
             }
-            string token = CreateDownloadToken(sb.ToString());
+            string token = createDownloadToken(sb.ToString());
             sb.AppendFormat("&token={0}", token);
 
             return sb.ToString();
@@ -66,7 +66,7 @@ namespace Qiniu.IO
         /// <param name="signedUrl">(可访问的)链接</param>
         /// <param name="saveasFile">(另存为)本地文件名</param>
         /// <returns>下载资源(私有文件)的结果</returns>
-        public HttpResult DownloadPriv(string signedUrl,string saveasFile)
+        public HttpResult downloadPriv(string signedUrl,string saveasFile)
         {
             HttpResult result = new HttpResult();
              
@@ -113,7 +113,7 @@ namespace Qiniu.IO
         /// <param name="url">公开可访问的资源下载URL</param>
         /// <param name="saveasFile">(另存为)本地文件名</param>
         /// <returns>下载资源(公开文件)的结果</returns>
-        public static HttpResult Download(string url,string saveasFile)
+        public static HttpResult download(string url,string saveasFile)
         {
             HttpResult result = new HttpResult();
 

@@ -1,6 +1,6 @@
 **2017-01-10**
 
-最新版本v7.2.2.0，适用于.NET Framework 2.0+ 和.NET Core
+最新版本v7.2.3，适用于.NET Framework 2.0+ 和.NET Core
 
 更新：HTTP模块现在可以加入请求Header内容。
 
