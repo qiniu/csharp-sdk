@@ -14,7 +14,7 @@
 
 以下文档/链接提供一些基本示例，参考这些示例可以帮助您更快熟悉如何使用这套SDK。
 
-* [github | csharp-sdk-examples](https://github.com/fengyhack/csharp-sdk-shared-examples)
+* [github | csharp-sdk-examples](https://github.com/fengyhack/csharp-sdk-examples)
 
 * [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.3/index.html)
 
