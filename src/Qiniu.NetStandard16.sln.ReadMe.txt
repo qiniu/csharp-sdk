@@ -1,0 +1,3 @@
+如需编译Qiniu.NetStandard16或者Qiniu.ALL_VER(它包含前者)
+请先将project.json和project.lock.json拷贝至Qiniu文件夹下
+或者拷贝project.json文件然后执行dotnet restore命令

@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{45A014F6-CCD4-42CE-819C-5F68EA92C8AE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Qiniu</RootNamespace>
+    <AssemblyName>Qiniu</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <BaseIntermediateOutputPath>..\..\bin\net45\obj</BaseIntermediateOutputPath>
+    <OutputPath>..\..\bin\net45\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;Net45</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\bin\net45\Qiniu.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <BaseIntermediateOutputPath>..\..\bin\net45\obj</BaseIntermediateOutputPath>
+    <OutputPath>..\..\bin\net45\</OutputPath>
+    <DefineConstants>TRACE;Net45</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\bin\net45\Qiniu.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Http\HttpManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CDN\Model\RefreshRequest.cs" />
+    <Compile Include="CDN\Model\RefreshInfo.cs" />
+    <Compile Include="CDN\Model\RefreshResult.cs" />
+    <Compile Include="CDN\Model\PrefetchRequest.cs" />
+    <Compile Include="CDN\Model\PrefetchInfo.cs" />
+    <Compile Include="CDN\Model\PrefetchResult.cs" />
+    <Compile Include="CDN\Model\BandwidthRequest.cs" />
+    <Compile Include="CDN\Model\BandwidthInfo.cs" />
+    <Compile Include="CDN\Model\BandwidthResult.cs" />
+    <Compile Include="CDN\Model\FluxRequest.cs" />
+    <Compile Include="CDN\Model\FluxInfo.cs" />
+    <Compile Include="CDN\Model\FluxResult.cs" />
+    <Compile Include="CDN\Model\LogListRequest.cs" />
+    <Compile Include="CDN\Model\LogListInfo.cs" />
+    <Compile Include="CDN\Model\LogListResult.cs" />
+    <Compile Include="CDN\Model\HotLinkRequest.cs" />
+    <Compile Include="CDN\FusionManager.cs" />
+    <Compile Include="RSF\OperationManager.cs" />
+    <Compile Include="RS\Model\BucketInfo.cs" />
+    <Compile Include="RS\Model\BucketResult.cs" />
+    <Compile Include="Util\CRC32.cs" />
+    <Compile Include="Util\QETag.cs" />
+    <Compile Include="Util\StringHelper.cs" />
+    <Compile Include="Util\UserEnv.cs" />
+    <Compile Include="Common\QiniuCSharpSDK.cs" />
+    <Compile Include="Common\Config.cs" />
+    <Compile Include="Common\Mac.cs" />
+    <Compile Include="Common\Signature.cs" />
+    <Compile Include="Common\Zone.cs" />
+    <Compile Include="Common\ZoneHelper.cs" />
+    <Compile Include="Http\HttpHelper.cs" />
+    <Compile Include="Http\HttpResult.cs" />
+    <Compile Include="Http\UrlHelper.cs" />
+    <Compile Include="IO\Model\ChunkUnit.cs" />
+    <Compile Include="IO\Model\PutPolicy.cs" />
+    <Compile Include="IO\Model\ResumeContext.cs" />
+    <Compile Include="IO\Model\ResumeHelper.cs" />
+    <Compile Include="IO\Model\ResumeInfo.cs" />
+    <Compile Include="IO\Model\UploadController.cs" />
+    <Compile Include="IO\Model\UploadProgressHandler.cs" />
+    <Compile Include="IO\ResumableUploader.cs" />
+    <Compile Include="IO\SimpleUploader.cs" />
+    <Compile Include="IO\UploadManager.cs" />
+    <Compile Include="IO\DownloadManager.cs" />
+    <Compile Include="RS\Model\BatchResult.cs" />
+    <Compile Include="RS\BucketManager.cs" />
+    <Compile Include="RS\Model\BatchInfo.cs" />
+    <Compile Include="RS\Model\BucketsResult.cs" />
+    <Compile Include="RS\Model\DomainsResult.cs" />
+    <Compile Include="RS\Model\FileDesc.cs" />
+    <Compile Include="RS\Model\ListInfo.cs" />
+    <Compile Include="RS\Model\ListResult.cs" />
+    <Compile Include="RS\Model\StatInfo.cs" />
+    <Compile Include="RS\Model\StatResult.cs" />
+    <Compile Include="RSF\Model\PfopResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Packages.Net40.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+	  del  /q /s Qiniu.pdb
+	  rd  /q /s .\obj\
+  </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,18 @@
+{
+  "title": "Qiniu (Cloud) C# SDK v7.2.2.0 (.NETStandard 1.6.0)",
+  "copyright": "Copyright ©  2017",
+  "description": "Qiniu (Cloud) C# SDK v7.2.2.0 (.NETStandard 1.6.0)",
+  "version": "7.2.2-0",
+  "dependencies": {
+    "NETStandard.Library": "1.6.0"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  },
+  "buildOptions": {
+    "xmlDoc": true,
+    "define": [ "NetStandard", "NetStandard16" ]
+  }
+}
