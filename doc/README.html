@@ -1,0 +1,221 @@
+<!DOCTYPE html><html><head><title>Qiniu (Cloud) C# SDK</title><meta charset='utf-8'><link href='https://dn-maxiang.qbox.me/res-min/themes/marxico.css' rel='stylesheet'><style>
+.note-content  {font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif;}
+
+</style></head><body><div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h1 id="qiniu-cloud-c-sdk">Qiniu (Cloud) C# SDK</h1>
+
+<h2 id="关于">关于</h2>
+
+<p>此 C# SDK 适用于.NET Framework 2.0+ 和 .NET Core，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。</p>
+
+<h2 id="sdk文档">SDK文档</h2>
+
+<p>以下文档用于检索SDK接口、属性说明，它将有助于您理解SDK的结构。</p>
+
+<ul><li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.2/index.html" target="_blank">HTML在线浏览</a></p></li>
+<li><p><a href="http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.2.chm" target="_blank">CHM文件下载</a></p></li>
+</ul>
+
+<p>以下文档/链接提供一些基本示例，参考这些示例可以帮助您更快熟悉如何使用这套SDK。</p>
+
+<ul><li><p><a href="https://github.com/fengyhack/csharp-sdk-shared-examples" target="_blank">github | csharp-sdk-examples</a></p></li>
+<li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.2/index.html" target="_blank">C# SDK使用指南 | 代码示例</a></p></li>
+</ul>
+
+
+
+<h2 id="如何安装">如何安装</h2>
+
+<p>当前最新版本及最新改动同步在master分支。</p>
+
+<p>以下是安装SDK的几种不同的方式，您可以根据需要来选择。</p>
+
+<p><strong>1. 直接添加DLL引用</strong></p>
+
+<p>您可以在<a href="https://github.com/qiniu/csharp-sdk/releases" target="_blank">这里</a>找到所有的Release，选择您需要的版本下载，解压后将*.dll文件添加至项目引用。需要注意的是，此SDK依赖<a href="http://www.newtonsoft.com/json" target="_blank">Json.NET</a>，可以添加对应版本Newtonsoft.Json.dll引用或者使用NuGet来安装它：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs sql"><span class="hljs-operator"><span class="hljs-keyword">Install</span>-<span class="hljs-keyword">Package</span> Newtonsoft.<span class="hljs-keyword">Json</span></span><br></code></pre>
+
+<p><strong>2. 包管理器(NuGet)安装</strong> </p>
+
+<p>或者从NuGet来安装，以Visual Studio 2013/2015为例，打开NuGet程序包管理器搜索Qiniu.Shared或者在控制台中键入以下命令：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs sql"><span class="hljs-operator"><span class="hljs-keyword">Install</span>-<span class="hljs-keyword">Package</span> Qiniu.<span class="hljs-keyword">Shared</span></span><br></code></pre>
+
+<p><strong>3. 从源码编译</strong></p>
+
+<p>当然，您也可以直接从源码编译</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs crmsh">git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/qiniu/csharp-sdk<br></code></pre>
+
+
+
+<h2 id="如何编译">如何编译</h2>
+
+<p>推荐使用VS2013及以上版，根据目标平台选择对应的解决方案文件并打开：</p>
+
+<table>
+<thead>
+<tr>
+  <th>目标</th>
+  <th>解决方案文件</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td>.NET Framework 2.0</td>
+  <td>Qiniu.Net20.sln</td>
+</tr>
+<tr>
+  <td>.NET Framework 3.5</td>
+  <td>Qiniu.Net35.sln</td>
+</tr>
+<tr>
+  <td>.NET Framework 4.0</td>
+  <td>Qiniu.Net40.sln</td>
+</tr>
+<tr>
+  <td>.NET Framework 4.5</td>
+  <td>Qiniu.Net45.sln</td>
+</tr>
+<tr>
+  <td>.NET Framework 4.6</td>
+  <td>Qiniu.Net46.sln</td>
+</tr>
+<tr>
+  <td>.NET Core(netstandard1.6)</td>
+  <td>Qiniu.NetStandard16.sln</td>
+</tr>
+<tr>
+  <td>以上全部</td>
+  <td>Qiniu.ALL_VER.sln</td>
+</tr>
+</tbody></table>
+
+
+<p><strong>注意</strong></p>
+
+<p>如需编译<code>Qiniu.NetStandard16</code>或者<code>Qiniu.ALL_VER</code>(它包含前者)，请先将<code>project.json</code>和<code>project.lock.json</code>拷贝至<code>Qiniu</code>文件夹下，或者拷贝<code>project.json</code>文件然后执行<code>dotnet restore</code>命令（推荐）。</p>
+
+<p>如需编译其他非NetCore版本，请删除<code>Qiniu</code>文件夹下的<code>project.json</code>和<code>project.lock.json</code>（如果有）。</p>
+
+
+
+<h2 id="api参考手册">API参考手册</h2>
+
+<ul><li><p><a href="http://developer.qiniu.com/article/index.html#kodo-api-handbook" target="_blank">对象存储API参考手册</a></p></li>
+<li><p><a href="http://developer.qiniu.com/article/index.html#dora-api-handbook" target="_blank">数据处理API参考手册</a></p></li>
+<li><p><a href="http://developer.qiniu.com/article/index.html#fusion-api-handbook" target="_blank">融合CDN加速API参考手册</a></p></li>
+</ul>
+
+
+
+<h2 id="相关资源">相关资源</h2>
+
+<p>如果您有任何关于我们文档或产品的建议和想法，欢迎到我们的技术论坛参与讨论。</p>
+
+<ul><li><p><a href="http://segmentfault.com/qiniu" target="_blank">技术论坛</a> - 在这里您可以和其他开发者愉快的讨论如何更好的使用七牛云服务</p></li>
+<li><p><a href="http://support.qiniu.com/hc/request/guest/" target="_blank">提交工单</a> - 如果您的问题不适合在论坛讨论或得不到回答，您也可以提交一个工单，技术支持人员会尽快回复您</p></li>
+<li><p><a href="http://blog.qiniu.com/" target="_blank">博客</a> - 这里会持续发布市场活动和技术分享文章</p></li>
+<li><p><a href="http://weibo.com/qiniutek" target="_blank">微博</a></p></li>
+<li><p><a href="http://developer.qiniu.com/article/faqs/" target="_blank">常见问题</a></p></li>
+</ul>
+
+
+
+<h2 id="贡献代码">贡献代码</h2>
+
+<ol><li rel="1"><p>Fork</p></li>
+<li rel="2"><p>创建您的特性分支 git checkout -b my-new-feature</p></li>
+<li rel="3"><p>提交您的改动 git commit -am ‘Added some feature’</p></li>
+<li rel="4"><p>将您的修改记录提交到远程 git 仓库 git push origin my-new-feature</p></li>
+<li rel="5"><p>然后到 github 网站的该 git 远程仓库的 my-new-feature 分支下发起 Pull Request</p></li>
+</ol>
+
+
+
+<h2 id="许可证">许可证</h2>
+
+<p>Copyright (c) 2017 <a href="http://www.qiniu.com" target="_blank">qiniu.com</a></p>
+
+<p>基于 MIT 协议发布:</p>
+
+<p>www.opensource.org/licenses/MIT</p>
+
+<h2 id="附录">附录</h2>
+
+
+
+<h3 id="速览net-core">速览.NET Core</h3>
+
+<p>下面是一个入门向导，如果您对如何创建及使用.NET Core程序还不太熟悉，可以参考；如果您已经比较熟悉，可以直接略过(或者也可以帮助我们改进^_^)。</p>
+
+<p>开始之前，您需要准备<code>dotnet</code>工具，参见<a href="https://github.com/dotnet/cli/" target="_blank">https://github.com/dotnet/cli/</a></p>
+
+<p>以下步骤基本上都是在命令行终端下执行(如Windows的命令行控制台，Ubuntu/Mac的终端)。</p>
+
+
+
+<h4 id="1-创建">1. 创建</h4>
+
+<p>首先切换到您的项目工作目录，然后键入以下命令来创建一个新的项目:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs actionscript">dotnet <span class="hljs-keyword">new</span><br>dotnet restore<br></code></pre>
+
+<p><strong>注意</strong></p>
+
+<p>在执行<code>dotnet restore</code>之前，您可以在文本编辑器中打开并修改<code>project.json</code>文件(这个文件在执行<code>dotnet new</code>后就会自动生成)内容，下面是一个示例:</p>
+
+<pre class="prettyprint hljs-dark"><code class="language-json hljs">{<br>    "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.0-*"</span></span>,<br>    "<span class="hljs-attribute">buildOptions</span>": <span class="hljs-value">{<br>         "<span class="hljs-attribute">emitEntryPoint</span>": <span class="hljs-value"><span class="hljs-literal">true</span><br>        </span>}</span>,<br><br>    "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{<br>        "<span class="hljs-attribute">Microsoft.NETCore.App</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.1"</span><br>            </span>}</span>,<br>            "<span class="hljs-attribute">Qiniu</span>": <span class="hljs-value"><span class="hljs-string">"7.1.0.0"</span></span>,<br>            "<span class="hljs-attribute">Newtonsoft.Json</span>": <span class="hljs-value"><span class="hljs-string">"9.0.1"</span><br>        </span>}</span>,<br><br>        "<span class="hljs-attribute">frameworks</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">netcoreapp1.0</span>": <span class="hljs-value">{<br>                "<span class="hljs-attribute">imports</span>": <span class="hljs-value"><span class="hljs-string">"dnxcore50"</span><br>                </span>}<br>        </span>}</span>,<br><br>        "<span class="hljs-attribute">runtimes</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">win7-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">win7-x86</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">osx.10.10-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">osx.10.11-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">ubuntu.14.04-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">ubuntu.16.04-x64</span>": <span class="hljs-value">{}<br>        </span>}<br></span>}<br></code></pre>
+
+<p>创建好项目之后就可以编写您的csharp代码了。</p>
+
+
+
+<h4 id="2-发布">2. 发布</h4>
+
+<p>根据您的目标平台(操作系统)，选择其中一个来执行:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs cpp">dotnet publish -r win7-x64<br>dotnet publish -r ubuntu<span class="hljs-number">.16</span><span class="hljs-number">.04</span>-x64<br>dotnet publish -r osx<span class="hljs-number">.10</span><span class="hljs-number">.11</span>-x64<br></code></pre>
+
+<p>发布之后，直接拷贝发布目录下的所有文件到目标计算机就可以直接使用。</p>
+
+<p>如果目标平台上已经安装了.NET Core运行时，那么您需要做的就是编译：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs nginx"><span class="hljs-title">dotnet</span> build<br></code></pre>
+
+
+
+<h4 id="3-执行">3. 执行</h4>
+
+<p><strong>如果您使用的是OSX 10.11(EI Capitan)</strong>, 请先安装openssl:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs crystal">brew update<br>brew install openssl<br>brew link --force openssl<br>ln -s /usr/local/opt/openssl/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">libcrypto</span>.1.0.0.<span class="hljs-title">dylib</span> /<span class="hljs-title">usr</span>/<span class="hljs-title">local</span>/<span class="hljs-title">lib</span>/</span><br>ln -s /usr/local/opt/openssl/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">libssl</span>.1.0.0.<span class="hljs-title">dylib</span> /<span class="hljs-title">usr</span>/<span class="hljs-title">local</span>/<span class="hljs-title">lib</span>/</span><br></code></pre>
+
+<p>假设您编译好的程序(<em>built app</em>)是<code>Example.dll</code>，您可以键入以下命令来执行:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs css"><span class="hljs-tag">dotnet</span> <span class="hljs-tag">Example</span><span class="hljs-class">.dll</span><br></code></pre>
+
+<p>当然，执行这个命令之前，<code>dotnet</code>工具是必须安装的。</p>
+
+<p>如果您发布到Windows并且生成了exe文件，直接双击就可以运行。</p></div></body></html>
