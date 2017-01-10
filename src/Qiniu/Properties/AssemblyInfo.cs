@@ -10,45 +10,45 @@ using System.Runtime.InteropServices;
 
 #if Net20
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 2.0)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 2.0)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 2.0)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 2.0)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 2.0)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 2.0)")]
 
 #elif Net35
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 3.5)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 3.5)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 3.5)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 3.5)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 3.5)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 3.5)")]
 
 #elif Net40
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 4.0)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 4.0)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 4.0)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 4.0)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 4.0)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 4.0)")]
 
 #elif Net45
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 4.5)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 4.5)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 4.5)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 4.5)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 4.5)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 4.5)")]
 
 #elif Net46
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 4.6)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 4.6)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.2.0 (.NET 4.6)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 4.6)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 4.6)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.3.0 (.NET 4.6)")]
 
 #elif NetStandard16
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.2.0 (.NETStandard 1.6.0)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.2.0 (.NETStandard 1.6.0)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.2.0 (.NETStandard 1.6.0)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.3.0 (.NETStandard 1.6.0)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.3.0 (.NETStandard 1.6.0)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.3.0 (.NETStandard 1.6.0)")]
 
 #else
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.2.0")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.2.0")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.2.0")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.3.0")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.3.0")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.3.0")]
 
 #endif
 
@@ -63,6 +63,6 @@ using System.Runtime.InteropServices;
 [assembly: Guid("957cd434-8b12-46ce-980b-09ca26ed340d")]
 
 [assembly: AssemblyCopyright("Copyright ©  2017")]
-[assembly: AssemblyVersion("7.2.2.0")]
-[assembly: AssemblyFileVersion("7.2.2.0")]
+[assembly: AssemblyVersion("7.2.3.0")]
+[assembly: AssemblyFileVersion("7.2.3.0")]
 
