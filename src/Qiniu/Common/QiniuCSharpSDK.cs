@@ -11,7 +11,7 @@ public class QiniuCSharpSDK
     /// <summary>
     /// SDK版本号
     /// </summary>
-    public const string VERSION = "7.2.2.0";
+    public const string VERSION = "7.2.4";
 
     /// <summary>
     /// SDK模块

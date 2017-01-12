@@ -25,6 +25,15 @@ namespace Qiniu.IO
         // 是否从CDN上传
         private bool UPLOAD_FROM_CDN = false;
 
+        // 上传进度处理器 - 仅用于上传大文件
+        private UploadProgressHandler upph = null;
+
+        // 上传控制器 - 仅用于上传大文件
+        private UploadController upctl = null;
+
+        // 上传记录文件 - 仅用于上传大文件
+        private string recordFile = null;
+
         /// <summary>
         /// 初始化
         /// </summary>
@@ -34,6 +43,33 @@ namespace Qiniu.IO
         {
             PUT_THRESHOLD = putThreshold;
             UPLOAD_FROM_CDN = uploadFromCDN;
+        }
+
+        /// <summary>
+        /// 设置上传进度处理器-仅对于上传大文件有效
+        /// </summary>
+        /// <param name="upph">上传进度处理器</param>
+        public void setUploadProgressHandler(UploadProgressHandler upph)
+        {
+            this.upph = upph;
+        }
+
+        /// <summary>
+        /// 设置上传控制器-仅对于上传大文件有效
+        /// </summary>
+        /// <param name="upctl">上传控制器</param>
+        public void setUploadController(UploadController upctl)
+        {
+            this.upctl = upctl;
+        }
+
+        /// <summary>
+        /// 设置断点记录文件-仅对于上传大文件有效
+        /// </summary>
+        /// <param name="recordFile">记录文件</param>
+        public void setRecordFile(string recordFile)
+        {
+            this.recordFile = recordFile;
         }
 
         /// <summary>
@@ -73,8 +109,23 @@ namespace Qiniu.IO
             FileInfo fi = new FileInfo(localFile);
             if (fi.Length > PUT_THRESHOLD)
             {
-                ResumableUploader ru = new ResumableUploader(UPLOAD_FROM_CDN);
-                result = ru.uploadFile(localFile, saveKey, token);
+                if (string.IsNullOrEmpty(recordFile))
+                {
+                    recordFile = "QiniuRU_" + Util.StringHelper.calcMD5(localFile + saveKey);
+                }
+
+                if (upph == null)
+                {
+                    upph = new UploadProgressHandler(ResumableUploader.defaultUploadProgressHandler);
+                }
+
+                if (upctl == null)
+                {
+                    upctl = new UploadController(ResumableUploader.defaultUploadController);
+                }
+
+                ResumableUploader ru = new ResumableUploader(UPLOAD_FROM_CDN, CHUNK_UNIT);
+                result = ru.uploadFile(localFile, saveKey, token, recordFile, upph, upctl);
             }
             else
             {

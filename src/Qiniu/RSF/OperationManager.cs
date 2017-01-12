@@ -186,7 +186,7 @@ namespace Qiniu.RSF
                 sb.AppendFormat("{0}--\r\n", sep);
                 byte[] data = Encoding.UTF8.GetBytes(sb.ToString());
 
-                result = httpManager.postMultipart(dfopUrl, data, boundary, token, null, true);
+                result = httpManager.postMultipart(dfopUrl, data, boundary, token, true);
             }
             catch (Exception ex)
             {
@@ -246,7 +246,7 @@ namespace Qiniu.RSF
                 string dfopUrl = string.Format("{0}/dfop?fop={1}&url={2}", Config.DFOP_API_HOST, fop, encodedUrl);
                 string token = createManageToken(dfopUrl, null);
 
-                result = httpManager.post(dfopUrl, token, null, true);
+                result = httpManager.post(dfopUrl, token, true);
             }
             catch (Exception ex)
             {
@@ -299,7 +299,7 @@ namespace Qiniu.RSF
                 ms.Write(partData2, 0, partData2.Length);
                 ms.Write(partData3, 0, partData3.Length);
 
-                result = httpManager.postMultipart(dfopUrl, ms.ToArray(), boundary, token, null, true);
+                result = httpManager.postMultipart(dfopUrl, ms.ToArray(), boundary, token, true);
             }
             catch (Exception ex)
             {

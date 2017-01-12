@@ -72,7 +72,7 @@ namespace Qiniu.IO
              
             try
             {
-                result = httpManager.get(signedUrl, null, null, true);
+                result = httpManager.get(signedUrl, null, true);
                 if (result.Code == HttpHelper.STATUS_CODE_OK)
                 {
                     using (FileStream fs = File.Create(saveasFile, result.Data.Length))
@@ -121,7 +121,7 @@ namespace Qiniu.IO
             {
                 HttpManager httpManager = new HttpManager();
 
-                result = httpManager.get(url, null, null, true);
+                result = httpManager.get(url, null, true);
                 if (result.Code == HttpHelper.STATUS_CODE_OK)
                 {
                     using (FileStream fs = File.Create(saveasFile, result.Data.Length))
