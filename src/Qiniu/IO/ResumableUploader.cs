@@ -59,8 +59,8 @@ namespace Qiniu.IO
         /// <returns>上传结果</returns>
         public HttpResult uploadFile(string localFile, string saveKey, string token)
         {
-            string ruFile = "QiniuRU_" + StringHelper.calcMD5(localFile + saveKey);
-            string recordFile = Path.Combine(UserEnv.getHomeFolder(), ruFile);
+            string recordKey = defaultRecordKey(localFile, saveKey);
+            string recordFile = Path.Combine(UserEnv.getHomeFolder(), recordKey);
             UploadProgressHandler uppHandler = new UploadProgressHandler(defaultUploadProgressHandler);
             return uploadFile(localFile, saveKey, token, recordFile, uppHandler);
         }
@@ -102,8 +102,6 @@ namespace Qiniu.IO
 
             try
             {
-                string s = null;
-
                 fs = new FileStream(localFile, FileMode.Open);
 
                 long fileSize = fs.Length;
@@ -164,9 +162,9 @@ namespace Qiniu.IO
                     if (hr.Code != HttpHelper.STATUS_CODE_OK)
                     {
                         result.shadow(hr);
-                        s = string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
+                        result.RefText += string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
                             offset, blockSize, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                        result.RefText += s;
+
                         return result;
                     }
 
@@ -200,9 +198,9 @@ namespace Qiniu.IO
                             if (hr.Code != HttpHelper.STATUS_CODE_OK)
                             {
                                 result.shadow(hr);
-                                s = string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
+                                result.RefText += string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
                                     offset, blockOffset, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                result.RefText += s;
+
                                 return result;
                             }
 
@@ -231,16 +229,16 @@ namespace Qiniu.IO
                 if (hr.Code != HttpHelper.STATUS_CODE_OK)
                 {
                     result.shadow(hr);
-                    s = string.Format("[ResumableUpload] Error: mkfile @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    result.RefText += s;
+                    result.RefText += string.Format("[ResumableUpload] Error: mkfile @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
                     return result;
                 }
 
                 File.Delete(recordFile);
                 result.shadow(hr);
-                s = string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
+                result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
                     localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                result.RefText += s;
+
             }
             catch (Exception ex)
             {
@@ -291,8 +289,6 @@ namespace Qiniu.IO
 
             try
             {
-                string s = null;
-
                 fs = new FileStream(localFile, FileMode.Open);
 
                 long fileSize = fs.Length;
@@ -339,9 +335,8 @@ namespace Qiniu.IO
                     {
                         result.Code = HttpHelper.STATUS_CODE_USER_CANCELED;
                         result.RefCode = HttpHelper.STATUS_CODE_USER_CANCELED;
-                        s = string.Format("[ResumableUpload] Info: upload task is aborted @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                        result.RefText += s;
-                        Console.WriteLine(s);
+                        result.RefText += string.Format("[ResumableUpload] Info: upload task is aborted @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
                         return result;
                     }
                     else if (upts == UPTS.Suspended)
@@ -352,9 +347,7 @@ namespace Qiniu.IO
                             mres.Reset();
 
                             result.RefCode = HttpHelper.STATUS_CODE_USER_PAUSED;
-                            s = string.Format("[ResumableUpload] Info: upload task is paused @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                            result.RefText += s;
-                            Console.WriteLine(s);
+                            result.RefText += string.Format("[ResumableUpload] Info: upload task is paused @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                         }
                         mres.WaitOne(1000);
                     }
@@ -366,9 +359,7 @@ namespace Qiniu.IO
                             mres.Set();
 
                             result.RefCode = HttpHelper.STATUS_CODE_USER_RESUMED;
-                            s = string.Format("[ResumableUpload] Info: upload task is resumed @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                            result.RefText += s;
-                            Console.WriteLine(s);
+                            result.RefText += string.Format("[ResumableUpload] Info: upload task is resumed @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                         }
 
                         #region one_block
@@ -396,9 +387,9 @@ namespace Qiniu.IO
                         if (hr.Code != HttpHelper.STATUS_CODE_OK)
                         {
                             result.shadow(hr);
-                            s = string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
+                            result.RefText += string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
                             offset, blockSize, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                            result.RefText += s;
+
                             return result;
                         }
 
@@ -432,9 +423,9 @@ namespace Qiniu.IO
                                 if (hr.Code != HttpHelper.STATUS_CODE_OK)
                                 {
                                     result.shadow(hr);
-                                    s = string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
+                                    result.RefText += string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
                                     offset, blockOffset, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                    result.RefText += s;
+
                                     return result;
                                 }
 
@@ -464,16 +455,15 @@ namespace Qiniu.IO
                 if (hr.Code != HttpHelper.STATUS_CODE_OK)
                 {
                     result.shadow(hr);
-                    s = string.Format("[ResumableUpload] Error: mkfile @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    result.RefText += s;
+                    result.RefText += string.Format("[ResumableUpload] Error: mkfile @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
                     return result;
                 }
 
                 File.Delete(recordFile);
                 result.shadow(hr);
-                s = string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
+                result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
                     localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                result.RefText += s;
             }
             catch (Exception ex)
             {
@@ -502,7 +492,7 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// 高级上传，分片上传/断点续上传，检查CRC32，支持重试
+        /// 分片上传/断点续上传，检查CRC32，支持重试
         /// 使用默认记录文件(recordFile)和默认进度处理(progressHandler)
         /// </summary>
         /// <param name="localFile">本地待上传的文件名</param>
@@ -510,16 +500,16 @@ namespace Qiniu.IO
         /// <param name="token">上传凭证</param>
         /// <param name="maxTry">最大尝试次数</param>
         /// <returns>上传结果</returns>
-        public HttpResult uploadFileAdvanced(string localFile, string saveKey, string token, int maxTry)
+        public HttpResult uploadFile(string localFile, string saveKey, string token, int maxTry)
         {
-            string ruFile = "QiniuRU_" + StringHelper.calcMD5(localFile + saveKey);
-            string recordFile = Path.Combine(UserEnv.getHomeFolder(), ruFile);
+            string recordKey = defaultRecordKey(localFile, saveKey);
+            string recordFile = Path.Combine(UserEnv.getHomeFolder(), recordKey);
             UploadProgressHandler uppHandler = new UploadProgressHandler(defaultUploadProgressHandler);
-            return uploadFileAdvanced(localFile, saveKey, token, recordFile, maxTry, uppHandler);
+            return uploadFile(localFile, saveKey, token, recordFile, maxTry, uppHandler);
         }
 
         /// <summary>
-        /// 高级上传，分片上传/断点续上传，检查CRC32，支持重试
+        /// 分片上传/断点续上传，检查CRC32，支持重试
         /// 使用默认进度处理(progressHandler)
         /// </summary>
         /// <param name="localFile">本地待上传的文件名</param>
@@ -528,14 +518,14 @@ namespace Qiniu.IO
         /// <param name="recordFile">记录文件(记录断点信息)</param>
         /// <param name="maxTry">最大尝试次数</param>
         /// <returns>上传结果</returns>
-        public HttpResult uploadFileAdvanced(string localFile, string saveKey, string token, string recordFile, int maxTry)
+        public HttpResult uploadFile(string localFile, string saveKey, string token, string recordFile, int maxTry)
         {
             UploadProgressHandler uppHandler = new UploadProgressHandler(defaultUploadProgressHandler);
-            return uploadFileAdvanced(localFile, saveKey, token, recordFile, maxTry, uppHandler);
+            return uploadFile(localFile, saveKey, token, recordFile, maxTry, uppHandler);
         }
 
         /// <summary>
-        /// 高级上传，分片上传/断点续上传，检查CRC32，带有自定义进度处理，支持重试
+        /// 分片上传/断点续上传，检查CRC32，带有自定义进度处理，支持重试
         /// </summary>
         /// <param name="localFile">本地待上传的文件名</param>
         /// <param name="saveKey">要保存的文件名称</param>
@@ -544,7 +534,7 @@ namespace Qiniu.IO
         /// <param name="maxTry">最大尝试次数</param>
         /// <param name="uppHandler">上传进度处理</param>
         /// <returns>上传结果</returns>
-        public HttpResult uploadFileAdvanced(string localFile, string saveKey, string token, string recordFile, int maxTry, UploadProgressHandler uppHandler)
+        public HttpResult uploadFile(string localFile, string saveKey, string token, string recordFile, int maxTry, UploadProgressHandler uppHandler)
         {
             HttpResult result = new HttpResult();
 
@@ -559,8 +549,6 @@ namespace Qiniu.IO
 
             try
             {
-                string s = null;
-
                 fs = new FileStream(localFile, FileMode.Open);
 
                 long fileSize = fs.Length;
@@ -623,8 +611,7 @@ namespace Qiniu.IO
                     iTry = 0;
                     while (++iTry <= MAX_TRY)
                     {
-                        s = string.Format("[ResumableUpload] try mkblk#{0} @{1}\n", iTry, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                        result.RefText += s;
+                        result.RefText += string.Format("[ResumableUpload] try mkblk#{0} @{1}\n", iTry, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
                         hr = mkblkChecked(chunkBuffer, offset, blockSize, chunkSize, token);
 
@@ -637,9 +624,9 @@ namespace Qiniu.IO
                     if (hr.Code != HttpHelper.STATUS_CODE_OK || hr.RefCode == HttpHelper.STATUS_CODE_NEED_RETRY)
                     {
                         result.shadow(hr);
-                        s = string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
+                        result.RefText += string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
                             offset, blockSize, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                        result.RefText += s;
+
                         return result;
                     }
 
@@ -673,8 +660,7 @@ namespace Qiniu.IO
                             iTry = 0;
                             while (++iTry <= MAX_TRY)
                             {
-                                s = string.Format("[ResumableUpload] try bput#{0} @{1}\n", iTry, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                result.RefText += s;
+                                result.RefText += string.Format("[ResumableUpload] try bput#{0} @{1}\n", iTry, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
                                 hr = bputChecked(chunkBuffer, blockOffset, chunkSize, context, token);
 
@@ -686,9 +672,8 @@ namespace Qiniu.IO
                             if (hr.Code != HttpHelper.STATUS_CODE_OK || hr.RefCode == HttpHelper.STATUS_CODE_NEED_RETRY)
                             {
                                 result.shadow(hr);
-                                s = string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
+                                result.RefText += string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
                                     offset, blockOffset, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                result.RefText += s;
                                 return result;
                             }
 
@@ -717,16 +702,15 @@ namespace Qiniu.IO
                 if (hr.Code != HttpHelper.STATUS_CODE_OK)
                 {
                     result.shadow(hr);
-                    s = string.Format("[ResumableUpload] Error: mkfile @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    result.RefText += s;
+                    result.RefText += string.Format("[ResumableUpload] Error: mkfile @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
                     return result;
                 }
 
                 File.Delete(recordFile);
                 result.shadow(hr);
-                s = string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
+                result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
                     localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                result.RefText += s;
             }
             catch (Exception ex)
             {
@@ -755,7 +739,7 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// 高级上传，分片上传/断点续上传，检查CRC32，，带有自定义进度处理和上传控制，支持重试
+        /// 分片上传/断点续上传，检查CRC32，，带有自定义进度处理和上传控制，支持重试
         /// </summary>
         /// <param name="localFile">本地待上传的文件名</param>
         /// <param name="saveKey">要保存的文件名称</param>
@@ -765,7 +749,7 @@ namespace Qiniu.IO
         /// <param name="uppHandler">上传进度处理</param>
         /// <param name="uploadController">上传控制(暂停/继续/退出)</param>
         /// <returns>上传结果</returns>
-        public HttpResult uploadFileAdvanced(string localFile, string saveKey, string token, string recordFile, int maxTry, UploadProgressHandler uppHandler, UploadController uploadController)
+        public HttpResult uploadFile(string localFile, string saveKey, string token, string recordFile, int maxTry, UploadProgressHandler uppHandler, UploadController uploadController)
         {
             HttpResult result = new HttpResult();
 
@@ -780,8 +764,6 @@ namespace Qiniu.IO
 
             try
             {
-                string s = null;
-
                 fs = new FileStream(localFile, FileMode.Open);
 
                 long fileSize = fs.Length;
@@ -829,10 +811,9 @@ namespace Qiniu.IO
                     {
                         result.Code = HttpHelper.STATUS_CODE_USER_CANCELED;
                         result.RefCode = HttpHelper.STATUS_CODE_USER_CANCELED;
-                        s = string.Format("[ResumableUpload] Info: upload task is aborted @{0}\n", 
+                        result.RefText += string.Format("[ResumableUpload] Info: upload task is aborted @{0}\n",
                             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                        result.RefText += s;
-                        Console.WriteLine(s);
+
                         return result;
                     }
                     else if (upts == UPTS.Suspended)
@@ -843,10 +824,8 @@ namespace Qiniu.IO
                             mres.Reset();
 
                             result.RefCode = HttpHelper.STATUS_CODE_USER_PAUSED;
-                            s = string.Format("[ResumableUpload] Info: upload task is paused @{0}\n", 
+                            result.RefText += string.Format("[ResumableUpload] Info: upload task is paused @{0}\n",
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                            result.RefText += s;
-                            Console.WriteLine(s);
                         }
                         mres.WaitOne(1000);
                     }
@@ -858,10 +837,8 @@ namespace Qiniu.IO
                             mres.Set();
 
                             result.RefCode = HttpHelper.STATUS_CODE_USER_RESUMED;
-                            s = string.Format("[ResumableUpload] Info: upload task is resumed @{0}\n", 
+                            result.RefText += string.Format("[ResumableUpload] Info: upload task is resumed @{0}\n",
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                            result.RefText += s;
-                            Console.WriteLine(s);
                         }
 
                         #region one_block
@@ -889,9 +866,8 @@ namespace Qiniu.IO
                         iTry = 0;
                         while (++iTry <= MAX_TRY)
                         {
-                            s = string.Format("[ResumableUpload] try mkblk#{0} @{1}\n", iTry, 
+                            result.RefText += string.Format("[ResumableUpload] try mkblk#{0} @{1}\n", iTry,
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                            result.RefText += s;
 
                             hr = mkblkChecked(chunkBuffer, offset, blockSize, chunkSize, token);
 
@@ -903,9 +879,9 @@ namespace Qiniu.IO
                         if (hr.Code != HttpHelper.STATUS_CODE_OK || hr.RefCode == HttpHelper.STATUS_CODE_NEED_RETRY)
                         {
                             result.shadow(hr);
-                            s = string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
+                            result.RefText += string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
                             offset, blockSize, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                            result.RefText += s;
+
                             return result;
                         }
 
@@ -939,9 +915,8 @@ namespace Qiniu.IO
                                 iTry = 0;
                                 while (++iTry <= MAX_TRY)
                                 {
-                                    s = string.Format("[ResumableUpload] try bput#{0} @{1}\n", iTry, 
+                                    result.RefText += string.Format("[ResumableUpload] try bput#{0} @{1}\n", iTry,
                                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                    result.RefText += s;
 
                                     hr = bputChecked(chunkBuffer, blockOffset, chunkSize, context, token);
 
@@ -953,9 +928,9 @@ namespace Qiniu.IO
                                 if (hr.Code != HttpHelper.STATUS_CODE_OK || hr.RefCode == HttpHelper.STATUS_CODE_NEED_RETRY)
                                 {
                                     result.shadow(hr);
-                                    s = string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
+                                    result.RefText += string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
                                         offset, blockOffset, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                    result.RefText += s;
+
                                     return result;
                                 }
 
@@ -985,17 +960,16 @@ namespace Qiniu.IO
                 if (hr.Code != HttpHelper.STATUS_CODE_OK)
                 {
                     result.shadow(hr);
-                    s = string.Format("[ResumableUpload] Error: mkfile @{0}\n", 
+                    result.RefText += string.Format("[ResumableUpload] Error: mkfile @{0}\n",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    result.RefText += s;
+
                     return result;
                 }
 
                 File.Delete(recordFile);
                 result.shadow(hr);
-                s = string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
+                result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
                     localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                result.RefText += s;
             }
             catch (Exception ex)
             {
@@ -1007,7 +981,7 @@ namespace Qiniu.IO
                     e = e.InnerException;
                 }
 
-                sb.AppendFormat(" @{0}\n", 
+                sb.AppendFormat(" @{0}\n",
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
                 result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
@@ -1024,6 +998,267 @@ namespace Qiniu.IO
             return result;
         }
 
+        /// <summary>
+        /// 分片上传/断点续上传，检查CRC32，，带有自定义进度处理和上传控制，支持重试
+        /// </summary>
+        /// <param name="localFile">本地待上传的文件名</param>
+        /// <param name="saveKey">要保存的文件名称</param>
+        /// <param name="token">上传凭证</param>
+        /// <param name="recordFile">记录文件(记录断点信息)</param>
+        /// <param name="maxTry">最大尝试次数</param>
+        /// <param name="uppHandler">上传进度处理</param>
+        /// <param name="uploadController">上传控制(暂停/继续/退出)</param>
+        /// <param name="extraParams">用户自定义的附加参数</param>
+        /// <returns>上传结果</returns>
+        public HttpResult uploadFile(string localFile, string saveKey, string token, string recordFile, int maxTry, UploadProgressHandler uppHandler, UploadController uploadController, Dictionary<string, string> extraParams)
+        {
+            HttpResult result = new HttpResult();
+
+            FileStream fs = null;
+
+            int MAX_TRY = getMaxTry(maxTry);
+
+            if (uppHandler == null)
+            {
+                uppHandler = defaultUploadProgressHandler;
+            }
+
+            try
+            {
+                fs = new FileStream(localFile, FileMode.Open);
+
+                long fileSize = fs.Length;
+                long chunkSize = CHUNK_SIZE;
+                long blockSize = BLOCK_SIZE;
+                byte[] chunkBuffer = new byte[chunkSize];
+                int blockCount = (int)((fileSize + blockSize - 1) / blockSize);
+
+                ResumeInfo resumeInfo = ResumeHelper.Load(recordFile);
+                if (resumeInfo == null)
+                {
+                    resumeInfo = new ResumeInfo()
+                    {
+                        FileSize = fileSize,
+                        BlockIndex = 0,
+                        BlockCount = blockCount,
+                        Contexts = new string[blockCount]
+                    };
+
+                    ResumeHelper.Save(resumeInfo, recordFile);
+                }
+
+                int index = resumeInfo.BlockIndex;
+                long offset = index * blockSize;
+                string context = null;
+                long leftBytes = fileSize - offset;
+                long blockLeft = 0;
+                long blockOffset = 0;
+                HttpResult hr = null;
+                ResumeContext rc = null;
+
+                fs.Seek(offset, SeekOrigin.Begin);
+
+                var upts = UPTS.Activated;
+                bool bres = true;
+                var mres = new ManualResetEvent(true);
+                int iTry = 0;
+
+                while (leftBytes > 0)
+                {
+                    // 每上传一个BLOCK之前，都要检查一下UPTS
+                    upts = uploadController();
+
+                    if (upts == UPTS.Aborted)
+                    {
+                        result.Code = HttpHelper.STATUS_CODE_USER_CANCELED;
+                        result.RefCode = HttpHelper.STATUS_CODE_USER_CANCELED;
+                        result.RefText += string.Format("[ResumableUpload] Info: upload task is aborted @{0}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                        return result;
+                    }
+                    else if (upts == UPTS.Suspended)
+                    {
+                        if (bres)
+                        {
+                            bres = false;
+                            mres.Reset();
+
+                            result.RefCode = HttpHelper.STATUS_CODE_USER_PAUSED;
+                            result.RefText += string.Format("[ResumableUpload] Info: upload task is paused @{0}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                        }
+                        mres.WaitOne(1000);
+                    }
+                    else
+                    {
+                        if (!bres)
+                        {
+                            bres = true;
+                            mres.Set();
+
+                            result.RefCode = HttpHelper.STATUS_CODE_USER_RESUMED;
+                            result.RefText += string.Format("[ResumableUpload] Info: upload task is resumed @{0}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                        }
+
+                        #region one_block
+
+                        #region mkblk
+                        if (leftBytes < BLOCK_SIZE)
+                        {
+                            blockSize = leftBytes;
+                        }
+                        else
+                        {
+                            blockSize = BLOCK_SIZE;
+                        }
+                        if (leftBytes < CHUNK_SIZE)
+                        {
+                            chunkSize = leftBytes;
+                        }
+                        else
+                        {
+                            chunkSize = CHUNK_SIZE;
+                        }
+
+                        fs.Read(chunkBuffer, 0, (int)chunkSize);
+
+                        iTry = 0;
+                        while (++iTry <= MAX_TRY)
+                        {
+                            result.RefText += string.Format("[ResumableUpload] try mkblk#{0} @{1}\n", iTry,
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                            hr = mkblkChecked(chunkBuffer, offset, blockSize, chunkSize, token);
+
+                            if (hr.Code == HttpHelper.STATUS_CODE_OK && hr.RefCode != HttpHelper.STATUS_CODE_NEED_RETRY)
+                            {
+                                break;
+                            }
+                        }
+                        if (hr.Code != HttpHelper.STATUS_CODE_OK || hr.RefCode == HttpHelper.STATUS_CODE_NEED_RETRY)
+                        {
+                            result.shadow(hr);
+                            result.RefText += string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
+                            offset, blockSize, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                            return result;
+                        }
+
+                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        context = rc.Ctx;
+                        offset += chunkSize;
+                        leftBytes -= chunkSize;
+                        #endregion mkblk
+
+                        uppHandler(offset, fileSize);
+
+                        if (leftBytes > 0)
+                        {
+                            blockLeft = blockSize - chunkSize;
+                            blockOffset = chunkSize;
+                            while (blockLeft > 0)
+                            {
+                                #region bput-loop
+
+                                if (blockLeft < CHUNK_SIZE)
+                                {
+                                    chunkSize = blockLeft;
+                                }
+                                else
+                                {
+                                    chunkSize = CHUNK_SIZE;
+                                }
+
+                                fs.Read(chunkBuffer, 0, (int)chunkSize);
+
+                                iTry = 0;
+                                while (++iTry <= MAX_TRY)
+                                {
+                                    result.RefText += string.Format("[ResumableUpload] try bput#{0} @{1}\n", iTry,
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                                    hr = bputChecked(chunkBuffer, blockOffset, chunkSize, context, token);
+
+                                    if (hr.Code == HttpHelper.STATUS_CODE_OK && hr.RefCode != HttpHelper.STATUS_CODE_NEED_RETRY)
+                                    {
+                                        break;
+                                    }
+                                }
+                                if (hr.Code != HttpHelper.STATUS_CODE_OK || hr.RefCode == HttpHelper.STATUS_CODE_NEED_RETRY)
+                                {
+                                    result.shadow(hr);
+                                    result.RefText += string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
+                                        offset, blockOffset, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                                    return result;
+                                }
+
+                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                context = rc.Ctx;
+
+                                offset += chunkSize;
+                                leftBytes -= chunkSize;
+                                blockOffset += chunkSize;
+                                blockLeft -= chunkSize;
+                                #endregion bput-loop
+
+                                uppHandler(offset, fileSize);
+                            }
+                        }
+
+                        #endregion one_block
+
+                        resumeInfo.BlockIndex = index;
+                        resumeInfo.Contexts[index] = context;
+                        ResumeHelper.Save(resumeInfo, recordFile);
+                        ++index;
+                    }
+                }
+
+                hr = mkfile(localFile, fileSize, saveKey, HttpHelper.CONTENT_TYPE_APP_OCTET, resumeInfo.Contexts, token, extraParams);
+                if (hr.Code != HttpHelper.STATUS_CODE_OK)
+                {
+                    result.shadow(hr);
+                    result.RefText += string.Format("[ResumableUpload] Error: mkfile @{0}\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                    return result;
+                }
+
+                File.Delete(recordFile);
+                result.shadow(hr);
+                result.RefText += string.Format("[ResumableUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
+                    localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder("[ResumableUpload] Error: ");
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+
+                sb.AppendFormat(" @{0}\n",
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Dispose();
+                }
+            }
+
+            return result;
+        }
+        
         /// <summary>
         /// 上传数据流-分片方式
         /// </summary>
@@ -1043,8 +1278,6 @@ namespace Qiniu.IO
 
             try
             {
-                string s = null;
-
                 long fileSize = stream.Length;
                 long chunkSize = CHUNK_SIZE;
                 long blockSize = BLOCK_SIZE;
@@ -1095,9 +1328,9 @@ namespace Qiniu.IO
                     if (hr.Code != HttpHelper.STATUS_CODE_OK)
                     {
                         result.shadow(hr);
-                        s = string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
+                        result.RefText += string.Format("[ResumableUpload] Error: mkblk: offset={0}, blockSize={1}, chunkSize={2}, @{3}\n",
                             offset, blockSize, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                        result.RefText += s;
+
                         return result;
                     }
 
@@ -1131,9 +1364,9 @@ namespace Qiniu.IO
                             if (hr.Code != HttpHelper.STATUS_CODE_OK)
                             {
                                 result.shadow(hr);
-                                s = string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
+                                result.RefText += string.Format("[ResumableUpload] Error: bput: offset={0}, blockOffset={1}, chunkSize={2}, @{3}\n",
                                     offset, blockOffset, chunkSize, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                result.RefText += s;
+
                                 return result;
                             }
 
@@ -1161,15 +1394,14 @@ namespace Qiniu.IO
                 if (hr.Code != HttpHelper.STATUS_CODE_OK)
                 {
                     result.shadow(hr);
-                    s = string.Format("[ResumableUpload] Error: mkfile @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    result.RefText += s;
+                    result.RefText += string.Format("[ResumableUpload] Error: mkfile @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
                     return result;
                 }
 
                 result.shadow(hr);
-                s = string.Format("[ResumableUpload] Uploaded: \"#DATA#\" ==> \"{0}\", @{1}\n",
+                result.RefText += string.Format("[ResumableUpload] Uploaded: \"#DATA#\" ==> \"{0}\", @{1}\n",
                     saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                result.RefText += s;
             }
             catch (Exception ex)
             {
@@ -1206,6 +1438,17 @@ namespace Qiniu.IO
         {
             Stream stream = new MemoryStream(data);
             return uploadStream(stream, saveKey, token, uppHandler);
+        }
+
+        /// <summary>
+        /// 默认的断点记录文件名称
+        /// </summary>
+        /// <param name="localFile">待上传的本地文件</param>
+        /// <param name="saveKey">要保存的目标key</param>
+        /// <returns></returns>
+        public string defaultRecordKey(string localFile, string saveKey)
+        {
+            return "QiniuRU_" + StringHelper.calcMD5(localFile + saveKey);
         }
 
         /// <summary>
@@ -1248,6 +1491,55 @@ namespace Qiniu.IO
                 string keyStr = string.Format("/key/{0}", StringHelper.urlSafeBase64Encode(saveKey));
 
                 string url = string.Format("{0}/mkfile/{1}{2}{3}{4}", uploadHost, size, mimeTypeStr, fnameStr, keyStr);
+                string body = StringHelper.join(contexts, ",");
+                string upToken = string.Format("UpToken {0}", token);
+
+                result = httpManager.postForm(url, body, upToken);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder("mkfile Error: ");
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+
+                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 创建文件
+        /// </summary>
+        private HttpResult mkfile(string fileName, long size, string saveKey, string mimeType, string[] contexts, string token, Dictionary<string, string> extraParams)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string fnameStr = string.Format("/fname/{0}", StringHelper.urlSafeBase64Encode(fileName));
+                string mimeTypeStr = string.Format("/mimeType/{0}", StringHelper.urlSafeBase64Encode(mimeType));
+                string keyStr = string.Format("/key/{0}", StringHelper.urlSafeBase64Encode(saveKey));
+                string paramStr = "";
+                if (extraParams != null && extraParams.Count > 0)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var kvp in extraParams)
+                    {
+                        sb.AppendFormat("/{0}/{1}", kvp.Key, kvp.Value);
+                    }
+
+                    paramStr = sb.ToString();
+                }
+
+                string url = string.Format("{0}/mkfile/{1}{2}{3}{4}{5}", uploadHost, size, mimeTypeStr, fnameStr, keyStr, paramStr);
                 string body = StringHelper.join(contexts, ",");
                 string upToken = string.Format("UpToken {0}", token);
 

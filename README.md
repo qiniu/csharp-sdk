@@ -8,15 +8,15 @@
 
 以下文档用于检索SDK接口、属性说明，它将有助于您理解SDK的结构。
 
-* [HTML在线浏览](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.3/index.html)
+* [HTML在线浏览](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.4/index.html)
 
-* [CHM文件下载](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.3.chm)
+* [CHM文件下载](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.4.chm)
 
 以下文档/链接提供一些基本示例，参考这些示例可以帮助您更快熟悉如何使用这套SDK。
 
 * [github | csharp-sdk-examples](https://github.com/fengyhack/csharp-sdk-examples)
 
-* [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.3/index.html)
+* [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.4/index.html)
 
 ##如何安装
 

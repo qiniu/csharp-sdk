@@ -1,3 +1,13 @@
+**2017-01-12**
+
+最新版本v7.2.4，适用于.NET Framework 2.0+ 和.NET Core
+
+新增：分片上传(ResumableUploader)的uploadFile拥有更多的重载版本。
+
+新增：上传文件支持用户自定义参数(extraParams)
+
+* * *
+
 **2017-01-10**
 
 最新版本v7.2.3，适用于.NET Framework 2.0+ 和.NET Core

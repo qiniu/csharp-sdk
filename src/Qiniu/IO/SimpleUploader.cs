@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 using Qiniu.Common;
 using Qiniu.Http;
 
@@ -65,6 +66,76 @@ namespace Qiniu.IO
 
                 string filename = Path.GetFileName(localFile);
                 sb.AppendFormat("Content-Disposition: form-data; name=file; filename={0}\r\n\r\n", filename);
+
+                byte[] partData1 = Encoding.UTF8.GetBytes(sb.ToString());
+                byte[] partData2 = File.ReadAllBytes(localFile);
+                byte[] partData3 = Encoding.UTF8.GetBytes(string.Format("\r\n{0}--\r\n", sep));
+
+                MemoryStream ms = new MemoryStream();
+                ms.Write(partData1, 0, partData1.Length);
+                ms.Write(partData2, 0, partData2.Length);
+                ms.Write(partData3, 0, partData3.Length);
+
+                result = httpManager.postMultipart(uploadHost, ms.ToArray(), boundary, null);
+                result.RefText += string.Format("[SimpleUpload] Uploaded: \"{0}\" ==> \"{1}\", @{2}\n",
+                    localFile, saveKey, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder("[SimpleUpload] Error: ");
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+
+                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 上传文件 - 可附加自定义参数
+        /// </summary>
+        /// <param name="localFile">待上传的本地文件</param>
+        /// <param name="saveKey">要保存的目标文件名称</param>
+        /// <param name="token">上传凭证</param>
+        /// <param name="extraParams">用户自定义的附加参数</param>
+        /// <returns></returns>
+        public HttpResult uploadFile(string localFile, string saveKey, string token, Dictionary<string,string> extraParams)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string boundary = HttpHelper.createFormDataBoundary();
+                string sep = "--" + boundary;
+                StringBuilder sb = new StringBuilder();
+
+                sb.AppendLine(sep);                
+
+                sb.AppendLine("Content-Disposition: form-data; name=key\r\n");
+                sb.AppendLine(saveKey);
+                sb.AppendLine(sep);
+
+                sb.AppendLine("Content-Disposition: form-data; name=token\r\n");
+                sb.AppendLine(token);
+                sb.AppendLine(sep);
+
+                foreach (var d in extraParams)
+                {
+                    sb.AppendFormat("Content-Disposition: form-data; name=\"{0}\"\r\n\r\n", d.Key);
+                    sb.AppendLine(d.Value);
+                    sb.AppendLine(sep);
+                }
+
+                string filename = Path.GetFileName(localFile);
+                sb.AppendFormat("Content-Disposition: form-data; name=file; filename={0}\r\n\r\n", filename);               
 
                 byte[] partData1 = Encoding.UTF8.GetBytes(sb.ToString());
                 byte[] partData2 = File.ReadAllBytes(localFile);

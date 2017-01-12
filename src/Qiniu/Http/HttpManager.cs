@@ -18,10 +18,9 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult get(string url, string token, Dictionary<string, string> header = null, bool binaryMode = false)
+        public HttpResult get(string url, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -36,8 +35,6 @@ namespace Qiniu.Http
                     wReq.Headers.Add("Authorization", token);
                 }
                 wReq.UserAgent = HttpHelper.getUserAgent();
-
-                addHeaders(ref wReq, header);
 
                 HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
 
@@ -124,10 +121,9 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult post(string url, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult post(string url, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -142,8 +138,6 @@ namespace Qiniu.Http
                     wReq.Headers.Add("Authorization", token);
                 }
                 wReq.UserAgent = HttpHelper.getUserAgent();
-
-                addHeaders(ref wReq, header);
 
                 HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
 
@@ -231,10 +225,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postData(string url, byte[] data, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postData(string url, byte[] data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -250,8 +243,6 @@ namespace Qiniu.Http
                 }
                 wReq.ContentType = HttpHelper.CONTENT_TYPE_APP_OCTET;
                 wReq.UserAgent = HttpHelper.getUserAgent();
-
-                addHeaders(ref wReq, header);
 
                 if (data != null)
                 {
@@ -349,10 +340,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postJson(string url, string data, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postJson(string url, string data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -368,8 +358,6 @@ namespace Qiniu.Http
                 }
                 wReq.ContentType = HttpHelper.CONTENT_TYPE_APP_JSON;
                 wReq.UserAgent = HttpHelper.getUserAgent();
-
-                addHeaders(ref wReq, header);
 
                 if (data != null)
                 {
@@ -467,10 +455,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="kvData">键值对数据</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postForm(string url, Dictionary<string, string> kvData, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postForm(string url, Dictionary<string, string> kvData, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -486,8 +473,6 @@ namespace Qiniu.Http
                 }
                 wReq.ContentType = HttpHelper.CONTENT_TYPE_WWW_FORM;
                 wReq.UserAgent = HttpHelper.getUserAgent();
-
-                addHeaders(ref wReq, header);
 
                 if (kvData != null)
                 {
@@ -591,10 +576,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">表单数据</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postForm(string url, string data, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postForm(string url, string data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -610,8 +594,6 @@ namespace Qiniu.Http
                 }
                 wReq.ContentType = HttpHelper.CONTENT_TYPE_WWW_FORM;
                 wReq.UserAgent = HttpHelper.getUserAgent();
-
-                addHeaders(ref wReq, header);
 
                 if (!string.IsNullOrEmpty(data))
                 {
@@ -709,10 +691,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">表单数据</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postForm(string url, byte[] data, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postForm(string url, byte[] data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -728,8 +709,6 @@ namespace Qiniu.Http
                 }
                 wReq.ContentType = HttpHelper.CONTENT_TYPE_WWW_FORM;
                 wReq.UserAgent = HttpHelper.getUserAgent();
-
-                addHeaders(ref wReq, header);
 
                 if (data != null)
                 {
@@ -828,10 +807,9 @@ namespace Qiniu.Http
         /// <param name="data">主体数据</param>
         /// <param name="boundary">分界标志</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns></returns>
-        public HttpResult postMultipart(string url, byte[] data, string boundary, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postMultipart(string url, byte[] data, string boundary, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -847,8 +825,6 @@ namespace Qiniu.Http
                 }
                 wReq.ContentType = string.Format("{0}; boundary={1}", HttpHelper.CONTENT_TYPE_MULTIPART, boundary);
                 wReq.UserAgent = HttpHelper.getUserAgent();
-
-                addHeaders(ref wReq, header);
 
                 wReq.AllowWriteStreamBuffering = true;
                 using (Stream sReq = wReq.GetRequestStream())
@@ -985,25 +961,6 @@ namespace Qiniu.Http
             }
         }
 
-        /// <summary>
-        /// 添加附加头部
-        /// </summary>
-        /// <param name="req">HTTP请求</param>
-        /// <param name="header">请求的头部信息</param>
-        private void addHeaders(ref HttpWebRequest req, Dictionary<string, string> header)
-        {
-            if (req != null && header != null)
-            {
-                foreach (var kvp in header)
-                {
-                    if (!kvp.Key.Equals("Content-Type"))
-                    {
-                        req.Headers.Add(kvp.Key, kvp.Value);
-                    }
-                }
-            }
-        }
-
     }
 }
 
@@ -1072,10 +1029,9 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult get(string url, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult get(string url, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -1091,8 +1047,6 @@ namespace Qiniu.Http
                 var msg = client.SendAsync(req).Result;
                 result.Code = (int)msg.StatusCode;
                 result.RefCode = (int)msg.StatusCode;
-
-                getHeaders(ref result, msg);
 
                 if (binaryMode)
                 {
@@ -1127,10 +1081,9 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult post(string url, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult post(string url, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -1142,8 +1095,6 @@ namespace Qiniu.Http
                 {
                     req.Headers.Add("Authorization", token);
                 }
-
-                addHeaders(ref req, header);
 
                 var msg = client.SendAsync(req).Result;
                 result.Code = (int)msg.StatusCode;
@@ -1185,10 +1136,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postData(string url, byte[] data, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postData(string url, byte[] data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -1200,8 +1150,6 @@ namespace Qiniu.Http
                 {
                     req.Headers.Add("Authorization", token);
                 }
-
-                addHeaders(ref req, header);
 
                 var content = new ByteArrayContent(data);
                 req.Content = content;
@@ -1247,10 +1195,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postJson(string url, string data, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postJson(string url, string data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -1262,8 +1209,6 @@ namespace Qiniu.Http
                 {
                     req.Headers.Add("Authorization", token);
                 }
-
-                addHeaders(ref req, header);
 
                 var content = new StringContent(data);
                 req.Content = content;
@@ -1309,10 +1254,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="kvData">键值对数据</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postForm(string url, Dictionary<string, string> kvData, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postForm(string url, Dictionary<string, string> kvData, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -1324,8 +1268,6 @@ namespace Qiniu.Http
                 {
                     req.Headers.Add("Authorization", token);
                 }
-
-                addHeaders(ref req, header);
 
                 var content = new FormUrlEncodedContent(kvData);
                 req.Content = content;
@@ -1371,10 +1313,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">表单数据</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postForm(string url, string data, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postForm(string url, string data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -1386,8 +1327,6 @@ namespace Qiniu.Http
                 {
                     req.Headers.Add("Authorization", token);
                 }
-
-                addHeaders(ref req, header);
 
                 var content = new StringContent(data);
                 req.Content = content;
@@ -1433,10 +1372,9 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">表单</param>
         /// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns>响应结果</returns>
-        public HttpResult postForm(string url, byte[] data, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postForm(string url, byte[] data, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -1448,8 +1386,6 @@ namespace Qiniu.Http
                 {
                     req.Headers.Add("Authorization", token);
                 }
-
-                addHeaders(ref req, header);
 
                 var content = new ByteArrayContent(data);
                 req.Content = content;
@@ -1496,10 +1432,9 @@ namespace Qiniu.Http
         /// <param name="data">主体数据</param>
         /// <param name="boundary">分界标志</param>
 		/// <param name="token">令牌(凭证)</param>
-        /// <param name="header">请求中携带的头部信息</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容</param>
         /// <returns></returns>
-        public HttpResult postMultipart(string url, byte[] data, string boundary, string token, Dictionary<string,string> header = null, bool binaryMode = false)
+        public HttpResult postMultipart(string url, byte[] data, string boundary, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -1512,8 +1447,6 @@ namespace Qiniu.Http
                     req.Headers.Add("Authorization", token);
                 }
                 req.Headers.Add("User-Agent", userAgent);
-
-                addHeaders(ref req, header);
 
                 var content = new ByteArrayContent(data);
                 req.Content = content;
@@ -1618,26 +1551,6 @@ namespace Qiniu.Http
                 }                
             }
         }
-        
-        /// <summary>
-        /// 添加附加头部
-        /// </summary>
-        /// <param name="req">HTTP请求</param>
-        /// <param name="header">请求的头部信息</param>
-        private void addHeaders(ref HttpRequestMessage req, Dictionary<string, string> header)
-        {
-            if (req != null && header != null)
-            {
-                foreach (var kvp in header)
-                {
-                    if (!kvp.Key.Equals("Content-Type"))
-                    {
-                        req.Headers.Add(kvp.Key, kvp.Value);
-                    }
-                }
-            }
-        }
-
 
     }
 }
