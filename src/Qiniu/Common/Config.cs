@@ -24,6 +24,11 @@
         public const string DFOP_API_HOST = "http://api.qiniu.com";
 
         /// <summary>
+        /// PILI API Host
+        /// </summary>
+        public const string PILI_API_HOST = "http://pili.qiniuapi.com";
+
+        /// <summary>
         /// 根据Zone配置对应参数(RS_HOST,API_HOST等)
         /// </summary>
         /// <param name="zoneId">ZoneID</param>

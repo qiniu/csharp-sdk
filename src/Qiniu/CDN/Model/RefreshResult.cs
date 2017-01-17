@@ -17,7 +17,7 @@ namespace Qiniu.CDN.Model
             get
             {
                 RefreshInfo info = null;
-                if ((Code == HttpHelper.STATUS_CODE_OK) && (!string.IsNullOrEmpty(Text)))
+                if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
                     info = JsonConvert.DeserializeObject<RefreshInfo>(Text);
                 }

@@ -1,4 +1,6 @@
-﻿namespace Qiniu.IO.Model
+﻿using System.Collections.Generic;
+
+namespace Qiniu.IO.Model
 {
     /// <summary>
     /// 断点续上传断点信息
@@ -23,6 +25,6 @@
         /// <summary>
         /// 上下文信息列表
         /// </summary>
-        public string[] Contexts { get; set; }
+        public List<string> Contexts { get; set; }
     }
 }

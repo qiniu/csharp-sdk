@@ -18,7 +18,7 @@ namespace Qiniu.RS.Model
             get
             {
                 string ex = null;
-                if (Code != HttpHelper.STATUS_CODE_OK && Code != HttpHelper.STATUS_CODE_PARTLY_OK)
+                if (Code != (int)HttpCode.OK && Code != (int)HttpCode.PARTLY_OK)
                 {
                     var vt = JsonConvert.DeserializeObject<Dictionary<string, string>>(Text);
                     if (vt.ContainsKey("error"))
@@ -38,7 +38,7 @@ namespace Qiniu.RS.Model
             get
             {
                 List<BatchInfo> info = null;
-                if ((Code == HttpHelper.STATUS_CODE_OK || Code == HttpHelper.STATUS_CODE_PARTLY_OK)&&
+                if ((Code == (int)HttpCode.OK || Code == (int)HttpCode.PARTLY_OK) &&
                     (!string.IsNullOrEmpty(Text)))
                 {
                     info = JsonConvert.DeserializeObject<List<BatchInfo>>(Text);

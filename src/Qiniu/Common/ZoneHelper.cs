@@ -35,21 +35,19 @@ namespace Qiniu.Common
             try
             {
                 // HTTP/GET https://uc.qbox.me/v1/query?ak=(AK)&bucket=(Bucket)
-                // 该请求的返回数据参见后面的 QueryResponse 结构
-                // 根据response消息提取出upHost
                 string queryUrl = string.Format("https://uc.qbox.me/v1/query?ak={0}&bucket={1}", accessKey, bucket);
 
-                HttpManager httpManager = new Http.HttpManager();
+                HttpManager httpManager = new HttpManager();
                 var hr = httpManager.get(queryUrl, null);
-                if (hr.Code == HttpHelper.STATUS_CODE_OK)
+                if (hr.Code == (int)HttpCode.OK)
                 {
-                    QueryResponse qr = JsonConvert.DeserializeObject<QueryResponse>(hr.Text);
-                    string upHost = qr.HTTP.UP[0];
+                    ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
+                    string upHost = zInfo.HTTP.UP[0];
                     zoneId = ZONE_DICT[upHost];
                 }
                 else
                 {
-                    throw new Exception(hr.RefText);
+                    throw new Exception("text: " + hr.Text + ", ref-text:" + hr.RefText);
                 }
             }
             catch (Exception ex)
@@ -70,54 +68,6 @@ namespace Qiniu.Common
             return zoneId;
         }
 
-        #region UC_QUERY_RESPONSE
-
-        // 从uc.qbox.me返回的消息，使用Json解析
-        // 以下是一个response示例
-        // {
-        //     "ttl" : 86400,
-        //     "http" : {
-        //         "up" : [
-        //                     "http://up.qiniu.com",
-        //                     "http://upload.qiniu.com",
-        //                     "-H up.qiniu.com http://183.136.139.16"
-        //                 ],
-        //        "io" : [
-        //                      "http://iovip.qbox.me"
-        //                ]
-        //             },
-        //     "https" : {
-        //          "io" : [
-        //                     "https://iovip.qbox.me"
-        //                  ],
-        //         "up" : [
-        //                     "https://up.qbox.me"
-        //                  ]
-        //                  }
-        // }
-
-        /// <summary>
-        /// 从uc.qbox.me返回的消息
-        /// </summary>
-        private class QueryResponse
-        {
-            public string TTL { get; set; }
-            public HttpBulk HTTP { get; set; }
-
-            public HttpBulk HTTPS { get; set; }
-        }
-
-        /// <summary>
-        /// HttpBulk作为QueryResponse的成员
-        /// 包含uploadHost和iovip等
-        /// </summary>
-        private class HttpBulk
-        {
-            public string[] UP { get; set; }
-            public string[] IO { get; set; }
-        }
-
-        #endregion UC_QUERY_RESPONSE  
     }
 
 }

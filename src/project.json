@@ -1,8 +1,8 @@
 {
-  "title": "Qiniu (Cloud) C# SDK v7.2.4 (.NETStd 1.6)",
+  "title": "Qiniu (Cloud) C# SDK v7.2.5 (.NETStd 1.6)",
   "copyright": "Copyright ©  2017",
-  "description": "Qiniu (Cloud) C# SDK v7.2.4 (.NETStd 1.6)",
-  "version": "7.2.4-0",
+  "description": "Qiniu (Cloud) C# SDK v7.2.5 (.NETStd 1.6)",
+  "version": "7.2.5-0",
   "dependencies": {
     "NETStandard.Library": "1.6.0"
   },

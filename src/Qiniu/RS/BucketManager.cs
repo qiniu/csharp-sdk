@@ -12,7 +12,7 @@ namespace Qiniu.RS
     /// </summary>
     public class BucketManager
     {
-        private Signature signature;
+        private Auth auth;
         private HttpManager httpManager;
 
         /// <summary>
@@ -21,33 +21,8 @@ namespace Qiniu.RS
         /// <param name="mac">账户访问控制(密钥)</param>
         public BucketManager(Mac mac)
         {
-            signature = new Signature(mac);
+            auth = new Auth(mac);
             httpManager = new HttpManager();
-        }
-
-        /// <summary>
-        /// 生成管理凭证
-        /// 有关管理凭证请参阅
-        /// http://developer.qiniu.com/article/developer/security/access-token.html
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <returns>生成的管理凭证</returns>
-        public string createManageToken(string url)
-        {
-            return createManageToken(url, null);
-        }
-
-        /// <summary>
-        /// 生成管理凭证
-        /// 有关管理凭证请参阅
-        /// http://developer.qiniu.com/article/developer/security/access-token.html
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="body">请求的主体内容</param>
-        /// <returns>生成的管理凭证</returns>
-        public string createManageToken(string url, byte[] body)
-        {
-            return string.Format("QBox {0}", signature.signRequest(url, body));
         }
 
         /// <summary>
@@ -63,7 +38,7 @@ namespace Qiniu.RS
             try
             {
                 string statUrl = Config.ZONE.RsHost + statOp(bucket, key);
-                string token = createManageToken(statUrl);
+                string token = auth.createManageToken(statUrl);
 
                 HttpResult hr = httpManager.get(statUrl, token);
                 result.shadow(hr);
@@ -80,7 +55,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -98,7 +73,7 @@ namespace Qiniu.RS
             try
             {
                 string bucketsUrl = Config.ZONE.RsHost + "/buckets";
-                string token = createManageToken(bucketsUrl);
+                string token = auth.createManageToken(bucketsUrl);
 
                 HttpResult hr = httpManager.get(bucketsUrl, token);
                 result.shadow(hr);
@@ -115,7 +90,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -134,7 +109,7 @@ namespace Qiniu.RS
             try
             {
                 string bucketsUrl = Config.ZONE.RsHost + "/bucket/" + bucketName;
-                string token = createManageToken(bucketsUrl);
+                string token = auth.createManageToken(bucketsUrl);
 
                 HttpResult hr = httpManager.get(bucketsUrl, token);
                 result.shadow(hr);
@@ -151,7 +126,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -171,7 +146,7 @@ namespace Qiniu.RS
             try
             {
                 string deleteUrl = Config.ZONE.RsHost + deleteOp(bucket, key);
-                string token = createManageToken(deleteUrl);
+                string token = auth.createManageToken(deleteUrl);
 
                 result = httpManager.post(deleteUrl, token);
             }
@@ -187,7 +162,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -209,7 +184,7 @@ namespace Qiniu.RS
             try
             {
                 string copyUrl = Config.ZONE.RsHost + copyOp(srcBucket, srcKey, dstBucket, dstKey);
-                string token = createManageToken(copyUrl);
+                string token = auth.createManageToken(copyUrl);
 
                 result = httpManager.post(copyUrl, token);
             }
@@ -225,7 +200,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -248,7 +223,7 @@ namespace Qiniu.RS
             try
             {
                 string copyUrl = Config.ZONE.RsHost + copyOp(srcBucket, srcKey, dstBucket, dstKey, force);
-                string token = createManageToken(copyUrl);
+                string token = auth.createManageToken(copyUrl);
 
                 result = httpManager.post(copyUrl, token);
             }
@@ -264,7 +239,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -286,7 +261,7 @@ namespace Qiniu.RS
             try
             {
                 string moveUrl = Config.ZONE.RsHost + moveOp(srcBucket, srcKey, dstBucket, dstKey);
-                string token = createManageToken(moveUrl);
+                string token = auth.createManageToken(moveUrl);
 
                 result = httpManager.post(moveUrl, token);
             }
@@ -302,7 +277,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -325,7 +300,7 @@ namespace Qiniu.RS
             try
             {
                 string moveUrl = Config.ZONE.RsHost + moveOp(srcBucket, srcKey, dstBucket, dstKey, force);
-                string token = createManageToken(moveUrl);
+                string token = auth.createManageToken(moveUrl);
 
                 result = httpManager.post(moveUrl, token);
             }
@@ -341,7 +316,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -374,7 +349,7 @@ namespace Qiniu.RS
             try
             {
                 string chgmUrl = Config.ZONE.RsHost + chgmOp(bucket, key, mimeType);
-                string token = createManageToken(chgmUrl);
+                string token = auth.createManageToken(chgmUrl);
 
                 result = httpManager.post(chgmUrl, token);
             }
@@ -390,7 +365,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -410,7 +385,7 @@ namespace Qiniu.RS
             {
                 string batchUrl = Config.ZONE.RsHost + "/batch";
                 byte[] data = Encoding.UTF8.GetBytes(batchOps);
-                string token = createManageToken(batchUrl, data);
+                string token = auth.createManageToken(batchUrl, data);
 
                 HttpResult hr = httpManager.postForm(batchUrl, data, token);
                 result.shadow(hr);
@@ -427,7 +402,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -499,7 +474,7 @@ namespace Qiniu.RS
             try
             {
                 string fetchUrl = Config.ZONE.IovipHost + fetchOp(resUrl, bucket, key);
-                string token = createManageToken(fetchUrl);
+                string token = auth.createManageToken(fetchUrl);
 
                 result = httpManager.post(fetchUrl, token);
             }
@@ -515,7 +490,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -535,7 +510,7 @@ namespace Qiniu.RS
             try
             {
                 string prefetchUrl = Config.ZONE.IovipHost + prefetchOp(bucket, key);
-                string token = createManageToken(prefetchUrl);
+                string token = auth.createManageToken(prefetchUrl);
 
                 result = httpManager.post(prefetchUrl, token);
             }
@@ -551,7 +526,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -572,7 +547,7 @@ namespace Qiniu.RS
                 string domainsUrl = Config.ZONE.ApiHost + "/v6/domain/list";
                 string body = string.Format("tbl={0}", bucket);
                 byte[] data = Encoding.UTF8.GetBytes(body);
-                string token = createManageToken(domainsUrl, data);
+                string token = auth.createManageToken(domainsUrl, data);
 
                 HttpResult hr = httpManager.postForm(domainsUrl, data, token);
                 result.shadow(hr);
@@ -589,7 +564,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -657,7 +632,7 @@ namespace Qiniu.RS
                 }
 
                 string listUrl = Config.ZONE.RsfHost + sb.ToString();
-                string token = createManageToken(listUrl);
+                string token = auth.createManageToken(listUrl);
 
                 HttpResult hr = httpManager.post(listUrl, token);
                 result.shadow(hr);
@@ -674,7 +649,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -695,8 +670,7 @@ namespace Qiniu.RS
             try
             {
                 string updateUrl = Config.ZONE.RsHost + updateLifecycleOp(bucket, key, deleteAfterDays);
-
-                string token = createManageToken(updateUrl);
+                string token = auth.createManageToken(updateUrl);
 
                 result = httpManager.post(updateUrl, token);
             }
@@ -712,7 +686,7 @@ namespace Qiniu.RS
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -727,7 +701,7 @@ namespace Qiniu.RS
         /// <returns>stat操作字符串</returns>
         public string statOp(string bucket, string key)
         {
-            return string.Format("/stat/{0}", StringHelper.encodedEntry(bucket, key));
+            return string.Format("/stat/{0}", Base64.urlSafeBase64Encode(bucket, key));
         }
 
         /// <summary>
@@ -738,7 +712,7 @@ namespace Qiniu.RS
         /// <returns>delete操作字符串</returns>
         public string deleteOp(string bucket, string key)
         {
-            return string.Format("/delete/{0}", StringHelper.encodedEntry(bucket, key));
+            return string.Format("/delete/{0}", Base64.urlSafeBase64Encode(bucket, key));
         }
 
         /// <summary>
@@ -752,8 +726,8 @@ namespace Qiniu.RS
         public string copyOp(string srcBucket, string srcKey, string dstBucket, string dstKey)
         {
             return string.Format("/copy/{0}/{1}",
-                StringHelper.encodedEntry(srcBucket, srcKey),
-                StringHelper.encodedEntry(dstBucket, dstKey));
+                Base64.urlSafeBase64Encode(srcBucket, srcKey),
+                Base64.urlSafeBase64Encode(dstBucket, dstKey));
         }
 
         /// <summary>
@@ -769,8 +743,8 @@ namespace Qiniu.RS
         {
             string fx = force ? "force/true" : "force/false";
             return string.Format("/copy/{0}/{1}/{2}",
-                StringHelper.encodedEntry(srcBucket, srcKey),
-                StringHelper.encodedEntry(dstBucket, dstKey), fx);
+                Base64.urlSafeBase64Encode(srcBucket, srcKey),
+                Base64.urlSafeBase64Encode(dstBucket, dstKey), fx);
         }
 
         /// <summary>
@@ -784,8 +758,8 @@ namespace Qiniu.RS
         public string moveOp(string srcBucket, string srcKey, string dstBucket, string dstKey)
         {
             return string.Format("/move/{0}/{1}",
-                StringHelper.encodedEntry(srcBucket, srcKey),
-                StringHelper.encodedEntry(dstBucket, dstKey));
+                Base64.urlSafeBase64Encode(srcBucket, srcKey),
+                Base64.urlSafeBase64Encode(dstBucket, dstKey));
         }
 
         /// <summary>
@@ -801,8 +775,8 @@ namespace Qiniu.RS
         {
             string fx = force ? "force/true" : "force/false";
             return string.Format("/move/{0}/{1}/{2}",
-                StringHelper.encodedEntry(srcBucket, srcKey),
-                StringHelper.encodedEntry(dstBucket, dstKey), fx);
+                Base64.urlSafeBase64Encode(srcBucket, srcKey),
+                Base64.urlSafeBase64Encode(dstBucket, dstKey), fx);
         }
 
         /// <summary>
@@ -815,8 +789,8 @@ namespace Qiniu.RS
         public string chgmOp(string bucket, string key, string mimeType)
         {
             return string.Format("/chgm/{0}/mime/{1}",
-                StringHelper.encodedEntry(bucket, key),
-                StringHelper.urlSafeBase64Encode(mimeType));
+                Base64.urlSafeBase64Encode(bucket, key),
+                Base64.urlSafeBase64Encode(mimeType));
         }
 
         /// <summary>
@@ -829,8 +803,8 @@ namespace Qiniu.RS
         public string fetchOp(string url, string bucket, string key)
         {
             return string.Format("/fetch/{0}/to/{1}",
-                StringHelper.urlSafeBase64Encode(url), 
-                StringHelper.encodedEntry(bucket, key));
+                Base64.urlSafeBase64Encode(url),
+                Base64.urlSafeBase64Encode(bucket, key));
         }
 
         /// <summary>
@@ -841,8 +815,8 @@ namespace Qiniu.RS
         /// <returns>prefetch操作字符串</returns>
         public string prefetchOp(string bucket, string key)
         {
-            return string.Format("/prefetch/{0}", 
-                StringHelper.encodedEntry(bucket, key));
+            return string.Format("/prefetch/{0}",
+                Base64.urlSafeBase64Encode(bucket, key));
         }
 
         /// <summary>
@@ -855,7 +829,7 @@ namespace Qiniu.RS
         public string updateLifecycleOp(string bucket,string key,int deleteAfterDays)
         {
             return string.Format("/deleteAfterDays/{0}/{1}",
-                StringHelper.encodedEntry(bucket, key), deleteAfterDays);
+                Base64.urlSafeBase64Encode(bucket, key), deleteAfterDays);
         }
 
     }

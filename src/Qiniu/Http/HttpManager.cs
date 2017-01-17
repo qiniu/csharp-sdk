@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Net;
+using Qiniu.Util;
 
 namespace Qiniu.Http
 {
@@ -13,6 +14,36 @@ namespace Qiniu.Http
     /// </summary>
     public class HttpManager
     {
+        private string userAgent;
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        public HttpManager()
+        {
+            userAgent = getUserAgent();
+        }
+
+        /// <summary>
+        /// 客户端标识
+        /// </summary>
+        /// <returns>客户端标识UA</returns>
+        public static string getUserAgent()
+        {
+            string osDesc = Environment.OSVersion.Platform + "; " + Environment.OSVersion.Version;
+            return string.Format("{0}/{1} ({2})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.VERSION, osDesc);
+        }
+
+        /// <summary>
+        /// 多部分表单数据(multi-part form-data)的分界(boundary)标识
+        /// </summary>
+        /// <returns>多部分表单数据的boundary</returns>
+        public static string createFormDataBoundary()
+        {
+            string now = DateTime.UtcNow.Ticks.ToString();
+            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.calcMD5(now));
+        }
+
         /// <summary>
         /// HTTP-GET方法
         /// </summary>
@@ -34,7 +65,7 @@ namespace Qiniu.Http
                 {
                     wReq.Headers.Add("Authorization", token);
                 }
-                wReq.UserAgent = HttpHelper.getUserAgent();
+                wReq.UserAgent = userAgent;
 
                 HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
 
@@ -102,7 +133,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
             finally
@@ -137,7 +168,7 @@ namespace Qiniu.Http
                 {
                     wReq.Headers.Add("Authorization", token);
                 }
-                wReq.UserAgent = HttpHelper.getUserAgent();
+                wReq.UserAgent = userAgent;
 
                 HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
 
@@ -205,7 +236,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
             finally
@@ -241,8 +272,8 @@ namespace Qiniu.Http
                 {
                     wReq.Headers.Add("Authorization", token);
                 }
-                wReq.ContentType = HttpHelper.CONTENT_TYPE_APP_OCTET;
-                wReq.UserAgent = HttpHelper.getUserAgent();
+                wReq.ContentType = ContentType.APPLICATION_OCTET_STREAM;
+                wReq.UserAgent = userAgent;
 
                 if (data != null)
                 {
@@ -320,7 +351,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
             finally
@@ -356,8 +387,8 @@ namespace Qiniu.Http
                 {
                     wReq.Headers.Add("Authorization", token);
                 }
-                wReq.ContentType = HttpHelper.CONTENT_TYPE_APP_JSON;
-                wReq.UserAgent = HttpHelper.getUserAgent();
+                wReq.ContentType = ContentType.APPLICATION_JSON;
+                wReq.UserAgent = userAgent;
 
                 if (data != null)
                 {
@@ -435,7 +466,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
             finally
@@ -471,8 +502,8 @@ namespace Qiniu.Http
                 {
                     wReq.Headers.Add("Authorization", token);
                 }
-                wReq.ContentType = HttpHelper.CONTENT_TYPE_WWW_FORM;
-                wReq.UserAgent = HttpHelper.getUserAgent();
+                wReq.ContentType = ContentType.WWW_FORM_URLENC;
+                wReq.UserAgent = userAgent;
 
                 if (kvData != null)
                 {
@@ -556,7 +587,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
             finally
@@ -592,8 +623,8 @@ namespace Qiniu.Http
                 {
                     wReq.Headers.Add("Authorization", token);
                 }
-                wReq.ContentType = HttpHelper.CONTENT_TYPE_WWW_FORM;
-                wReq.UserAgent = HttpHelper.getUserAgent();
+                wReq.ContentType = ContentType.WWW_FORM_URLENC;
+                wReq.UserAgent = userAgent;
 
                 if (!string.IsNullOrEmpty(data))
                 {
@@ -671,7 +702,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
             finally
@@ -707,8 +738,8 @@ namespace Qiniu.Http
                 {
                     wReq.Headers.Add("Authorization", token);
                 }
-                wReq.ContentType = HttpHelper.CONTENT_TYPE_WWW_FORM;
-                wReq.UserAgent = HttpHelper.getUserAgent();
+                wReq.ContentType = ContentType.WWW_FORM_URLENC;
+                wReq.UserAgent = userAgent;
 
                 if (data != null)
                 {
@@ -786,7 +817,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
             finally
@@ -823,8 +854,8 @@ namespace Qiniu.Http
                 {
                     wReq.Headers.Add("Authorization", token);
                 }
-                wReq.ContentType = string.Format("{0}; boundary={1}", HttpHelper.CONTENT_TYPE_MULTIPART, boundary);
-                wReq.UserAgent = HttpHelper.getUserAgent();
+                wReq.ContentType = string.Format("{0}; boundary={1}", ContentType.MULTIPART_FORM_DATA, boundary);
+                wReq.UserAgent = userAgent;
 
                 wReq.AllowWriteStreamBuffering = true;
                 using (Stream sReq = wReq.GetRequestStream())
@@ -899,7 +930,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
             finally
@@ -971,6 +1002,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Qiniu.Util;
 
 namespace Qiniu.Http
 {
@@ -993,12 +1025,12 @@ namespace Qiniu.Http
         public int TIMEOUT_MAX_SEC = 60;
 
         /// <summary>
-        /// 
+        /// 初始化
         /// </summary>
         public HttpManager()
         {
             client = new HttpClient();
-            userAgent = HttpHelper.getUserAgent();
+            userAgent = getUserAgent();
         }
 
         /// <summary>
@@ -1008,6 +1040,69 @@ namespace Qiniu.Http
         {
             client.Dispose();
             client = null;
+        }
+
+        /// <summary>
+        /// 客户端标识
+        /// </summary>
+        /// <returns>客户端标识UA</returns>
+        public static string getUserAgent()
+        {
+#if NetStandard
+            string osDesc = "";
+
+            var windows = System.Runtime.InteropServices.OSPlatform.Windows;
+            var linux = System.Runtime.InteropServices.OSPlatform.Linux;
+            var osx = System.Runtime.InteropServices.OSPlatform.OSX;
+            bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(windows);
+            bool isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(linux);
+            bool isOSX = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(osx);
+
+            
+            if (isWindows)
+            {
+                osDesc = "Windows;";
+            }
+            else if (isLinux)
+            {
+                osDesc = "Linux;";
+            }
+            else if (isOSX)
+            {
+                osDesc = "OSX;";
+            }
+            else
+            {
+                osDesc = "Other;";
+            }
+            
+            if (isWindows)
+            {
+                osDesc += " " + System.Runtime.InteropServices.RuntimeInformation.OSDescription.TrimEnd();
+            }
+            else
+            {
+                string[] oss = System.Runtime.InteropServices.RuntimeInformation.OSDescription.Split(' ');
+                for (int i = 0; i < oss.Length && i < 2; ++i)
+                {
+                    osDesc += " " + oss[i];
+                }
+            }
+
+#else
+            string osDesc = Environment.OSVersion.Platform + "; " + Environment.OSVersion.Version;
+#endif
+            return string.Format("{0}/{1} ({2})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.VERSION, osDesc);
+        }
+
+        /// <summary>
+        /// 多部分表单数据(multi-part form-data)的分界(boundary)标识
+        /// </summary>
+        /// <returns>多部分表单数据的boundary</returns>
+        public static string createFormDataBoundary()
+        {
+            string now = DateTime.UtcNow.Ticks.ToString();
+            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.calcMD5(now));
         }
 
         /// <summary>
@@ -1069,7 +1164,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -1123,7 +1218,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -1153,7 +1248,7 @@ namespace Qiniu.Http
 
                 var content = new ByteArrayContent(data);
                 req.Content = content;
-				req.Content.Headers.ContentType = new MediaTypeHeaderValue(HttpHelper.CONTENT_TYPE_APP_OCTET);
+				req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.APPLICATION_OCTET_STREAM);
 
                 var msg = client.SendAsync(req).Result;
                 result.Code = (int)msg.StatusCode;
@@ -1182,7 +1277,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -1212,7 +1307,7 @@ namespace Qiniu.Http
 
                 var content = new StringContent(data);
                 req.Content = content;
-                req.Content.Headers.ContentType = new MediaTypeHeaderValue(HttpHelper.CONTENT_TYPE_APP_JSON);
+                req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.APPLICATION_JSON);
 
                 var msg = client.SendAsync(req).Result;
                 result.Code = (int)msg.StatusCode;
@@ -1241,7 +1336,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -1271,7 +1366,7 @@ namespace Qiniu.Http
 
                 var content = new FormUrlEncodedContent(kvData);
                 req.Content = content;
-				req.Content.Headers.ContentType = new MediaTypeHeaderValue(HttpHelper.CONTENT_TYPE_WWW_FORM);
+				req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.WWW_FORM_URLENC);
 
                 var msg = client.SendAsync(req).Result;
                 result.Code = (int)msg.StatusCode;
@@ -1300,7 +1395,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -1330,7 +1425,7 @@ namespace Qiniu.Http
 
                 var content = new StringContent(data);
                 req.Content = content;
-                req.Content.Headers.ContentType = new MediaTypeHeaderValue(HttpHelper.CONTENT_TYPE_WWW_FORM);
+                req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.WWW_FORM_URLENC);
 
                 var msg = client.SendAsync(req).Result;
                 result.Code = (int)msg.StatusCode;
@@ -1359,7 +1454,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -1389,7 +1484,7 @@ namespace Qiniu.Http
 
                 var content = new ByteArrayContent(data);
                 req.Content = content;
-				req.Content.Headers.ContentType = new MediaTypeHeaderValue(HttpHelper.CONTENT_TYPE_WWW_FORM);				
+				req.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.WWW_FORM_URLENC);				
 				
                 var msg = client.SendAsync(req).Result;
                 result.Code = (int)msg.StatusCode;
@@ -1418,7 +1513,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -1450,7 +1545,7 @@ namespace Qiniu.Http
 
                 var content = new ByteArrayContent(data);
                 req.Content = content;
-				string ct = string.Format("{0}; boundary={1}", HttpHelper.CONTENT_TYPE_MULTIPART, boundary);
+				string ct = string.Format("{0}; boundary={1}", ContentType.MULTIPART_FORM_DATA, boundary);
                 req.Content.Headers.Add("Content-Type", ct);
                 
                 var msg = client.SendAsync(req).Result;
@@ -1480,7 +1575,7 @@ namespace Qiniu.Http
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 

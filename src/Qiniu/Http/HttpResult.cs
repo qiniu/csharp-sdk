@@ -43,11 +43,11 @@ namespace Qiniu.Http
         /// </summary>
         public HttpResult()
         {
-            Code = HttpHelper.STATUS_CODE_UNDEF;
+            Code = (int)HttpCode.USER_UNDEF;
             Text = null;
             Data = null;
 
-            RefCode = HttpHelper.STATUS_CODE_UNDEF;
+            RefCode = (int)HttpCode.USER_UNDEF;
             RefInfo = null;
         }
 
