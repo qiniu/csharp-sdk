@@ -1,4 +1,4 @@
-﻿using Qiniu.Common;
+﻿using Qiniu.Util;
 using Qiniu.IO.Model;
 using System.IO;
 using Qiniu.Http;
@@ -82,20 +82,6 @@ namespace Qiniu.IO
         }
 
         /// <summary>
-        /// 生成上传凭证
-        /// 有关上传策略请参阅 http://developer.qiniu.com/article/developer/security/put-policy.html
-        /// 有关上传凭证请参阅 http://developer.qiniu.com/article/developer/security/upload-token.html
-        /// </summary>
-        /// <param name="mac">账户访问控制(密钥)</param>
-        /// <param name="putPolicy">上传策略</param>
-        /// <returns></returns>
-        public static string createUploadToken(Mac mac,PutPolicy putPolicy)
-        {
-            Signature sx = new Signature(mac);
-            return sx.signWithData(putPolicy.ToJsonString());
-        }
-
-        /// <summary>
         /// 上传文件
         /// </summary>
         /// <param name="localFile">本地待上传的文件名</param>
@@ -111,7 +97,7 @@ namespace Qiniu.IO
             {
                 if (string.IsNullOrEmpty(recordFile))
                 {
-                    recordFile = "QiniuRU_" + Util.StringHelper.calcMD5(localFile + saveKey);
+                    recordFile = "QiniuRU_" + Hashing.calcMD5(localFile + saveKey);
                 }
 
                 if (upph == null)
@@ -129,33 +115,8 @@ namespace Qiniu.IO
             }
             else
             {
-                SimpleUploader su = new SimpleUploader(UPLOAD_FROM_CDN);
+                FormUploader su = new FormUploader(UPLOAD_FROM_CDN);
                 result = su.uploadFile(localFile, saveKey, token);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// 上传数据流
-        /// </summary>
-        /// <param name="stream">待上传的数据流</param>
-        /// <param name="saveKey">要保存的文件名称</param>
-        /// <param name="token">上传凭证</param>
-        /// <returns>上传结果</returns>
-        public HttpResult uploadStream(Stream stream, string saveKey, string token)
-        {
-            HttpResult result = new HttpResult();
-
-            if (stream.Length > PUT_THRESHOLD)
-            {
-                ResumableUploader ru = new ResumableUploader(UPLOAD_FROM_CDN);
-                result = ru.uploadStream(stream, saveKey, token, null);
-            }
-            else
-            {
-                SimpleUploader su = new SimpleUploader(UPLOAD_FROM_CDN);
-                result = su.uploadStream(stream, saveKey, token);
             }
 
             return result;
@@ -179,12 +140,11 @@ namespace Qiniu.IO
             }
             else
             {
-                SimpleUploader su = new SimpleUploader(UPLOAD_FROM_CDN);
+                FormUploader su = new FormUploader(UPLOAD_FROM_CDN);
                 result = su.uploadData(data, saveKey, token);
             }
 
             return result;
         }
-
     }
 }

@@ -141,7 +141,9 @@ namespace Qiniu.IO.Model
         /// <returns>JSON字符串</returns>
         public string ToJsonString()
         {
-            return StringHelper.jsonEncode(this);
+            JsonSerializerSettings setting = new JsonSerializerSettings();
+            setting.NullValueHandling = NullValueHandling.Ignore;
+            return JsonConvert.SerializeObject(this, setting);
         }
     }
 }

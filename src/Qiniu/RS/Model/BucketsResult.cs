@@ -18,7 +18,7 @@ namespace Qiniu.RS.Model
             get
             {
                 List<string> buckets = null;
-                if ((Code == HttpHelper.STATUS_CODE_OK) && (!string.IsNullOrEmpty(Text)))
+                if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
                     buckets = JsonConvert.DeserializeObject<List<string>>(Text);
                 }

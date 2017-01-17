@@ -13,7 +13,7 @@ namespace Qiniu.RSF
     /// </summary>
     public class OperationManager
     {
-        private Signature signature;
+        private Auth auth;
         private HttpManager httpManager;
 
         /// <summary>
@@ -22,19 +22,8 @@ namespace Qiniu.RSF
         /// <param name="mac">账户访问控制(密钥)</param>
         public OperationManager(Mac mac)
         {
-            signature = new Signature(mac);
+            auth = new Auth(mac);
             httpManager = new HttpManager();
-        }
-
-        /// <summary>
-        /// 生成管理凭证
-        /// </summary>
-        /// <param name="url">请求的URL</param>
-        /// <param name="body">请求的主体内容</param>
-        /// <returns></returns>
-        public string createManageToken(string url, byte[] body)
-        {
-            return string.Format("QBox {0}", signature.signRequest(url, body));
         }
 
         /// <summary>
@@ -70,7 +59,7 @@ namespace Qiniu.RSF
                     sb.AppendFormat("&pipeline={0}", pipeline);
                 }
                 byte[] data = Encoding.UTF8.GetBytes(sb.ToString());
-                string token = createManageToken(pfopUrl, data);
+                string token = auth.createManageToken(pfopUrl, data);
 
                 HttpResult hr = httpManager.postForm(pfopUrl, data, token);
                 result.shadow(hr);
@@ -87,7 +76,7 @@ namespace Qiniu.RSF
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -115,7 +104,7 @@ namespace Qiniu.RSF
         /// </summary>
         /// <param name="persistentId">持久化ID</param>
         /// <returns>操作结果</returns>
-        public HttpResult prefop(string persistentId)
+        public static HttpResult prefop(string persistentId)
         {
             HttpResult result = new HttpResult();
 
@@ -123,7 +112,8 @@ namespace Qiniu.RSF
             {
                 string prefopUrl = string.Format("{0}/status/get/prefop?id={1}", Config.ZONE.ApiHost, persistentId);
 
-                result = httpManager.get(prefopUrl, null);
+                HttpManager httpMgr = new HttpManager();
+                result = httpMgr.get(prefopUrl, null);
             }
             catch (Exception ex)
             {
@@ -137,7 +127,7 @@ namespace Qiniu.RSF
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -175,15 +165,17 @@ namespace Qiniu.RSF
             try
             {
                 string dfopUrl = string.Format("{0}/dfop?fop={1}", Config.DFOP_API_HOST, fop);
-                string token = createManageToken(dfopUrl, null);
-                string boundary = HttpHelper.createFormDataBoundary();
+                string token = auth.createManageToken(dfopUrl);
+                string boundary = HttpManager.createFormDataBoundary();
                 string sep = "--" + boundary;
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(sep);
-                sb.AppendFormat("Content-Type: {0}\r\n", HttpHelper.CONTENT_TYPE_TEXT_PLAIN);
-                sb.AppendLine("Content-Disposition: form-data; name=data; filename=text\r\n");
+                sb.AppendFormat("Content-Type: {0}", ContentType.TEXT_PLAIN);
+                sb.AppendLine();
+                sb.AppendLine("Content-Disposition: form-data; name=data; filename=text");
+                sb.AppendLine();
                 sb.AppendLine(text);
-                sb.AppendFormat("{0}--\r\n", sep);
+                sb.AppendLine(sep + "--");
                 byte[] data = Encoding.UTF8.GetBytes(sb.ToString());
 
                 result = httpManager.postMultipart(dfopUrl, data, boundary, token, true);
@@ -200,7 +192,7 @@ namespace Qiniu.RSF
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -223,7 +215,7 @@ namespace Qiniu.RSF
             }
             else
             {
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText = "[dfop error] File not found: " + textFile;
             }
 
@@ -244,7 +236,7 @@ namespace Qiniu.RSF
             {
                 string encodedUrl = StringHelper.urlEncode(url);
                 string dfopUrl = string.Format("{0}/dfop?fop={1}&url={2}", Config.DFOP_API_HOST, fop, encodedUrl);
-                string token = createManageToken(dfopUrl, null);
+                string token = auth.createManageToken(dfopUrl);
 
                 result = httpManager.post(dfopUrl, token, true);
             }
@@ -260,7 +252,7 @@ namespace Qiniu.RSF
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 
@@ -282,18 +274,27 @@ namespace Qiniu.RSF
                 string dfopUrl = string.Format("{0}/dfop?fop={1}", Config.DFOP_API_HOST, fop);
                 string key = Path.GetFileName(localFile);
                 byte[] data = File.ReadAllBytes(localFile);
-                string token = createManageToken(dfopUrl, null);
-                string boundary = HttpHelper.createFormDataBoundary();
+                string token = auth.createManageToken(dfopUrl);
+                string boundary = HttpManager.createFormDataBoundary();
                 string sep = "--" + boundary;
 
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine(sep);
+                StringBuilder sbp1 = new StringBuilder();
+                sbp1.AppendLine(sep);
                 string filename = Path.GetFileName(localFile);
-                sb.AppendFormat("Content-Type: {0}\r\n", HttpHelper.CONTENT_TYPE_APP_OCTET);
-                sb.AppendFormat("Content-Disposition: form-data; name=\"data\"; filename={0}\r\n\r\n", filename);
-                byte[] partData1 = Encoding.UTF8.GetBytes(sb.ToString());
+                sbp1.AppendFormat("Content-Type: {0}", ContentType.APPLICATION_OCTET_STREAM);
+                sbp1.AppendLine();
+                sbp1.AppendFormat("Content-Disposition: form-data; name=\"data\"; filename={0}", filename);
+                sbp1.AppendLine();
+                sbp1.AppendLine();
+
+                StringBuilder sbp3 = new StringBuilder();
+                sbp3.AppendLine();
+                sbp3.AppendLine(sep + "--");
+
+                byte[] partData1 = Encoding.UTF8.GetBytes(sbp1.ToString());
                 byte[] partData2 = File.ReadAllBytes(localFile);
-                byte[] partData3 = Encoding.UTF8.GetBytes(string.Format("\r\n{0}--\r\n", sep));
+                byte[] partData3 = Encoding.UTF8.GetBytes(sbp3.ToString());
+
                 MemoryStream ms = new MemoryStream();
                 ms.Write(partData1, 0, partData1.Length);
                 ms.Write(partData2, 0, partData2.Length);
@@ -313,7 +314,7 @@ namespace Qiniu.RSF
 
                 sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
 
-                result.RefCode = HttpHelper.STATUS_CODE_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
             }
 

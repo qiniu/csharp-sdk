@@ -19,7 +19,7 @@ namespace Qiniu.RSF.Model
             {
                 string pid = null;
 
-                if ((Code == HttpHelper.STATUS_CODE_OK) && (!string.IsNullOrEmpty(Text)))
+                if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
                     var vt = JsonConvert.DeserializeObject<Dictionary<string, string>>(Text);
                     if (vt.ContainsKey("persistentId"))

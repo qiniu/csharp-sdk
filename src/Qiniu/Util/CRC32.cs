@@ -11,9 +11,9 @@ namespace Qiniu.Util
         /// <summary>
         /// magic
         /// </summary>
-        public const UInt32 IEEE = 0xedb88320;
-        private UInt32[] Table;
-        private UInt32 Value;
+        public const uint IEEE = 0xedb88320;
+        private uint[] Table;
+        private uint Value;
 
         /// <summary>
         /// 初始化
@@ -44,12 +44,12 @@ namespace Qiniu.Util
             return this.Value;
         }
 
-        private static uint[] makeTable(UInt32 poly)
+        private static uint[] makeTable(uint poly)
         {
-            UInt32[] table = new UInt32[256];
+            uint[] table = new uint[256];
             for (int i = 0; i < 256; i++)
             {
-                UInt32 crc = (UInt32)i;
+                uint crc = (uint)i;
                 for (int j = 0; j < 8; j++)
                 {
                     if ((crc & 1) == 1)

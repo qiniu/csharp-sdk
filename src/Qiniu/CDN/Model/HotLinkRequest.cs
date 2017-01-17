@@ -1,5 +1,5 @@
 ﻿using System;
-using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.CDN.Model
 {

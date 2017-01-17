@@ -18,7 +18,7 @@ namespace Qiniu.RS.Model
             get
             {
                 List<string> domains = null;
-                if ((Code == HttpHelper.STATUS_CODE_OK) && (!string.IsNullOrEmpty(Text)))
+                if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
                     domains = JsonConvert.DeserializeObject<List<string>>(Text);
                 }
