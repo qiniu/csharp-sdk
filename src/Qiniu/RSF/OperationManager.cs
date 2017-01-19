@@ -272,8 +272,6 @@ namespace Qiniu.RSF
             try
             {
                 string dfopUrl = string.Format("{0}/dfop?fop={1}", Config.DFOP_API_HOST, fop);
-                string key = Path.GetFileName(localFile);
-                byte[] data = File.ReadAllBytes(localFile);
                 string token = auth.createManageToken(dfopUrl);
                 string boundary = HttpManager.createFormDataBoundary();
                 string sep = "--" + boundary;
