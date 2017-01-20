@@ -61,25 +61,26 @@ namespace Qiniu.IO
                         fs.Write(result.Data, 0, result.Data.Length);
                         fs.Flush();
                     }
-                    result.RefText += string.Format("[Download] Success: (Remote file) ==> \"{0}\" @{1}\n",
-                        saveasFile, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    result.RefText += string.Format("[{0}] [Download] Success: (Remote file) ==> \"{1}\"\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), saveasFile);
                 }
                 else
                 {
-                    result.RefText += string.Format("[Download] Error: @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    result.RefText += string.Format("[{0}] [Download] Error: code = {1}\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code);
                 }
             }
             catch(Exception ex)
             {
-                StringBuilder sb = new StringBuilder("Download Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] Download Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();

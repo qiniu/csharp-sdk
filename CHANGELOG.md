@@ -1,3 +1,13 @@
+**2017-01-20**
+
+最新版本v7.2.6，适用于.NET Framework 2.0+ 和.NET Core
+
+修复：从断点记录恢复时出现错误(Context保存错误)
+
+新增：HTTP状态码，HTTP方法(postPlain等)
+
+* * *
+
 **2017-01-17**
 
 最新版本v7.2.5，适用于.NET Framework 2.0+ 和.NET Core

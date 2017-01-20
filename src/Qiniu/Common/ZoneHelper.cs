@@ -52,15 +52,15 @@ namespace Qiniu.Common
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[ConfigZone] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] queryZone Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 throw new Exception(sb.ToString());
             }
