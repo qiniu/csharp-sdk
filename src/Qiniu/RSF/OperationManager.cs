@@ -66,15 +66,15 @@ namespace Qiniu.RSF
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Pfop] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] pfop Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -117,15 +117,15 @@ namespace Qiniu.RSF
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Prefop] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] prefop Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -182,15 +182,15 @@ namespace Qiniu.RSF
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Dfop] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] dfop Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -242,15 +242,15 @@ namespace Qiniu.RSF
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Dfop] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] dfop Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -302,15 +302,15 @@ namespace Qiniu.RSF
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Dfop] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] dfop Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();

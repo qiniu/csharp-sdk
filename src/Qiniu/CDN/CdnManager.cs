@@ -74,15 +74,15 @@ namespace Qiniu.CDN
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Refresh] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] refresh Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -147,15 +147,15 @@ namespace Qiniu.CDN
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Prefetch] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] prefetch Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -196,15 +196,15 @@ namespace Qiniu.CDN
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Bandwidth] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] bandwidth Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -248,15 +248,15 @@ namespace Qiniu.CDN
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Flux] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] flux Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -301,15 +301,15 @@ namespace Qiniu.CDN
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[LogList] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] loglist Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();

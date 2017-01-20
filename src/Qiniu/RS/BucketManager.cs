@@ -45,15 +45,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Stat] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] stat Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -80,15 +80,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Buckets] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] buckets Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -116,15 +116,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Bucket] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] bucket Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -152,15 +152,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Delete] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] delete Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -190,15 +190,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Copy] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] copy Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -229,15 +229,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Copy] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] copy Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -267,15 +267,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Move] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] move Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -306,15 +306,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Move] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] move Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -355,15 +355,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Chgm] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] chgm Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -392,15 +392,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Batch] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] batch Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -480,15 +480,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Fetch] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] fetch Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -516,15 +516,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Prefetch] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] prefetch Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -554,15 +554,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Domains] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] domains Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -639,15 +639,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[List-files] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] list Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
@@ -676,15 +676,15 @@ namespace Qiniu.RS
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder("[Update-lifecycle] Error: ");
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] deleteAfterDays Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
-
-                sb.AppendFormat(" @{0}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();

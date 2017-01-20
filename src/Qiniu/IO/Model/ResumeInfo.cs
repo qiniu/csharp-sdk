@@ -25,6 +25,12 @@ namespace Qiniu.IO.Model
         /// <summary>
         /// 上下文信息列表
         /// </summary>
-        public List<string> Contexts { get; set; }
+        public string[] Contexts { get; set; }
+
+        /// <summary>
+        /// 上传数据流时使用
+        /// </summary>
+        public List<string> SContexts { get; set; }
+
     }
 }
