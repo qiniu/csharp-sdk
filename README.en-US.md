@@ -112,11 +112,9 @@ www.opensource.org/licenses/MIT
 
 ##Appendix
 
-###Quick start on .NET Coree
+###Quick start on .NET Core
 
-### How-to-use
-
-Here is a step-by-step guide.
+**How-to-use** Here is a step-by-step guide.
 
 To get ready, if you need `dotnet` tool, see https://github.com/dotnet/cli/
 
@@ -203,11 +201,9 @@ In this case, you should have `dotnet` tool installed at the very begin.
 
 Or if you want to run the *published app* `Example`, just double-click it. 
 
-######Quick start on .NET Coree
+### Quick start on UWP
 
-**What is UWP**
-
-UWP means (Windows 10) Universal Windows Platform.
+**What is UWP** UWP means (Windows 10) Universal Windows Platform.
 
 UWP project also  contains a file called `project.json`, here is an example:
 
