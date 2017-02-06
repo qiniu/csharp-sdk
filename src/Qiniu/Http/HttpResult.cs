@@ -4,7 +4,7 @@ using System.Text;
 namespace Qiniu.Http
 {
     /// <summary>
-    /// (HTTP请求的)返回消息
+    /// HTTP请求(GET,POST等)的返回消息
     /// </summary>
     public class HttpResult
     {
@@ -14,12 +14,12 @@ namespace Qiniu.Http
         public int Code { get; set; }
 
         /// <summary>
-        /// 消息或错误，文本格式
+        /// 消息或错误文本
         /// </summary>
         public string Text { get; set; }
 
         /// <summary>
-        /// 消息或错误，二进制格式
+        /// 消息或错误(二进制格式)
         /// </summary>
         public byte[] Data { get; set; }
 
@@ -29,12 +29,12 @@ namespace Qiniu.Http
         public int RefCode { get; set; }
 
         /// <summary>
-        /// 附加信息(如Exception内容)
+        /// 附加信息(用户自定义,如Exception内容)
         /// </summary>
         public string RefText { get; set; }
 
         /// <summary>
-        /// 参考信息(从返回消息的头部获取)
+        /// 参考信息(从返回消息WebResponse的头部获取)
         /// </summary>
         public Dictionary<string, string> RefInfo { get; set; }
 
@@ -54,8 +54,8 @@ namespace Qiniu.Http
         /// <summary>
         /// 对象复制
         /// </summary>
-        /// <param name="hr"></param>
-        public void shadow(HttpResult hr)
+        /// <param name="hr">要复制其内容的来源</param>
+        public void Shadow(HttpResult hr)
         {
             this.Code = hr.Code;
             this.Text = hr.Text;
@@ -66,40 +66,43 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// 转换为易读字符串格式
+        /// 转换为易读或便于打印的字符串格式
         /// </summary>
         /// <returns>便于打印和阅读的字符串</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendFormat("code: {0}\n", Code);
+            sb.AppendFormat("code:{0}", Code);
+            sb.AppendLine();
 
             if (!string.IsNullOrEmpty(Text))
             {
                 sb.AppendLine("text:");
                 sb.AppendLine(Text);
-            }
-
-            sb.AppendLine();
+            }           
 
             if (Data != null)
             {
                 sb.AppendLine("data:");
-                if (Data.Length <= 4096)
+                int n = 1024;
+                if (Data.Length <= n)
                 {
                     sb.AppendLine(Encoding.UTF8.GetString(Data));
                 }
                 else
                 {
-                    int n = 1024;
+                    
                     sb.AppendLine(Encoding.UTF8.GetString(Data, 0, n));
-                    sb.AppendFormat("<--- TOO-LARGE-TO-DISPLAY --- REST {0} BYTES --->\n", Data.Length - n);
-                }
+                    sb.AppendFormat("<--- TOO-LARGE-TO-DISPLAY --- TOTAL {0} BYTES --->", Data.Length);
+                    sb.AppendLine();
+                }                
             }
-            sb.AppendLine();
 
-            sb.AppendFormat("ref-code:{0}\n", RefCode);
+            sb.AppendLine();      
+
+            sb.AppendFormat("ref-code:{0}", RefCode);
+            sb.AppendLine();
 
             if(!string.IsNullOrEmpty(RefText))
             {
@@ -109,12 +112,14 @@ namespace Qiniu.Http
 
             if (RefInfo != null)
             {
-                sb.AppendFormat("ref-info:\n");
+                sb.AppendLine("ref-info:");
                 foreach (var d in RefInfo)
                 {
                     sb.AppendLine(string.Format("{0}:{1}", d.Key, d.Value));
-                }
+                }                
             }
+
+            sb.AppendLine();
 
             return sb.ToString();
         }

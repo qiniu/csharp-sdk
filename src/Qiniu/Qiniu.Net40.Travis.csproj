@@ -17,24 +17,20 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <BaseIntermediateOutputPath>..\..\bin\net40\obj</BaseIntermediateOutputPath>
-    <OutputPath>..\..\bin\net40\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE;Net40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>..\..\bin\net40\Qiniu.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <BaseIntermediateOutputPath>..\..\bin\net40\obj</BaseIntermediateOutputPath>
-    <OutputPath>..\..\bin\net40\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>TRACE;Net40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>..\..\bin\net40\Qiniu.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -83,7 +79,7 @@
     <Compile Include="CDN\Model\LogListRequest.cs" />
     <Compile Include="CDN\Model\LogListInfo.cs" />
     <Compile Include="CDN\Model\LogListResult.cs" />
-    <Compile Include="CDN\Model\HotLinkRequest.cs" />
+    <Compile Include="CDN\Model\TimestampAntiLeechUrlRequest.cs" />
     <Compile Include="CDN\CdnManager.cs" />
     <Compile Include="Util\Auth.cs" />
     <Compile Include="Util\Mac.cs" />
@@ -129,14 +125,6 @@
     <None Include="..\Packages.Net40.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!--
-  <PropertyGroup>
-    <PostBuildEvent>
-	  del  /q /s Qiniu.pdb
-	  rd  /q /s .\obj\
-  </PostBuildEvent>
-  </PropertyGroup>
-  -->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

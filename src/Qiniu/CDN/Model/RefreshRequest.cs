@@ -40,7 +40,7 @@ namespace Qiniu.CDN.Model
         /// </summary>
         /// <param name="urls">URL列表</param>
         /// <param name="dirs">URL目录列表</param>
-        public RefreshRequest(IEnumerable<string> urls,IEnumerable<string> dirs)
+        public RefreshRequest(IList<string> urls,IList<string> dirs)
         {
             Urls = new List<string>(urls);
             Dirs = new List<string>(dirs);
@@ -50,7 +50,7 @@ namespace Qiniu.CDN.Model
         /// 添加URL列表
         /// </summary>
         /// <param name="urls">URL列表</param>
-        public void AddUrls(IEnumerable<string> urls)
+        public void AddUrls(IList<string> urls)
         {
             Urls.AddRange(urls);
         }
@@ -59,7 +59,7 @@ namespace Qiniu.CDN.Model
         /// 添加URL目录列表
         /// </summary>
         /// <param name="dirs">URL目录列表</param>
-        public void AddDirs(IEnumerable<string> dirs)
+        public void AddDirs(IList<string> dirs)
         {
             Dirs.AddRange(dirs);
         }
@@ -74,29 +74,49 @@ namespace Qiniu.CDN.Model
             sb.Append("{ ");
 
             sb.Append("\"urls\":[");
-            for (int i = 0; i < Urls.Count; ++i)
-            {
-                if (i < Urls.Count - 1)
+            if (Urls != null)
+            {                
+                if (Urls.Count == 1)
                 {
-                    sb.Append(string.Format("\"{0}\",", Urls[i]));
+                    sb.AppendFormat("\"{0}\"", Urls[0]);
                 }
                 else
                 {
-                    sb.Append(string.Format("\"{0}\"", Urls[i]));
+                    for (int i = 0; i < Urls.Count; ++i)
+                    {
+                        if (i < Urls.Count - 1)
+                        {
+                            sb.AppendFormat("\"{0}\",", Urls[i]);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("\"{0}\"", Urls[i]);
+                        }
+                    }
                 }
             }
             sb.Append("], ");
 
             sb.Append("\"dirs\":[");
-            for (int i = 0; i < Dirs.Count; ++i)
+            if (Dirs != null)
             {
-                if (i < Dirs.Count - 1)
+                if (Dirs.Count == 1)
                 {
-                    sb.Append(string.Format("\"{0}\",", Dirs[i]));
+                    sb.AppendFormat("\"{0}\"", Dirs[0]);
                 }
                 else
                 {
-                    sb.Append(string.Format("\"{0}\"", Dirs[i]));
+                    for (int i = 0; i < Dirs.Count; ++i)
+                    {
+                        if (i < Dirs.Count - 1)
+                        {
+                            sb.AppendFormat("\"{0}\",", Dirs[i]);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("\"{0}\"", Dirs[i]);
+                        }
+                    }
                 }
             }
             sb.Append("] }");

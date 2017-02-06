@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Qiniu", "Qiniu\Qiniu.NetStandard16.xproj", "{957CD434-8B12-46CE-980B-09CA26ED340D}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Qiniu.NetCore", "Qiniu\Qiniu.NetCore.xproj", "{957CD434-8B12-46CE-980B-09CA26ED340D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

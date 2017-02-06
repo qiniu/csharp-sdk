@@ -129,7 +129,7 @@ namespace Qiniu.IO.Model
         /// 设置上传凭证有效期
         /// </summary>
         /// <param name="expireInSeconds"></param>
-        public void setExpires(int expireInSeconds)
+        public void SetExpires(int expireInSeconds)
         {
             TimeSpan ts = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0));
             this.Deadline = (int)ts.TotalSeconds + expireInSeconds;

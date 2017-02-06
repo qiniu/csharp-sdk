@@ -13,9 +13,9 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="text">源字符串</param>
         /// <returns>已编码字符串</returns>
-        public static string urlSafeBase64Encode(string text)
+        public static string UrlSafeBase64Encode(string text)
         {
-            return urlSafeBase64Encode(Encoding.UTF8.GetBytes(text));
+            return UrlSafeBase64Encode(Encoding.UTF8.GetBytes(text));
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="data">需要编码的字节数据</param>
         /// <returns></returns>
-        public static string urlSafeBase64Encode(byte[] data)
+        public static string UrlSafeBase64Encode(byte[] data)
         {
             return Convert.ToBase64String(data).Replace('+', '-').Replace('/', '_');
         }
@@ -34,9 +34,9 @@ namespace Qiniu.Util
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
         /// <returns>编码</returns>
-        public static string urlSafeBase64Encode(string bucket, string key)
+        public static string UrlSafeBase64Encode(string bucket, string key)
         {
-            return urlSafeBase64Encode(bucket + ":" + key);
+            return UrlSafeBase64Encode(bucket + ":" + key);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="text">待解码的字符串</param>
         /// <returns>已解码字符串</returns>
-        public static byte[] urlsafeBase64Decode(string text)
+        public static byte[] UrlsafeBase64Decode(string text)
         {
             return Convert.FromBase64String(text.Replace('-', '+').Replace('_', '/'));
         }

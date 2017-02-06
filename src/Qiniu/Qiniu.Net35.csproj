@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <BaseIntermediateOutputPath>..\..\bin\net35\obj</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\bin\net35\obj\</BaseIntermediateOutputPath>
     <OutputPath>..\..\bin\net35\</OutputPath>
     <DefineConstants>DEBUG;TRACE;Net35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -28,7 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <BaseIntermediateOutputPath>..\..\bin\net35\obj</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\bin\net35\obj\</BaseIntermediateOutputPath>
     <OutputPath>..\..\bin\net35\</OutputPath>
     <DefineConstants>TRACE;Net35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDN\Model\TimestampAntiLeechUrlRequest.cs" />
     <Compile Include="IO\SimpleUploader.cs" />
     <Compile Include="QiniuCSharpSDK.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -78,7 +79,6 @@
     <Compile Include="CDN\Model\LogListRequest.cs" />
     <Compile Include="CDN\Model\LogListInfo.cs" />
     <Compile Include="CDN\Model\LogListResult.cs" />
-    <Compile Include="CDN\Model\HotLinkRequest.cs" />
     <Compile Include="CDN\CdnManager.cs" />
     <Compile Include="Util\Auth.cs" />
     <Compile Include="Util\Mac.cs" />

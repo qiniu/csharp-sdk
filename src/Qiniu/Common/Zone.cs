@@ -74,7 +74,7 @@
         /// <param name="zoneId">区域编号</param>
         /// <param name="useHTTPS">是否使用HTTPS</param>
         /// <returns></returns>
-        public static Zone getZone(ZoneID zoneId, bool useHTTPS = false)
+        public static Zone GetZone(ZoneID zoneId, bool useHTTPS = false)
         {
             switch (zoneId)
             {

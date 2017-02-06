@@ -29,7 +29,7 @@ namespace Qiniu.CDN.Model
         /// 初始化(URL列表)
         /// </summary>
         /// <param name="urls">URL列表</param>
-        public PrefetchRequest(IEnumerable<string> urls)
+        public PrefetchRequest(IList<string> urls)
         {
             Urls = new List<string>(urls);
         }
@@ -38,7 +38,7 @@ namespace Qiniu.CDN.Model
         /// 添加要查询的URL
         /// </summary>
         /// <param name="urls">URL列表</param>
-        public void AddUrls(IEnumerable<string> urls)
+        public void AddUrls(IList<string> urls)
         {
             Urls.AddRange(urls);
         }
@@ -53,15 +53,25 @@ namespace Qiniu.CDN.Model
             sb.Append("{ ");
 
             sb.Append("\"urls\":[");
-            for (int i = 0; i < Urls.Count; ++i)
+            if (Urls != null)
             {
-                if (i < Urls.Count - 1)
+                if (Urls.Count == 1)
                 {
-                    sb.Append(string.Format("\"{0}\",", Urls[i]));
+                    sb.AppendFormat("\"{0}\"", Urls[0]);
                 }
                 else
                 {
-                    sb.Append(string.Format("\"{0}\"", Urls[i]));
+                    for (int i = 0; i < Urls.Count; ++i)
+                    {
+                        if (i < Urls.Count - 1)
+                        {
+                            sb.AppendFormat("\"{0}\",", Urls[i]);
+                        }
+                        else
+                        {
+                            sb.AppendFormat("\"{0}\"", Urls[i]);
+                        }
+                    }
                 }
             }
             sb.Append("] }");

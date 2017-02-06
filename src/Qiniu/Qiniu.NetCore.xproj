@@ -8,8 +8,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>957cd434-8b12-46ce-980b-09ca26ed340d</ProjectGuid>
     <RootNamespace>Qiniu</RootNamespace>
-    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\bin\netstandard16\obj</BaseIntermediateOutputPath>
-    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\bin\netstandard16</OutputPath>
+    <BaseIntermediateOutputPath>..\..\bin\netcore\obj\</BaseIntermediateOutputPath>
+    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\bin\netcore\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="QiniuCSharpSDK.cs" />
@@ -33,7 +33,7 @@
     <Compile Include="CDN\Model\LogListRequest.cs" />
     <Compile Include="CDN\Model\LogListInfo.cs" />
     <Compile Include="CDN\Model\LogListResult.cs" />
-    <Compile Include="CDN\Model\HotLinkRequest.cs" />
+    <Compile Include="CDN\Model\TimestampAntiLeechUrlRequest.cs" />
     <Compile Include="CDN\CdnManager.cs" />
     <Compile Include="Util\Auth.cs" />
     <Compile Include="Util\Mac.cs" />
@@ -77,16 +77,6 @@
   </ItemGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
-    <PostBuildEvent>
-	    if exist .\Qiniu\bin\Release\netstandard1.6\Qiniu.dll ( move .\Qiniu\bin\Release\netstandard1.6\Qiniu.dll .\ )
-        if exist .\Qiniu\bin\Release\netstandard1.6\Qiniu.xml ( move .\Qiniu\bin\Release\netstandard1.6\Qiniu.xml .\ )
-        if exist .\Qiniu\bin\Release\netstandard1.6\Qiniu.deps.json ( move .\Qiniu\bin\Release\netstandard1.6\Qiniu.deps.json .\ )
-        if exist .\Qiniu\bin\Debug\netstandard1.6\Qiniu.dll ( move .\Qiniu\bin\Debug\netstandard1.6\Qiniu.dll .\ )
-        if exist .\Qiniu\bin\Debug\netstandard1.6\Qiniu.xml ( move .\Qiniu\bin\Debug\netstandard1.6\Qiniu.xml .\ )
-        if exist .\Qiniu\bin\Debug\netstandard1.6\Qiniu.deps.json ( move .\Qiniu\bin\Debug\netstandard1.6\Qiniu.deps.json .\ )
-        rd  /q /s .\Qiniu\
-        rd  /q /s .\obj\
-  </PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

@@ -15,7 +15,7 @@ namespace Qiniu.Util
         /// <param name="array">字符串数组</param>
         /// <param name="sep">连接符</param>
         /// <returns>连接后字符串</returns>
-        public static string join(IList<string> array, string sep)
+        public static string Join(IList<string> array, string sep)
         {
             if (array == null || sep == null)
             {
@@ -36,7 +36,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="array">字符串数组</param>
         /// <returns>连接后字符串</returns>
-        public static string jsonJoin(IList<string> array)
+        public static string JsonJoin(IList<string> array)
         {
             if (array == null || array.Count == 0)
             {
@@ -58,7 +58,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="text">源字符串</param>
         /// <returns>URL编码字符串</returns>
-        public static string urlEncode(string text)
+        public static string UrlEncode(string text)
         {
             return Uri.EscapeDataString(text);
         }
@@ -67,8 +67,8 @@ namespace Qiniu.Util
         /// URL键值对编码
         /// </summary>
         /// <param name="values">键值对</param>
-        /// <returns>URL表单编码的键值对数据</returns>
-        public static string urlValuesEncode(Dictionary<string, string> values)
+        /// <returns>URL编码的键值对数据</returns>
+        public static string UrlFormEncode(Dictionary<string, string> values)
         {
             StringBuilder urlValuesBuilder = new StringBuilder();
            
@@ -85,7 +85,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="timestamp">时间戳字符串</param>
         /// <returns>日期</returns>
-        public static DateTime fromUnixTimestamp(string timestamp)
+        public static DateTime ConvertToDateTime(string timestamp)
         {
             DateTime dt0 = (new DateTime(1910, 1, 1)).ToLocalTime();
             long ticks = long.Parse(timestamp + "0000000");
@@ -98,7 +98,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="stopAt">绝对时间点</param>
         /// <returns>时间戳字符串</returns>
-        public static string toUnixTimestamp(DateTime stopAt)
+        public static string ConvertToTimestamp(DateTime stopAt)
         {
             DateTime dt0 = (new DateTime(1910, 1, 1)).ToLocalTime();
             TimeSpan tsx = stopAt.Subtract(dt0);
@@ -111,7 +111,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="secondsAfterNow">从现在起多少秒以后</param>
         /// <returns>时间戳字符串</returns>
-        public static string calcUnixTimestamp(long secondsAfterNow)
+        public static string CalcUnixTimestamp(long secondsAfterNow)
         {
             DateTime dt0 = (new DateTime(1910, 1, 1)).ToLocalTime();
             DateTime dt1 = DateTime.Now.AddSeconds(secondsAfterNow);

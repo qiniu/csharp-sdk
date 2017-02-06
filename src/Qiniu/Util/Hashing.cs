@@ -1,5 +1,10 @@
 ﻿using System.Text;
+#if WINDOWS_UWP
+using Windows.Security.Cryptography;
+using Windows.Security.Cryptography.Core;
+#else
 using System.Security.Cryptography;
+#endif
 
 namespace Qiniu.Util
 {
@@ -15,10 +20,19 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="data">字节数据</param>
         /// <returns>SHA1</returns>
-        public static byte[] calcSHA1(byte[] data)
+        public static byte[] CalcSHA1(byte[] data)
         {
+#if WINDOWS_UWP
+            var sha = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
+            var buf = CryptographicBuffer.CreateFromByteArray(data);
+            var digest = sha.HashData(buf);
+            var hashBytes = new byte[digest.Length];
+            CryptographicBuffer.CopyToByteArray(digest, out hashBytes);
+            return hashBytes;
+#else
             SHA1 sha1 = SHA1.Create();
             return sha1.ComputeHash(data);
+#endif
         }
 
         /// <summary>
@@ -26,8 +40,14 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="str">待计算的字符串</param>
         /// <returns>MD5结果</returns>
-        public static string calcMD5(string str)
+        public static string CalcMD5(string str)
         {
+#if WINDOWS_UWP
+            var md5 = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
+            var buf = CryptographicBuffer.ConvertStringToBinary(str, BinaryStringEncoding.Utf8);
+            var digest = md5.HashData(buf);
+            return CryptographicBuffer.EncodeToHexString(digest);
+#else
             MD5 md5 = MD5.Create();
             byte[] data = Encoding.UTF8.GetBytes(str);
             byte[] hashData = md5.ComputeHash(data);
@@ -37,6 +57,7 @@ namespace Qiniu.Util
                 sb.AppendFormat("{0:x2}", b);
             }
             return sb.ToString();
+#endif
         }
     }
 }

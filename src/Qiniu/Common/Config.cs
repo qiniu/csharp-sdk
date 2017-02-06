@@ -1,4 +1,8 @@
-﻿namespace Qiniu.Common
+﻿#if Net45||Net46||NetCore||WINDOWS_UWP
+using System.Threading.Tasks;
+#endif
+
+namespace Qiniu.Common
 {
     /// <summary>
     /// 配置信息，主要包括Zone配置(另请参阅Zone模块)
@@ -11,7 +15,7 @@
         /// <summary>
         /// 空间所在的区域(Zone)
         /// </summary>
-        public static Zone ZONE = Zone.getZone(ZoneID.Default);
+        public static Zone ZONE = Zone.GetZone(ZoneID.Default);
 
         /// <summary>
         /// Fusion API Host
@@ -33,10 +37,12 @@
         /// </summary>
         /// <param name="zoneId">ZoneID</param>
         /// <param name="useHTTPS">是否使用HTTPS</param>
-        public static void setZone(ZoneID zoneId, bool useHTTPS)
+        public static void SetZone(ZoneID zoneId, bool useHTTPS)
         {
-            ZONE = Zone.getZone(zoneId, useHTTPS);
+            ZONE = Zone.GetZone(zoneId, useHTTPS);
         }
+
+#if Net20 || Net35 || Net40 || Net45 || Net46 || NetCore
 
         /// <summary>
         /// 自动配置Zone
@@ -44,11 +50,30 @@
         /// <param name="accessKey">AccessKey</param>
         /// <param name="bucket">空间名称</param>
         /// <param name="useHTTPS">是否使用HTTPS</param>
-        public static void autoZone(string accessKey,string bucket, bool useHTTPS)
+        public static void AutoZone(string accessKey, string bucket, bool useHTTPS)
         {
-            ZoneID id = ZoneHelper.queryZone(accessKey, bucket);
-            setZone(id, useHTTPS);
+            ZoneID id = ZoneHelper.QueryZone(accessKey, bucket);
+            SetZone(id, useHTTPS);
         }
+
+#endif
+
+#if Net45 || Net46 || NetCore || WINDOWS_UWP
+
+        /// <summary>
+        /// 自动配置Zone
+        /// </summary>
+        /// <param name="accessKey">AccessKey</param>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="useHTTPS">是否使用HTTPS</param>
+        public static async Task AutoZoneAsync(string accessKey, string bucket, bool useHTTPS)
+        {
+            ZoneID id = await ZoneHelper.QueryZoneAsync(accessKey, bucket);
+            SetZone(id, useHTTPS);
+        }     
+
+#endif
+
     }
 
 }

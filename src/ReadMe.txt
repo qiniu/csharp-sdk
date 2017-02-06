@@ -1,0 +1,3 @@
+如需编译Qiniu.NetCore.sln（或Qiniu.UWP.sln）
+请先将Qiniu.NetCore（或Qiniu.UWP）文件夹下的project.json和project.lock.json拷贝至Qiniu文件夹下
+或者只拷贝project.json文件然后执行dotnet restore命令
