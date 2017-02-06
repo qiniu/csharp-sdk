@@ -1,5 +1,7 @@
 #Qiniu (Cloud) C# SDK 
 
+[![Build Status](https://api.travis-ci.org/qiniu/csharp-sdk.png?branch=master)](https://travis-ci.org/qiniu/csharp-sdk)
+
 ##关于
 
 此 C# SDK 适用于.NET Framework 2.0+ , .NET Core 以及UWP(Windows 10 通用应用)，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
