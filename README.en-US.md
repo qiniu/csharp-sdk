@@ -20,6 +20,8 @@ Want to know more about how to using this SDK? Are you trying to find some code 
 
 * [SDK manual | examples](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.7/index.html)
 
+Or if you want to develop UWP apps, see this demo: [github | csharp-sdk-example-uwp](https://github.com/fengyhack/csharp-sdk-example-uwp)
+
 ##How-to-install
 
 Releases can be found [here](https://github.com/fengyhack/csharp-sdk-shared/releases), choose the one you need and unzipped it, then add reference to the *.dll file in your project.
