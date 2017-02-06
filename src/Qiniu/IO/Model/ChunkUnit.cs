@@ -48,7 +48,7 @@
         /// </summary>
         /// <param name="cu"></param>
         /// <returns></returns>
-        public static int getChunkSize(ChunkUnit cu)
+        public static int GetChunkSize(ChunkUnit cu)
         {
             int c = (int)cu;
             return c * N;
@@ -59,7 +59,7 @@
         /// </summary>
         /// <param name="chunkSize"></param>
         /// <returns></returns>
-        public static ChunkUnit getChunkUnit(int chunkSize)
+        public static ChunkUnit GetChunkUnit(int chunkSize)
         {
             if (chunkSize < 128 * 1024 || chunkSize > 4 * 1024 * 1024)
             {

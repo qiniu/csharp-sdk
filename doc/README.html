@@ -9,22 +9,26 @@
 
 <h1 id="qiniu-cloud-c-sdk">Qiniu (Cloud) C# SDK</h1>
 
+
+
 <h2 id="关于">关于</h2>
 
-<p>此 C# SDK 适用于.NET Framework 2.0+ 和 .NET Core，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。</p>
+<p>此 C# SDK 适用于.NET Framework 2.0+ , .NET Core 以及UWP(Windows 10 通用应用)，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。</p>
+
+
 
 <h2 id="sdk文档">SDK文档</h2>
 
 <p>以下文档用于检索SDK接口、属性说明，它将有助于您理解SDK的结构。</p>
 
-<ul><li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.5/index.html" target="_blank">HTML在线浏览</a></p></li>
-<li><p><a href="http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.5.chm" target="_blank">CHM文件下载</a></p></li>
+<ul><li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.7/index.html" target="_blank">HTML在线浏览</a></p></li>
+<li><p><a href="http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.7.chm" target="_blank">CHM文件下载</a></p></li>
 </ul>
 
 <p>以下文档/链接提供一些基本示例，参考这些示例可以帮助您更快熟悉如何使用这套SDK。</p>
 
-<ul><li><p><a href="https://github.com/fengyhack/csharp-sdk-shared-examples" target="_blank">github | csharp-sdk-examples</a></p></li>
-<li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.5/index.html" target="_blank">C# SDK使用指南 | 代码示例</a></p></li>
+<ul><li><p><a href="https://github.com/fengyhack/csharp-sdk-examples" target="_blank">github | csharp-sdk-examples</a></p></li>
+<li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.7/index.html" target="_blank">C# SDK使用指南 | 代码示例</a></p></li>
 </ul>
 
 
@@ -93,8 +97,12 @@
   <td>Qiniu.Net46.sln</td>
 </tr>
 <tr>
-  <td>.NET Core(netstandard1.6)</td>
-  <td>Qiniu.NetStandard16.sln</td>
+  <td>.NET Core</td>
+  <td>Qiniu.Core.sln</td>
+</tr>
+<tr>
+  <td>Win10 UWP</td>
+  <td>Qiniu.UWP.sln</td>
 </tr>
 <tr>
   <td>以上全部</td>
@@ -105,9 +113,10 @@
 
 <p><strong>注意</strong></p>
 
-<p>如需编译<code>Qiniu.NetStandard16</code>或者<code>Qiniu.ALL_VER</code>(它包含前者)，请先将<code>project.json</code>和<code>project.lock.json</code>拷贝至<code>Qiniu</code>文件夹下，或者拷贝<code>project.json</code>文件然后执行<code>dotnet restore</code>命令（推荐）。</p>
+<p>如需编译<code>Qiniu.Core.sln</code>（或<code>Qiniu.UWP.sln</code>），请先将<code>Qiniu.NetCore</code>（或<code>Qiniu.UWP</code>）文件夹下的 <br>
+<code>project.json</code>和<code>project.lock.json</code>拷贝至<code>Qiniu</code>文件夹下，或者只拷贝<code>project.json</code>文件然后执行<code>dotnet restore</code>命令（推荐）。</p>
 
-<p>如需编译其他非NetCore版本，请删除<code>Qiniu</code>文件夹下的<code>project.json</code>和<code>project.lock.json</code>（如果有）。</p>
+<p>编译其他版本时，如果<code>Qiniu</code>文件夹下有<code>project.json</code>或<code>project.lock.json</code>，请先删除。</p>
 
 
 
@@ -152,6 +161,8 @@
 
 <p>www.opensource.org/licenses/MIT</p>
 
+
+
 <h2 id="附录">附录</h2>
 
 
@@ -177,6 +188,8 @@
 <p><strong>注意</strong></p>
 
 <p>在执行<code>dotnet restore</code>之前，您可以在文本编辑器中打开并修改<code>project.json</code>文件(这个文件在执行<code>dotnet new</code>后就会自动生成)内容，下面是一个示例:</p>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-json hljs">{<br>    "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.0-*"</span></span>,<br>    "<span class="hljs-attribute">buildOptions</span>": <span class="hljs-value">{<br>         "<span class="hljs-attribute">emitEntryPoint</span>": <span class="hljs-value"><span class="hljs-literal">true</span><br>        </span>}</span>,<br><br>    "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{<br>        "<span class="hljs-attribute">Microsoft.NETCore.App</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.1"</span><br>            </span>}</span>,<br>            "<span class="hljs-attribute">Qiniu</span>": <span class="hljs-value"><span class="hljs-string">"7.1.0.0"</span></span>,<br>            "<span class="hljs-attribute">Newtonsoft.Json</span>": <span class="hljs-value"><span class="hljs-string">"9.0.1"</span><br>        </span>}</span>,<br><br>        "<span class="hljs-attribute">frameworks</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">netcoreapp1.0</span>": <span class="hljs-value">{<br>                "<span class="hljs-attribute">imports</span>": <span class="hljs-value"><span class="hljs-string">"dnxcore50"</span><br>                </span>}<br>        </span>}</span>,<br><br>        "<span class="hljs-attribute">runtimes</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">win7-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">win7-x86</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">osx.10.10-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">osx.10.11-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">ubuntu.14.04-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">ubuntu.16.04-x64</span>": <span class="hljs-value">{}<br>        </span>}<br></span>}<br></code></pre>
 
@@ -218,4 +231,16 @@
 
 <p>当然，执行这个命令之前，<code>dotnet</code>工具是必须安装的。</p>
 
-<p>如果您发布到Windows并且生成了exe文件，直接双击就可以运行。</p></div></body></html>
+<p>如果您发布到Windows并且生成了exe文件，直接双击就可以运行。</p>
+
+
+
+<h3 id="速览win10-uwp">速览Win10 UWP</h3>
+
+<p>Win10 UWP是指“Windows 10 通用应用”，它和之前的.NET应用开发有一些区别，比如文件存储使用的是StorageFolder和StorageFile等。具体请参阅Windows官方文档。</p>
+
+<p>同样的，UWP解决方案中也包含一个project.json文件，以下是一个简单的示例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-json hljs">{<br>  "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">Microsoft.NETCore.UniversalWindowsPlatform</span>": <span class="hljs-value"><span class="hljs-string">"5.1.0"</span><br>  </span>}</span>,<br>  "<span class="hljs-attribute">frameworks</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">uap10.0</span>": <span class="hljs-value">{}<br>  </span>}</span>,<br>  "<span class="hljs-attribute">runtimes</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">win10-arm</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-arm-aot</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x86</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x86-aot</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x64</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x64-aot</span>": <span class="hljs-value">{}<br>  </span>}<br></span>}<br></code></pre></div></body></html>

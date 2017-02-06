@@ -1,3 +1,15 @@
+**2017-02-06**
+
+最新版本v7.2.7，适用于.NET Framework 2.0+ , .NET Core 和 UWP
+
+新增：对于UWP(Windows10)的支持
+
+新增：对于.NET Framework 4.5及以上, .NET Core和UWP的“异步(async)”支持
+
+更新：部分类、属性、方法名称等细节修改，请参见SDK文档或者使用指南
+
+* * *
+
 **2017-01-20**
 
 最新版本v7.2.6，适用于.NET Framework 2.0+ 和.NET Core

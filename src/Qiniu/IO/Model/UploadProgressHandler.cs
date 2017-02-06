@@ -10,7 +10,7 @@
     /// <summary>
     /// 数据流流上传进度处理
     /// </summary>
-    /// <param name="uploadedBytes"></param>
+    /// <param name="uploadedBytes">已上传的字节数，如果设置为0或负数表示读取完毕</param>
     public delegate void StreamProgressHandler(long uploadedBytes);
 
 }

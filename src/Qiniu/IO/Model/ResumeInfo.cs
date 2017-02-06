@@ -3,7 +3,7 @@
 namespace Qiniu.IO.Model
 {
     /// <summary>
-    /// 断点续上传断点信息
+    /// 分片上传的记录信息
     /// </summary>
     public class ResumeInfo
     {
@@ -28,7 +28,7 @@ namespace Qiniu.IO.Model
         public string[] Contexts { get; set; }
 
         /// <summary>
-        /// 上传数据流时使用
+        /// 上下文信息列表-仅上传不确定数据流时使用，此情形下不支持“断点恢复”
         /// </summary>
         public List<string> SContexts { get; set; }
 

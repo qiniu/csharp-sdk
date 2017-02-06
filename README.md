@@ -1,24 +1,22 @@
 #Qiniu (Cloud) C# SDK 
 
-[![Build Status](https://api.travis-ci.org/qiniu/csharp-sdk.png?branch=master)](https://travis-ci.org/qiniu/csharp-sdk)
-
 ##关于
 
-此 C# SDK 适用于.NET Framework 2.0+ 和 .NET Core，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+此 C# SDK 适用于.NET Framework 2.0+ , .NET Core 以及UWP(Windows 10 通用应用)，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
 ##SDK文档
 
 以下文档用于检索SDK接口、属性说明，它将有助于您理解SDK的结构。
 
-* [HTML在线浏览](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.6/index.html)
+* [HTML在线浏览](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.7/index.html)
 
-* [CHM文件下载](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.6.chm)
+* [CHM文件下载](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.7.chm)
 
 以下文档/链接提供一些基本示例，参考这些示例可以帮助您更快熟悉如何使用这套SDK。
 
 * [github | csharp-sdk-examples](https://github.com/fengyhack/csharp-sdk-examples)
 
-* [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.6/index.html)
+* [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.7/index.html)
 
 ##如何安装
 
@@ -61,14 +59,16 @@ git clone https://github.com/qiniu/csharp-sdk
 | .NET Framework 4.0 | Qiniu.Net40.sln |
 | .NET Framework 4.5 | Qiniu.Net45.sln |
 | .NET Framework 4.6 | Qiniu.Net46.sln |
-| .NET Core(netstandard1.6) | Qiniu.NetStandard16.sln |
+| .NET Core | Qiniu.Core.sln |
+| Win10 UWP| Qiniu.UWP.sln |
 | 以上全部 | Qiniu.ALL_VER.sln |
 
 **注意**
 
-如需编译`Qiniu.NetStandard16`或者`Qiniu.ALL_VER`(它包含前者)，请先将`project.json`和`project.lock.json`拷贝至`Qiniu`文件夹下，或者拷贝`project.json`文件然后执行`dotnet restore`命令（推荐）。
+如需编译`Qiniu.Core.sln`（或`Qiniu.UWP.sln`），请先将`Qiniu.NetCore`（或`Qiniu.UWP`）文件夹下的
+`project.json`和`project.lock.json`拷贝至`Qiniu`文件夹下，或者只拷贝`project.json`文件然后执行`dotnet restore`命令（推荐）。
 
-如需编译其他非NetCore版本，请删除`Qiniu`文件夹下的`project.json`和`project.lock.json`（如果有）。
+编译其他版本时，如果`Qiniu`文件夹下有`project.json`或`project.lock.json`，请先删除。
 
 ##API参考手册
 
@@ -209,3 +209,28 @@ dotnet Example.dll
 当然，执行这个命令之前，`dotnet`工具是必须安装的。
 
 如果您发布到Windows并且生成了exe文件，直接双击就可以运行。
+
+###速览Win10 UWP
+
+Win10 UWP是指“Windows 10 通用应用”，它和之前的.NET应用开发有一些区别，比如文件存储使用的是StorageFolder和StorageFile等。具体请参阅Windows官方文档。
+
+同样的，UWP解决方案中也包含一个project.json文件，以下是一个简单的示例：
+
+```json
+{
+  "dependencies": {
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0"
+  },
+  "frameworks": {
+    "uap10.0": {}
+  },
+  "runtimes": {
+    "win10-arm": {},
+    "win10-arm-aot": {},
+    "win10-x86": {},
+    "win10-x86-aot": {},
+    "win10-x64": {},
+    "win10-x64-aot": {}
+  }
+}
+```

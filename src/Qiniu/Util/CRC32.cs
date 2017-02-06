@@ -30,16 +30,16 @@ namespace Qiniu.Util
         /// <param name="p">字节数据</param>
         /// <param name="offset">偏移位置</param>
         /// <param name="count">字节数</param>
-        public void write(byte[] p, int offset, int count)
+        public void Write(byte[] p, int offset, int count)
         {
-            this.Value = update(this.Value, this.Table, p, offset, count);
+            this.Value = Update(this.Value, this.Table, p, offset, count);
         }
 
         /// <summary>
         /// 校验和
         /// </summary>
         /// <returns>校验和</returns>
-        public uint sum()
+        public uint Sum()
         {
             return this.Value;
         }
@@ -71,7 +71,7 @@ namespace Qiniu.Util
         /// <param name="offset">偏移位置</param>
         /// <param name="count">字节数</param>
         /// <returns></returns>
-        public static uint update(UInt32 crc, UInt32[] table, byte[] p, int offset, int count)
+        public static uint Update(UInt32 crc, UInt32[] table, byte[] p, int offset, int count)
         {
             crc = ~crc;
             for (int i = 0; i < count; i++)
@@ -86,11 +86,11 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="data">二进制数据</param>
         /// <returns>crc32值</returns>
-        public static uint checkSumBytes(byte[] data)
+        public static uint CheckSumBytes(byte[] data)
         {
             CRC32 crc = new CRC32();
-            crc.write(data, 0, data.Length);
-            return crc.sum();
+            crc.Write(data, 0, data.Length);
+            return crc.Sum();
         }
 
         /// <summary>
@@ -100,11 +100,11 @@ namespace Qiniu.Util
         /// <param name="offset">偏移位置</param>
         /// <param name="count">字节数</param>
         /// <returns></returns>
-        public static uint checkSumSlice(byte[] data, int offset, int count)
+        public static uint CheckSumSlice(byte[] data, int offset, int count)
         {
             CRC32 crc = new CRC32();
-            crc.write(data, offset, count);
-            return crc.sum();
+            crc.Write(data, offset, count);
+            return crc.Sum();
         }
 
         /// <summary>
@@ -124,10 +124,10 @@ namespace Qiniu.Util
                     int n = fs.Read(buffer, 0, bufferLen);
                     if (n == 0)
                         break;
-                    crc.write(buffer, 0, n);
+                    crc.Write(buffer, 0, n);
                 }
             }
-            return crc.sum();
+            return crc.Sum();
         }
     }
 }

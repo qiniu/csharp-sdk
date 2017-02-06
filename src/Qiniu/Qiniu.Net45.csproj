@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <BaseIntermediateOutputPath>..\..\bin\net45\obj</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\bin\net45\obj\</BaseIntermediateOutputPath>
     <OutputPath>..\..\bin\net45\</OutputPath>
     <DefineConstants>DEBUG;TRACE;Net45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -28,7 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <BaseIntermediateOutputPath>..\..\bin\net45\obj</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\bin\net45\obj\</BaseIntermediateOutputPath>
     <OutputPath>..\..\bin\net45\</OutputPath>
     <DefineConstants>TRACE;Net45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDN\Model\TimestampAntiLeechUrlRequest.cs" />
     <Compile Include="IO\SimpleUploader.cs" />
     <Compile Include="QiniuCSharpSDK.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,7 +80,6 @@
     <Compile Include="CDN\Model\LogListRequest.cs" />
     <Compile Include="CDN\Model\LogListInfo.cs" />
     <Compile Include="CDN\Model\LogListResult.cs" />
-    <Compile Include="CDN\Model\HotLinkRequest.cs" />
     <Compile Include="CDN\CdnManager.cs" />
     <Compile Include="Util\Auth.cs" />
     <Compile Include="Util\Mac.cs" />
@@ -122,7 +122,7 @@
     <Compile Include="RSF\OperationManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Packages.Net40.config" />
+    <None Include="..\Packages.Net45.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

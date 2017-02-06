@@ -18,7 +18,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="_url">待判断的url</param>
         /// <returns></returns>
-        public static bool isValidUrl(string _url)
+        public static bool IsValidUrl(string _url)
         {
             return regx.IsMatch(_url);
         }
@@ -28,7 +28,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="_url">待判断的url</param>
         /// <returns></returns>
-        public static bool isNormalUrl(string _url)
+        public static bool IsNormalUrl(string _url)
         {
             return regu.IsMatch(_url);
         }
@@ -38,7 +38,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="_dir">待判断的url目录</param>
         /// <returns></returns>
-        public static bool isValidDir(string _dir)
+        public static bool IsValidDir(string _dir)
         {
             return regd.IsMatch(_dir);
         }
@@ -48,7 +48,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="_url">待转换的url</param>
         /// <returns></returns>
-        public static string getNormalUrl(string _url)
+        public static string GetNormalUrl(string _url)
         {
             var m = regu.Match(_url);
             return m.Value;
@@ -62,7 +62,7 @@ namespace Qiniu.Util
         /// <param name="path">path部分</param>
         /// <param name="file">文件名</param>
         /// <param name="query">参数</param>
-        public static void urlSplit(string url, out string host, out string path, out string file, out string query)
+        public static void UrlSplit(string url, out string host, out string path, out string file, out string query)
         {
             int start = 0;
 

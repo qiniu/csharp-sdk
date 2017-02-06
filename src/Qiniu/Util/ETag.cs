@@ -19,7 +19,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>文件hash</returns>
-        public static string calcHash(string filePath)
+        public static string CalcHash(string filePath)
         {
             string qetag = "";
 
@@ -36,7 +36,7 @@ namespace Qiniu.Util
                         byte[] readBuffer = new byte[readByteCount];
                         Array.Copy(buffer, readBuffer, readByteCount);
 
-                        byte[] sha1Buffer = Hashing.calcSHA1(readBuffer);
+                        byte[] sha1Buffer = Hashing.CalcSHA1(readBuffer);
 
                         finalBuffer[0] = 0x16;
                         Array.Copy(sha1Buffer, 0, finalBuffer, 1, sha1Buffer.Length);
@@ -52,17 +52,17 @@ namespace Qiniu.Util
                             byte[] readBuffer = new byte[readByteCount];
                             Array.Copy(buffer, readBuffer, readByteCount);
 
-                            byte[] sha1Buffer = Hashing.calcSHA1(readBuffer);
+                            byte[] sha1Buffer = Hashing.CalcSHA1(readBuffer);
                             Array.Copy(sha1Buffer, 0, sha1AllBuffer, i * BLOCK_SHA1_SIZE, sha1Buffer.Length);
                         }
 
-                        byte[] sha1AllBufferSha1 = Hashing.calcSHA1(sha1AllBuffer);
+                        byte[] sha1AllBufferSha1 = Hashing.CalcSHA1(sha1AllBuffer);
 
                         finalBuffer[0] = 0x96;
                         Array.Copy(sha1AllBufferSha1, 0, finalBuffer, 1, sha1AllBufferSha1.Length);
 
                     }
-                    qetag = Base64.urlSafeBase64Encode(finalBuffer);
+                    qetag = Base64.UrlSafeBase64Encode(finalBuffer);
                 }
             }
             catch (Exception) { }
