@@ -1,3 +1,11 @@
+**2017-02-08**
+
+最新版本v7.2.8，适用于.NET Framework 2.0+ , .NET Core 和 UWP
+
+修复：FormUploader上传文件出现"file is not specified in multipart"的错误
+
+* * *
+
 **2017-02-06**
 
 最新版本v7.2.7，适用于.NET Framework 2.0+ , .NET Core 和 UWP
