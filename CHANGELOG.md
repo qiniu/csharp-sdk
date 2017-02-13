@@ -1,3 +1,13 @@
+**2017-02-13**
+
+最新版本v7.2.9，适用于.NET Framework 2.0+ , .NET Core 和 UWP
+
+新增：单元测试(NUnit)
+
+修复：部分细节问题修复
+
+* * *
+
 **2017-02-08**
 
 最新版本v7.2.8，适用于.NET Framework 2.0+ , .NET Core 和 UWP

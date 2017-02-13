@@ -1,2 +1,23 @@
 language: csharp
-solution: Qiniu.Net40.Travis.sln
+
+install:
+
+ - sudo apt-get install nunit
+ 
+before_script:
+
+  - export QINIU_ACCESS_KEY="QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm"
+  - export QINIU_SECRET_KEY="Bxckh6FA-Fbs9Yt3i3cbKVK22UPBmAOHJcL95pGz"
+  - export QINIU_BUCKET_1="csharpsdk"
+  - export QINIU_BUCKET_2="csharpsdk"
+  - export FILE_KEY_1="test-file-1"
+  - export FILE_KEY_2="test-file-2"
+  - export LOCAL_FILE_1="1.txt"
+  - export LOCAL_FILE_2="1.jpg"
+  - export TEST_DOMAIN="csharpsdk.qiniudn.com"
+  - export TEST_URL1="http://img.ivsky.com/img/tupian/pre/201610/09/beifang_shanlin_xuejing-001.jpg"
+  - export TEST_URL2="http://DOMAIN/PATH/FILE?QUERY"
+ 
+script: 
+
+ - make build-and-test

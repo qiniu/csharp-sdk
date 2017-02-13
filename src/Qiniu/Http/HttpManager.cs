@@ -24,7 +24,7 @@ namespace Qiniu.Http
         public HttpManager(bool allowAutoRedirect = false)
         {
             this.allowAutoRedirect = allowAutoRedirect;
-            userAgent = GetUserAgent();
+            userAgent = GetUserAgent();            
         }
 
         /// <summary>
@@ -35,6 +35,20 @@ namespace Qiniu.Http
         {
             string osDesc = Environment.OSVersion.Platform + "; " + Environment.OSVersion.Version;
             return string.Format("{0}-{1}/{2} ({3})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.RTFX, QiniuCSharpSDK.VERSION, osDesc);
+        }
+
+        /// <summary>
+        /// 设置自定义的客户端标识(UserAgent)，示例："SepcifiedClient/1.1 (Universal)"
+        /// 如果设置为空白或者不设置，SDK会自动使用默认的UserAgent
+        /// </summary>
+        /// <param name="userAgent">用户自定义的UserAgent</param>
+        /// <returns>客户端标识UA</returns>
+        public void SetUserAgent(string userAgent)
+        {
+            if(!string.IsNullOrEmpty(userAgent))
+            {
+                this.userAgent = userAgent;
+            }
         }
 
         /// <summary>
@@ -1343,6 +1357,20 @@ namespace Qiniu.Http
             string osDesc = "UNKNOWN";
 #endif
             return string.Format("{0}-{1}/{2} ({3})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.RTFX, QiniuCSharpSDK.VERSION, osDesc);
+        }
+
+        /// <summary>
+        /// 设置自定义的客户端标识，示例："SepcifiedClient/1.1 (Universal)"
+        /// 如果设置为空白或者不设置，SDK会自动使用默认的UserAgent
+        /// </summary>
+        /// <param name="userAgent">用户自定义的UA</param>
+        /// <returns>客户端标识UA</returns>
+        public void SetUserAgent(string userAgent)
+        {
+            if(!string.IsNullOrEmpty(userAgent))
+            {
+                this.userAgent = userAgent;
+            }
         }
 
         /// <summary>

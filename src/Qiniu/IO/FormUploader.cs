@@ -76,8 +76,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine("--" + boundary);
 
-                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
-                string filename = Util.Hashing.CalcMD5(Path.GetFileName(localFile));
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -166,8 +166,8 @@ namespace Qiniu.IO
                     sbp1.AppendLine("--" + boundary);
                 }
 
-                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
-                string filename = Util.Hashing.CalcMD5(Path.GetFileName(localFile));
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -245,7 +245,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine("--" + boundary);
 
-                string filename = Path.GetFileName(saveKey);
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -323,7 +324,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine("--" + boundary);
 
-                string filename = Path.GetFileName(saveKey);
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -424,8 +426,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine(sep);
 
-                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
-                string filename = Util.Hashing.CalcMD5(Path.GetFileName(localFile));
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -505,8 +507,8 @@ namespace Qiniu.IO
                     sbp1.AppendLine(sep);
                 }
 
-                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
-                string filename = Util.Hashing.CalcMD5(Path.GetFileName(localFile));
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -603,8 +605,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine(sep);
 
-                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
-                string filename = Util.Hashing.CalcMD5(Path.GetFileName(file.Path));
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -684,8 +686,8 @@ namespace Qiniu.IO
                     sbp1.AppendLine(sep);
                 }
 
-                // FIX 2017-02-08 https://github.com/qiniu/csharp-sdk/issues/140
-                string filename = Util.Hashing.CalcMD5(Path.GetFileName(file.Path));
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -784,7 +786,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine(sep);
 
-                string filename = Path.GetFileName(saveKey);
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();
@@ -854,7 +857,8 @@ namespace Qiniu.IO
                 sbp1.AppendLine(token);
                 sbp1.AppendLine(sep);
 
-                string filename = Path.GetFileName(saveKey);
+                // FIX 2017-02-09 https://github.com/qiniu/csharp-sdk/issues/140
+                string filename = Util.Hashing.CalcMD5(saveKey);
                 sbp1.AppendFormat("Content-Disposition: form-data; name=file; filename={0}", filename);
                 sbp1.AppendLine();
                 sbp1.AppendLine();

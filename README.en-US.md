@@ -1,7 +1,5 @@
 #Qiniu (Cloud) C# SDK
 
-[![Build Status](https://api.travis-ci.org/qiniu/csharp-sdk.png?branch=master)](https://travis-ci.org/qiniu/csharp-sdk)
-
 ##About
 
 This C# SDK is built based on Qiniu Cloud API (see below), and it can be used on .NET Framework 2.0+, .NET Core and UWP (Windows 10 Universal Platforms). It will help you to build an application easily and quickly.
@@ -10,19 +8,15 @@ This C# SDK is built based on Qiniu Cloud API (see below), and it can be used on
 
 You can have a better view of this SDK by checking the documnets given below:
 
-* [SDK-reference HTML Online](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.8/index.html)
+* [SDK-reference HTML Online](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.9/index.html)
 
-* [SDK-reference CHM Offline](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.8.chm)
+* [SDK-reference CHM Offline](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.9.chm)
 
 Want to know more about how to using this SDK? Are you trying to find some code examples based on this SDK? These documents or links below will be helpful:
 
 * [github/csharp-sdk-shared-examples](https://github.com/fengyhack/csharp-sdk-shared-examples)
 
-* [SDK manual | examples](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.8/index.html)
-
-Or if you want to develop **UWP apps**, the demo given below will do some help: 
-
-* [github | csharp-sdk-example-uwp](https://github.com/fengyhack/csharp-sdk-example-uwp)
+* [SDK manual | examples](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.97/index.html)
 
 ##How-to-install
 
@@ -52,6 +46,7 @@ Suppose you are using Visual Studio(VS2013 and higher versions are strongly reco
 | .NET Core | Qiniu.NetCore.sln |
 | Windows10 UWP | Qiniu.UWP.sln |
 | All the above | Qiniu.ALL_VER.sln |
+| UnitTest(NUnit) | Qiniu.UnitTest.sln |
 
 **Some details about building NetCore/UWP projects**
 
@@ -112,9 +107,11 @@ www.opensource.org/licenses/MIT
 
 ##Appendix
 
-###Quick start on .NET Core
+###Quick start on .NET Coree
 
-**How-to-use** Here is a step-by-step guide.
+### How-to-use
+
+Here is a step-by-step guide.
 
 To get ready, if you need `dotnet` tool, see https://github.com/dotnet/cli/
 
@@ -201,9 +198,11 @@ In this case, you should have `dotnet` tool installed at the very begin.
 
 Or if you want to run the *published app* `Example`, just double-click it. 
 
-### Quick start on UWP
+######Quick start on .NET Coree
 
-**What is UWP** UWP means (Windows 10) Universal Windows Platform.
+**What is UWP**
+
+UWP means (Windows 10) Universal Windows Platform.
 
 UWP project also  contains a file called `project.json`, here is an example:
 
