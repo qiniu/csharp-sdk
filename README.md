@@ -1,7 +1,5 @@
 #Qiniu (Cloud) C# SDK 
 
-[![Build Status](https://api.travis-ci.org/qiniu/csharp-sdk.png?branch=master)](https://travis-ci.org/qiniu/csharp-sdk)
-
 ##关于
 
 此 C# SDK 适用于.NET Framework 2.0+ , .NET Core 以及UWP(Windows 10 通用应用)，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
@@ -10,19 +8,15 @@
 
 以下文档用于检索SDK接口、属性说明，它将有助于您理解SDK的结构。
 
-* [HTML在线浏览](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.8/index.html)
+* [HTML在线浏览](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.9/index.html)
 
-* [CHM文件下载](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.8.chm)
+* [CHM文件下载](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.9.chm)
 
 以下文档/链接提供一些基本示例，参考这些示例可以帮助您更快熟悉如何使用这套SDK。
 
 * [github | csharp-sdk-examples](https://github.com/fengyhack/csharp-sdk-examples)
 
-* [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.8/index.html)
-
-如果您想开发**UWP应用**，您也可以参考如下示例：
-
-* [github | csharp-sdk-example-uwp](https://github.com/fengyhack/csharp-sdk-example-uwp)
+* [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.9/index.html)
 
 ##如何安装
 
@@ -68,6 +62,7 @@ git clone https://github.com/qiniu/csharp-sdk
 | .NET Core | Qiniu.Core.sln |
 | Win10 UWP| Qiniu.UWP.sln |
 | 以上全部 | Qiniu.ALL_VER.sln |
+| 单元测试(NUnit) | Qiniu.UnitTest.sln |
 
 **注意**
 

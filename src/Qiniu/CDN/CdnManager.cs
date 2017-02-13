@@ -630,7 +630,7 @@ namespace Qiniu.CDN
             string key = request.Key;
             string path = Uri.EscapeUriString(request.Path);
             string file = request.File;
-            string ts = (int.Parse(request.Timestamp)).ToString("x");
+            string ts = (long.Parse(request.Timestamp)).ToString("x");
             string SIGN = Hashing.CalcMD5(key + path + file + ts);
 
             return string.Format("{0}&sign={1}&t={2}", RAW, SIGN, ts);
