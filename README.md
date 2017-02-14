@@ -20,6 +20,10 @@
 
 * [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.9/index.html)
 
+如果您想开发**UWP应用**，您也可以参考如下示例。
+
+* [github | csharp-sdk-example-uwp](https://github.com/fengyhack/csharp-sdk-example-uwp)
+
 ##如何安装
 
 当前最新版本及最新改动同步在master分支。
