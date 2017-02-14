@@ -1,5 +1,7 @@
 #Qiniu (Cloud) C# SDK
 
+[![Build Status](https://api.travis-ci.org/qiniu/csharp-sdk.png)](https://travis-ci.org/qiniu/csharp-sdk)
+
 ##About
 
 This C# SDK is built based on Qiniu Cloud API (see below), and it can be used on .NET Framework 2.0+, .NET Core and UWP (Windows 10 Universal Platforms). It will help you to build an application easily and quickly.
@@ -16,7 +18,7 @@ Want to know more about how to using this SDK? Are you trying to find some code 
 
 * [github/csharp-sdk-shared-examples](https://github.com/fengyhack/csharp-sdk-shared-examples)
 
-* [SDK manual | examples](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.97/index.html)
+* [SDK manual | examples](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.9/index.html)
 
 ##How-to-install
 
