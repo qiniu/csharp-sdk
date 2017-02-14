@@ -1,4 +1,6 @@
-#Qiniu (Cloud) C# SDK 
+#Qiniu (Cloud) C# SDK
+
+[![Build Status](https://api.travis-ci.org/qiniu/csharp-sdk.png)](https://travis-ci.org/qiniu/csharp-sdk)
 
 ##关于
 
