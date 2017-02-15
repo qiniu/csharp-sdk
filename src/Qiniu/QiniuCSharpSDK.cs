@@ -19,7 +19,7 @@ public class QiniuCSharpSDK
     /// <summary>
     /// 目标框架
     /// </summary>
- #if Net20
+#if Net20
     public const string RTFX = "NET20";
 #elif Net35
     public const string RTFX = "NET35";
@@ -40,6 +40,6 @@ public class QiniuCSharpSDK
     /// <summary>
     /// SDK版本号
     /// </summary>
-    public const string VERSION = "7.2.9";
+    public const string VERSION = "7.2.10";
 
 }

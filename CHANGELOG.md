@@ -1,3 +1,17 @@
+**2017-02-15**
+
+最新版本v7.2.10，适用于.NET Framework 2.0+ , .NET Core 和 UWP
+
+移除：移除`Qiniu.IO.SimpleUploader`
+
+优化：部分细节优化
+
+更新：User-Agent格式为`SDK_ALIAS/SDK_VERSION (RUNTIME; OS_DECRIPTION)`
+
+更新：新增DLL文件签名
+
+* * *
+
 **2017-02-13**
 
 最新版本v7.2.9，适用于.NET Framework 2.0+ , .NET Core 和 UWP

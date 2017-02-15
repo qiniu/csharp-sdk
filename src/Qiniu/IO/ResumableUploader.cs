@@ -238,7 +238,7 @@ namespace Qiniu.IO
                     ++index;
                 }
 
-                hr = mkfile(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = mkfile( saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -465,7 +465,7 @@ namespace Qiniu.IO
                     }
                 }
 
-                hr = mkfile(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = mkfile(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -713,7 +713,7 @@ namespace Qiniu.IO
                     ++index;
                 }
 
-                hr = mkfile(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = mkfile(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -970,7 +970,7 @@ namespace Qiniu.IO
                     }
                 }
 
-                hr = mkfile(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = mkfile(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -1228,7 +1228,7 @@ namespace Qiniu.IO
                     }
                 }
 
-                hr = mkfile(fileSize, saveKey, resumeInfo.Contexts, token, extraParams);
+                hr = mkfile(saveKey, fileSize, saveKey, resumeInfo.Contexts, token, extraParams);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -1755,7 +1755,7 @@ namespace Qiniu.IO
                     ++index;
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -1982,7 +1982,7 @@ namespace Qiniu.IO
                     }
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -2230,7 +2230,7 @@ namespace Qiniu.IO
                     ++index;
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -2487,7 +2487,7 @@ namespace Qiniu.IO
                     }
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -2745,7 +2745,7 @@ namespace Qiniu.IO
                     }
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token, extraParams);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token, extraParams);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -2971,7 +2971,7 @@ namespace Qiniu.IO
                     ++index;
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -3201,7 +3201,7 @@ namespace Qiniu.IO
                     }
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -3450,7 +3450,7 @@ namespace Qiniu.IO
                     ++index;
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -3710,7 +3710,7 @@ namespace Qiniu.IO
                     }
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -3971,7 +3971,7 @@ namespace Qiniu.IO
                     }
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token, extraParams);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token, extraParams);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -4369,6 +4369,45 @@ namespace Qiniu.IO
         }
 
         /// <summary>
+        /// 根据已上传的所有分片数据创建文件，保存的文件名会自动生成
+        /// </summary>
+        /// <param name="fileName">源文件名</param>
+        /// <param name="size">目标文件大小</param>
+        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="token">上传凭证</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private HttpResult mkfile(string fileName, long size, IList<string> contexts, string token)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string url = string.Format("{0}/mkfile/{1}/fname/{2}", uploadHost, size, Base64.UrlSafeBase64Encode(fileName));
+                string body = StringHelper.Join(contexts, ",");
+                string upToken = string.Format("UpToken {0}", token);
+
+                result = httpManager.PostText(url, body, upToken);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 根据已上传的所有分片数据创建文件
         /// </summary>
         /// <param name="size">目标文件大小</param>
@@ -4385,6 +4424,49 @@ namespace Qiniu.IO
                 string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
 
                 string url = string.Format("{0}/mkfile/{1}{2}", uploadHost, size, keyStr);
+                string body = StringHelper.Join(contexts, ",");
+                string upToken = string.Format("UpToken {0}", token);
+
+                result = httpManager.PostText(url, body, upToken);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 根据已上传的所有分片数据创建文件
+        /// </summary>
+        /// <param name="fileName">源文件名</param>
+        /// <param name="size">文件大小</param>
+        /// <param name="saveKey">要保存的文件名</param>
+        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="token">上传凭证</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private HttpResult mkfile(string fileName, long size, string saveKey, IList<string> contexts, string token)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
+                string fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));
+
+                string url = string.Format("{0}/mkfile/{1}{2}{3}", uploadHost, size, keyStr, fnameStr);
                 string body = StringHelper.Join(contexts, ",");
                 string upToken = string.Format("UpToken {0}", token);
 
@@ -4451,7 +4533,7 @@ namespace Qiniu.IO
 
             return result;
         }
-
+        
         /// <summary>
         /// 根据已上传的所有分片数据创建文件
         /// </summary>
@@ -4526,6 +4608,116 @@ namespace Qiniu.IO
                 }
 
                 string url = string.Format("{0}/mkfile/{1}{2}{3}", uploadHost, size, keyStr, paramStr);
+                string body = StringHelper.Join(contexts, ",");
+                string upToken = string.Format("UpToken {0}", token);
+
+                result = httpManager.PostText(url, body, upToken);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 根据已上传的所有分片数据创建文件
+        /// </summary>
+        /// <param name="fileName">源文件名</param>
+        /// <param name="size">文件大小</param>
+        /// <param name="saveKey">要保存的文件名</param>
+        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="token">上传凭证</param>
+        /// <param name="extraParams">用户指定的额外参数</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private HttpResult mkfile(string fileName, long size, string saveKey, IList<string> contexts, string token, Dictionary<string, string> extraParams)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));                
+                string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
+                string paramStr = "";
+                if (extraParams != null && extraParams.Count > 0)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var kvp in extraParams)
+                    {
+                        sb.AppendFormat("/{0}/{1}", kvp.Key, kvp.Value);
+                    }
+
+                    paramStr = sb.ToString();
+                }
+
+                string url = string.Format("{0}/mkfile/{1}{2}{3}{4}", uploadHost, size, fnameStr, keyStr, paramStr);
+                string body = StringHelper.Join(contexts, ",");
+                string upToken = string.Format("UpToken {0}", token);
+
+                result = httpManager.PostText(url, body, upToken);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 根据已上传的所有分片数据创建文件
+        /// </summary>
+        /// <param name="size">文件大小</param>
+        /// <param name="saveKey">要保存的文件名</param>
+        /// <param name="mimeType">用户设置的文件MimeType</param>
+        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="token">上传凭证</param>
+        /// <param name="extraParams">用户指定的额外参数</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private HttpResult mkfile(long size, string saveKey, string mimeType, IList<string> contexts, string token, Dictionary<string, string> extraParams)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
+                string mimeTypeStr = string.Format("/mimeType/{0}", Base64.UrlSafeBase64Encode(mimeType));
+                string paramStr = "";
+                if (extraParams != null && extraParams.Count > 0)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var kvp in extraParams)
+                    {
+                        sb.AppendFormat("/{0}/{1}", kvp.Key, kvp.Value);
+                    }
+
+                    paramStr = sb.ToString();
+                }
+
+                string url = string.Format("{0}/mkfile/{1}{2}{3}{4}", uploadHost, size, keyStr, mimeTypeStr, paramStr);
                 string body = StringHelper.Join(contexts, ",");
                 string upToken = string.Format("UpToken {0}", token);
 
@@ -4861,6 +5053,45 @@ namespace Qiniu.IO
         }
 
         /// <summary>
+        /// [异步async]根据已上传的所有分片数据创建文件，保存的文件名会自动生成
+        /// </summary>
+        /// <param name="fileName">源文件名</param>
+        /// <param name="size">目标文件大小</param>
+        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="token">上传凭证</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private async Task<HttpResult> mkfileAsync(string fileName, long size, IList<string> contexts, string token)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string url = string.Format("{0}/mkfile/{1}/fname/{2}", uploadHost, size,Base64.UrlSafeBase64Encode(fileName));
+                string body = StringHelper.Join(contexts, ",");
+                string upToken = string.Format("UpToken {0}", token);
+
+                result = await httpManager.PostTextAsync(url, body, upToken);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// [异步async]根据已上传的所有分片数据创建文件
         /// </summary>
         /// <param name="size">目标文件大小</param>
@@ -4877,6 +5108,48 @@ namespace Qiniu.IO
                 string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
 
                 string url = string.Format("{0}/mkfile/{1}{2}", uploadHost, size, keyStr);
+                string body = StringHelper.Join(contexts, ",");
+                string upToken = string.Format("UpToken {0}", token);
+
+                result = await httpManager.PostTextAsync(url, body, upToken);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// [异步async]根据已上传的所有分片数据创建文件
+        /// </summary>
+        /// <param name="fileName">源文件名</param>
+        /// <param name="size">目标文件大小</param>
+        /// <param name="saveKey">要保存的文件名</param>
+        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="token">上传凭证</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private async Task<HttpResult> mkfileAsync(string fileName, long size, string saveKey, IList<string> contexts, string token)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
+                string fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));
+                string url = string.Format("{0}/mkfile/{1}{2}{3}", uploadHost, size, keyStr,fnameStr);
                 string body = StringHelper.Join(contexts, ",");
                 string upToken = string.Format("UpToken {0}", token);
 
@@ -5018,6 +5291,116 @@ namespace Qiniu.IO
                 }
 
                 string url = string.Format("{0}/mkfile/{1}{2}{3}", uploadHost, size, keyStr, paramStr);
+                string body = StringHelper.Join(contexts, ",");
+                string upToken = string.Format("UpToken {0}", token);
+
+                result = await httpManager.PostTextAsync(url, body, upToken);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// [异步async]根据已上传的所有分片数据创建文件
+        /// </summary>
+        /// <param name="fileName">源文件名</param>
+        /// <param name="size">文件大小</param>
+        /// <param name="saveKey">要保存的文件名</param>
+        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="token">上传凭证</param>
+        /// <param name="extraParams">用户指定的额外参数</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private async Task<HttpResult> mkfileAsync(string fileName, long size, string saveKey, IList<string> contexts, string token, Dictionary<string, string> extraParams)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));
+                string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
+                string paramStr = "";
+                if (extraParams != null && extraParams.Count > 0)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var kvp in extraParams)
+                    {
+                        sb.AppendFormat("/{0}/{1}", kvp.Key, kvp.Value);
+                    }
+
+                    paramStr = sb.ToString();
+                }
+
+                string url = string.Format("{0}/mkfile/{1}{2}{3}{4}", uploadHost, size, fnameStr, keyStr, paramStr);
+                string body = StringHelper.Join(contexts, ",");
+                string upToken = string.Format("UpToken {0}", token);
+
+                result = await httpManager.PostTextAsync(url, body, upToken);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// [异步async]根据已上传的所有分片数据创建文件
+        /// </summary>
+        /// <param name="size">文件大小</param>
+        /// <param name="saveKey">要保存的文件名</param>
+        /// <param name="mimeType">用户设置的文件MimeType</param>
+        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="token">上传凭证</param>
+        /// <param name="extraParams">用户指定的额外参数</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private async Task<HttpResult> mkfileAsync(long size, string saveKey, string mimeType, IList<string> contexts, string token, Dictionary<string, string> extraParams)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string mimeTypeStr = string.Format("/mimeType/{0}", Base64.UrlSafeBase64Encode(mimeType));
+                string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
+                string paramStr = "";
+                if (extraParams != null && extraParams.Count > 0)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var kvp in extraParams)
+                    {
+                        sb.AppendFormat("/{0}/{1}", kvp.Key, kvp.Value);
+                    }
+
+                    paramStr = sb.ToString();
+                }
+
+                string url = string.Format("{0}/mkfile/{1}{2}{3}{4}", uploadHost, size, mimeTypeStr, keyStr, paramStr);
                 string body = StringHelper.Join(contexts, ",");
                 string upToken = string.Format("UpToken {0}", token);
 

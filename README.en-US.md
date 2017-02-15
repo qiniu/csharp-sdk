@@ -10,15 +10,15 @@ This C# SDK is built based on Qiniu Cloud API (see below), and it can be used on
 
 You can have a better view of this SDK by checking the documnets given below:
 
-* [SDK-reference HTML Online](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.9/index.html)
+* [SDK-reference HTML Online](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.10/index.html)
 
-* [SDK-reference CHM Offline](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.9.chm)
+* [SDK-reference CHM Offline](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.10.chm)
 
 Want to know more about how to using this SDK? Are you trying to find some code examples based on this SDK? These documents or links below will be helpful:
 
 * [github/csharp-sdk-shared-examples](https://github.com/fengyhack/csharp-sdk-shared-examples)
 
-* [SDK manual | examples](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.9/index.html)
+* [SDK manual | examples](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.10/index.html)
 
 Or if you want to develop **UWP apps**, see example(s) given below.
 
