@@ -9,6 +9,8 @@ namespace Qiniu.UnitTest
     [TestFixture]
     public class CdnManagerTest:QiniuTestEnvars
     {
+
+#if LOCAL_TEST
         [Test]
         public void RefreshTest()
         {
@@ -67,7 +69,6 @@ namespace Qiniu.UnitTest
             Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
 
-#if LOCAL_TEST
         [Test]
         public void CreateAnitleechUrlTest()
         {
