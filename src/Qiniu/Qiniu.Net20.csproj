@@ -40,8 +40,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>QiniuCSharpSDK.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>false</DelaySign>
@@ -56,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IO\SimpleUploader.cs" />
     <Compile Include="QiniuCSharpSDK.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Config.cs" />
@@ -122,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Packages.Net20.config" />
+    <None Include="QiniuCSharpSDK.snk" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

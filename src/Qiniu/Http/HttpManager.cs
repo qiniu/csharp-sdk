@@ -34,7 +34,7 @@ namespace Qiniu.Http
         public static string GetUserAgent()
         {
             string osDesc = Environment.OSVersion.Platform + "; " + Environment.OSVersion.Version;
-            return string.Format("{0}-{1}/{2} ({3})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.RTFX, QiniuCSharpSDK.VERSION, osDesc);
+            return string.Format("{0}/{1} ({2}; {3})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.VERSION, QiniuCSharpSDK.RTFX, osDesc);
         }
 
         /// <summary>
@@ -1356,7 +1356,7 @@ namespace Qiniu.Http
 #else
             string osDesc = "UNKNOWN";
 #endif
-            return string.Format("{0}-{1}/{2} ({3})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.RTFX, QiniuCSharpSDK.VERSION, osDesc);
+            return string.Format("{0}/{1} ({2}; {3})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.VERSION, QiniuCSharpSDK.RTFX, osDesc);
         }
 
         /// <summary>
