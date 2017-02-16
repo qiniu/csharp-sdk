@@ -32,6 +32,9 @@ namespace Qiniu.IO
         // 上传进度处理器 - 仅用于上传大文件
         private UploadProgressHandler upph = null;
 
+        // 上传进度处理器 - 仅用于上传数据流
+        private StreamProgressHandler sph = null;
+
         // 上传控制器 - 仅用于上传大文件
         private UploadController upctl = null;
 
@@ -60,6 +63,15 @@ namespace Qiniu.IO
         public void SetUploadProgressHandler(UploadProgressHandler upph)
         {
             this.upph = upph;
+        }
+
+        /// <summary>
+        /// 设置上传进度处理器-仅对于上传数据流有效，如果不设置则使用默认的进度处理器
+        /// </summary>
+        /// <param name="sph">数据流上传进度处理器</param>
+        public void SetStreamrogressHandler(StreamProgressHandler sph)
+        {
+            this.sph = sph;
         }
 
         /// <summary>
@@ -311,7 +323,7 @@ namespace Qiniu.IO
             if (data.Length > PUT_THRESHOLD)
             {
                 ResumableUploader ru = new ResumableUploader(UPLOAD_FROM_CDN);
-                result = await ru.UploadDataAsync(data, saveKey, token, null);
+                result = await ru.UploadDataAsync(data, saveKey, token, upph);
             }
             else
             {
@@ -336,7 +348,7 @@ namespace Qiniu.IO
             if (stream.Length > PUT_THRESHOLD)
             {
                 ResumableUploader ru = new ResumableUploader(UPLOAD_FROM_CDN);
-                result = await ru.UploadStreamAsync(stream, saveKey, token, null);
+                result = await ru.UploadStreamAsync(stream, saveKey, token, sph);
             }
             else
             {

@@ -79,9 +79,16 @@ namespace Qiniu.Util
             start += path.Length;
 
             int index = url.IndexOf('?', start);
-            file = url.Substring(start, index - start);
-
-            query = url.Substring(index);
+            if (index > 0)
+            {
+                file = url.Substring(start, index - start);
+                query = url.Substring(index);
+            }
+            else
+            {
+                file = url.Substring(start);
+                query = "";
+            }
         }
     }
 }

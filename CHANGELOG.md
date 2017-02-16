@@ -1,3 +1,15 @@
+**2017-02-16**
+
+最新版本v7.2.11，适用于.NET Framework 2.0+ , .NET Core 和 UWP
+
+新增：适用于UWP的MSTest单元测试
+
+修复：FormUploader.UploadDataAsync()的已知bug
+
+修复：Qiniu.Util.UrlHelper中URL拆分函数的bug
+
+* * *
+
 **2017-02-15**
 
 最新版本v7.2.10，适用于.NET Framework 2.0+ , .NET Core 和 UWP

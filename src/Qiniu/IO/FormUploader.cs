@@ -213,6 +213,22 @@ namespace Qiniu.IO
         }
 
         /// <summary>
+        /// 读取文件内容到byte数组中
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>存放文件内容的字节数组</returns>
+        public static byte[] ReadToByteArray(string file)
+        {
+            byte[] bytes = null;
+            using (var stream = new FileStream(file, FileMode.Open))
+            {
+                bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, (int)stream.Length);
+            }
+            return bytes;
+        }
+
+        /// <summary>
         /// 上传数据
         /// </summary>
         /// <param name="data">待上传的数据</param>
@@ -539,6 +555,8 @@ namespace Qiniu.IO
             return result;
         }
 
+        #endregion NET-UPLOAD-ASYNC
+
         /// <summary>
         /// [异步async]读取文件内容到byte数组中
         /// </summary>
@@ -554,8 +572,6 @@ namespace Qiniu.IO
             }
             return bytes;
         }
-
-        #endregion NET-UPLOAD-ASYNC
 
 #endif
 
