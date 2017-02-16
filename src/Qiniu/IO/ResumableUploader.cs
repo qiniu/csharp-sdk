@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 #if WINDOWS_UWP
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Storage.Streams;
 #endif
 
 namespace Qiniu.IO
@@ -1270,6 +1271,22 @@ namespace Qiniu.IO
         }
 
         /// <summary>
+        /// 读取文件内容到byte数组中
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>存放文件内容的字节数组</returns>
+        public static byte[] ReadToByteArray(string file)
+        {
+            byte[] bytes = null;
+            using (var stream = new FileStream(file, FileMode.Open))
+            {
+                bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, (int)stream.Length);
+            }
+            return bytes;
+        }
+
+        /// <summary>
         /// 上传数据-分片方式，不支持断点续上传。如果数据比较大或者网络状态不佳，可以使用此方式
         /// </summary>
         /// <param name="data">待上传的数据</param>
@@ -1444,7 +1461,6 @@ namespace Qiniu.IO
 
             return result;
         }
-
 
         /// <summary>
         /// 上传数据流-分片方式，不支持断点续上传。如果预估数据流比较长或者网络状态不佳，可以使用此方式
@@ -2788,6 +2804,22 @@ namespace Qiniu.IO
 
         #endregion NET-UPLOAD-ASYNC
 
+        /// <summary>
+        /// [异步async]读取文件内容到byte数组中
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>存放文件内容的字节数组</returns>
+        public static async Task<byte[]> ReadToByteArrayAsync(string file)
+        {
+            byte[] bytes = null;
+            using (var stream = new FileStream(file, FileMode.Open))
+            {
+                bytes = new byte[stream.Length];
+                await stream.ReadAsync(bytes, 0, (int)stream.Length);
+            }
+            return bytes;
+        }
+
 #endif
 
 #if WINDOWS_UWP
@@ -2880,9 +2912,9 @@ namespace Qiniu.IO
 
                 while (leftBytes > 0)
                 {
-                    #region one-block
+        #region one-block
 
-                    #region mkblk
+        #region mkblk
 
                     if (leftBytes < BLOCK_SIZE)
                     {
@@ -2917,7 +2949,7 @@ namespace Qiniu.IO
                     offset += chunkSize;
                     leftBytes -= chunkSize;
                     
-                    #endregion mkblk
+        #endregion mkblk
 
                     uppHandler(offset, fileSize);
 
@@ -2927,7 +2959,7 @@ namespace Qiniu.IO
                         blockOffset = chunkSize;
                         while (blockLeft > 0)
                         {
-                            #region bput-loop
+        #region bput-loop
 
                             if (blockLeft < CHUNK_SIZE)
                             {
@@ -2957,13 +2989,13 @@ namespace Qiniu.IO
                             blockOffset += chunkSize;
                             blockLeft -= chunkSize;
         
-                            #endregion bput-loop
+        #endregion bput-loop
 
                             uppHandler(offset, fileSize);
                         }
                     }
 
-                    #endregion one-block
+        #endregion one-block
 
                     resumeInfo.BlockIndex = index;
                     resumeInfo.Contexts[index] = context;
@@ -3109,9 +3141,9 @@ namespace Qiniu.IO
                             result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is resumed\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                         }
 
-                        #region one-block
+        #region one-block
 
-                        #region mkblk
+        #region mkblk
 						
                         if (leftBytes < BLOCK_SIZE)
                         {
@@ -3146,7 +3178,7 @@ namespace Qiniu.IO
                         offset += chunkSize;
                         leftBytes -= chunkSize;
         
-                        #endregion mkblk
+        #endregion mkblk
 
                         uppHandler(offset, fileSize);
 
@@ -3156,7 +3188,7 @@ namespace Qiniu.IO
                             blockOffset = chunkSize;
                             while (blockLeft > 0)
                             {
-                                #region bput-loop
+        #region bput-loop
 
                                 if (blockLeft < CHUNK_SIZE)
                                 {
@@ -3186,13 +3218,13 @@ namespace Qiniu.IO
                                 blockOffset += chunkSize;
                                 blockLeft -= chunkSize;
                                 
-                                #endregion bput-loop
+        #endregion bput-loop
 
                                 uppHandler(offset, fileSize);
                             }
                         }
 
-                        #endregion one-block
+        #endregion one-block
 
                         resumeInfo.BlockIndex = index;
                         resumeInfo.Contexts[index] = context;
@@ -3335,9 +3367,9 @@ namespace Qiniu.IO
 
                 while (leftBytes > 0)
                 {
-                    #region one-block
+        #region one-block
 
-                    #region mkblk
+        #region mkblk
 					
                     if (leftBytes < BLOCK_SIZE)
                     {
@@ -3385,7 +3417,7 @@ namespace Qiniu.IO
                     offset += chunkSize;
                     leftBytes -= chunkSize;
                     
-                    #endregion mkblk
+        #endregion mkblk
 
                     uppHandler(offset, fileSize);
 
@@ -3395,7 +3427,7 @@ namespace Qiniu.IO
                         blockOffset = chunkSize;
                         while (blockLeft > 0)
                         {
-                            #region bput-loop
+        #region bput-loop
 
                             if (blockLeft < CHUNK_SIZE)
                             {
@@ -3436,13 +3468,13 @@ namespace Qiniu.IO
                             blockOffset += chunkSize;
                             blockLeft -= chunkSize;
                             
-                            #endregion bput-loop
+        #endregion bput-loop
 
                             uppHandler(offset, fileSize);
                         }
                     }
 
-                    #endregion one-block
+        #endregion one-block
 
                     resumeInfo.BlockIndex = index;
                     resumeInfo.Contexts[index] = context;
@@ -3594,9 +3626,9 @@ namespace Qiniu.IO
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                         }
 
-                        #region one-block
+        #region one-block
 
-                        #region mkblk
+        #region mkblk
 						
                         if (leftBytes < BLOCK_SIZE)
                         {
@@ -3643,7 +3675,7 @@ namespace Qiniu.IO
                         offset += chunkSize;
                         leftBytes -= chunkSize;
                         
-                        #endregion mkblk
+        #endregion mkblk
 
                         uppHandler(offset, fileSize);
 
@@ -3653,7 +3685,7 @@ namespace Qiniu.IO
                             blockOffset = chunkSize;
                             while (blockLeft > 0)
                             {
-                                #region bput-loop
+        #region bput-loop
 
                                 if (blockLeft < CHUNK_SIZE)
                                 {
@@ -3695,13 +3727,13 @@ namespace Qiniu.IO
                                 blockOffset += chunkSize;
                                 blockLeft -= chunkSize;
                                 
-                                #endregion bput-loop
+        #endregion bput-loop
 
                                 uppHandler(offset, fileSize);
                             }
                         }
 
-                        #endregion one-block
+        #endregion one-block
 
                         resumeInfo.BlockIndex = index;
                         resumeInfo.Contexts[index] = context;
@@ -3855,9 +3887,9 @@ namespace Qiniu.IO
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                         }
 
-                        #region one-block
+        #region one-block
 
-                        #region mkblk
+        #region mkblk
 						
                         if (leftBytes < BLOCK_SIZE)
                         {
@@ -3904,7 +3936,7 @@ namespace Qiniu.IO
                         offset += chunkSize;
                         leftBytes -= chunkSize;
                         
-                        #endregion mkblk
+        #endregion mkblk
 
                         uppHandler(offset, fileSize);
 
@@ -3914,7 +3946,7 @@ namespace Qiniu.IO
                             blockOffset = chunkSize;
                             while (blockLeft > 0)
                             {
-                                #region bput-loop
+        #region bput-loop
 
                                 if (blockLeft < CHUNK_SIZE)
                                 {
@@ -3956,13 +3988,13 @@ namespace Qiniu.IO
                                 blockOffset += chunkSize;
                                 blockLeft -= chunkSize;
                                 
-                                #endregion bput-loop
+        #endregion bput-loop
 
                                 uppHandler(offset, fileSize);
                             }
                         }
 
-                        #endregion one-block
+        #endregion one-block
 
                         resumeInfo.BlockIndex = index;
                         resumeInfo.Contexts[index] = context;
@@ -4014,6 +4046,26 @@ namespace Qiniu.IO
 
         #endregion UWP-UPLOAD-ASYNC
 
+        /// <summary>
+        /// [异步async]将文件(StorageFile)内容读取到字节数组中
+        /// </summary>
+        /// <param name="file">文件StorageFile</param>
+        /// <returns>存放文件按内容的字节数组</returns>
+        public static async Task<byte[]> ReadToByteArrayAsync(StorageFile file)
+        {
+            byte[] bytes = null;
+            using (var stream = await file.OpenStreamForReadAsync())
+            {
+                bytes = new byte[stream.Length];
+                using (var dataReader = new DataReader(stream.AsInputStream()))
+                {
+                    await dataReader.LoadAsync((uint)stream.Length);
+                    dataReader.ReadBytes(bytes);
+                }
+            }
+            return bytes;
+        }
+
 #endif
 
 #if Net45 || Net46 || NetCore || WINDOWS_UWP
@@ -4052,13 +4104,13 @@ namespace Qiniu.IO
                     FileSize = 0,
                     BlockIndex = 0,
                     BlockCount = 0,
-                    SContexts = new List<string>()
+                    Contexts = new string[blockCount]
                 };
 
-                int index = resumeInfo.BlockIndex;
-                long offset = index * blockSize;
+                int index = 0;
+                long offset = 0;
                 string context = null;
-                long leftBytes = fileSize - offset;
+                long leftBytes = fileSize;
                 long blockLeft = 0;
                 long blockOffset = 0;
                 HttpResult hr = null;
@@ -4152,11 +4204,11 @@ namespace Qiniu.IO
                     #endregion one-block
 
                     resumeInfo.BlockIndex = index;
-                    resumeInfo.SContexts.Add(context);
+                    resumeInfo.Contexts[index] = context;
                     ++index;
                 }
 
-                hr = await mkfileAsync(fileSize, saveKey, resumeInfo.Contexts, token);
+                hr = await mkfileAsync(saveKey, fileSize, saveKey, resumeInfo.Contexts, token);
                 if (hr.Code != (int)HttpCode.OK)
                 {
                     result.Shadow(hr);
@@ -5106,7 +5158,6 @@ namespace Qiniu.IO
             try
             {
                 string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
-
                 string url = string.Format("{0}/mkfile/{1}{2}", uploadHost, size, keyStr);
                 string body = StringHelper.Join(contexts, ",");
                 string upToken = string.Format("UpToken {0}", token);
@@ -5149,7 +5200,7 @@ namespace Qiniu.IO
             {
                 string keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(saveKey));
                 string fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));
-                string url = string.Format("{0}/mkfile/{1}{2}{3}", uploadHost, size, keyStr,fnameStr);
+                string url = string.Format("{0}/mkfile/{1}{2}{3}", uploadHost, size, keyStr, fnameStr);
                 string body = StringHelper.Join(contexts, ",");
                 string upToken = string.Format("UpToken {0}", token);
 
