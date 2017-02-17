@@ -1,0 +1,26 @@
+{
+  "title": "Qiniu (Cloud) C# SDK Examples (.NET Core)",
+  "copyright": "Copyright ©  2017",
+  "description": "Qiniu (Cloud) C# SDK Examples (.NET Core)",
+  "version": "1.0.0-0",
+  "buildOptions": {
+         "emitEntryPoint": true
+        },
+  "dependencies": {
+    "Microsoft.NETCore.App": {
+            "version": "1.0.1"
+            },
+    "Newtonsoft.Json": "9.0.1",
+    "Qiniu.Shared": "7.2.11",
+  },
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": "dnxcore40"
+    }
+  },
+  "runtimes": {
+    "win7-x64": {},
+	  "osx.10.11-x64": {},
+    "ubuntu.16.04-x64": {}
+  }
+}
