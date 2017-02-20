@@ -22,6 +22,9 @@
             //// 上传数据流
             //UploadDemo.uploadStream();
 
+            //// 上传数据流(NetStream)
+            //UploadDemo.uploadNetStream();
+
             //// 上传后触发fop(数据处理)
             //UploadDemo.uploadWithFop();
 
