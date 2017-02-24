@@ -632,7 +632,7 @@ namespace Qiniu.CDN
             string file = request.File;
             string query = request.Query;
             string ts = (long.Parse(request.Timestamp)).ToString("x");
-            string SIGN = Hashing.CalcMD5(key + path + file + ts);
+            string SIGN = Hashing.CalcMD5X(key + path + file + ts);
             string LEAD = query + "&";
             if(string.IsNullOrEmpty(query))
             {

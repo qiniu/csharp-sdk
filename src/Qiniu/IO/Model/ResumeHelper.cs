@@ -29,7 +29,7 @@ namespace Qiniu.IO.Model
         /// <returns>用于记录断点信息的文件名</returns>
         public static string GetDefaultRecordKey(string localFile, string saveKey)
         {
-            return "QiniuRU_" + Hashing.CalcMD5(localFile + saveKey);
+            return "QiniuRU_" + Hashing.CalcMD5X(localFile + saveKey);
         }
 
 #if Net20 || Net35 || Net40 || Net45 || Net46 || NetCore

@@ -58,7 +58,7 @@ namespace Qiniu.Http
         public static string CreateFormDataBoundary()
         {
             string now = DateTime.UtcNow.Ticks.ToString();
-            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.CalcMD5(now));
+            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.CalcMD5X(now));
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-GET] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-GET] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -246,7 +246,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -362,7 +362,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -479,7 +479,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -595,7 +595,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-JSON] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-JSON] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -711,7 +711,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-TEXT] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-TEXT] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -833,7 +833,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-FORM] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -949,7 +949,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-FORM] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1065,7 +1065,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-FORM] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1179,7 +1179,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-MPART] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-MPART] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1380,7 +1380,7 @@ namespace Qiniu.Http
         public static string CreateFormDataBoundary()
         {
             string now = DateTime.UtcNow.Ticks.ToString();
-            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.CalcMD5(now));
+            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.CalcMD5X(now));
         }
 
         /// <summary>
@@ -1435,7 +1435,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-GET] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-GET] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1490,7 +1490,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1550,7 +1550,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1611,7 +1611,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-data Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1670,7 +1670,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-JSON] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1730,7 +1730,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] Post-json Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-TEXT] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1789,7 +1789,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1849,7 +1849,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1909,7 +1909,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -1972,7 +1972,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-MPART] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2029,7 +2029,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-GET] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-GET] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2084,7 +2084,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2144,7 +2144,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-BIN] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2205,7 +2205,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2264,7 +2264,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-JSON] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-JSON] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2324,7 +2324,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-TEXT] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-TEXT] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2383,7 +2383,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2443,7 +2443,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2503,7 +2503,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
@@ -2566,7 +2566,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [HTTP-POST-MPART] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-MPART] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
                 Exception e = ex;
                 while (e != null)
                 {

@@ -1,3 +1,13 @@
+**2017-02-24**
+
+最新版本v7.2.12，适用于.NET Framework 2.0+ , .NET Core 和 UWP
+
+新增：MD5哈希函数的3rdParty实现(避免FIPS问题)
+
+修复：日期时间戳转换的bug(时间基准设置不对)
+
+* * *
+
 **2017-02-16**
 
 最新版本v7.2.11，适用于.NET Framework 2.0+ , .NET Core 和 UWP

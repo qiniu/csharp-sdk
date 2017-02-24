@@ -88,7 +88,7 @@ namespace Qiniu.CDN.Model
         /// <param name="seconds">单位:秒</param>
         public void SetLinkExpire(int seconds)
         {
-            DateTime dt0 = (new DateTime(1910, 1, 1)).ToLocalTime();
+            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
             DateTime dt1 = DateTime.Now.AddSeconds(seconds);
             TimeSpan tsx = dt1.Subtract(dt0);
             string sts = tsx.Ticks.ToString();
@@ -101,7 +101,7 @@ namespace Qiniu.CDN.Model
         /// <param name="stopAt">失效时刻</param>
         public void SetLinkExpire(DateTime stopAt)
         {
-            DateTime dt0 = (new DateTime(1910, 1, 1)).ToLocalTime();
+            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
             TimeSpan tsx = stopAt.Subtract(dt0);
             string sts = tsx.Ticks.ToString();
             Timestamp = sts.Substring(0, sts.Length - 7);
