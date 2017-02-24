@@ -79,6 +79,7 @@
     <Compile Include="CDN\Model\LogListResult.cs" />
     <Compile Include="CDN\CdnManager.cs" />
     <Compile Include="Util\Auth.cs" />
+    <Compile Include="Util\LabMD5.cs" />
     <Compile Include="Util\Mac.cs" />
     <Compile Include="Util\Signature.cs" />
     <Compile Include="Util\UrlHelper.cs" />

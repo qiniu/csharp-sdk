@@ -87,7 +87,7 @@ namespace Qiniu.Util
         /// <returns>日期</returns>
         public static DateTime ConvertToDateTime(string timestamp)
         {
-            DateTime dt0 = (new DateTime(1910, 1, 1)).ToLocalTime();
+            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
             long ticks = long.Parse(timestamp + "0000000");
             TimeSpan tsx = new TimeSpan(ticks);
             return dt0.Add(tsx);
@@ -100,7 +100,7 @@ namespace Qiniu.Util
         /// <returns>时间戳字符串</returns>
         public static string ConvertToTimestamp(DateTime stopAt)
         {
-            DateTime dt0 = (new DateTime(1910, 1, 1)).ToLocalTime();
+            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
             TimeSpan tsx = stopAt.Subtract(dt0);
             string sts = tsx.Ticks.ToString();
             return sts.Substring(0, sts.Length - 7);
@@ -113,7 +113,7 @@ namespace Qiniu.Util
         /// <returns>时间戳字符串</returns>
         public static string CalcUnixTimestamp(long secondsAfterNow)
         {
-            DateTime dt0 = (new DateTime(1910, 1, 1)).ToLocalTime();
+            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
             DateTime dt1 = DateTime.Now.AddSeconds(secondsAfterNow);
             TimeSpan tsx = dt1.Subtract(dt0);
             string sts = tsx.Ticks.ToString();

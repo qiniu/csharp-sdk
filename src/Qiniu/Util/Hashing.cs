@@ -36,7 +36,7 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// md5 hash in hex string
+        /// 计算MD5哈希(可能需要关闭FIPS)
         /// </summary>
         /// <param name="str">待计算的字符串</param>
         /// <returns>MD5结果</returns>
@@ -59,5 +59,18 @@ namespace Qiniu.Util
             return sb.ToString();
 #endif
         }
+
+        /// <summary>
+        /// 计算MD5哈希(第三方实现)
+        /// </summary>
+        /// <param name="str">待计算的字符串,避免FIPS-Exception</param>
+        /// <returns>MD5结果</returns>
+        public static string CalcMD5X(string str)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(str);
+            LabMD5 md5 = new LabMD5();
+            return md5.ComputeHash(data);
+        }
+
     }
 }

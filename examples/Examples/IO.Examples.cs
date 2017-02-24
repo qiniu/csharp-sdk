@@ -141,6 +141,38 @@ namespace CSharpSDKExamples
         }
 
         /// <summary>
+        /// 上传数据流(NetStream)
+        /// </summary>
+        public static void uploadNetStream()
+        {
+            try
+            {
+                string url = "http://img.ivsky.com/img/tupian/pre/201610/09/beifang_shanlin_xuejing-001.jpg";
+                var wReq = System.Net.WebRequest.Create(url) as System.Net.HttpWebRequest;
+                var resp = wReq.GetResponse() as System.Net.HttpWebResponse;
+                using (var stream = resp.GetResponseStream())
+                {
+                    Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+                    PutPolicy putPolicy = new PutPolicy();
+                    putPolicy.Scope = "xuejing-001.jpg";
+                    putPolicy.SetExpires(3600);
+                    string jstr = putPolicy.ToJsonString();
+                    string token = Auth.CreateUploadToken(mac, jstr);
+
+                    // 请不要使用UploadManager的UploadStream方法，因为此流不支持查找(无法获取Stream.Length)
+                    // 请使用FormUploader或者ResumableUploader的UploadStream方法
+                    FormUploader fu = new FormUploader();
+                    var result = fu.UploadStream(stream, "xuejing-001.jpg", token);
+                    Console.WriteLine(result);
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        /// <summary>
         /// 上传完毕后触发数据处理
         /// </summary>
         public static void uploadWithFop()

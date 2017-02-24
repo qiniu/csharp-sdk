@@ -1,0 +1,23 @@
+﻿<Page
+    x:Class="QiniuExampleUWP.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QiniuExampleUWP"
+    Width="800" Height="600">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="5*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBox Width="400" Height="70" Header="LocalFile" Name="TextBox_LocalFile" Margin="10 0"></TextBox>
+            <Button Width="100" Height="40" Name="Button_OpenFile" Margin="10,35,10,10" Click="Button_OpenFile_Click">OpenFile</Button>
+            <Button Width="100" Height="40" Name="Button_UploadFile" Margin="10,30,10,10" Click="Button_UploadFile_Click">UploadFile</Button>
+            <Button Width="100" Height="40" Name="Button_UploadData" Margin="10,30,10,10" Click="Button_UploadData_Click">UploadData</Button>
+        </StackPanel>
+        <ProgressBar Grid.Row="1" Width="750" Height="10" Margin="0 10" Name="ProgressBar_UploadProgress" Minimum="0" Maximum="1.0"></ProgressBar>
+        <TextBox Grid.Row="2" Name="TextBox_Info" Width="760" TextWrapping="Wrap"></TextBox>
+    </Grid>
+</Page>

@@ -83,6 +83,7 @@
     <Compile Include="Util\CRC32.cs" />
     <Compile Include="Util\ETag.cs" />
     <Compile Include="Util\Hashing.cs" />
+	<Compile Include="Util\LabMD5.cs" />
     <Compile Include="Util\StringHelper.cs" />
     <Compile Include="Util\UserEnv.cs" />
     <Compile Include="Http\HttpCode.cs" />
