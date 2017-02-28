@@ -36,7 +36,7 @@ namespace Qiniu.Common
         /// <param name="bucket">空间名称</param>
         public static ZoneID QueryZone(string accessKey, string bucket)
         {
-            ZoneID zoneId = ZoneID.Default;
+            ZoneID zoneId = ZoneID.Invalid;
 
             try
             {
@@ -53,13 +53,13 @@ namespace Qiniu.Common
                 }
                 else
                 {
-                    throw new Exception("text: " + hr.Text + ", ref-text:" + hr.RefText);
+                    throw new Exception("code: " + hr.Code + ", text: " + hr.Text + ", ref-text:" + hr.RefText);
                 }
             }
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] queryZone Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] QueryZone Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -102,7 +102,7 @@ namespace Qiniu.Common
                 }
                 else
                 {
-                    throw new Exception("text: " + hr.Text + ", ref-text:" + hr.RefText);
+                    throw new Exception("code: " + hr.Code + ", text: " + hr.Text + ", ref-text:" + hr.RefText);
                 }
             }
             catch (Exception ex)

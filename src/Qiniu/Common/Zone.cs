@@ -30,7 +30,12 @@
         /// <summary>
         /// 默认-华东
         /// </summary>
-        Default = CN_East
+        Default = CN_East,
+
+        /// <summary>
+        /// 未定义,比如QueryZone查询出错
+        /// </summary>
+        Invalid = 999
     };
 
     /// <summary>

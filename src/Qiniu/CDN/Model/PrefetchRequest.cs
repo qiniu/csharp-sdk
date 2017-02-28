@@ -31,7 +31,14 @@ namespace Qiniu.CDN.Model
         /// <param name="urls">URL列表</param>
         public PrefetchRequest(IList<string> urls)
         {
-            Urls = new List<string>(urls);
+            if (urls != null)
+            {
+                Urls = new List<string>(urls);
+            }
+            else
+            {
+                Urls = new List<string>();
+            }
         }
 
         /// <summary>
@@ -40,7 +47,10 @@ namespace Qiniu.CDN.Model
         /// <param name="urls">URL列表</param>
         public void AddUrls(IList<string> urls)
         {
-            Urls.AddRange(urls);
+            if (urls != null)
+            {
+                Urls.AddRange(urls);
+            }
         }
 
         /// <summary>

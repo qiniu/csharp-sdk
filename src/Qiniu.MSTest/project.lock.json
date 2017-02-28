@@ -286,7 +286,7 @@
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
-      "Qiniu.Shared/7.2.11": {
+      "Qiniu.Shared/7.2.13": {
         "type": "package",
         "compile": {
           "lib/uap10.0/Qiniu.dll": {}

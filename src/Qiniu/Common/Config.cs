@@ -39,7 +39,14 @@ namespace Qiniu.Common
         /// <param name="useHTTPS">是否使用HTTPS</param>
         public static void SetZone(ZoneID zoneId, bool useHTTPS)
         {
-            ZONE = Zone.GetZone(zoneId, useHTTPS);
+            if (zoneId != ZoneID.Invalid)
+            {
+                ZONE = Zone.GetZone(zoneId, useHTTPS);
+            }
+            else
+            {
+                throw new System.Exception("Invalid ZoneID");
+            }
         }
 
 #if Net20 || Net35 || Net40 || Net45 || Net46 || NetCore
@@ -53,7 +60,10 @@ namespace Qiniu.Common
         public static void AutoZone(string accessKey, string bucket, bool useHTTPS)
         {
             ZoneID id = ZoneHelper.QueryZone(accessKey, bucket);
-            SetZone(id, useHTTPS);
+            if (id != ZoneID.Invalid)
+            {
+                SetZone(id, useHTTPS);
+            }
         }
 
 #endif
@@ -69,7 +79,10 @@ namespace Qiniu.Common
         public static async Task AutoZoneAsync(string accessKey, string bucket, bool useHTTPS)
         {
             ZoneID id = await ZoneHelper.QueryZoneAsync(accessKey, bucket);
-            SetZone(id, useHTTPS);
+            if (id != ZoneID.Invalid)
+            {
+                SetZone(id, useHTTPS);
+            }
         }     
 
 #endif
