@@ -325,7 +325,7 @@ namespace CSharpSDKExamples
             string rawUrl = "http://your-bucket.cloud-storage.com/1.jpg";
             string saveFile = "D:\\QFL\\saved-2.jpg";
 
-            string accUrl = DownloadManager.CreateSignedUrl(mac, rawUrl, 3600);
+            string accUrl = DownloadManager.CreateSignedUrl(mac, rawUrl,3600);
 
             // 接下来可以使用accUrl来下载文件
             var result = DownloadManager.Download(accUrl, saveFile);

@@ -64,6 +64,7 @@
                 AccessKey = "QINIU_ACCESS_KEY";
                 SecretKey ="QINIU_SECRET_KEY";
                 Bucket1 = "QINIU_BUCKET_1";
+
                 Bucket1 = "QINIU_BUCKET_2";
                 FileKey1 = "FILE_KEY_1";
                 FileKey2 = "FILE_KEY_2";

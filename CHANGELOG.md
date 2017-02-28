@@ -1,5 +1,13 @@
 **2017-02-24**
 
+最新版本v7.2.13，适用于.NET Framework 2.0+ , .NET Core 和 UWP
+
+修复：`Qiniu.CDN.Model`模块下`XXRequest.ctor(IList_string)`函数传入null参数导致的错误
+
+* * *
+
+**2017-02-24**
+
 最新版本v7.2.12，适用于.NET Framework 2.0+ , .NET Core 和 UWP
 
 新增：MD5哈希函数的3rdParty实现(避免FIPS问题)

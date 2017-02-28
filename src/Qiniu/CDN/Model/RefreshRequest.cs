@@ -42,8 +42,23 @@ namespace Qiniu.CDN.Model
         /// <param name="dirs">URL目录列表</param>
         public RefreshRequest(IList<string> urls,IList<string> dirs)
         {
-            Urls = new List<string>(urls);
-            Dirs = new List<string>(dirs);
+            if (urls != null)
+            {
+                Urls = new List<string>(urls);
+            }
+            else
+            {
+                Urls = new List<string>();
+            }
+
+            if (dirs != null)
+            {
+                Dirs = new List<string>(dirs);
+            }
+            else
+            {
+                Dirs = new List<string>();
+            }
         }
 
         /// <summary>
@@ -52,7 +67,10 @@ namespace Qiniu.CDN.Model
         /// <param name="urls">URL列表</param>
         public void AddUrls(IList<string> urls)
         {
-            Urls.AddRange(urls);
+            if (urls != null)
+            {
+                Urls.AddRange(urls);
+            }
         }
 
         /// <summary>
@@ -61,7 +79,10 @@ namespace Qiniu.CDN.Model
         /// <param name="dirs">URL目录列表</param>
         public void AddDirs(IList<string> dirs)
         {
-            Dirs.AddRange(dirs);
+            if (dirs != null)
+            {
+                Dirs.AddRange(dirs);
+            }
         }
 
         /// <summary>
