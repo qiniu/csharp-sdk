@@ -16,7 +16,7 @@ before_script:
   - export LOCAL_FILE_2="1.jpg"
   - export TEST_DOMAIN="csharpsdk.qiniudn.com"
   - export TEST_URL1="http://img.ivsky.com/img/tupian/pre/201610/09/beifang_shanlin_xuejing-001.jpg"
-  - export TEST_URL2="http://DOMAIN/PATH/FILE?QUERY"
+  - export TEST_URL2="http://DOMAIN.COM/DIR1/DIR2/FILE?QUERY"
  
 script: 
 
