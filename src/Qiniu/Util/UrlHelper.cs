@@ -64,30 +64,46 @@ namespace Qiniu.Util
         /// <param name="query">参数</param>
         public static void UrlSplit(string url, out string host, out string path, out string file, out string query)
         {
+            host = "";
+            path = "";
+            file = "";
+            query = "";
+
+            if(string.IsNullOrEmpty(url))
+            {
+                return;
+            }
+
             int start = 0;
 
-            Regex regHost = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+");
-            host = regHost.Match(url, start).Value;
-            start += host.Length;
+            try
+            {
+                Regex regHost = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+");
+                host = regHost.Match(url, start).Value;
+                start += host.Length;
 
-            Regex regPath = new Regex(@"(/(\w|\-)*)+/");
-            path = regPath.Match(url, start).Value;
-            if (string.IsNullOrEmpty(path))
-            {
-                path = "/";
-            }
-            start += path.Length;
+                Regex regPath = new Regex(@"(/(\w|\-)*)+/");
+                path = regPath.Match(url, start).Value;
+                if (!string.IsNullOrEmpty(path))
+                {
+                    start += path.Length;
+                }
 
-            int index = url.IndexOf('?', start);
-            if (index > 0)
-            {
-                file = url.Substring(start, index - start);
-                query = url.Substring(index);
+                int index = url.IndexOf('?', start);
+                if (index > 0)
+                {
+                    file = url.Substring(start, index - start);
+                    query = url.Substring(index);
+                }
+                else
+                {
+                    file = url.Substring(start);
+                    query = "";
+                }
             }
-            else
+            catch(System.Exception)
             {
-                file = url.Substring(start);
-                query = "";
+                //
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
-using Qiniu.Util;
+using System.Text;
 
 namespace Qiniu.IO.Model
 {
@@ -8,122 +7,107 @@ namespace Qiniu.IO.Model
     /// 上传策略
     /// 另请参阅 http://developer.qiniu.com/article/developer/security/put-policy.html
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
     public class PutPolicy
     {
         /// <summary>
-        /// bucket或者bucket:key
+        /// [必需]bucket或者bucket:key
         /// </summary>
-        [JsonProperty("scope")]
-        public string Scope { set; get; }
+        public string Scope { get; set; }
 
         /// <summary>
-        /// 上传策略失效时刻
+        /// [必需]上传策略失效时刻，请使用SetExpire来设置它
         /// </summary>
-        [JsonProperty("deadline")]
-        public int Deadline { set; get; }
+        public int Deadline { get; private set; }
 
         /// <summary>
-        /// "仅新增"模式
+        /// [可选]"仅新增"模式
         /// </summary>
-        [JsonProperty("insertOnly")]
-        public int? InsertOnly { set; get; }
+        public int? InsertOnly { get; set; }
 
         /// <summary>
-        /// 保存文件的key
+        /// [可选]保存文件的key
         /// </summary>
-        [JsonProperty("saveKey")]
-        public string SaveKey { set; get; }
+        public string SaveKey { get; set; }
 
         /// <summary>
-        /// 终端用户
+        /// [可选]终端用户
         /// </summary>
-        [JsonProperty("endUser")]
-        public string EndUser { set; get; }
+        public string EndUser { get; set; }
 
         /// <summary>
-        /// 返回URL
+        /// [可选]返回URL
         /// </summary>
-        [JsonProperty("returnUrl")]
-        public string ReturnUrl { set; get; }
+        public string ReturnUrl { get; set; }
 
         /// <summary>
-        /// 返回内容
+        /// [可选]返回内容
         /// </summary>
-        [JsonProperty("returnBody")]
-        public string ReturnBody { set; get; }
+        public string ReturnBody { get; set; }
 
         /// <summary>
-        /// 回调URL
+        /// [可选]回调URL
         /// </summary>
-        [JsonProperty("callbackUrl")]
-        public string CallbackUrl { set; get; }
+        public string CallbackUrl { get; set; }
 
         /// <summary>
-        /// 回调内容
+        /// [可选]回调内容
         /// </summary>
-        [JsonProperty("callbackBody")]
-        public string CallbackBody { set; get; }
+        public string CallbackBody { get; set; }
 
         /// <summary>
-        /// 回调内容类型
+        /// [可选]回调内容类型
         /// </summary>
-        [JsonProperty("callbackBodyType")]
-        public string CallbackBodyType { set; get; }
+        public string CallbackBodyType { get; set; }
 
         /// <summary>
-        /// 回调host
+        /// [可选]回调host
         /// </summary>
-        [JsonProperty("callbackHost")]
-        public string CallbackHost { set; get; }
+        public string CallbackHost { get; set; }
 
         /// <summary>
-        /// 回调fetchkey
+        /// [可选]回调fetchkey
         /// </summary>
-        [JsonProperty("callbackFetchKey")]
-        public int? CallbackFetchKey { set; get; }
+        public int? CallbackFetchKey { get; set; }
 
         /// <summary>
-        /// 上传预转持久化
+        /// [可选]上传预转持久化
         /// </summary>
-        [JsonProperty("persistentOps")]
-        public string PersistentOps { set; get; }
+        public string PersistentOps { get; set; }
 
         /// <summary>
-        /// 持久化结果通知
+        /// [可选]持久化结果通知
         /// </summary>
-        [JsonProperty("persistentNotifyUrl")]
-        public string PersistentNotifyUrl { set; get; }
+        public string PersistentNotifyUrl { get; set; }
 
         /// <summary>
-        /// 私有队列
+        /// [可选]私有队列
         /// </summary>
-        [JsonProperty("persistentPipeline")]
-        public string PersistentPipeline { set; get; }
+        public string PersistentPipeline { get; set; }
 
         /// <summary>
-        /// 上传文件大小限制
+        /// [可选]上传文件大小限制：最小值
         /// </summary>
-        [JsonProperty("fsizeLimit")]
-        public int? FsizeLimit { set; get; }
+        public int? FileSizeMin { get; set; }
 
         /// <summary>
-        /// 上传时是否自动检测MIME
+        /// [可选]上传文件大小限制：最大值
         /// </summary>
-        [JsonProperty("detectMime")]
-        public int? DetectMime { set; get; }
+        public int? FileSizeLimit { get; set; }
 
         /// <summary>
-        /// 上传文件MIME限制
+        /// [可选]上传时是否自动检测MIME
         /// </summary>
-        [JsonProperty("mimeLimit")]
-        public string MimeLimit { set; get; }
+        public int? DetectMime { get; set; }
 
         /// <summary>
-        /// 文件上传后多少天后自动删除
+        /// [可选]上传文件MIME限制
         /// </summary>
-        [JsonProperty("deleteAfterDays")]
-        public int? DeleteAfterDays { set; get; }
+        public string MimeLimit { get; set; }
+
+        /// <summary>
+        /// [可选]文件上传后多少天后自动删除
+        /// </summary>
+        public int? DeleteAfterDays { get; set; }
 
         /// <summary>
         /// 设置上传凭证有效期
@@ -132,18 +116,136 @@ namespace Qiniu.IO.Model
         public void SetExpires(int expireInSeconds)
         {
             TimeSpan ts = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0));
-            this.Deadline = (int)ts.TotalSeconds + expireInSeconds;
+            Deadline = (int)ts.TotalSeconds + expireInSeconds;
         }
 
         /// <summary>
-        /// 转换到JSON字符串
+        /// 转换为JSON字符串
         /// </summary>
         /// <returns>JSON字符串</returns>
         public string ToJsonString()
         {
-            JsonSerializerSettings setting = new JsonSerializerSettings();
-            setting.NullValueHandling = NullValueHandling.Ignore;
-            return JsonConvert.SerializeObject(this, setting);
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("{ ");
+            
+            sb.AppendFormat("\"scope\": \"{0}\"", Scope); //必需
+
+            sb.Append(", "); 
+            sb.AppendFormat("\"deadline\": {0}", Deadline);  //必需
+
+            if (InsertOnly.HasValue)
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"inserOnly\": {0}", InsertOnly);
+            }
+
+            if (!string.IsNullOrEmpty(SaveKey))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"saveKey\": \"{0}\"", SaveKey);
+            }
+
+            if (!string.IsNullOrEmpty(EndUser))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"endUser\": \"{0}\"", EndUser);
+            }
+
+            if (!string.IsNullOrEmpty(ReturnUrl))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"returnUrl\": \"{0}\"", ReturnUrl);
+            }
+
+            if (!string.IsNullOrEmpty(ReturnBody))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"returnBody\": \"{0}\"", ReturnBody);
+            }
+
+            if (!string.IsNullOrEmpty(CallbackUrl))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"callbackUrl\": \"{0}\"", CallbackUrl);
+            }
+
+            if (!string.IsNullOrEmpty(CallbackBody))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"callbackBody\": \"{0}\"", CallbackBody);
+            }
+
+            if (!string.IsNullOrEmpty(CallbackBodyType))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"callbackBodyType\": \"{0}\"", CallbackBodyType);
+            }
+
+            if (!string.IsNullOrEmpty(CallbackHost))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"calbackHost\": \"{0}\"", CallbackHost);
+            }
+
+            if (CallbackFetchKey.HasValue)
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"callbackFetchKey\": {0}", CallbackFetchKey);
+            }
+
+            if (!string.IsNullOrEmpty(PersistentOps))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"persistentOps\": \"{0}\"", PersistentOps);
+            }
+
+            if (!string.IsNullOrEmpty(PersistentNotifyUrl))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"persistentNotifyUrl\": \"{0}\"", PersistentNotifyUrl);
+            }
+
+            if (!string.IsNullOrEmpty(PersistentPipeline))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"persistentPipeline\": \"{0}\"", PersistentPipeline);
+            }
+
+            if (FileSizeMin.HasValue)
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"fsizeMin\": {0}", FileSizeMin);
+            }
+
+            if (FileSizeLimit.HasValue)
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"fsizeLimit\": {0}", FileSizeLimit);
+            }
+
+            if (DetectMime.HasValue)
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"detectMime\": {0}", DetectMime);
+            }
+
+            if (!string.IsNullOrEmpty(MimeLimit))
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"mimeLimit\": \"{0}\"", MimeLimit);
+            }
+
+            if (DeleteAfterDays.HasValue)
+            {
+                sb.Append(", ");
+                sb.AppendFormat("\"deleteAfterDays\": {0}", DeleteAfterDays);
+            }
+
+            sb.Append(" }");
+
+            return sb.ToString();
         }
+
     }
 }

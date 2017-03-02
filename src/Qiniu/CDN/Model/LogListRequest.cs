@@ -45,8 +45,39 @@ namespace Qiniu.CDN.Model
         /// <param name="domains">域名列表</param>
         public LogListRequest(string day,IList<string> domains)
         {
-            Day = day;
-            Domains = Util.StringHelper.Join(domains, ";");
+            if(string.IsNullOrEmpty(day))
+            {
+                Day = "";
+            }
+            else
+            {
+                Day = day;
+            }
+            
+            if (domains == null)
+            {
+                Domains = "";
+            }
+            else
+            {
+                List<string> uniqueDomains = new List<string>();
+                foreach(string d in domains)
+                {
+                    if(!uniqueDomains.Contains(d))
+                    {
+                        uniqueDomains.Add(d);
+                    }
+                }
+
+                if (uniqueDomains.Count > 0)
+                {
+                    Domains = Util.StringHelper.Join(uniqueDomains, ";");
+                }
+                else
+                {
+                    Domains = "";
+                }
+            }
         }
 
         /// <summary>

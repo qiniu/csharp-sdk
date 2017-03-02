@@ -1,3 +1,15 @@
+**2017-03-02**
+
+最新版本v7.2.14，适用于.NET Framework 2.0+ , .NET Core 和 UWP
+
+修复：上传策略`PutPolicy`(位于`Qiniu.IO.Model`)补上fsizeMin字段
+
+优化：JSON解析优化，开放JSON解析模块，可由用户自行定义
+
+优化：`Qiniu.CDN`模块中一些优化，如urlSplit等优化
+
+* * *
+
 **2017-02-24**
 
 最新版本v7.2.13，适用于.NET Framework 2.0+ , .NET Core 和 UWP

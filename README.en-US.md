@@ -1,6 +1,8 @@
 #Qiniu (Cloud) C# SDK
 
-[![Build Status](https://api.travis-ci.org/qiniu/csharp-sdk.png)](https://travis-ci.org/qiniu/csharp-sdk)
+
+[![Documentation](https://img.shields.io/badge/Qiniu%20C%23%20SDK-Official%20Documentation-brightgreen.svg)](https://developer.qiniu.com/kodo/sdk/csharp) [![Supported](https://img.shields.io/badge/Supported-.NET%202.0%2B%2F.NET%20Core%2FWin10%20UWP-brightgreen.svg)](#)
+[![GitHub release](https://img.shields.io/github/release/qiniu/csharp-sdk.svg?label=github)](https://github.com/qiniu/csharp-sdk/releases) [![Github Downloads](https://img.shields.io/github/downloads/qiniu/csharp-sdk/total.svg?colorB=aaaaff)](https://github.com/qiniu/csharp-sdk/releases) [![NuGet release](https://img.shields.io/nuget/v/Qiniu.Shared.svg?colorB=aa77ff)](https://www.nuget.org/packages/Qiniu.Shared) [![Travis](https://img.shields.io/travis/qiniu/csharp-sdk.svg)](https://travis-ci.org/qiniu/csharp-sdk) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/qiniu/csharp-sdk/master/LICENSE)
 
 ##About
 
@@ -10,15 +12,16 @@ This C# SDK is built based on Qiniu Cloud API (see below), and it can be used on
 
 You can have a better view of this SDK by checking the documnets given below:
 
-* [SDK-reference HTML Online](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.13/index.html)
+* [SDK-reference HTML Online](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.14/index.html)
 
-* [SDK-reference CHM Offline](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.13.chm)
+* [SDK-reference CHM Offline](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.14.chm)
 
 Want to know more about how to using this SDK? Are you trying to find some code examples based on this SDK? These examples (**UWP app** example included) or links below will be helpful:
 
-* [github/csharp-sdk-shared-examples](https://github.com/qiniu/csharp-sdk/tree/master/examples)
+* [qiniu/csharp-sdk/examples](https://github.com/qiniu/csharp-sdk/tree/master/examples)
 
-* [SDK manual | examples](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.13/index.html)
+* [SDK manual | examples](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.14/index.html)
+
 
 ##How-to-install
 
@@ -26,10 +29,10 @@ Releases can be found [here](https://github.com/fengyhack/csharp-sdk-shared/rele
 
 The latest update will always be available in the `master` branch.
 
-Or you can install using NuGet, take Visual Studio 2013/2015 as an example, navigate to the NuGet package manager, and search `Qiniu.Shared`, or just type the scriptin the package manager console as follow:
+Or you can install using NuGet, take Visual Studio 2013/2015 as an example, navigate to the NuGet package manager, and search `Qiniu`, or just type the scriptin the package manager console as follow:
 
 ```
-Install-Package Qiniu.Shared
+Install-Package Qiniu
 ```
 
 And of course, you can build totally from source.

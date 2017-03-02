@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using Qiniu.JSON;
 using Qiniu.Http;
 
 namespace Qiniu.RSF.Model
@@ -21,7 +21,8 @@ namespace Qiniu.RSF.Model
 
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    var vt = JsonConvert.DeserializeObject<Dictionary<string, string>>(Text);
+                    var vt = new Dictionary<string, string>();
+                    JsonHelper.Deserialize(Text, out vt);
                     if (vt.ContainsKey("persistentId"))
                     {
                         pid = vt["persistentId"];

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using Qiniu.JSON;
 using Qiniu.Http;
 
 namespace Qiniu.RS.Model
@@ -20,7 +20,8 @@ namespace Qiniu.RS.Model
                 string ex = null;
                 if (Code != (int)HttpCode.OK && Code != (int)HttpCode.PARTLY_OK)
                 {
-                    var vt = JsonConvert.DeserializeObject<Dictionary<string, string>>(Text);
+                    var vt = new Dictionary<string, string>();
+                    JsonHelper.Deserialize(Text, out vt);
                     if (vt.ContainsKey("error"))
                     {
                         ex = vt["error"];
@@ -41,7 +42,7 @@ namespace Qiniu.RS.Model
                 if ((Code == (int)HttpCode.OK || Code == (int)HttpCode.PARTLY_OK) &&
                     (!string.IsNullOrEmpty(Text)))
                 {
-                    info = JsonConvert.DeserializeObject<List<BatchInfo>>(Text);
+                    JsonHelper.Deserialize(Text, out info);
                 }
                 return info;
             }

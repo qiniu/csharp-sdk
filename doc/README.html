@@ -1,15 +1,16 @@
-<!DOCTYPE html><html><head><title>关于</title><meta charset='utf-8'><link href='https://dn-maxiang.qbox.me/res-min/themes/marxico.css' rel='stylesheet'><style>
+<!DOCTYPE html><html><head><title>Qiniu (Cloud) C# SDK</title><meta charset='utf-8'><link href='https://dn-maxiang.qbox.me/res-min/themes/marxico.css' rel='stylesheet'><style>
 .note-content  {font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif;}
 
 </style></head><body><div id='preview-contents' class='note-content'>
                         
                     
 
-<h1>Qiniu (Cloud) C# SDK</h1>
+
+
+<h1 id="qiniu-cloud-c-sdk">Qiniu (Cloud) C# SDK</h1>
 
 <div><div class="toc"><div class="toc">
 <ul>
-<li><ul>
 <li><a href="#关于">关于</a></li>
 <li><a href="#sdk文档">SDK文档</a></li>
 <li><a href="#如何安装">如何安装</a></li>
@@ -18,18 +19,7 @@
 <li><a href="#相关资源">相关资源</a></li>
 <li><a href="#贡献代码">贡献代码</a></li>
 <li><a href="#许可证">许可证</a></li>
-<li><a href="#附录">附录</a><ul>
-<li><a href="#速览net-core">速览.NET Core</a><ul>
-<li><a href="#1-创建">1. 创建</a></li>
-<li><a href="#2-发布">2. 发布</a></li>
-<li><a href="#3-执行">3. 执行</a></li>
-</ul>
-</li>
-<li><a href="#速览win10-uwp">速览Win10 UWP</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a href="#附录">附录(速览.NET Core、UWP)</a></li>
 </ul>
 </div>
 </div>
@@ -45,14 +35,14 @@
 
 <p>以下文档用于检索SDK接口、属性说明，它将有助于您理解SDK的结构。</p>
 
-<ul><li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.13/index.html" target="_blank">HTML在线浏览</a></p></li>
-<li><p><a href="http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.13.chm" target="_blank">CHM文件下载</a></p></li>
+<ul><li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.14/index.html" target="_blank">HTML在线浏览</a></p></li>
+<li><p><a href="http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.14.chm" target="_blank">CHM文件下载</a></p></li>
 </ul>
 
 <p>以下链接提供了一些示例(包含<strong>UWP应用</strong>示例)，参考这些示例可以帮助您更快熟悉如何使用这套SDK。</p>
 
-<ul><li><p><a href="https://github.com/qiniu/csharp-sdk/tree/master/examples" target="_blank">github | csharp-sdk-examples</a></p></li>
-<li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.13/index.html" target="_blank">C# SDK使用指南 | 代码示例</a></p></li>
+<ul><li><p><a href="https://github.com/qiniu/csharp-sdk/tree/master/examples" target="_blank">qiniu/csharp-sdk/examples</a></p></li>
+<li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.14/index.html" target="_blank">C# SDK使用指南 | 代码示例</a></p></li>
 </ul>
 
 
@@ -69,15 +59,15 @@
 
 
 
-<pre class="prettyprint hljs-dark"><code class="hljs sql"><span class="hljs-operator"><span class="hljs-keyword">Install</span>-<span class="hljs-keyword">Package</span> Newtonsoft.<span class="hljs-keyword">Json</span></span><br></code></pre>
+<pre class="prettyprint hljs-light"><code class="hljs sql"><span class="hljs-operator"><span class="hljs-keyword">Install</span>-<span class="hljs-keyword">Package</span> Newtonsoft.<span class="hljs-keyword">Json</span></span><br></code></pre>
 
 <p><strong>2. 包管理器(NuGet)安装</strong> </p>
 
-<p>或者从NuGet来安装，以Visual Studio 2013/2015为例，打开NuGet程序包管理器搜索Qiniu.Shared或者在控制台中键入以下命令：</p>
+<p>或者从NuGet来安装，以Visual Studio 2013/2015为例，打开NuGet程序包管理器搜索<code>Qiniu</code>或者在控制台中键入以下命令：</p>
 
 
 
-<pre class="prettyprint hljs-dark"><code class="hljs sql"><span class="hljs-operator"><span class="hljs-keyword">Install</span>-<span class="hljs-keyword">Package</span> Qiniu.<span class="hljs-keyword">Shared</span></span><br></code></pre>
+<pre class="prettyprint hljs-light"><code class="hljs sql"><span class="hljs-operator"><span class="hljs-keyword">Install</span>-<span class="hljs-keyword">Package</span> Qiniu</span><br></code></pre>
 
 <p><strong>3. 从源码编译</strong></p>
 
@@ -85,7 +75,7 @@
 
 
 
-<pre class="prettyprint hljs-dark"><code class="hljs crmsh">git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/qiniu/csharp-sdk<br></code></pre>
+<pre class="prettyprint hljs-light"><code class="hljs crmsh">git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/qiniu/csharp-sdk<br></code></pre>
 
 
 
@@ -215,7 +205,7 @@
 
 
 
-<pre class="prettyprint hljs-dark"><code class="hljs actionscript">dotnet <span class="hljs-keyword">new</span><br>dotnet restore<br></code></pre>
+<pre class="prettyprint hljs-light"><code class="hljs actionscript">dotnet <span class="hljs-keyword">new</span><br>dotnet restore<br></code></pre>
 
 <p><strong>注意</strong></p>
 
@@ -223,7 +213,7 @@
 
 
 
-<pre class="prettyprint hljs-dark"><code class="language-json hljs">{<br>    "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.0-*"</span></span>,<br>    "<span class="hljs-attribute">buildOptions</span>": <span class="hljs-value">{<br>         "<span class="hljs-attribute">emitEntryPoint</span>": <span class="hljs-value"><span class="hljs-literal">true</span><br>        </span>}</span>,<br><br>    "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{<br>        "<span class="hljs-attribute">Microsoft.NETCore.App</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.1"</span><br>            </span>}</span>,<br>            "<span class="hljs-attribute">Qiniu</span>": <span class="hljs-value"><span class="hljs-string">"7.1.0.0"</span></span>,<br>            "<span class="hljs-attribute">Newtonsoft.Json</span>": <span class="hljs-value"><span class="hljs-string">"9.0.1"</span><br>        </span>}</span>,<br><br>        "<span class="hljs-attribute">frameworks</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">netcoreapp1.0</span>": <span class="hljs-value">{<br>                "<span class="hljs-attribute">imports</span>": <span class="hljs-value"><span class="hljs-string">"dnxcore50"</span><br>                </span>}<br>        </span>}</span>,<br><br>        "<span class="hljs-attribute">runtimes</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">win7-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">win7-x86</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">osx.10.10-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">osx.10.11-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">ubuntu.14.04-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">ubuntu.16.04-x64</span>": <span class="hljs-value">{}<br>        </span>}<br></span>}<br></code></pre>
+<pre class="prettyprint hljs-light"><code class="language-json hljs">{<br>    "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.0-*"</span></span>,<br>    "<span class="hljs-attribute">buildOptions</span>": <span class="hljs-value">{<br>         "<span class="hljs-attribute">emitEntryPoint</span>": <span class="hljs-value"><span class="hljs-literal">true</span><br>        </span>}</span>,<br><br>    "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{<br>        "<span class="hljs-attribute">Microsoft.NETCore.App</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"1.0.1"</span><br>            </span>}</span>,<br>            "<span class="hljs-attribute">Qiniu</span>": <span class="hljs-value"><span class="hljs-string">"7.1.0.0"</span></span>,<br>            "<span class="hljs-attribute">Newtonsoft.Json</span>": <span class="hljs-value"><span class="hljs-string">"9.0.1"</span><br>        </span>}</span>,<br><br>        "<span class="hljs-attribute">frameworks</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">netcoreapp1.0</span>": <span class="hljs-value">{<br>                "<span class="hljs-attribute">imports</span>": <span class="hljs-value"><span class="hljs-string">"dnxcore50"</span><br>                </span>}<br>        </span>}</span>,<br><br>        "<span class="hljs-attribute">runtimes</span>": <span class="hljs-value">{<br>            "<span class="hljs-attribute">win7-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">win7-x86</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">osx.10.10-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">osx.10.11-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">ubuntu.14.04-x64</span>": <span class="hljs-value">{}</span>,<br>            "<span class="hljs-attribute">ubuntu.16.04-x64</span>": <span class="hljs-value">{}<br>        </span>}<br></span>}<br></code></pre>
 
 <p>创建好项目之后就可以编写您的csharp代码了。</p>
 
@@ -235,7 +225,7 @@
 
 
 
-<pre class="prettyprint hljs-dark"><code class="hljs cpp">dotnet publish -r win7-x64<br>dotnet publish -r ubuntu<span class="hljs-number">.16</span><span class="hljs-number">.04</span>-x64<br>dotnet publish -r osx<span class="hljs-number">.10</span><span class="hljs-number">.11</span>-x64<br></code></pre>
+<pre class="prettyprint hljs-light"><code class="hljs cpp">dotnet publish -r win7-x64<br>dotnet publish -r ubuntu<span class="hljs-number">.16</span><span class="hljs-number">.04</span>-x64<br>dotnet publish -r osx<span class="hljs-number">.10</span><span class="hljs-number">.11</span>-x64<br></code></pre>
 
 <p>发布之后，直接拷贝发布目录下的所有文件到目标计算机就可以直接使用。</p>
 
@@ -243,7 +233,7 @@
 
 
 
-<pre class="prettyprint hljs-dark"><code class="hljs nginx"><span class="hljs-title">dotnet</span> build<br></code></pre>
+<pre class="prettyprint hljs-light"><code class="hljs nginx"><span class="hljs-title">dotnet</span> build<br></code></pre>
 
 
 
@@ -253,13 +243,13 @@
 
 
 
-<pre class="prettyprint hljs-dark"><code class="hljs crystal">brew update<br>brew install openssl<br>brew link --force openssl<br>ln -s /usr/local/opt/openssl/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">libcrypto</span>.1.0.0.<span class="hljs-title">dylib</span> /<span class="hljs-title">usr</span>/<span class="hljs-title">local</span>/<span class="hljs-title">lib</span>/</span><br>ln -s /usr/local/opt/openssl/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">libssl</span>.1.0.0.<span class="hljs-title">dylib</span> /<span class="hljs-title">usr</span>/<span class="hljs-title">local</span>/<span class="hljs-title">lib</span>/</span><br></code></pre>
+<pre class="prettyprint hljs-light"><code class="hljs crystal">brew update<br>brew install openssl<br>brew link --force openssl<br>ln -s /usr/local/opt/openssl/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">libcrypto</span>.1.0.0.<span class="hljs-title">dylib</span> /<span class="hljs-title">usr</span>/<span class="hljs-title">local</span>/<span class="hljs-title">lib</span>/</span><br>ln -s /usr/local/opt/openssl/<span class="hljs-class"><span class="hljs-keyword">lib</span>/<span class="hljs-title">libssl</span>.1.0.0.<span class="hljs-title">dylib</span> /<span class="hljs-title">usr</span>/<span class="hljs-title">local</span>/<span class="hljs-title">lib</span>/</span><br></code></pre>
 
 <p>假设您编译好的程序(<em>built app</em>)是<code>Example.dll</code>，您可以键入以下命令来执行:</p>
 
 
 
-<pre class="prettyprint hljs-dark"><code class="hljs css"><span class="hljs-tag">dotnet</span> <span class="hljs-tag">Example</span><span class="hljs-class">.dll</span><br></code></pre>
+<pre class="prettyprint hljs-light"><code class="hljs css"><span class="hljs-tag">dotnet</span> <span class="hljs-tag">Example</span><span class="hljs-class">.dll</span><br></code></pre>
 
 <p>当然，执行这个命令之前，<code>dotnet</code>工具是必须安装的。</p>
 
@@ -273,6 +263,4 @@
 
 <p>同样的，UWP解决方案中也包含一个project.json文件，以下是一个简单的示例：</p>
 
-
-
-<pre class="prettyprint hljs-dark"><code class="language-json hljs">{<br>  "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">Microsoft.NETCore.UniversalWindowsPlatform</span>": <span class="hljs-value"><span class="hljs-string">"5.1.0"</span><br>  </span>}</span>,<br>  "<span class="hljs-attribute">frameworks</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">uap10.0</span>": <span class="hljs-value">{}<br>  </span>}</span>,<br>  "<span class="hljs-attribute">runtimes</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">win10-arm</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-arm-aot</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x86</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x86-aot</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x64</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x64-aot</span>": <span class="hljs-value">{}<br>  </span>}<br></span>}<br></code></pre></div></body></html>
+<pre class="prettyprint hljs-light"><code class="language-json hljs">{<br>  "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">Microsoft.NETCore.UniversalWindowsPlatform</span>": <span class="hljs-value"><span class="hljs-string">"5.1.0"</span><br>  </span>}</span>,<br>  "<span class="hljs-attribute">frameworks</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">uap10.0</span>": <span class="hljs-value">{}<br>  </span>}</span>,<br>  "<span class="hljs-attribute">runtimes</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">win10-arm</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-arm-aot</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x86</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x86-aot</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x64</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x64-aot</span>": <span class="hljs-value">{}<br>  </span>}<br></span>}<br></code></pre></div></body></html>

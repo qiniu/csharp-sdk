@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Threading;
-using Newtonsoft.Json;
+using Qiniu.JSON;
 using Qiniu.Common;
 using Qiniu.IO.Model;
 using Qiniu.Util;
@@ -182,7 +182,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if(!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     leftBytes -= chunkSize;
@@ -218,7 +227,16 @@ namespace Qiniu.IO
                                 return result;
                             }
 
-                            rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                            if (!JsonHelper.Deserialize(hr.Text, out rc))
+                            {
+                                result.Shadow(hr);
+                                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                return result;
+                            }
+
                             context = rc.Ctx;
 
                             offset += chunkSize;
@@ -408,7 +426,16 @@ namespace Qiniu.IO
                             return result;
                         }
 
-                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        if (!JsonHelper.Deserialize(hr.Text, out rc))
+                        {
+                            result.Shadow(hr);
+                            result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                            return result;
+                        }
+
                         context = rc.Ctx;
                         offset += chunkSize;
                         leftBytes -= chunkSize;
@@ -444,7 +471,16 @@ namespace Qiniu.IO
                                     return result;
                                 }
 
-                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                if (!JsonHelper.Deserialize(hr.Text, out rc))
+                                {
+                                    result.Shadow(hr);
+                                    result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                    result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                    return result;
+                                }
+
                                 context = rc.Ctx;
 
                                 offset += chunkSize;
@@ -646,7 +682,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if (!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     leftBytes -= chunkSize;
@@ -693,7 +738,16 @@ namespace Qiniu.IO
                                 return result;
                             }
 
-                            rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                            if (!JsonHelper.Deserialize(hr.Text, out rc))
+                            {
+                                result.Shadow(hr);
+                                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                return result;
+                            }
+
                             context = rc.Ctx;
 
                             offset += chunkSize;
@@ -901,7 +955,16 @@ namespace Qiniu.IO
                             return result;
                         }
 
-                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        if (!JsonHelper.Deserialize(hr.Text, out rc))
+                        {
+                            result.Shadow(hr);
+                            result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                            return result;
+                        }
+
                         context = rc.Ctx;
                         offset += chunkSize;
                         leftBytes -= chunkSize;
@@ -949,7 +1012,16 @@ namespace Qiniu.IO
                                     return result;
                                 }
 
-                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                if (!JsonHelper.Deserialize(hr.Text, out rc))
+                                {
+                                    result.Shadow(hr);
+                                    result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                    result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                    return result;
+                                }
+
                                 context = rc.Ctx;
 
                                 offset += chunkSize;
@@ -1159,7 +1231,16 @@ namespace Qiniu.IO
                             return result;
                         }
 
-                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        if (!JsonHelper.Deserialize(hr.Text, out rc))
+                        {
+                            result.Shadow(hr);
+                            result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                            return result;
+                        }
+
                         context = rc.Ctx;
                         offset += chunkSize;
                         leftBytes -= chunkSize;
@@ -1207,7 +1288,16 @@ namespace Qiniu.IO
                                     return result;
                                 }
 
-                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                if (!JsonHelper.Deserialize(hr.Text, out rc))
+                                {
+                                    result.Shadow(hr);
+                                    result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                    result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                    return result;
+                                }
+
                                 context = rc.Ctx;
 
                                 offset += chunkSize;
@@ -1365,7 +1455,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if (!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     leftBytes -= chunkSize;
@@ -1401,7 +1500,16 @@ namespace Qiniu.IO
                                 return result;
                             }
 
-                            rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                            if (!JsonHelper.Deserialize(hr.Text, out rc))
+                            {
+                                result.Shadow(hr);
+                                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                return result;
+                            }
+
                             context = rc.Ctx;
 
                             offset += chunkSize;
@@ -1529,7 +1637,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if (!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     fileSize += chunkSize;
@@ -1713,7 +1830,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if (!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     leftBytes -= chunkSize;
@@ -1750,7 +1876,16 @@ namespace Qiniu.IO
                                 return result;
                             }
 
-                            rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                            if (!JsonHelper.Deserialize(hr.Text, out rc))
+                            {
+                                result.Shadow(hr);
+                                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                return result;
+                            }
+
                             context = rc.Ctx;
 
                             offset += chunkSize;
@@ -1940,7 +2075,16 @@ namespace Qiniu.IO
                             return result;
                         }
 
-                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        if (!JsonHelper.Deserialize(hr.Text, out rc))
+                        {
+                            result.Shadow(hr);
+                            result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                            return result;
+                        }
+
                         context = rc.Ctx;
                         offset += chunkSize;
                         leftBytes -= chunkSize;
@@ -1976,7 +2120,16 @@ namespace Qiniu.IO
                                     return result;
                                 }
 
-                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                if (!JsonHelper.Deserialize(hr.Text, out rc))
+                                {
+                                    result.Shadow(hr);
+                                    result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                    result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                    return result;
+                                }
+
                                 context = rc.Ctx;
 
                                 offset += chunkSize;
@@ -2177,7 +2330,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if (!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     leftBytes -= chunkSize;
@@ -2225,7 +2387,16 @@ namespace Qiniu.IO
                                 return result;
                             }
 
-                            rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                            if (!JsonHelper.Deserialize(hr.Text, out rc))
+                            {
+                                result.Shadow(hr);
+                                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                return result;
+                            }
+
                             context = rc.Ctx;
 
                             offset += chunkSize;
@@ -2433,7 +2604,16 @@ namespace Qiniu.IO
                             return result;
                         }
 
-                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        if (!JsonHelper.Deserialize(hr.Text, out rc))
+                        {
+                            result.Shadow(hr);
+                            result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                            return result;
+                        }
+
                         context = rc.Ctx;
                         offset += chunkSize;
                         leftBytes -= chunkSize;
@@ -2481,7 +2661,16 @@ namespace Qiniu.IO
                                     return result;
                                 }
 
-                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                if (!JsonHelper.Deserialize(hr.Text, out rc))
+                                {
+                                    result.Shadow(hr);
+                                    result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                    result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                    return result;
+                                }
+
                                 context = rc.Ctx;
 
                                 offset += chunkSize;
@@ -2691,7 +2880,16 @@ namespace Qiniu.IO
                             return result;
                         }
 
-                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        if (!JsonHelper.Deserialize(hr.Text, out rc))
+                        {
+                            result.Shadow(hr);
+                            result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                            return result;
+                        }
+
                         context = rc.Ctx;
                         offset += chunkSize;
                         leftBytes -= chunkSize;
@@ -2739,7 +2937,16 @@ namespace Qiniu.IO
                                     return result;
                                 }
 
-                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                if (!JsonHelper.Deserialize(hr.Text, out rc))
+                                {
+                                    result.Shadow(hr);
+                                    result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                    result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                    return result;
+                                }
+
                                 context = rc.Ctx;
 
                                 offset += chunkSize;
@@ -2944,7 +3151,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if(!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     leftBytes -= chunkSize;
@@ -2981,7 +3197,16 @@ namespace Qiniu.IO
                                 return result;
                             }
 
-                            rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                            if(!JsonHelper.Deserialize(hr.Text, out rc))
+                            {
+                                result.Shadow(hr);
+                                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                               return result;
+                            }
+
                             context = rc.Ctx;
 
                             offset += chunkSize;
@@ -3173,7 +3398,16 @@ namespace Qiniu.IO
                             return result;
                         }
 
-                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        if(!JsonHelper.Deserialize(hr.Text, out rc))
+                        {
+                            result.Shadow(hr);
+                            result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                            return result;
+                        }
+
                         context = rc.Ctx;
                         offset += chunkSize;
                         leftBytes -= chunkSize;
@@ -3210,7 +3444,15 @@ namespace Qiniu.IO
                                     return result;
                                 }
 
-                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                if(!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
                                 context = rc.Ctx;
 
                                 offset += chunkSize;
@@ -3412,7 +3654,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if(!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     leftBytes -= chunkSize;
@@ -3460,7 +3711,16 @@ namespace Qiniu.IO
                                 return result;
                             }
 
-                            rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                            if(!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                             context = rc.Ctx;
 
                             offset += chunkSize;
@@ -3670,7 +3930,16 @@ namespace Qiniu.IO
                             return result;
                         }
 
-                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        if(!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                         context = rc.Ctx;
                         offset += chunkSize;
                         leftBytes -= chunkSize;
@@ -3719,7 +3988,16 @@ namespace Qiniu.IO
                                     return result;
                                 }
 
-                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                if(!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                                 context = rc.Ctx;
 
                                 offset += chunkSize;
@@ -3931,7 +4209,16 @@ namespace Qiniu.IO
                             return result;
                         }
 
-                        rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                        if(!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                         context = rc.Ctx;
                         offset += chunkSize;
                         leftBytes -= chunkSize;
@@ -3980,7 +4267,16 @@ namespace Qiniu.IO
                                     return result;
                                 }
 
-                                rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                                if(!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                                 context = rc.Ctx;
 
                                 offset += chunkSize;
@@ -4150,7 +4446,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if (!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     leftBytes -= chunkSize;
@@ -4187,7 +4492,16 @@ namespace Qiniu.IO
                                 return result;
                             }
 
-                            rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                            if (!JsonHelper.Deserialize(hr.Text, out rc))
+                            {
+                                result.Shadow(hr);
+                                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                return result;
+                            }
+
                             context = rc.Ctx;
 
                             offset += chunkSize;
@@ -4317,7 +4631,16 @@ namespace Qiniu.IO
                         return result;
                     }
 
-                    rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text);
+                    if (!JsonHelper.Deserialize(hr.Text, out rc))
+                    {
+                        result.Shadow(hr);
+                        result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                        return result;
+                    }
+
                     context = rc.Ctx;
                     offset += chunkSize;
                     fileSize += chunkSize;
@@ -4916,7 +5239,9 @@ namespace Qiniu.IO
 
                     if (result.Code == (int)HttpCode.OK)
                     {
-                        var rd = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+                        var rd = new Dictionary<string, string>();
+                        JsonHelper.Deserialize(result.Text, out rd);
+
                         if (rd.ContainsKey("crc32"))
                         {
                             uint crc_1 = Convert.ToUInt32(rd["crc32"]);
@@ -4926,6 +5251,12 @@ namespace Qiniu.IO
                                 result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                                 result.RefText += string.Format(" CRC32: remote={0}, local={1}\n", crc_1, crc_2);
                             }
+                        }
+                        else
+                        {
+                            result.RefText += string.Format("[{0}] JSON Decode Error: text = {1}", 
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Text);
+                            result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                         }
                     }
                     else
@@ -5021,7 +5352,8 @@ namespace Qiniu.IO
 
                     if (result.Code == (int)HttpCode.OK)
                     {
-                        var rd = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+                        var rd = new Dictionary<string, string>();
+                        JsonHelper.Deserialize(result.Text, out rd);
                         if (rd.ContainsKey("crc32"))
                         {
                             uint crc_1 = Convert.ToUInt32(rd["crc32"]);
@@ -5031,6 +5363,12 @@ namespace Qiniu.IO
                                 result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                                 result.RefText += string.Format(" CRC32: remote={0}, local={1}\n", crc_1, crc_2);
                             }
+                        }
+                        else
+                        {
+                            result.RefText += string.Format("[{0}] JSON Decode Error: text = {1}",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Text);
+                            result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                         }
                     }
                     else
@@ -5598,7 +5936,8 @@ namespace Qiniu.IO
 
                     if (result.Code == (int)HttpCode.OK)
                     {
-                        var rd = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+                        var rd = new Dictionary<string, string>();
+                        JsonHelper.Deserialize(result.Text, out rd);
                         if (rd.ContainsKey("crc32"))
                         {
                             uint crc_1 = Convert.ToUInt32(rd["crc32"]);
@@ -5608,6 +5947,12 @@ namespace Qiniu.IO
                                 result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                                 result.RefText += string.Format(" CRC32: remote={0}, local={1}\n", crc_1, crc_2);
                             }
+                        }
+                        else
+                        {
+                            result.RefText += string.Format("[{0}] JSON Decode Error: text = {1}",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Text);
+                            result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                         }
                     }
                     else
@@ -5703,7 +6048,8 @@ namespace Qiniu.IO
 
                     if (result.Code == (int)HttpCode.OK)
                     {
-                        var rd = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+                        var rd = new Dictionary<string, string>();
+                        JsonHelper.Deserialize(result.Text, out rd);
                         if (rd.ContainsKey("crc32"))
                         {
                             uint crc_1 = Convert.ToUInt32(rd["crc32"]);
@@ -5713,6 +6059,12 @@ namespace Qiniu.IO
                                 result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                                 result.RefText += string.Format(" CRC32: remote={0}, local={1}\n", crc_1, crc_2);
                             }
+                        }
+                        else
+                        {
+                            result.RefText += string.Format("[{0}] JSON Decode Error: text = {1}",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Text);
+                            result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                         }
                     }
                     else

@@ -9902,10 +9902,10 @@
         "tools/install.ps1"
       ]
     },
-    "Qiniu.Shared/7.2.7": {
+    "Qiniu/7.2.14": {
       "sha512": "lqei/BCkv9Vzf8aIlpR8POgVmtGBEN3d2q/clPBxm4keNB7U+nt83MxdHsxbXtLBCIWfi5PSyYbELLqNKFjWkg==",
       "type": "package",
-      "path": "Qiniu.Shared/7.2.7",
+      "path": "Qiniu/7.2.14",
       "files": [
         "lib/net20/Qiniu.dll",
         "lib/net35/Qiniu.dll",
@@ -9914,8 +9914,8 @@
         "lib/netstandard1.6/Qiniu.deps.json",
         "lib/netstandard1.6/Qiniu.dll",
         "lib/uap10.0/Qiniu.dll",
-        "qiniu.shared.7.2.7.nupkg.sha512",
-        "qiniu.shared.nuspec"
+        "qiniu.7.2.14.nupkg.sha512",
+        "qiniu.nuspec"
       ]
     },
     "runtime.any.System.Collections/4.0.11": {
@@ -15373,7 +15373,7 @@
     "": [
       "Microsoft.NETCore.App >= 1.0.1",
       "Newtonsoft.Json >= 9.0.1",
-      "Qiniu.Shared >= 7.2.7"
+      "Qiniu >= 7.2.14"
     ],
     ".NETCoreApp,Version=v1.0": []
   },

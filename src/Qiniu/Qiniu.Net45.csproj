@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CDN\Model\TimestampAntiLeechUrlRequest.cs" />
+    <Compile Include="JSON\JsonHelper.cs" />
     <Compile Include="QiniuCSharpSDK.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Config.cs" />
