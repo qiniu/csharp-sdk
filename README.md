@@ -2,7 +2,7 @@
 
 [![Documentation](https://img.shields.io/badge/Qiniu%20C%23%20SDK-Documentation-brightgreen.svg)](https://developer.qiniu.com/kodo/sdk/csharp) [![Supported](https://img.shields.io/badge/Supported-.NET2.0%2B%2F.NETCore%2FUWP-brightgreen.svg)](#)
 
-[![GitHub release](https://img.shields.io/github/release/qiniu/csharp-sdk.svg?label=github)](https://github.com/qiniu/csharp-sdk/releases) [![Github Downloads](https://img.shields.io/github/downloads/qiniu/csharp-sdk/total.svg?colorB=aaaaff)](https://github.com/qiniu/csharp-sdk/releases) [![NuGet release](https://img.shields.io/nuget/v/Qiniu.Shared.svg?colorB=aa77ff)](https://www.nuget.org/packages/Qiniu) [![Travis](https://img.shields.io/travis/qiniu/csharp-sdk.svg)](https://travis-ci.org/qiniu/csharp-sdk) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/qiniu/csharp-sdk/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/qiniu/csharp-sdk.svg?label=github)](https://github.com/qiniu/csharp-sdk/releases) [![Github Downloads](https://img.shields.io/github/downloads/qiniu/csharp-sdk/total.svg?colorB=aaaaff)](https://github.com/qiniu/csharp-sdk/releases) [![NuGet release](https://img.shields.io/nuget/v/Qiniu.Shared.svg?colorB=aa77ff)](https://www.nuget.org/packages/Qiniu.Shared) [![Travis](https://img.shields.io/travis/qiniu/csharp-sdk.svg)](https://travis-ci.org/qiniu/csharp-sdk) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/qiniu/csharp-sdk/master/LICENSE)
 
 ##关于
 
