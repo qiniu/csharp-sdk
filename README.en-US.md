@@ -29,10 +29,10 @@ Releases can be found [here](https://github.com/fengyhack/csharp-sdk-shared/rele
 
 The latest update will always be available in the `master` branch.
 
-Or you can install using NuGet, take Visual Studio 2013/2015 as an example, navigate to the NuGet package manager, and search `Qiniu`, or just type the scriptin the package manager console as follow:
+Or you can install using NuGet, take Visual Studio 2013/2015 as an example, navigate to the NuGet package manager, and search `Qiniu.Shared`, or just type the scriptin the package manager console as follow:
 
 ```
-Install-Package Qiniu
+Install-Package Qiniu.Shared
 ```
 
 And of course, you can build totally from source.

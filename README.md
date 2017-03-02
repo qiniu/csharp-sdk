@@ -1,7 +1,7 @@
 #Qiniu (Cloud) C# SDK
 
 [![Documentation](https://img.shields.io/badge/Qiniu%20C%23%20SDK-Official%20Documentation-brightgreen.svg)](https://developer.qiniu.com/kodo/sdk/csharp) [![Supported](https://img.shields.io/badge/Supported-.NET%202.0%2B%2F.NET%20Core%2FWin10%20UWP-brightgreen.svg)](#)
-[![GitHub release](https://img.shields.io/github/release/qiniu/csharp-sdk.svg?label=github)](https://github.com/qiniu/csharp-sdk/releases) [![Github Downloads](https://img.shields.io/github/downloads/qiniu/csharp-sdk/total.svg?colorB=aaaaff)](https://github.com/qiniu/csharp-sdk/releases) [![NuGet release](https://img.shields.io/nuget/v/Qiniu.svg?colorB=aa77ff)](https://www.nuget.org/packages/Qiniu) [![Travis](https://img.shields.io/travis/qiniu/csharp-sdk.svg)](https://travis-ci.org/qiniu/csharp-sdk) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/qiniu/csharp-sdk/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/qiniu/csharp-sdk.svg?label=github)](https://github.com/qiniu/csharp-sdk/releases) [![Github Downloads](https://img.shields.io/github/downloads/qiniu/csharp-sdk/total.svg?colorB=aaaaff)](https://github.com/qiniu/csharp-sdk/releases) [![NuGet release](https://img.shields.io/nuget/v/Qiniu.Shared.svg?colorB=aa77ff)](https://www.nuget.org/packages/Qiniu) [![Travis](https://img.shields.io/travis/qiniu/csharp-sdk.svg)](https://travis-ci.org/qiniu/csharp-sdk) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/qiniu/csharp-sdk/master/LICENSE)
 
 ##关于
 
@@ -37,10 +37,10 @@ Install-Package Newtonsoft.Json
 
 **2. 包管理器(NuGet)安装** 
 
-或者从NuGet来安装，以Visual Studio 2013/2015为例，打开NuGet程序包管理器搜索`Qiniu`或者在控制台中键入以下命令：
+或者从NuGet来安装，以Visual Studio 2013/2015为例，打开NuGet程序包管理器搜索`Qiniu.Shared`或者在控制台中键入以下命令：
 
 ```
-Install-Package Qiniu
+Install-Package Qiniu.Shared
 ```
 
 **3. 从源码编译**
