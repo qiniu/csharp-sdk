@@ -154,7 +154,7 @@ namespace CSharpSDKExamples
                 {
                     Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
                     PutPolicy putPolicy = new PutPolicy();
-                    putPolicy.Scope = "xuejing-001.jpg";
+                    putPolicy.Scope = "test" + ":" + "xuejing-001.jpg";
                     putPolicy.SetExpires(3600);
                     string jstr = putPolicy.ToJsonString();
                     string token = Auth.CreateUploadToken(mac, jstr);

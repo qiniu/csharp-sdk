@@ -49,7 +49,13 @@ namespace Qiniu.CDN.Model
         {
             if (urls != null)
             {
-                Urls.AddRange(urls);
+                foreach (string u in urls)
+                {
+                    if(!Urls.Contains(u))
+                    {
+                        Urls.Add(u);
+                    }
+                }
             }
         }
 

@@ -626,18 +626,22 @@ namespace Qiniu.CDN
         public string CreateTimestampAntiLeechUrl(TimestampAntiLeechUrlRequest request)
         {
             string RAW = request.RawUrl;
-
-            string key = request.Key;
-            string path = Uri.EscapeUriString(request.Path);
-            string file = request.File;
-            string query = request.Query;
-            string ts = (long.Parse(request.Timestamp)).ToString("x");
-            string SIGN = Hashing.CalcMD5X(key + path + file + ts);
-            string LEAD = query + "&";
-            if(string.IsNullOrEmpty(query))
+            string LEAD = "&";
+            if (string.IsNullOrEmpty(request.Query))
             {
                 LEAD = "?";
             }
+
+            string key = request.Key;
+            string path = request.Path;
+            if(!string.IsNullOrEmpty(path))
+            {
+                path = Uri.EscapeUriString(path);
+            }
+            string file = request.File;
+            string ts = (long.Parse(request.Timestamp)).ToString("x");
+            string SIGN = Hashing.CalcMD5X(key + path + file + ts);
+            
 
             return string.Format("{0}{1}sign={2}&t={3}", RAW, LEAD, SIGN, ts);
         }

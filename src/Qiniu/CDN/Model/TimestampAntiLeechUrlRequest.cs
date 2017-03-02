@@ -15,9 +15,21 @@ namespace Qiniu.CDN.Model
         {
             get
             {
-                return Host + Path + File + Query;
+                if (string.IsNullOrEmpty(OriginURL))
+                {
+                    return OriginURL;
+                }
+                else
+                {
+                    return Host + Path + File + Query;
+                }
             }
         }
+
+        /// <summary>
+        /// 仅当以直接传入方式初始化时可用
+        /// </summary>
+        public string OriginURL { get; protected set; }
 
         /// <summary>
         /// URL的Host部分，例如http://cxxx.dyyy.com
@@ -54,6 +66,7 @@ namespace Qiniu.CDN.Model
         /// </summary>
         public TimestampAntiLeechUrlRequest()
         {
+            OriginURL = "";
             Host = "";
             Path = "";
             File = "";
@@ -70,6 +83,8 @@ namespace Qiniu.CDN.Model
         /// <param name="expire">有效时长(秒)</param>
         public TimestampAntiLeechUrlRequest(string url, string key, int expire)
         {
+            OriginURL = url;
+
             string host, path, file, query;
             UrlHelper.UrlSplit(url, out host, out path, out file, out query);
 

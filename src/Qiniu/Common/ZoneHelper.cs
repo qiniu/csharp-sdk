@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using Qiniu.JSON;
 using Qiniu.Http;
 
 #if Net45 || Net46 || NetCore || WINDOWS_UWP
@@ -47,9 +47,16 @@ namespace Qiniu.Common
                 var hr = httpManager.Get(queryUrl, null);
                 if (hr.Code == (int)HttpCode.OK)
                 {
-                    ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
-                    string upHost = zInfo.HTTP.UP[0];
-                    zoneId = ZONE_DICT[upHost];
+                    ZoneInfo zInfo = null;
+                    if (JsonHelper.Deserialize(hr.Text, out zInfo))
+                    {
+                        string upHost = zInfo.HTTP.UP[0];
+                        zoneId = ZONE_DICT[upHost];
+                    }
+                    else
+                    {
+                        throw new Exception("JSON Deserialize failed: " + hr.Text);
+                    }
                 }
                 else
                 {
@@ -85,7 +92,7 @@ namespace Qiniu.Common
         /// <param name="bucket">空间名称</param>
         public static async Task<ZoneID> QueryZoneAsync(string accessKey, string bucket)
         {
-            ZoneID zoneId = ZoneID.Default;
+            ZoneID zoneId = ZoneID.Invalid;
 
             try
             {
@@ -96,9 +103,16 @@ namespace Qiniu.Common
                 var hr = await httpManager.GetAsync(queryUrl, null);
                 if (hr.Code == (int)HttpCode.OK)
                 {
-                    ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
-                    string upHost = zInfo.HTTP.UP[0];
-                    zoneId = ZONE_DICT[upHost];
+                    ZoneInfo zInfo = null;
+                    if (JsonHelper.Deserialize(hr.Text, out zInfo))
+                    {
+                        string upHost = zInfo.HTTP.UP[0];
+                        zoneId = ZONE_DICT[upHost];
+                    }
+                    else
+                    {
+                        throw new Exception("JSON Deserialize failed: " + hr.Text);
+                    }
                 }
                 else
                 {

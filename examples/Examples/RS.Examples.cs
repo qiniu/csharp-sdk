@@ -21,7 +21,7 @@ namespace CSharpSDKExamples
             Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
 
             string bucket = "test";
-            string key = "L-1.avi";
+            string key = "1.mp4";
 
             BucketManager bm = new BucketManager(mac);
 
@@ -242,7 +242,7 @@ namespace CSharpSDKExamples
         /// </summary>
         public static void bucket()
         {
-            string bkt = "test-s-5";
+            string bkt = "test";
 
             Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
             BucketManager bm = new BucketManager(mac);

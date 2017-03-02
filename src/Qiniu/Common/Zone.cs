@@ -33,7 +33,7 @@
         Default = CN_East,
 
         /// <summary>
-        /// 未定义,比如QueryZone查询出错
+        /// 未定义,比如QueryZone查询出错时设置为此值
         /// </summary>
         Invalid = 999
     };

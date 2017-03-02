@@ -1,6 +1,8 @@
 #Qiniu (Cloud) C# SDK
 
-[![Build Status](https://api.travis-ci.org/qiniu/csharp-sdk.png)](https://travis-ci.org/qiniu/csharp-sdk)
+[![Documentation](https://img.shields.io/badge/Qiniu%20C%23%20SDK-Documentation-brightgreen.svg)](https://developer.qiniu.com/kodo/sdk/csharp) [![Supported](https://img.shields.io/badge/Supported-.NET2.0%2B%2F.NETCore%2FUWP-brightgreen.svg)](#)
+
+[![GitHub release](https://img.shields.io/github/release/qiniu/csharp-sdk.svg?label=github)](https://github.com/qiniu/csharp-sdk/releases) [![Github Downloads](https://img.shields.io/github/downloads/qiniu/csharp-sdk/total.svg?colorB=aaaaff)](https://github.com/qiniu/csharp-sdk/releases) [![NuGet release](https://img.shields.io/nuget/v/Qiniu.Shared.svg?colorB=aa77ff)](https://www.nuget.org/packages/Qiniu) [![Travis](https://img.shields.io/travis/qiniu/csharp-sdk.svg)](https://travis-ci.org/qiniu/csharp-sdk) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/qiniu/csharp-sdk/master/LICENSE)
 
 ##关于
 
@@ -10,15 +12,15 @@
 
 以下文档用于检索SDK接口、属性说明，它将有助于您理解SDK的结构。
 
-* [HTML在线浏览](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.13/index.html)
+* [HTML在线浏览](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.14/index.html)
 
-* [CHM文件下载](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.13.chm)
+* [CHM文件下载](http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.14.chm)
 
 以下链接提供了一些示例(包含**UWP应用**示例)，参考这些示例可以帮助您更快熟悉如何使用这套SDK。
 
-* [github | csharp-sdk-examples](https://github.com/qiniu/csharp-sdk/tree/master/examples)
+* [qiniu/csharp-sdk/examples](https://github.com/qiniu/csharp-sdk/tree/master/examples)
 
-* [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.13/index.html)
+* [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.14/index.html)
 
 ##如何安装
 
@@ -36,7 +38,7 @@ Install-Package Newtonsoft.Json
 
 **2. 包管理器(NuGet)安装** 
 
-或者从NuGet来安装，以Visual Studio 2013/2015为例，打开NuGet程序包管理器搜索Qiniu.Shared或者在控制台中键入以下命令：
+或者从NuGet来安装，以Visual Studio 2013/2015为例，打开NuGet程序包管理器搜索`Qiniu.Shared`或者在控制台中键入以下命令：
 
 ```
 Install-Package Qiniu.Shared

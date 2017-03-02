@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Newtonsoft.Json;
+using Qiniu.JSON;
 using Qiniu.Util;
 
 #if Net45||Net46||NetCore
@@ -50,7 +50,7 @@ namespace Qiniu.IO.Model
                     using (StreamReader sr = new StreamReader(fs))
                     {
                         string jsonStr = sr.ReadToEnd();
-                        resumeInfo = JsonConvert.DeserializeObject<ResumeInfo>(jsonStr);
+                        JsonHelper.Deserialize(jsonStr, out resumeInfo);
                     }
                 }
             }
@@ -101,7 +101,7 @@ namespace Qiniu.IO.Model
                     using (StreamReader sr = new StreamReader(fs))
                     {
                         string jsonStr = await sr.ReadToEndAsync();
-                        resumeInfo = JsonConvert.DeserializeObject<ResumeInfo>(jsonStr);
+                        JsonHelper.Deserialize(jsonStr, out resumeInfo);
                     }
                 }
             }
@@ -147,7 +147,7 @@ namespace Qiniu.IO.Model
 
             try
             {
-                JsonConvert.DeserializeObject<ResumeInfo>(await FileIO.ReadTextAsync(recordFile));
+                JsonHelper.Deserialize(await FileIO.ReadTextAsync(recordFile),out resumeInfo);
             }
             catch (Exception)
             {

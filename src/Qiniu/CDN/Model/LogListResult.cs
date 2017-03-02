@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Newtonsoft.Json;
+using Qiniu.JSON;
 using Qiniu.Http;
 
 namespace Qiniu.CDN.Model
@@ -19,7 +19,7 @@ namespace Qiniu.CDN.Model
                 LogListInfo info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info = JsonConvert.DeserializeObject<LogListInfo>(Text);
+                    JsonHelper.Deserialize(Text, out info);
                 }
                 return info;
             }
