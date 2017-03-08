@@ -10,57 +10,57 @@ using System.Runtime.InteropServices;
 
 #if Net20
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.14 (.NET 2.0)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.14 (.NET 2.0)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.14 (.NET 2.0)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)")]
 
 #elif Net35
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.14 (.NET 3.5)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.14 (.NET 3.5)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.14 (.NET 3.5)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15 (.NET 3.5)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15 (.NET 3.5)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15 (.NET 3.5)")]
 
 #elif JEDISYNC
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.14 (JediSync-NET40)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.14 (JediSync-NET40)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.14 (JediSync-NET40)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15 (JediSync-NET40)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15 (JediSync-NET40)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15 (JediSync-NET40)")]
 
 #elif Net40
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.14 (.NET 4.0)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.14 (.NET 4.0)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.14 (.NET 4.0)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)")]
 
 #elif Net45
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.14 (.NET 4.5)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.14 (.NET 4.5)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.14 (.NET 4.5)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.5)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.5)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.5)")]
 
 #elif Net46
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.14 (.NET 4.6)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.14 (.NET 4.6)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.14 (.NET 4.6)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.6)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.6)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.6)")]
 
 #elif NetCore
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.14 (.Net Core)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.14 (.Net Core)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.14 (.Net Core)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)")]
 
 #elif WINDOWS_UWP
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.14 (Win10 UWP)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.14 (Win10 UWP)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.14 (Win10 UWP)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15 (Win10 UWP)")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15 (Win10 UWP)")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15 (Win10 UWP)")]
 
 #else
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.14")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.14")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.14")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15")]
 
 #endif
 
@@ -75,6 +75,6 @@ using System.Runtime.InteropServices;
 [assembly: Guid("957cd434-8b12-46ce-980b-09ca26ed340d")]
 
 [assembly: AssemblyCopyright("Copyright ©  2017")]
-[assembly: AssemblyVersion("7.2.14")]
-[assembly: AssemblyFileVersion("7.2.14")]
+[assembly: AssemblyVersion("7.2.15")]
+[assembly: AssemblyFileVersion("7.2.15")]
 

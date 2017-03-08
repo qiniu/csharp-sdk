@@ -2,7 +2,7 @@
   "dependencies": {
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
     "newtonsoft.json": "9.0.1",
-    "Qiniu": "7.2.14",
+    "Qiniu.Shared": "7.2.15",
     "System.Runtime": "4.0.20"
   },
   "frameworks": {

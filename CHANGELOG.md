@@ -1,3 +1,13 @@
+**2017-03-08**
+
+最新版本v7.2.15，适用于.NET Framework 2.0+ , .NET Core 和 UWP
+
+修复：时间戳防盗链(位于`Qiniu.CDN.Model`)函数中的一个已知问题
+
+优化：JSON序列化/反序列化，弱化Json.NET依赖，可由用户自行定义
+
+* * *
+
 **2017-03-02**
 
 最新版本v7.2.14，适用于.NET Framework 2.0+ , .NET Core 和 UWP

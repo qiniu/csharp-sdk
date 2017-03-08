@@ -1,4 +1,5 @@
 {
+  "locked": false,
   "version": 2,
   "targets": {
     "UAP,Version=v10.0": {
@@ -277,7 +278,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/9.0.1": {
+      "newtonsoft.json/9.0.1": {
         "type": "package",
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
@@ -286,7 +287,7 @@
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
-      "Qiniu.Shared/7.2.11": {
+      "Qiniu.Shared/7.2.15": {
         "type": "package",
         "compile": {
           "lib/uap10.0/Qiniu.dll": {}
@@ -2121,7 +2122,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/9.0.1": {
+      "newtonsoft.json/9.0.1": {
         "type": "package",
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
@@ -2130,7 +2131,7 @@
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
-      "Qiniu.Shared/7.2.11": {
+      "Qiniu.Shared/7.2.15": {
         "type": "package",
         "compile": {
           "lib/uap10.0/Qiniu.dll": {}
@@ -3880,7 +3881,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/9.0.1": {
+      "newtonsoft.json/9.0.1": {
         "type": "package",
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
@@ -3889,7 +3890,7 @@
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
-      "Qiniu.Shared/7.2.11": {
+      "Qiniu.Shared/7.2.15": {
         "type": "package",
         "compile": {
           "lib/uap10.0/Qiniu.dll": {}
@@ -5606,7 +5607,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/9.0.1": {
+      "newtonsoft.json/9.0.1": {
         "type": "package",
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
@@ -5615,7 +5616,7 @@
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
-      "Qiniu.Shared/7.2.11": {
+      "Qiniu.Shared/7.2.15": {
         "type": "package",
         "compile": {
           "lib/uap10.0/Qiniu.dll": {}
@@ -7368,7 +7369,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/9.0.1": {
+      "newtonsoft.json/9.0.1": {
         "type": "package",
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
@@ -7377,7 +7378,7 @@
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
-      "Qiniu.Shared/7.2.11": {
+      "Qiniu.Shared/7.2.15": {
         "type": "package",
         "compile": {
           "lib/uap10.0/Qiniu.dll": {}
@@ -9094,7 +9095,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/9.0.1": {
+      "newtonsoft.json/9.0.1": {
         "type": "package",
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
@@ -9103,7 +9104,7 @@
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
-      "Qiniu.Shared/7.2.11": {
+      "Qiniu.Shared/7.2.15": {
         "type": "package",
         "compile": {
           "lib/uap10.0/Qiniu.dll": {}
@@ -10856,7 +10857,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/9.0.1": {
+      "newtonsoft.json/9.0.1": {
         "type": "package",
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
@@ -10865,7 +10866,7 @@
           "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
-      "Qiniu.Shared/7.2.11": {
+      "Qiniu.Shared/7.2.15": {
         "type": "package",
         "compile": {
           "lib/uap10.0/Qiniu.dll": {}
@@ -12561,7 +12562,7 @@
     "Microsoft.NETCore.Windows.ApiSets-x64/1.0.0": {
       "sha512": "NC+dpFMdhujz2sWAdJ8EmBk07p1zOlNi0FCCnZEbzftABpw9xZ99EMP/bUJrPTgCxHfzJAiuLPOtAauzVINk0w==",
       "type": "package",
-      "path": "microsoft.netcore.windows.apisets-x64/1.0.0",
+      "path": "Microsoft.NETCore.Windows.ApiSets-x64/1.0.0",
       "files": [
         "microsoft.netcore.windows.apisets-x64.1.0.0.nupkg.sha512",
         "microsoft.netcore.windows.apisets-x64.nuspec",
@@ -12727,7 +12728,7 @@
     "Microsoft.NETCore.Windows.ApiSets-x86/1.0.0": {
       "sha512": "/HDRdhz5bZyhHwQ/uk/IbnDIX5VDTsHntEZYkTYo57dM+U3Ttel9/OJv0mjL64wTO/QKUJJNKp9XO+m7nSVjJQ==",
       "type": "package",
-      "path": "microsoft.netcore.windows.apisets-x86/1.0.0",
+      "path": "Microsoft.NETCore.Windows.ApiSets-x86/1.0.0",
       "files": [
         "microsoft.netcore.windows.apisets-x86.1.0.0.nupkg.sha512",
         "microsoft.netcore.windows.apisets-x86.nuspec",
@@ -12951,7 +12952,7 @@
         "ref/xamarinmac20/_._"
       ]
     },
-    "Newtonsoft.Json/9.0.1": {
+    "newtonsoft.json/9.0.1": {
       "sha512": "U82mHQSKaIk+lpSVCbWYKNavmNH1i5xrExDEquU1i6I5pV6UMOqRnJRSlKO3cMPfcpp0RgDY+8jUXHdQ4IfXvw==",
       "type": "package",
       "path": "newtonsoft.json/9.0.1",
@@ -12975,26 +12976,26 @@
         "tools/install.ps1"
       ]
     },
-    "Qiniu/7.2.14": {
-      "sha512": "epziSnN/rpKaEuvw9jRmQOw2u0ZgKan5ozPBQkIJHT2KUfvI5ufALRPa8WAyBsfHbz5hgf2FVOOeRLrMrshYLQ==",
+    "Qiniu.Shared/7.2.15": {
+      "sha512": "J46cZb8VJ7XKit0wjXmUHRWvF/oAm+EHTtUQdHW8U5AcnQDTs26u8jYydVYQ0RjN0mFyaXhRAz5yKrpHC22qIw==",
       "type": "package",
-      "path": "qiniu/7.2.14",
+      "path": "Qiniu.Shared/7.2.15",
       "files": [
+        "Qiniu.Shared.7.2.15.nupkg.sha512",
+        "Qiniu.Shared.nuspec",
         "lib/net20/Qiniu.dll",
         "lib/net35/Qiniu.dll",
         "lib/net40/Qiniu.dll",
         "lib/net45/Qiniu.dll",
         "lib/netstandard1.6/Qiniu.deps.json",
         "lib/netstandard1.6/Qiniu.dll",
-        "lib/uap10.0/Qiniu.dll",
-        "qiniu.7.2.14.nupkg.sha512",
-        "qiniu.nuspec"
+        "lib/uap10.0/Qiniu.dll"
       ]
     },
     "runtime.any.System.Private.DataContractSerialization/4.1.0": {
       "sha512": "nJ5sB6Q7vbOEZ+tm/L7XISxO0Az6tkMup5rhpgPboVpUKgMnsdWiDvSlzzpK/bsiYxMIJCJ4Xrt2abt8Z1beJw==",
       "type": "package",
-      "path": "runtime.any.system.private.datacontractserialization/4.1.0",
+      "path": "runtime.any.System.Private.DataContractSerialization/4.1.0",
       "files": [
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
@@ -13009,7 +13010,7 @@
     "runtime.aot.System.Private.DataContractSerialization/4.1.0": {
       "sha512": "0GKgzv1P8U+1x0grF5xg9xAjjVahzAZwGNF6ff8/CeXi+1isQYi7vZ/GhiyU7zDaQnKmSOj1/tTZqhOo5P4yTA==",
       "type": "package",
-      "path": "runtime.aot.system.private.datacontractserialization/4.1.0",
+      "path": "runtime.aot.System.Private.DataContractSerialization/4.1.0",
       "files": [
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
@@ -13022,7 +13023,7 @@
     "runtime.win7-x64.Microsoft.NETCore.Runtime.CoreCLR/1.0.1": {
       "sha512": "RGzhZPvizLZVtpUAnRHdIlluBT+IBgj9YuJcpUzvE9X9sDfSIzKLmHoAYeuQDOKXjRiy1qWh6/qsgXF9K8LDrQ==",
       "type": "package",
-      "path": "runtime.win7-x64.microsoft.netcore.runtime.coreclr/1.0.1",
+      "path": "runtime.win7-x64.Microsoft.NETCore.Runtime.CoreCLR/1.0.1",
       "files": [
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
@@ -13042,7 +13043,7 @@
     "runtime.win7-x86.Microsoft.NETCore.Runtime.CoreCLR/1.0.1": {
       "sha512": "Sm4ZEOX0J7RLguqTTv/S1df8DHy+ndLPCg8qlth3icuO6awpSzkqte5gQMV4pSci5YduMed9mgRGcPe3EQ5l2w==",
       "type": "package",
-      "path": "runtime.win7-x86.microsoft.netcore.runtime.coreclr/1.0.1",
+      "path": "runtime.win7-x86.Microsoft.NETCore.Runtime.CoreCLR/1.0.1",
       "files": [
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
@@ -13062,7 +13063,7 @@
     "runtime.win8-arm.Microsoft.NETCore.Runtime.CoreCLR/1.0.1": {
       "sha512": "sO14C2owb6uCS+OuoCUO6baXQQrG4D3rfOtE6iL1RNsiTTe/rjQC7NZY0iWmUjzd7+g+5ejaEv4x3sM2KRAUSw==",
       "type": "package",
-      "path": "runtime.win8-arm.microsoft.netcore.runtime.coreclr/1.0.1",
+      "path": "runtime.win8-arm.Microsoft.NETCore.Runtime.CoreCLR/1.0.1",
       "files": [
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
@@ -13746,7 +13747,7 @@
     "System.IO.Compression.clrcompression-arm/4.0.0": {
       "sha512": "Kk21GecAbI+H6tMP6/lMssGObbhoHwLiREiB5UkNMCypdxACuF+6gmrdDTousCUcbH28CJeo7tArrnUc+bchuw==",
       "type": "package",
-      "path": "system.io.compression.clrcompression-arm/4.0.0",
+      "path": "System.IO.Compression.clrcompression-arm/4.0.0",
       "files": [
         "runtimes/win10-arm/native/ClrCompression.dll",
         "runtimes/win7-arm/native/clrcompression.dll",
@@ -13757,7 +13758,7 @@
     "System.IO.Compression.clrcompression-x64/4.0.0": {
       "sha512": "Lqr+URMwKzf+8HJF6YrqEqzKzDzFJTE4OekaxqdIns71r8Ufbd8SbZa0LKl9q+7nu6Em4SkIEXVMB7plSXekOw==",
       "type": "package",
-      "path": "system.io.compression.clrcompression-x64/4.0.0",
+      "path": "System.IO.Compression.clrcompression-x64/4.0.0",
       "files": [
         "runtimes/win10-x64/native/ClrCompression.dll",
         "runtimes/win7-x64/native/clrcompression.dll",
@@ -13768,7 +13769,7 @@
     "System.IO.Compression.clrcompression-x86/4.0.0": {
       "sha512": "GmevpuaMRzYDXHu+xuV10fxTO8DsP7OKweWxYtkaxwVnDSj9X6RBupSiXdiveq9yj/xjZ1NbG+oRRRb99kj+VQ==",
       "type": "package",
-      "path": "system.io.compression.clrcompression-x86/4.0.0",
+      "path": "System.IO.Compression.clrcompression-x86/4.0.0",
       "files": [
         "runtimes/win10-x86/native/ClrCompression.dll",
         "runtimes/win7-x86/native/clrcompression.dll",
@@ -14489,7 +14490,7 @@
     "System.Reflection.Emit/4.0.0": {
       "sha512": "CqnQz5LbNbiSxN10cv3Ehnw3j1UZOBCxnE0OO0q/keGQ5ENjyFM6rIG4gm/i0dX6EjdpYkAgKcI/mhZZCaBq4A==",
       "type": "package",
-      "path": "system.reflection.emit/4.0.0",
+      "path": "System.Reflection.Emit/4.0.0",
       "files": [
         "lib/DNXCore50/System.Reflection.Emit.dll",
         "lib/MonoAndroid10/_._",
@@ -14517,7 +14518,7 @@
     "System.Reflection.Emit.ILGeneration/4.0.0": {
       "sha512": "02okuusJ0GZiHZSD2IOLIN41GIn6qOr7i5+86C98BPuhlwWqVABwebiGNvhDiXP1f9a6CxEigC7foQD42klcDg==",
       "type": "package",
-      "path": "system.reflection.emit.ilgeneration/4.0.0",
+      "path": "System.Reflection.Emit.ILGeneration/4.0.0",
       "files": [
         "lib/DNXCore50/System.Reflection.Emit.ILGeneration.dll",
         "lib/net45/_._",
@@ -14543,7 +14544,7 @@
     "System.Reflection.Emit.Lightweight/4.0.0": {
       "sha512": "DJZhHiOdkN08xJgsJfDjkuOreLLmMcU8qkEEqEHqyhkPUZMMQs0lE8R+6+68BAFWgcdzxtNu0YmIOtEug8j00w==",
       "type": "package",
-      "path": "system.reflection.emit.lightweight/4.0.0",
+      "path": "System.Reflection.Emit.Lightweight/4.0.0",
       "files": [
         "lib/DNXCore50/System.Reflection.Emit.Lightweight.dll",
         "lib/net45/_._",
@@ -15772,15 +15773,12 @@
   "projectFileDependencyGroups": {
     "": [
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.1.0",
+      "Qiniu.Shared >= 7.2.15",
       "System.Runtime >= 4.0.20",
-      "newtonsoft.json >= 9.0.1",
-      "qiniu >= 7.2.14"
+      "newtonsoft.json >= 9.0.1"
     ],
     "UAP,Version=v10.0": []
   },
   "tools": {},
-  "projectFileToolGroups": {},
-  "packageFolders": {
-    "C:\\Users\\xxxx\\.nuget\\packages\\": {}
-  }
+  "projectFileToolGroups": {}
 }

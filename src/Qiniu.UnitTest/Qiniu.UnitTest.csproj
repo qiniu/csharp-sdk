@@ -71,9 +71,11 @@
     <Compile Include="ConfigZoneTest.cs" />
     <Compile Include="FormUploaderTest.cs" />
     <Compile Include="HttpManagerTest.cs" />
+    <Compile Include="JsonHelperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResumableUploaderTest.cs" />
     <Compile Include="QiniuTestEnvars.cs" />
+    <Compile Include="UnixTimestampTest.cs" />
     <Compile Include="UploadManagerTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -15,7 +15,7 @@ namespace Qiniu.CDN.Model
         {
             get
             {
-                if (string.IsNullOrEmpty(OriginURL))
+                if (!string.IsNullOrEmpty(OriginURL))
                 {
                     return OriginURL;
                 }
@@ -103,23 +103,16 @@ namespace Qiniu.CDN.Model
         /// <param name="seconds">单位:秒</param>
         public void SetLinkExpire(int seconds)
         {
-            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
-            DateTime dt1 = DateTime.Now.AddSeconds(seconds);
-            TimeSpan tsx = dt1.Subtract(dt0);
-            string sts = tsx.Ticks.ToString();
-            Timestamp = sts.Substring(0, sts.Length - 7);
+            Timestamp = UnixTimestamp.GetUnixTimestamp(seconds).ToString();
         }
 
         /// <summary>
         /// 设置失效时间戳
         /// </summary>
-        /// <param name="stopAt">失效时刻</param>
-        public void SetLinkExpire(DateTime stopAt)
+        /// <param name="dt">失效时刻</param>
+        public void SetLinkExpire(DateTime dt)
         {
-            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
-            TimeSpan tsx = stopAt.Subtract(dt0);
-            string sts = tsx.Ticks.ToString();
-            Timestamp = sts.Substring(0, sts.Length - 7);
+            Timestamp = UnixTimestamp.ConvertToTimestamp(dt).ToString();
         }
     }
 }

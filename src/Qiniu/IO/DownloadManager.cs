@@ -30,7 +30,7 @@ namespace Qiniu.IO
         /// <returns>已授权的下载链接</returns>
         public static string CreateSignedUrl(Mac mac, string url, int expireInSeconds = 3600)
         {
-            string deadline = StringHelper.CalcUnixTimestamp(expireInSeconds);
+            long deadline = UnixTimestamp.GetUnixTimestamp(expireInSeconds);
 
             StringBuilder sb = new StringBuilder(url);
             if (url.Contains("?"))

@@ -1,16 +1,16 @@
-<!DOCTYPE html><html><head><title>Qiniu (Cloud) C# SDK</title><meta charset='utf-8'><link href='https://dn-maxiang.qbox.me/res-min/themes/marxico.css' rel='stylesheet'><style>
+<!DOCTYPE html>
+<html><head><title>Qiniu (Cloud) C# SDK</title><meta charset='utf-8'><link href='https://dn-maxiang.qbox.me/res-min/themes/marxico.css' rel='stylesheet'><style>
 .note-content  {font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif;}
 
 </style></head><body><div id='preview-contents' class='note-content'>
                         
                     
 
-
-
-<h1 id="qiniu-cloud-c-sdk">Qiniu (Cloud) C# SDK</h1>
+<h1>Qiniu (Cloud) C# SDK</h1>
 
 <div><div class="toc"><div class="toc">
 <ul>
+<li><ul>
 <li><a href="#关于">关于</a></li>
 <li><a href="#sdk文档">SDK文档</a></li>
 <li><a href="#如何安装">如何安装</a></li>
@@ -19,7 +19,18 @@
 <li><a href="#相关资源">相关资源</a></li>
 <li><a href="#贡献代码">贡献代码</a></li>
 <li><a href="#许可证">许可证</a></li>
-<li><a href="#附录">附录(速览.NET Core、UWP)</a></li>
+<li><a href="#附录">附录</a><ul>
+<li><a href="#速览net-core">速览.NET Core</a><ul>
+<li><a href="#1-创建">1. 创建</a></li>
+<li><a href="#2-发布">2. 发布</a></li>
+<li><a href="#3-执行">3. 执行</a></li>
+</ul>
+</li>
+<li><a href="#速览win10-uwp">速览Win10 UWP</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -35,14 +46,14 @@
 
 <p>以下文档用于检索SDK接口、属性说明，它将有助于您理解SDK的结构。</p>
 
-<ul><li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.14/index.html" target="_blank">HTML在线浏览</a></p></li>
-<li><p><a href="http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.14.chm" target="_blank">CHM文件下载</a></p></li>
+<ul><li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-ref-v7.2.15/index.html" target="_blank">HTML在线浏览</a></p></li>
+<li><p><a href="http://oiy037d6a.bkt.clouddn.com/QiniuCSharpSDK-Ref-v7.2.15.chm" target="_blank">CHM文件下载</a></p></li>
 </ul>
 
 <p>以下链接提供了一些示例(包含<strong>UWP应用</strong>示例)，参考这些示例可以帮助您更快熟悉如何使用这套SDK。</p>
 
 <ul><li><p><a href="https://github.com/qiniu/csharp-sdk/tree/master/examples" target="_blank">qiniu/csharp-sdk/examples</a></p></li>
-<li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.14/index.html" target="_blank">C# SDK使用指南 | 代码示例</a></p></li>
+<li><p><a href="http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.15/index.html" target="_blank">C# SDK使用指南 | 代码示例</a></p></li>
 </ul>
 
 
@@ -63,11 +74,11 @@
 
 <p><strong>2. 包管理器(NuGet)安装</strong> </p>
 
-<p>或者从NuGet来安装，以Visual Studio 2013/2015为例，打开NuGet程序包管理器搜索<code>Qiniu</code>或者在控制台中键入以下命令：</p>
+<p>或者从NuGet来安装，以Visual Studio 2013/2015为例，打开NuGet程序包管理器搜索<code>Qiniu.Shared</code>或者在控制台中键入以下命令：</p>
 
 
 
-<pre class="prettyprint hljs-light"><code class="hljs sql"><span class="hljs-operator"><span class="hljs-keyword">Install</span>-<span class="hljs-keyword">Package</span> Qiniu</span><br></code></pre>
+<pre class="prettyprint hljs-light"><code class="hljs sql"><span class="hljs-operator"><span class="hljs-keyword">Install</span>-<span class="hljs-keyword">Package</span> Qiniu.<span class="hljs-keyword">Shared</span></span><br></code></pre>
 
 <p><strong>3. 从源码编译</strong></p>
 
@@ -262,5 +273,7 @@
 <p>Win10 UWP是指“Windows 10 通用应用”，它和之前的.NET应用开发有一些区别，比如文件存储使用的是StorageFolder和StorageFile等。具体请参阅Windows官方文档。</p>
 
 <p>同样的，UWP解决方案中也包含一个project.json文件，以下是一个简单的示例：</p>
+
+
 
 <pre class="prettyprint hljs-light"><code class="language-json hljs">{<br>  "<span class="hljs-attribute">dependencies</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">Microsoft.NETCore.UniversalWindowsPlatform</span>": <span class="hljs-value"><span class="hljs-string">"5.1.0"</span><br>  </span>}</span>,<br>  "<span class="hljs-attribute">frameworks</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">uap10.0</span>": <span class="hljs-value">{}<br>  </span>}</span>,<br>  "<span class="hljs-attribute">runtimes</span>": <span class="hljs-value">{<br>    "<span class="hljs-attribute">win10-arm</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-arm-aot</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x86</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x86-aot</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x64</span>": <span class="hljs-value">{}</span>,<br>    "<span class="hljs-attribute">win10-x64-aot</span>": <span class="hljs-value">{}<br>  </span>}<br></span>}<br></code></pre></div></body></html>

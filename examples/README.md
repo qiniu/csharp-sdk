@@ -14,7 +14,7 @@
 
 **注意**
 
-如需编译`Qiniu.NetCore`，请先将`project.json`和`project.lock.json`拷贝至`Qiniu`文件夹下，或者拷贝`project.json`文件然后执行`dotnet restore`命令（推荐）。
+如需编译`Qiniu.NetCore`，请先将`project.json`和`project.lock.json`(如果有)拷贝至`Qiniu`文件夹下，或者拷贝`project.json`文件然后执行`dotnet restore`命令（推荐）。
 
 如需编译其他非NetCore版本，请删除`Qiniu`文件夹下的`project.json`和`project.lock.json`（如果有）。
 

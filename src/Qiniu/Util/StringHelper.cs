@@ -80,45 +80,5 @@ namespace Qiniu.Util
             return encodedStr.Substring(0, encodedStr.Length - 1);
         }
 
-        /// <summary>
-        /// 从UNIX时间戳转换为DateTime
-        /// </summary>
-        /// <param name="timestamp">时间戳字符串</param>
-        /// <returns>日期</returns>
-        public static DateTime ConvertToDateTime(string timestamp)
-        {
-            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
-            long ticks = long.Parse(timestamp + "0000000");
-            TimeSpan tsx = new TimeSpan(ticks);
-            return dt0.Add(tsx);
-        }
-
-        /// <summary>
-        /// 指定时间点转换为UNIX时间戳
-        /// </summary>
-        /// <param name="stopAt">绝对时间点</param>
-        /// <returns>时间戳字符串</returns>
-        public static string ConvertToTimestamp(DateTime stopAt)
-        {
-            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
-            TimeSpan tsx = stopAt.Subtract(dt0);
-            string sts = tsx.Ticks.ToString();
-            return sts.Substring(0, sts.Length - 7);
-        }
-
-        /// <summary>
-        /// 从现在(调用此函数时刻)起若干秒以后那个时间点的时间戳
-        /// </summary>
-        /// <param name="secondsAfterNow">从现在起多少秒以后</param>
-        /// <returns>时间戳字符串</returns>
-        public static string CalcUnixTimestamp(long secondsAfterNow)
-        {
-            DateTime dt0 = (new DateTime(1970, 1, 1)).ToLocalTime();
-            DateTime dt1 = DateTime.Now.AddSeconds(secondsAfterNow);
-            TimeSpan tsx = dt1.Subtract(dt0);
-            string sts = tsx.Ticks.ToString();
-            return sts.Substring(0, sts.Length - 7);
-        }
-
     }
 }
