@@ -88,5 +88,21 @@ namespace Qiniu.UnitTest
             Assert.IsNotNull(result);
         }
 
+        [Test]
+        public void CreateAnitleechUrlTest2()
+        {
+            Mac mac = new Mac(AccessKey, SecretKey);
+            CdnManager target = new CdnManager(mac);
+
+            string qiniuKey = "12345678";
+            int expireInSeconds = 600;
+
+            string host, path, file, query;
+            UrlHelper.UrlSplit(TestURL2, out host, out path, out file, out query);
+
+            string result = target.CreateTimestampAntiLeechUrl(host,path,file,query,qiniuKey,expireInSeconds);
+            Assert.IsNotNull(result);
+        }
+
     }
 }

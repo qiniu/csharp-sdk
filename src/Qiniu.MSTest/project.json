@@ -2,7 +2,7 @@
   "dependencies": {
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
     "newtonsoft.json": "9.0.1",
-    "qiniu.shared": "7.2.13"
+    "qiniu.shared": "7.2.15"
   },
   "frameworks": {
     "uap10.0": {}
