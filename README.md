@@ -1,14 +1,14 @@
-#Qiniu (Cloud) C# SDK
+# Qiniu (Cloud) C# SDK
 
 [![Documentation](https://img.shields.io/badge/Qiniu%20C%23%20SDK-Documentation-brightgreen.svg)](https://developer.qiniu.com/kodo/sdk/csharp) [![Supported](https://img.shields.io/badge/Supported-.NET2.0%2B%2F.NETCore%2FUWP-brightgreen.svg)](#)
 
 [![GitHub release](https://img.shields.io/github/release/qiniu/csharp-sdk.svg?label=github)](https://github.com/qiniu/csharp-sdk/releases) [![Github Downloads](https://img.shields.io/github/downloads/qiniu/csharp-sdk/total.svg?colorB=aaaaff)](https://github.com/qiniu/csharp-sdk/releases) [![NuGet release](https://img.shields.io/nuget/v/Qiniu.Shared.svg?colorB=aa77ff)](https://www.nuget.org/packages/Qiniu.Shared) [![Travis](https://img.shields.io/travis/qiniu/csharp-sdk.svg)](https://travis-ci.org/qiniu/csharp-sdk) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/qiniu/csharp-sdk/master/LICENSE)
 
-##关于
+## 关于
 
 此 C# SDK 适用于.NET Framework 2.0+ , .NET Core 以及UWP(Windows 10 通用应用)，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
-##SDK文档
+## SDK文档
 
 以下文档用于检索SDK接口、属性说明，它将有助于您理解SDK的结构。
 
@@ -22,7 +22,7 @@
 
 * [C# SDK使用指南 | 代码示例](http://oiy037d6a.bkt.clouddn.com/csharp-sdk-man-v7.2.15/index.html)
 
-##如何安装
+## 如何安装
 
 当前最新版本及最新改动同步在master分支。
 
@@ -52,7 +52,7 @@ Install-Package Qiniu.Shared
 git clone https://github.com/qiniu/csharp-sdk
 ```
 
-##如何编译
+## 如何编译
 
 推荐使用VS2013及以上版，根据目标平台选择对应的解决方案文件并打开：
 
@@ -76,7 +76,7 @@ git clone https://github.com/qiniu/csharp-sdk
 
 编译其他版本时，如果`Qiniu`文件夹下有`project.json`或`project.lock.json`，请先删除。
 
-##API参考手册
+## API参考手册
 
 * [对象存储API参考手册](http://developer.qiniu.com/article/index.html#kodo-api-handbook)
 
@@ -84,7 +84,7 @@ git clone https://github.com/qiniu/csharp-sdk
 
 * [融合CDN加速API参考手册](http://developer.qiniu.com/article/index.html#fusion-api-handbook)
 
-##相关资源
+## 相关资源
 
 如果您有任何关于我们文档或产品的建议和想法，欢迎到我们的技术论坛参与讨论。
 
@@ -98,7 +98,7 @@ git clone https://github.com/qiniu/csharp-sdk
 
 * [常见问题](http://developer.qiniu.com/article/faqs/)
 
-##贡献代码
+## 贡献代码
 
 1. Fork
 
@@ -111,7 +111,7 @@ git clone https://github.com/qiniu/csharp-sdk
 5. 然后到 github 网站的该 git 远程仓库的 my-new-feature 分支下发起 Pull Request
 
 
-##许可证
+## 许可证
 
 Copyright (c) 2017 [qiniu.com](www.qiniu.com)
 
@@ -119,9 +119,9 @@ Copyright (c) 2017 [qiniu.com](www.qiniu.com)
 
 www.opensource.org/licenses/MIT
 
-##附录
+## 附录
 
-###速览.NET Core
+### 速览.NET Core
 
 下面是一个入门向导，如果您对如何创建及使用.NET Core程序还不太熟悉，可以参考；如果您已经比较熟悉，可以直接略过(或者也可以帮助我们改进^_^)。
 
@@ -129,7 +129,7 @@ www.opensource.org/licenses/MIT
 
 以下步骤基本上都是在命令行终端下执行(如Windows的命令行控制台，Ubuntu/Mac的终端)。
 
-####1. 创建
+#### 1. 创建
 
 首先切换到您的项目工作目录，然后键入以下命令来创建一个新的项目:
 
