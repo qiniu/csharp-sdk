@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net46;net45;net40;net35;net20;netstandard1.4</TargetFrameworks>
+        <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net46;net45;net40;net35;net20;netstandard1.6</TargetFrameworks>
         <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
         <AssemblyVersion>7.2.15</AssemblyVersion>
 		<FileVersion>7.2.15</FileVersion>
@@ -57,7 +57,7 @@
 		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)</Product>
         <DefineConstants>Net20</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.4'">
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
         <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)</AssemblyTitle>
 		<Description>Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)</Description>
         <Product>Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)</Product>
