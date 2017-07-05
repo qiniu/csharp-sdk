@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net46;net45;net40;net35;net20;netstandard1.6</TargetFrameworks>
+        <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
+        <AssemblyVersion>7.2.15</AssemblyVersion>
+		<FileVersion>7.2.15</FileVersion>
+		<VersionPrefix>7.2.15</VersionPrefix>
+		<Company>QINIU</Company>
+		<Copyright>Copyright ©  2017</Copyright>
+		<RootNamespace>Qiniu</RootNamespace>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+		<MinClientVersion>2.12</MinClientVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="CDN\Model\HotLinkRequest.cs" />
+      <Compile Remove="Common\Mac.cs" />
+      <Compile Remove="Common\Signature.cs" />
+      <Compile Remove="Http\HttpHelper.cs" />
+      <Compile Remove="Http\UrlHelper.cs" />
+      <Compile Remove="Properties\AssemblyInfo.cs" />
+      <Compile Remove="Util\QETag.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net46' OR '$(TargetFramework)' == 'net45'">
+      <Reference Include="System.Net.Http" />
+    </ItemGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
+        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.6)</AssemblyTitle>
+        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.6)</Description>
+		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.6)</Product>
+        <DefineConstants>Net46</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
+        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.5)</AssemblyTitle>
+        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.5)</Description>
+		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.5)</Product>
+        <DefineConstants>Net45</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
+        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)</AssemblyTitle>
+        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)</Description>
+		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)</Product>
+        <DefineConstants>Net40</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
+        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 3.5)</AssemblyTitle>
+        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 3.5)</Description>
+		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 3.5)</Product>
+        <DefineConstants>Net35</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net20'">
+        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)</AssemblyTitle>
+        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)</Description>
+		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)</Product>
+        <DefineConstants>Net20</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
+        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)</AssemblyTitle>
+		<Description>Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)</Description>
+        <Product>Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)</Product>
+        <DefineConstants>NetCore</DefineConstants>
+    </PropertyGroup>
+</Project>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.Net20", "Qiniu\Qiniu.Net20.csproj", "{E5A764FD-FC95-4B51-BB10-9A807ED25652}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.NetCore", "Qiniu\Qiniu.NetCore.xproj", "{957CD434-8B12-46CE-980B-09CA26ED340D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiniu.UWP", "Qiniu\Qiniu.UWP.csproj", "{8ECFA9AE-C543-4241-9C89-9BDF235C37E2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qiniu", "Qiniu\Qiniu.csproj", "{60241003-DE4E-4B42-8DE0-5EA73BCB99FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{8ECFA9AE-C543-4241-9C89-9BDF235C37E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ECFA9AE-C543-4241-9C89-9BDF235C37E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ECFA9AE-C543-4241-9C89-9BDF235C37E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60241003-DE4E-4B42-8DE0-5EA73BCB99FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60241003-DE4E-4B42-8DE0-5EA73BCB99FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60241003-DE4E-4B42-8DE0-5EA73BCB99FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60241003-DE4E-4B42-8DE0-5EA73BCB99FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
