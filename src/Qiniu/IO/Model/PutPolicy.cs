@@ -15,6 +15,12 @@ namespace Qiniu.IO.Model
         public string Scope { get; set; }
 
         /// <summary>
+        /// [可选]若为 1，表示允许用户上传以 scope 的 keyPrefix 为前缀的文件。
+        /// </summary>
+        [JsonProperty("isPrefixalScope")]
+        public int? isPrefixalScope { get; set; }
+
+        /// <summary>
         /// [必需]上传策略失效时刻，请使用SetExpire来设置它
         /// </summary>
         [JsonProperty("deadline")]
@@ -127,6 +133,12 @@ namespace Qiniu.IO.Model
         /// </summary>
         [JsonProperty("deleteAfterDays")]
         public int? DeleteAfterDays { get; set; }
+
+        /// <summary>
+        /// [可选]文件的存储类型，默认为普通存储，设置为1为低频存储
+        /// </summary>
+        [JsonProperty("fileType")]
+        public int? FileType { get; set; }
 
         /// <summary>
         /// 设置上传凭证有效期（配置Deadline属性）
