@@ -80,7 +80,7 @@ namespace Qiniu.RS
 
             try
             {
-                string bucketsUrl = Config.ZONE.RsHost + "/buckets";
+                string bucketsUrl = "http://rs.qiniu.com/buckets";
                 string token = auth.CreateManageToken(bucketsUrl);
 
                 HttpResult hr = httpManager.Get(bucketsUrl, token);
