@@ -80,7 +80,12 @@ namespace Qiniu.Storage
             {
                 string scheme = this.config.UseHttps ? "https://" : "http://";
                 string rsHost = string.Format("{0}{1}", scheme, Config.DefaultRsHost);
-                string bucketsUrl = string.Format("{0}/buckets?shared={1}", rsHost, shared);
+                string sharedStr = "false";
+                if (shared)
+                {
+                    sharedStr = "true";
+                }
+                string bucketsUrl = string.Format("{0}/buckets?shared={1}", rsHost, sharedStr);
                 string token = auth.CreateManageToken(bucketsUrl);
 
                 HttpResult hr = httpManager.Get(bucketsUrl, token);
@@ -329,7 +334,7 @@ namespace Qiniu.Storage
                 string chgmUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket), 
                     ChgmOp(bucket, key, mimeType));
                 string token = auth.CreateManageToken(chgmUrl);
-
+                Console.WriteLine(chgmUrl+", "+token);
                 result = httpManager.Post(chgmUrl, token);
             }
             catch (Exception ex)

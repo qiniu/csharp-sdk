@@ -21,13 +21,17 @@ namespace Qiniu.Storage
         /// <param name="bucket">空间名称</param>
         public static Zone QueryZone(string accessKey, string bucket)
         {
-            Zone zone = new Zone();
+            Zone zone = null;
 
             string cacheKey = string.Format("{0}:{1}", accessKey, bucket);
 
+            //check from cache
             lock (rwLock)
             {
-                zone = zoneCache[cacheKey];
+                if (zoneCache.ContainsKey(cacheKey))
+                {
+                    zone = zoneCache[cacheKey];
+                }
             }
 
             if (zone != null)
@@ -35,6 +39,7 @@ namespace Qiniu.Storage
                 return zone;
             }
 
+            //query from uc api
             try
             {
                 string queryUrl = string.Format("https://uc.qbox.me/v2/query?ak={0}&bucket={1}", accessKey, bucket);
@@ -45,6 +50,7 @@ namespace Qiniu.Storage
                     ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
                     if (zInfo != null)
                     {
+                        zone = new Zone();
                         zone.SrcUpHosts = zInfo.Up.Src.Main;
                         zone.CdnUpHosts = zInfo.Up.Acc.Main;
                         zone.IovipHost = zInfo.Io.Src.Main[0];
