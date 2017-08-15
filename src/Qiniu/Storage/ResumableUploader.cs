@@ -35,8 +35,14 @@ namespace Qiniu.Storage
         /// <param name="config">分片上传的配置信息</param>
         public ResumableUploader(Config config)
         {
-            httpManager = new HttpManager();
-            this.config = config;
+            if (config == null)
+            {
+                this.config = new Config();
+            }else
+            {
+                this.config = config;
+            }
+            this.httpManager = new HttpManager();
             this.CHUNK_SIZE = ResumeChunk.GetChunkSize(this.config.ChunkSize);
         }
 
@@ -83,11 +89,14 @@ namespace Qiniu.Storage
             {
                 putExtra = new PutExtra();
             }
-            if (putExtra.ProgressHandler != null)
+            if (putExtra.ProgressHandler == null)
             {
                 putExtra.ProgressHandler = DefaultUploadProgressHandler;
             }
-
+            if (putExtra.UploadController == null)
+            {
+                putExtra.UploadController = DefaultUploadController;
+            }
             if (putExtra.MaxRetryTimes == 0)
             {
                 putExtra.MaxRetryTimes = DEFAULT_MAX_RETRY_TIMES;
@@ -120,18 +129,19 @@ namespace Qiniu.Storage
                     {
                         index = resumeInfo.BlockIndex;
                     }
-                    else
-                    {
-                        resumeInfo = new ResumeInfo()
-                        {
-                            FileSize = fileSize,
-                            BlockIndex = 0,
-                            BlockCount = blockCount,
-                            Contexts = new string[blockCount],
-                            ExpiredAt = 0,
-                        };
-                    }
                 }
+                if (resumeInfo == null)
+                {
+                    resumeInfo = new ResumeInfo()
+                    {
+                        FileSize = fileSize,
+                        BlockIndex = 0,
+                        BlockCount = blockCount,
+                        Contexts = new string[blockCount],
+                        ExpiredAt = 0,
+                    };
+                }
+
                 long offset = index * blockSize;
                 string context = null;
                 long expiredAt = 0;
@@ -230,7 +240,7 @@ namespace Qiniu.Storage
                             return result;
                         }
 
-                        if ((rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text)) != null)
+                        if ((rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text)) == null)
                         {
                             result.Shadow(hr);
                             result.RefCode = (int)HttpCode.USER_EXCEPTION;
@@ -287,7 +297,7 @@ namespace Qiniu.Storage
                                     return result;
                                 }
 
-                                if ((rc=JsonConvert.DeserializeObject<ResumeContext>(hr.Text))!=null)
+                                if ((rc=JsonConvert.DeserializeObject<ResumeContext>(hr.Text))==null)
                                 {
                                     result.Shadow(hr);
                                     result.RefCode = (int)HttpCode.USER_EXCEPTION;
@@ -318,7 +328,10 @@ namespace Qiniu.Storage
                         resumeInfo.BlockIndex = index;
                         resumeInfo.Contexts[index] = context;
                         resumeInfo.ExpiredAt = expiredAt;
-                        ResumeHelper.Save(resumeInfo, putExtra.ResumeRecordFile);
+                        if (!string.IsNullOrEmpty(putExtra.ResumeRecordFile))
+                        {
+                            ResumeHelper.Save(resumeInfo, putExtra.ResumeRecordFile);
+                        }
                         ++index;
                     }
                 }
@@ -343,6 +356,7 @@ namespace Qiniu.Storage
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.StackTrace);
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [ResumableUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
@@ -492,11 +506,11 @@ namespace Qiniu.Storage
 
                     if (result.Code == (int)HttpCode.OK)
                     {
-                        Dictionary<string, string> rd = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+                        ResumeContext rc = JsonConvert.DeserializeObject<ResumeContext>(result.Text);
 
-                        if (rd.ContainsKey("crc32"))
+                        if (rc.Crc32 > 0)
                         {
-                            uint crc_1 = Convert.ToUInt32(rd["crc32"]);
+                            uint crc_1 = rc.Crc32;
                             uint crc_2 = CRC32.CheckSumSlice(chunkBuffer, 0, (int)chunkSize);
                             if (crc_1 != crc_2)
                             {
@@ -506,7 +520,7 @@ namespace Qiniu.Storage
                         }
                         else
                         {
-                            result.RefText += string.Format("[{0}] JSON Decode Error: text = {1}", 
+                            result.RefText += string.Format("[{0}] JSON Decode Error: text = {1}",
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Text);
                             result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                         }
