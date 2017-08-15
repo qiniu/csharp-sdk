@@ -459,7 +459,8 @@ namespace Qiniu.Storage
 
             try
             {
-                string fetchUrl = this.config.IovipHost(this.mac.AccessKey,bucket) + FetchOp(resUrl, bucket, key);
+                string fetchUrl = string.Format("{0}{1}", this.config.IovipHost(this.mac.AccessKey, bucket),
+                    FetchOp(resUrl, bucket, key));
                 string token = auth.CreateManageToken(fetchUrl);
 
                 result = httpManager.Post(fetchUrl, token);
@@ -531,8 +532,8 @@ namespace Qiniu.Storage
             try
             {
                 string scheme = this.config.UseHttps ? "https://" : "http://";
-                string rsHost = string.Format("{0}{1}", scheme, Config.DefaultRsHost);
-                string domainsUrl =string.Format(rsHost,"/v6/domain/list");
+                string rsHost = string.Format("{0}{1}", scheme, Config.DefaultApiHost);
+                string domainsUrl =string.Format("{0}{1}",rsHost,"/v6/domain/list");
                 string body = string.Format("tbl={0}", bucket);
                 byte[] data = Encoding.UTF8.GetBytes(body);
                 string token = auth.CreateManageToken(domainsUrl, data);
