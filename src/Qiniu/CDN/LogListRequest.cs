@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Collections.Generic;
 
-namespace Qiniu.Cdn
+namespace Qiniu.CDN
 {
     /// <summary>
     /// 查询日志-请求

@@ -1,16 +1,26 @@
 ﻿using NUnit.Framework;
-using Qiniu.Util;
-using Qiniu.Http;
-using Qiniu.IO;
-using Qiniu.IO.Model;
+using Qiniu.Storage;
 using System.IO;
 using System.Text;
+using Qiniu.Util;
+using Qiniu.Http;
+
 
 namespace Qiniu.UnitTest
 {
-    [TestFixture]
-    public class UploadManagerTest:QiniuTestEnvars
+    public class UploadManagerTest : QiniuTestEnvars
     {
+        private Mac mac;
+        private Config config;
+
+        [SetUp]
+        public void Init()
+        {
+            this.mac = new Mac(AccessKey, SecretKey);
+            this.config = new Config();
+        }
+
+
         [Test]
         public void UploadFileTest()
         {
@@ -24,8 +34,8 @@ namespace Qiniu.UnitTest
             putPolicy.DeleteAfterDays = 1;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
 
-            UploadManager target = new UploadManager();
-            HttpResult result = target.UploadFile(filePath, key, token);
+            UploadManager target = new UploadManager(this.config);
+            HttpResult result = target.UploadFile(filePath, key, token, null);
 
             Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
@@ -43,8 +53,8 @@ namespace Qiniu.UnitTest
             putPolicy.DeleteAfterDays = 1;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
 
-            UploadManager target = new UploadManager();
-            HttpResult result = target.UploadData(data, key, token);
+            UploadManager target = new UploadManager(this.config);
+            HttpResult result = target.UploadData(data, key, token, null);
             Assert.AreEqual((int)HttpCode.OK, result.Code);
 
         }
@@ -64,8 +74,8 @@ namespace Qiniu.UnitTest
             putPolicy.DeleteAfterDays = 1;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
 
-            UploadManager target = new UploadManager();
-            HttpResult result = target.UploadStream(fs, key, token);
+            UploadManager target = new UploadManager(this.config);
+            HttpResult result = target.UploadStream(fs, key, token, null);
             Assert.AreEqual((int)HttpCode.OK, result.Code);
 
         }

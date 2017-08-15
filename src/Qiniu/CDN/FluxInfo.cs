@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Qiniu.Cdn
+namespace Qiniu.CDN
 {
     /// <summary>
     /// 流量-消息内容结构

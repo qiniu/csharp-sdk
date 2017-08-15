@@ -3,7 +3,7 @@ using System.Text;
 using Qiniu.Util;
 using Qiniu.Http;
 
-namespace Qiniu.Cdn
+namespace Qiniu.CDN
 {
     
     /// <summary>

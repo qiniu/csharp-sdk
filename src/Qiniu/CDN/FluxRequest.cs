@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Qiniu.Cdn
+namespace Qiniu.CDN
 {
     /// <summary>
     /// 查询流量-请求

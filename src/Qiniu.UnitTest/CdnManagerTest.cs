@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using Qiniu.CDN;
-using Qiniu.CDN.Model;
 using Qiniu.Util;
 using Qiniu.Http;
 

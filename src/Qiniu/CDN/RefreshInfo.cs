@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Qiniu.Cdn
+namespace Qiniu.CDN
 {
     /// <summary>
     /// 缓存刷新-消息内容结构

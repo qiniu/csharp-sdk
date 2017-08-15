@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Qiniu.Cdn
+namespace Qiniu.CDN
 {
     /// <summary>
     /// 日志-消息内容结构

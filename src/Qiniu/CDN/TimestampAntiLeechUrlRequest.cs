@@ -1,7 +1,7 @@
 ﻿using System;
 using Qiniu.Util;
 
-namespace Qiniu.Cdn
+namespace Qiniu.CDN
 {
     /// <summary>
     /// 时间戳防盗链 - 请求

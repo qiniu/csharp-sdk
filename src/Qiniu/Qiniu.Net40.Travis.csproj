@@ -40,8 +40,8 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\bin\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -52,79 +52,78 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDN\TimestampAntiLeechUrlRequest.cs" />
     <Compile Include="QiniuCSharpSDK.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="JSON\IJsonDeserializer.cs" />
-    <Compile Include="JSON\IJsonSerializer.cs" />
-    <Compile Include="JSON\JsonHelper.cs" />
-    <Compile Include="JSON\JsonPropertyAttribute.cs" />
-    <Compile Include="JSON\NewtonsoftJsonDeserializer.cs" />
-    <Compile Include="JSON\NewtonsoftJsonSerializer.cs" />
-    <Compile Include="Common\Config.cs" />
-    <Compile Include="Common\Zone.cs" />
-    <Compile Include="Common\ZoneHelper.cs" />
-    <Compile Include="Common\ZoneInfo.cs" />
-    <Compile Include="CDN\Model\RefreshRequest.cs" />
-    <Compile Include="CDN\Model\RefreshInfo.cs" />
-    <Compile Include="CDN\Model\RefreshResult.cs" />
-    <Compile Include="CDN\Model\PrefetchRequest.cs" />
-    <Compile Include="CDN\Model\PrefetchInfo.cs" />
-    <Compile Include="CDN\Model\PrefetchResult.cs" />
-    <Compile Include="CDN\Model\BandwidthRequest.cs" />
-    <Compile Include="CDN\Model\BandwidthInfo.cs" />
-    <Compile Include="CDN\Model\BandwidthResult.cs" />
-    <Compile Include="CDN\Model\FluxRequest.cs" />
-    <Compile Include="CDN\Model\FluxInfo.cs" />
-    <Compile Include="CDN\Model\FluxResult.cs" />
-    <Compile Include="CDN\Model\LogListRequest.cs" />
-    <Compile Include="CDN\Model\LogListInfo.cs" />
-    <Compile Include="CDN\Model\LogListResult.cs" />
-    <Compile Include="CDN\Model\TimestampAntiLeechUrlRequest.cs" />
+    <Compile Include="Storage\Config.cs" />
+    <Compile Include="Storage\PutExtra.cs" />
+    <Compile Include="Storage\Zone.cs" />
+    <Compile Include="Storage\ZoneHelper.cs" />
+    <Compile Include="Storage\ZoneInfo.cs" />
+    <Compile Include="CDN\RefreshRequest.cs" />
+    <Compile Include="CDN\RefreshInfo.cs" />
+    <Compile Include="CDN\RefreshResult.cs" />
+    <Compile Include="CDN\PrefetchRequest.cs" />
+    <Compile Include="CDN\PrefetchInfo.cs" />
+    <Compile Include="CDN\PrefetchResult.cs" />
+    <Compile Include="CDN\BandwidthRequest.cs" />
+    <Compile Include="CDN\BandwidthInfo.cs" />
+    <Compile Include="CDN\BandwidthResult.cs" />
+    <Compile Include="CDN\FluxRequest.cs" />
+    <Compile Include="CDN\FluxInfo.cs" />
+    <Compile Include="CDN\FluxResult.cs" />
+    <Compile Include="CDN\LogListRequest.cs" />
+    <Compile Include="CDN\LogListInfo.cs" />
+    <Compile Include="CDN\LogListResult.cs" />
     <Compile Include="CDN\CdnManager.cs" />
     <Compile Include="Util\Auth.cs" />
+    <Compile Include="Util\LabMD5.cs" />
     <Compile Include="Util\Mac.cs" />
     <Compile Include="Util\Signature.cs" />
+    <Compile Include="Util\UnixTimestamp.cs" />
+    <Compile Include="Util\UpToken.cs" />
     <Compile Include="Util\UrlHelper.cs" />
     <Compile Include="Util\Base64.cs" />
     <Compile Include="Util\CRC32.cs" />
     <Compile Include="Util\ETag.cs" />
     <Compile Include="Util\Hashing.cs" />
-	<Compile Include="Util\LabMD5.cs" />
-	<Compile Include="Util\UnixTimestamp.cs" />
     <Compile Include="Util\StringHelper.cs" />
     <Compile Include="Util\UserEnv.cs" />
     <Compile Include="Http\HttpCode.cs" />
     <Compile Include="Http\ContentType.cs" />
     <Compile Include="Http\HttpResult.cs" />
     <Compile Include="Http\HttpManager.cs" />
-    <Compile Include="IO\Model\ChunkUnit.cs" />
-    <Compile Include="IO\Model\PutPolicy.cs" />
-    <Compile Include="IO\Model\ResumeContext.cs" />
-    <Compile Include="IO\Model\ResumeHelper.cs" />
-    <Compile Include="IO\Model\ResumeInfo.cs" />
-    <Compile Include="IO\Model\UploadController.cs" />
-    <Compile Include="IO\Model\UploadProgressHandler.cs" />
-    <Compile Include="IO\ResumableUploader.cs" />
-    <Compile Include="IO\FormUploader.cs" />
-    <Compile Include="IO\UploadManager.cs" />
-    <Compile Include="IO\DownloadManager.cs" />
-    <Compile Include="RS\Model\BatchResult.cs" />
-    <Compile Include="RS\BucketManager.cs" />
-    <Compile Include="RS\Model\BatchInfo.cs" />
-    <Compile Include="RS\Model\BucketsResult.cs" />
-    <Compile Include="RS\Model\DomainsResult.cs" />
-    <Compile Include="RS\Model\FileDesc.cs" />
-    <Compile Include="RS\Model\ListInfo.cs" />
-    <Compile Include="RS\Model\ListResult.cs" />
-    <Compile Include="RS\Model\StatInfo.cs" />
-    <Compile Include="RS\Model\StatResult.cs" />
-    <Compile Include="RS\Model\BucketInfo.cs" />
-    <Compile Include="RS\Model\BucketResult.cs" />
-    <Compile Include="RSF\Model\PfopResult.cs" />
-    <Compile Include="RSF\OperationManager.cs" />
+    <Compile Include="Storage\ChunkUnit.cs" />
+    <Compile Include="Storage\PutPolicy.cs" />
+    <Compile Include="Storage\ResumeContext.cs" />
+    <Compile Include="Storage\ResumeHelper.cs" />
+    <Compile Include="Storage\ResumeInfo.cs" />
+    <Compile Include="Storage\UploadController.cs" />
+    <Compile Include="Storage\UploadProgressHandler.cs" />
+    <Compile Include="Storage\ResumableUploader.cs" />
+    <Compile Include="Storage\FormUploader.cs" />
+    <Compile Include="Storage\UploadManager.cs" />
+    <Compile Include="Storage\DownloadManager.cs" />
+    <Compile Include="Storage\BatchResult.cs" />
+    <Compile Include="Storage\BucketManager.cs" />
+    <Compile Include="Storage\BatchInfo.cs" />
+    <Compile Include="Storage\BucketsResult.cs" />
+    <Compile Include="Storage\DomainsResult.cs" />
+    <Compile Include="Storage\ListItem.cs" />
+    <Compile Include="Storage\ListInfo.cs" />
+    <Compile Include="Storage\ListResult.cs" />
+    <Compile Include="Storage\FileInfo.cs" />
+    <Compile Include="Storage\StatResult.cs" />
+    <Compile Include="Storage\BucketInfo.cs" />
+    <Compile Include="Storage\BucketResult.cs" />
+    <Compile Include="Storage\PfopResult.cs" />
+    <Compile Include="Storage\OperationManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Packages.Net40.config" />
+    <None Include="..\Packages.Net40.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

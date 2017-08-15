@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Qiniu.Http;
 
-namespace Qiniu.Cdn
+namespace Qiniu.CDN
 {
     /// <summary>
     /// 查询日志-结果

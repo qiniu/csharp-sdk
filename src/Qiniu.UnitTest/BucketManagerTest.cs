@@ -1,19 +1,27 @@
 ﻿using NUnit.Framework;
+using Qiniu.Storage;
 using Qiniu.Util;
 using Qiniu.Http;
-using Qiniu.RS;
-using Qiniu.RS.Model;
 
 namespace Qiniu.UnitTest
 {
     [TestFixture]
     public class BucketManagerTest:QiniuTestEnvars
     {
+        private Mac mac;
+        private Config config;
+
+        [SetUp]
+        public void Init()
+        {
+            this.mac = new Mac(AccessKey, SecretKey);
+            this.config = new Config();
+        }
+
         [Test]
         public void StatTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
             StatResult result = target.Stat(Bucket1, FileKey1);
 
             bool cond = (result.Code == (int)HttpCode.OK || 
@@ -26,8 +34,7 @@ namespace Qiniu.UnitTest
         [Test]
         public void CopyTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
 
             HttpResult result = target.Copy(Bucket1, FileKey1, Bucket2, FileKey2, true);
 
@@ -41,8 +48,7 @@ namespace Qiniu.UnitTest
         [Test]
         public void MoveTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
 
             HttpResult result = target.Move(Bucket1, FileKey1, Bucket2, FileKey2, true);
 
@@ -56,8 +62,7 @@ namespace Qiniu.UnitTest
         [Test]
         public void DeleteTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
 
             HttpResult result = target.Delete(Bucket1, FileKey1);
 
@@ -71,8 +76,7 @@ namespace Qiniu.UnitTest
         [Test]
         public void ChgmTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac, config);
 
             HttpResult result = target.Chgm(Bucket1, FileKey1, "MimeType");
 
@@ -84,23 +88,11 @@ namespace Qiniu.UnitTest
         }
 
         [Test]
-        public void BucketTest()
-        {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
-
-            BucketResult result = target.Bucket(Bucket1);
-
-            Assert.AreEqual((int)HttpCode.OK, result.Code);
-        }
-
-        [Test]
         public void BucketsTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
 
-            BucketsResult result = target.Buckets();
+            BucketsResult result = target.Buckets(true);
 
             Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
@@ -108,8 +100,7 @@ namespace Qiniu.UnitTest
         [Test]
         public void BatchTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
 
             string s1 = target.StatOp(Bucket1, FileKey1);
             string s2 = target.ChgmOp(Bucket2, FileKey2, "MimeType");
@@ -126,21 +117,18 @@ namespace Qiniu.UnitTest
         [Test]
         public void ListFilesTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
 
             HttpResult result = target.ListFiles(Bucket1, null, null, 100, null);
 
             Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
 
-#if LOCAL_TEST
 
         [Test]
         public void FetchTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
 
             HttpResult result = target.Fetch(TestURL1, Bucket1, FileKey1);
 
@@ -150,14 +138,11 @@ namespace Qiniu.UnitTest
 
             Assert.IsTrue(cond);
         }
-#endif
 
         [Test]
         public void PrefetchTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
-
+            BucketManager target = new BucketManager(mac,config);
             HttpResult result = target.Prefetch(Bucket1, FileKey1);
 
             bool cond = (result.Code == (int)HttpCode.OK ||
@@ -170,8 +155,7 @@ namespace Qiniu.UnitTest
         [Test]
         public void UpdateLifecycleTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
 
             HttpResult result = target.UpdateLifecycle(Bucket1, FileKey1, 1);
 
@@ -185,8 +169,7 @@ namespace Qiniu.UnitTest
         [Test]
         public void DomainsTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager target = new BucketManager(mac);
+            BucketManager target = new BucketManager(mac,config);
 
             DomainsResult result = target.Domains(Bucket1);
 
