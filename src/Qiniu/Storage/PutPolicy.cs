@@ -59,7 +59,7 @@ namespace Qiniu.Storage
         /// <summary>
         /// [可选]回调URL
         /// </summary>
-        [JsonProperty("callBackUrl", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("callbackUrl", NullValueHandling = NullValueHandling.Ignore)]
         public string CallbackUrl { get; set; }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace Qiniu.Storage
         /// <param name="expireInSeconds"></param>
         public void SetExpires(int expireInSeconds)
         {
-            Deadline = (int)Util.UnixTimestamp.GetUnixTimestamp(expireInSeconds);
+            this.Deadline = (int)Util.UnixTimestamp.GetUnixTimestamp(expireInSeconds);
         }
 
         /// <summary>
@@ -155,6 +155,11 @@ namespace Qiniu.Storage
         /// <returns>JSON字符串</returns>
         public string ToJsonString()
         {
+            if (this.Deadline == 0)
+            {
+                //默认一个小时有效期
+                this.SetExpires(3600);
+            }
             return JsonConvert.SerializeObject(this);
         }
 
