@@ -45,9 +45,9 @@ namespace Qiniu.Storage
                 FileStream fs = new FileStream(localFile, FileMode.Open);
                 return this.UploadStream(fs, key, token, extra);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-               HttpResult ret= HttpResult.InvalidFile;
+                HttpResult ret = HttpResult.InvalidFile;
                 ret.RefText = ex.Message;
                 return ret;
             }
@@ -76,12 +76,21 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传数据流后的返回结果</returns>
-        public HttpResult UploadStream(Stream stream, string key, string token,PutExtra extra)
+        public HttpResult UploadStream(Stream stream, string key, string token, PutExtra extra)
         {
             if (extra == null)
             {
                 extra = new PutExtra();
             }
+            if (string.IsNullOrEmpty(extra.MimeType )) {
+                extra.MimeType = "application/octet-stream";
+            }
+            string fname = key;
+            if (string.IsNullOrEmpty(key))
+            {
+                fname = "fname_temp";
+            }
+
             HttpResult result = new HttpResult();
 
             try
@@ -90,17 +99,24 @@ namespace Qiniu.Storage
                 StringBuilder bodyBuilder = new StringBuilder();
                 bodyBuilder.AppendLine("--" + boundary);
 
-                bodyBuilder.AppendLine("Content-Disposition: form-data; name=key");
-                bodyBuilder.AppendLine();
-                bodyBuilder.AppendLine(key);
-                bodyBuilder.AppendLine("--" + boundary);
+                if (key != null)
+                {
+                    //write key when it is not null
+                    bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"key\"");
+                    bodyBuilder.AppendLine();
+                    bodyBuilder.AppendLine(key);
+                    bodyBuilder.AppendLine("--" + boundary);
+                }
 
-                bodyBuilder.AppendLine("Content-Disposition: form-data; name=token");
+                //write token
+                bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"token\"");
                 bodyBuilder.AppendLine();
                 bodyBuilder.AppendLine(token);
                 bodyBuilder.AppendLine("--" + boundary);
 
-                if (extra.Params != null) {
+                //write extra params
+                if (extra.Params != null && extra.Params.Count > 0)
+                {
                     foreach (var p in extra.Params)
                     {
                         if (p.Key.StartsWith("x:"))
@@ -114,24 +130,34 @@ namespace Qiniu.Storage
                     }
                 }
 
-                bodyBuilder.AppendFormat("Content-Disposition: form-data; name=file; filename=\"{0}\"", key);
-                bodyBuilder.AppendLine();
-                if (!string.IsNullOrEmpty(extra.MimeType))
-                {
-                    bodyBuilder.AppendFormat("Content-Type: {0}",extra.MimeType);
-                }
-                bodyBuilder.AppendLine();
-                bodyBuilder.AppendLine();
-
+                //prepare data buffer
                 int bufferSize = 1024 * 1024;
                 byte[] buffer = new byte[bufferSize];
                 int bytesRead = 0;
                 MemoryStream dataMS = new MemoryStream();
-                while ((bytesRead = stream.Read(buffer, 0, bufferSize))!=0)
+                while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
                 {
                     dataMS.Write(buffer, 0, bytesRead);
                 }
 
+                //write crc32
+                uint crc32 = CRC32.CheckSumBytes(dataMS.ToArray());
+                //write key when it is not null
+                bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"crc32\"");
+                bodyBuilder.AppendLine();
+                bodyBuilder.AppendLine(crc32.ToString());
+                bodyBuilder.AppendLine("--" + boundary);
+
+                //write fname
+                bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"",fname); 
+                bodyBuilder.AppendLine();
+
+                //write mime type
+                bodyBuilder.AppendFormat("Content-Type: {0}", extra.MimeType);
+                bodyBuilder.AppendLine();
+                bodyBuilder.AppendLine();
+
+                //write file data
                 StringBuilder bodyEnd = new StringBuilder();
                 bodyEnd.AppendLine();
                 bodyEnd.AppendLine("--" + boundary + "--");
@@ -166,6 +192,10 @@ namespace Qiniu.Storage
                     result.RefText += string.Format("[{0}] [FormUpload] Failed: code = {1}, text = {2}\n",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
                 }
+
+                //close memory stream
+                ms.Close();
+                dataMS.Close();
             }
             catch (Exception ex)
             {
@@ -181,6 +211,18 @@ namespace Qiniu.Storage
 
                 result.RefCode = (int)HttpCode.USER_EXCEPTION;
                 result.RefText += sb.ToString();
+            }
+            finally
+            {
+                if (stream != null)
+                {
+                    try
+                    {
+                        stream.Close();
+                        stream.Dispose();
+                    }
+                    catch (Exception) { }
+                }
             }
 
             return result;

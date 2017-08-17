@@ -111,6 +111,8 @@ namespace Qiniu.Storage
                 byte[] chunkBuffer = new byte[chunkSize];
                 int blockCount = (int)((fileSize + blockSize - 1) / blockSize);
                 int index = 0; // zero block
+
+                //check resume record file
                 ResumeInfo resumeInfo = null;
                 if (File.Exists(putExtra.ResumeRecordFile))
                 {
@@ -142,6 +144,7 @@ namespace Qiniu.Storage
                     };
                 }
 
+                //read from offset
                 long offset = index * blockSize;
                 string context = null;
                 long expiredAt = 0;
@@ -155,7 +158,7 @@ namespace Qiniu.Storage
 
                 var upts = UploadControllerAction.Activated;
                 bool bres = true;
-                var mres = new ManualResetEvent(true);
+                var manualResetEvent = new ManualResetEvent(true);
                 int iTry = 0;
 
                 while (leftBytes > 0)
@@ -177,20 +180,20 @@ namespace Qiniu.Storage
                         if (bres)
                         {
                             bres = false;
-                            mres.Reset();
+                            manualResetEvent.Reset();
 
                             result.RefCode = (int)HttpCode.USER_PAUSED;
                             result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is paused\n",
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                         }
-                        mres.WaitOne(1000);
+                        manualResetEvent.WaitOne(1000);
                     }
                     else
                     {
                         if (!bres)
                         {
                             bres = true;
-                            mres.Set();
+                            manualResetEvent.Set();
 
                             result.RefCode = (int)HttpCode.USER_RESUMED;
                             result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is resumed\n",
@@ -208,6 +211,7 @@ namespace Qiniu.Storage
                         {
                             blockSize = BLOCK_SIZE;
                         }
+
                         if (leftBytes < CHUNK_SIZE)
                         {
                             chunkSize = leftBytes;
@@ -217,6 +221,7 @@ namespace Qiniu.Storage
                             chunkSize = CHUNK_SIZE;
                         }
 
+                        //read data buffer
                         stream.Read(chunkBuffer, 0, (int)chunkSize);
 
                         iTry = 0;
@@ -672,33 +677,5 @@ namespace Qiniu.Storage
         {
             return UploadControllerAction.Activated;
         }
-
-        /// <summary>
-        /// 设置最大尝试次数，取值范围1~20，设置为1表示仅1次机会无重试，设置为2表示第1次失败后进行下一次重试，以此类推
-        /// </summary>
-        /// <param name="maxTry">用户设置得最大尝试次数</param>
-        /// <returns></returns>
-        private int getMaxTry(int maxTry)
-        {
-            int iMaxTry = 5;
-            int MIN = 1;
-            int MAX = 20;
-
-            if (maxTry < MIN)
-            {
-                iMaxTry = MIN;
-            }
-            else if (maxTry > MAX)
-            {
-                iMaxTry = MAX;
-            }
-            else
-            {
-                iMaxTry = maxTry;
-            }
-
-            return iMaxTry;
-        }
-
     }
 }

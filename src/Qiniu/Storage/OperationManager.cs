@@ -50,10 +50,11 @@ namespace Qiniu.Storage
                 string pfopUrl = string.Format("{0}/pfop/", this.config.ApiHost(this.mac.AccessKey, bucket));
 
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("bucket={0}&key={1}&fops={2}", bucket, key, StringHelper.UrlEncode(fops));
+                sb.AppendFormat("bucket={0}&key={1}&fops={2}", StringHelper.UrlEncode(bucket), StringHelper.UrlEncode(key),
+                    StringHelper.UrlEncode(fops));
                 if (!string.IsNullOrEmpty(notifyUrl))
                 {
-                    sb.AppendFormat("&notifyURL={0}", notifyUrl);
+                    sb.AppendFormat("&notifyURL={0}", StringHelper.UrlEncode(notifyUrl));
                 }
                 if (force)
                 {

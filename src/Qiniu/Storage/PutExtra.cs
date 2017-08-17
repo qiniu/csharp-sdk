@@ -20,10 +20,6 @@ namespace Qiniu.Storage
         /// </summary>
         public string MimeType { set; get; }
         /// <summary>
-        /// 设置是否开启文件的CRC32校验
-        /// </summary>
-        public bool CheckCrc32 { set; get; }
-        /// <summary>
         /// 设置文件上传进度处理器
         /// </summary>
         public UploadProgressHandler ProgressHandler { set; get; }

@@ -19,9 +19,10 @@ namespace Qiniu.Storage
         /// <returns>用于记录断点信息的文件名</returns>
         public static string GetDefaultRecordKey(string localFile, string key)
         {
+            string tempDir = System.Environment.GetEnvironmentVariable("TEMP");
             System.IO.FileInfo fileInfo = new System.IO.FileInfo(localFile);
             string uniqueKey = string.Format("{0}:{1}:{2}", localFile, key, fileInfo.LastWriteTime.ToFileTime());
-            return "QiniuResume_" + Hashing.CalcMD5X(uniqueKey);
+            return string.Format("{0}\\{1}",tempDir,"QiniuResume_" + Hashing.CalcMD5X(uniqueKey));
         }
 
         /// <summary>
@@ -70,8 +71,5 @@ namespace Qiniu.Storage
                 }
             }
         }
-
-
-
     }
 }
