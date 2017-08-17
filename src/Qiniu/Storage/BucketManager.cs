@@ -158,33 +158,7 @@ namespace Qiniu.Storage
         /// <returns>状态码为200时表示OK</returns>
         public HttpResult Copy(string srcBucket, string srcKey, string dstBucket, string dstKey)
         {
-            HttpResult result = new HttpResult();
-
-            try
-            {
-                string copyUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, srcBucket) ,
-                    CopyOp(srcBucket, srcKey, dstBucket, dstKey));
-                string token = auth.CreateManageToken(copyUrl);
-
-                result = httpManager.Post(copyUrl, token);
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [copy] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
-            }
-
-            return result;
+            return Copy(srcBucket, srcKey, dstBucket, dstKey, false);
         }
 
         /// <summary>
@@ -202,7 +176,7 @@ namespace Qiniu.Storage
 
             try
             {
-                string copyUrl = string.Format("{0}{1}",this.config.RsHost(this.mac.AccessKey,srcBucket),
+                string copyUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, srcBucket),
                     CopyOp(srcBucket, srcKey, dstBucket, dstKey, force));
                 string token = auth.CreateManageToken(copyUrl);
 
@@ -237,33 +211,7 @@ namespace Qiniu.Storage
         /// <returns>状态码为200时表示OK</returns>
         public HttpResult Move(string srcBucket, string srcKey, string dstBucket, string dstKey)
         {
-            HttpResult result = new HttpResult();
-
-            try
-            {
-                string moveUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, srcBucket),
-                    MoveOp(srcBucket, srcKey, dstBucket, dstKey));
-                string token = auth.CreateManageToken(moveUrl);
-
-                result = httpManager.Post(moveUrl, token);
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [move] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
-            }
-
-            return result;
+            return Move(srcBucket, srcKey, dstBucket, dstKey, false);
         }
 
         /// <summary>
@@ -281,7 +229,7 @@ namespace Qiniu.Storage
 
             try
             {
-                string moveUrl =string.Format("{0}{1}",this.config.RsHost(this.mac.AccessKey,srcBucket),
+                string moveUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, srcBucket),
                     MoveOp(srcBucket, srcKey, dstBucket, dstKey, force));
                 string token = auth.CreateManageToken(moveUrl);
 
@@ -307,34 +255,22 @@ namespace Qiniu.Storage
         }
 
         /// <summary>
-        /// 修改文件名(key)
-        /// </summary>
-        /// <param name="bucket">文件所在空间</param>
-        /// <param name="oldKey">旧的文件名</param>
-        /// <param name="newKey">新的文件名</param>
-        /// <returns>状态码为200时表示OK</returns>
-        public HttpResult Rename(string bucket, string oldKey, string newKey)
-        {
-            return Move(bucket, oldKey, bucket, newKey);
-        }
-
-        /// <summary>
         /// 修改文件MimeType
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
         /// <param name="mimeType">修改后的MIME Type</param>
         /// <returns>状态码为200时表示OK</returns>
-        public HttpResult Chgm(string bucket, string key, string mimeType)
+        public HttpResult ChangeMime(string bucket, string key, string mimeType)
         {
             HttpResult result = new HttpResult();
 
             try
             {
-                string chgmUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket), 
-                    ChgmOp(bucket, key, mimeType));
+                string chgmUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
+                    ChangeMimeOp(bucket, key, mimeType));
                 string token = auth.CreateManageToken(chgmUrl);
-                Console.WriteLine(chgmUrl+", "+token);
+                Console.WriteLine(chgmUrl + ", " + token);
                 result = httpManager.Post(chgmUrl, token);
             }
             catch (Exception ex)
@@ -357,11 +293,49 @@ namespace Qiniu.Storage
         }
 
         /// <summary>
+        /// 修改文件存储类型
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="key">文件key</param>
+        /// <param name="fileType">修改后的文件存储类型，0表示普通存储，1表示低频存储</param>
+        /// <returns>状态码为200时表示OK</returns>
+        public HttpResult ChangeType(string bucket, string key, int fileType)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string chtypeUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
+                    ChangeTypeOp(bucket, key, fileType));
+                string token = auth.CreateManageToken(chtypeUrl);
+                Console.WriteLine(chtypeUrl + ", " + token);
+                result = httpManager.Post(chtypeUrl, token);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [chtype] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 批处理
         /// </summary>
         /// <param name="batchOps">批量操作的操作字符串</param>
         /// <returns>状态码为200时表示OK</returns>
-        public BatchResult Batch(string batchOps)
+        private BatchResult Batch(string batchOps)
         {
             BatchResult result = new BatchResult();
 
@@ -369,7 +343,7 @@ namespace Qiniu.Storage
             {
                 string scheme = this.config.UseHttps ? "https://" : "http://";
                 string rsHost = string.Format("{0}{1}", scheme, Config.DefaultRsHost);
-                string batchUrl = rsHost+ "/batch";
+                string batchUrl = rsHost + "/batch";
                 byte[] data = Encoding.UTF8.GetBytes(batchOps);
                 string token = auth.CreateManageToken(batchUrl, data);
 
@@ -410,40 +384,6 @@ namespace Qiniu.Storage
             }
 
             return Batch(opsb.ToString());
-        }
-
-        /// <summary>
-        /// 批处理-stat
-        /// </summary>
-        /// <param name="bucket">空间名称</param>
-        /// <param name="keys">文件key列表</param>
-        /// <returns>结果列表</returns>
-        public BatchResult BatchStat(string bucket, string[] keys)
-        {
-            string[] ops = new string[keys.Length];
-            for (int i = 0; i < keys.Length; ++i)
-            {
-                ops[i] = StatOp(bucket, keys[i]);
-            }
-
-            return Batch(ops);
-        }
-
-        /// <summary>
-        /// 批处理 - delete
-        /// </summary>
-        /// <param name="bucket">空间名称</param>
-        /// <param name="keys">文件key列表</param>
-        /// <returns>结果列表</returns>
-        public BatchResult BatchDelete(string bucket, string[] keys)
-        {
-            string[] ops = new string[keys.Length];
-            for (int i = 0; i < keys.Length; ++i)
-            {
-                ops[i] = DeleteOp(bucket, keys[i]);
-            }
-
-            return Batch(ops);
         }
 
         /// <summary>
@@ -496,7 +436,7 @@ namespace Qiniu.Storage
 
             try
             {
-                string prefetchUrl = this.config.IovipHost(this.mac.AccessKey,bucket) + PrefetchOp(bucket, key);
+                string prefetchUrl = this.config.IovipHost(this.mac.AccessKey, bucket) + PrefetchOp(bucket, key);
                 string token = auth.CreateManageToken(prefetchUrl);
 
                 result = httpManager.Post(prefetchUrl, token);
@@ -533,7 +473,7 @@ namespace Qiniu.Storage
             {
                 string scheme = this.config.UseHttps ? "https://" : "http://";
                 string rsHost = string.Format("{0}{1}", scheme, Config.DefaultApiHost);
-                string domainsUrl =string.Format("{0}{1}",rsHost,"/v6/domain/list");
+                string domainsUrl = string.Format("{0}{1}", rsHost, "/v6/domain/list");
                 string body = string.Format("tbl={0}", bucket);
                 byte[] data = Encoding.UTF8.GetBytes(body);
                 string token = auth.CreateManageToken(domainsUrl, data);
@@ -652,14 +592,14 @@ namespace Qiniu.Storage
         /// <param name="key">文件key</param>
         /// <param name="deleteAfterDays">多少天后删除</param>
         /// <returns>状态码为200时表示OK</returns>
-        public HttpResult UpdateLifecycle(string bucket, string key, int deleteAfterDays)
+        public HttpResult DeleteAfterDays(string bucket, string key, int deleteAfterDays)
         {
             HttpResult result = new HttpResult();
 
             try
             {
                 string updateUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
-                    UpdateLifecycleOp(bucket, key, deleteAfterDays));
+                    DeleteAfterDaysOp(bucket, key, deleteAfterDays));
                 string token = auth.CreateManageToken(updateUrl);
                 result = httpManager.Post(updateUrl, token);
             }
@@ -714,9 +654,7 @@ namespace Qiniu.Storage
         /// <returns>copy操作字符串</returns>
         public string CopyOp(string srcBucket, string srcKey, string dstBucket, string dstKey)
         {
-            return string.Format("/copy/{0}/{1}",
-                Base64.UrlSafeBase64Encode(srcBucket, srcKey),
-                Base64.UrlSafeBase64Encode(dstBucket, dstKey));
+            return CopyOp(srcBucket, srcKey, dstBucket, dstKey, false);
         }
 
         /// <summary>
@@ -731,8 +669,7 @@ namespace Qiniu.Storage
         public string CopyOp(string srcBucket, string srcKey, string dstBucket, string dstKey, bool force)
         {
             string fx = force ? "force/true" : "force/false";
-            return string.Format("/copy/{0}/{1}/{2}",
-                Base64.UrlSafeBase64Encode(srcBucket, srcKey),
+            return string.Format("/copy/{0}/{1}/{2}", Base64.UrlSafeBase64Encode(srcBucket, srcKey),
                 Base64.UrlSafeBase64Encode(dstBucket, dstKey), fx);
         }
 
@@ -746,9 +683,7 @@ namespace Qiniu.Storage
         /// <returns>move操作字符串</returns>
         public string MoveOp(string srcBucket, string srcKey, string dstBucket, string dstKey)
         {
-            return string.Format("/move/{0}/{1}",
-                Base64.UrlSafeBase64Encode(srcBucket, srcKey),
-                Base64.UrlSafeBase64Encode(dstBucket, dstKey));
+            return MoveOp(srcBucket, srcKey, dstBucket, dstKey, false);
         }
 
         /// <summary>
@@ -763,8 +698,7 @@ namespace Qiniu.Storage
         public string MoveOp(string srcBucket, string srcKey, string dstBucket, string dstKey, bool force)
         {
             string fx = force ? "force/true" : "force/false";
-            return string.Format("/move/{0}/{1}/{2}",
-                Base64.UrlSafeBase64Encode(srcBucket, srcKey),
+            return string.Format("/move/{0}/{1}/{2}", Base64.UrlSafeBase64Encode(srcBucket, srcKey),
                 Base64.UrlSafeBase64Encode(dstBucket, dstKey), fx);
         }
 
@@ -775,11 +709,23 @@ namespace Qiniu.Storage
         /// <param name="key">文件key</param>
         /// <param name="mimeType">修改后MIME Type</param>
         /// <returns>chgm操作字符串</returns>
-        public string ChgmOp(string bucket, string key, string mimeType)
+        public string ChangeMimeOp(string bucket, string key, string mimeType)
         {
-            return string.Format("/chgm/{0}/mime/{1}",
-                Base64.UrlSafeBase64Encode(bucket, key),
+            return string.Format("/chgm/{0}/mime/{1}", Base64.UrlSafeBase64Encode(bucket, key),
                 Base64.UrlSafeBase64Encode(mimeType));
+        }
+
+        /// <summary>
+        /// 生成chtype操作字符串
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="key">文件key</param>
+        /// <param name="fileType">修改后文件类型</param>
+        /// <returns>chtype操作字符串</returns>
+        public string ChangeTypeOp(string bucket, string key, int fileType)
+        {
+            return string.Format("/chtype/{0}/type/{1}", Base64.UrlSafeBase64Encode(bucket, key),
+                fileType);
         }
 
         /// <summary>
@@ -791,8 +737,7 @@ namespace Qiniu.Storage
         /// <returns>fetch操作字符串</returns>
         public string FetchOp(string url, string bucket, string key)
         {
-            return string.Format("/fetch/{0}/to/{1}",
-                Base64.UrlSafeBase64Encode(url),
+            return string.Format("/fetch/{0}/to/{1}", Base64.UrlSafeBase64Encode(url),
                 Base64.UrlSafeBase64Encode(bucket, key));
         }
 
@@ -804,8 +749,7 @@ namespace Qiniu.Storage
         /// <returns>prefetch操作字符串</returns>
         public string PrefetchOp(string bucket, string key)
         {
-            return string.Format("/prefetch/{0}",
-                Base64.UrlSafeBase64Encode(bucket, key));
+            return string.Format("/prefetch/{0}", Base64.UrlSafeBase64Encode(bucket, key));
         }
 
         /// <summary>
@@ -815,7 +759,7 @@ namespace Qiniu.Storage
         /// <param name="key">文件key</param>
         /// <param name="deleteAfterDays">多少天后删除(设为0表示取消)</param>
         /// <returns>updateLifecycle操作字符串</returns>
-        public string UpdateLifecycleOp(string bucket,string key,int deleteAfterDays)
+        public string DeleteAfterDaysOp(string bucket, string key, int deleteAfterDays)
         {
             return string.Format("/deleteAfterDays/{0}/{1}",
                 Base64.UrlSafeBase64Encode(bucket, key), deleteAfterDays);

@@ -110,17 +110,18 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="persistentId">持久化ID</param>
         /// <returns>操作结果</returns>
-        public HttpResult Prefop(string persistentId)
+        public PrefopResult Prefop(string persistentId)
         {
-            HttpResult result = new HttpResult();
+            PrefopResult result = new PrefopResult();
 
             try
             {
                 string scheme = this.config.UseHttps ? "https://" : "http://";
-                string prefopUrl = string.Format("{0}/status/get/prefop?id={1}", scheme, Config.DefaultApiHost, persistentId);
+                string prefopUrl = string.Format("{0}{1}/status/get/prefop?id={2}", scheme, Config.DefaultApiHost, persistentId);
 
                 HttpManager httpMgr = new HttpManager();
-                result = httpMgr.Get(prefopUrl, null);
+                HttpResult httpResult = httpMgr.Get(prefopUrl, null);
+                result.Shadow(httpResult);
             }
             catch (Exception ex)
             {

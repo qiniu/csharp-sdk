@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using Newtonsoft.Json;
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -31,16 +31,19 @@ namespace Qiniu.Storage
         /// <summary>
         /// marker标记
         /// </summary>
+        [JsonProperty("marker", NullValueHandling = NullValueHandling.Ignore)]
         public string Marker { get; set; }
 
         /// <summary>
         /// 文件列表
         /// </summary>
+        [JsonProperty("items", NullValueHandling = NullValueHandling.Ignore)]
         public List<ListItem> Items { get; set; }
 
         /// <summary>
         /// 公共前缀
         /// </summary>
+        [JsonProperty("commonPrefixes", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> CommonPrefixes { get; set; }
     }
 }
