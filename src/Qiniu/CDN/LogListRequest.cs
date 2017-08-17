@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Collections.Generic;
-
+using Newtonsoft.Json;
 namespace Qiniu.CDN
 {
     /// <summary>
@@ -11,11 +11,13 @@ namespace Qiniu.CDN
         /// <summary>
         /// 日期，例如 2016-09-01
         /// </summary>
+        [JsonProperty("day")]
         public string Day { get; set; }
 
         /// <summary>
         /// 域名列表，以西文半角分号分割
         /// </summary>
+        [JsonProperty("domains")]
         public string Domains { get; set; }
 
         /// <summary>
@@ -32,7 +34,7 @@ namespace Qiniu.CDN
         /// </summary>
         /// <param name="day">日期</param>
         /// <param name="domains">域名列表(多个域名以;分隔的字符串)</param>
-        public LogListRequest(string day,string domains)
+        public LogListRequest(string day, string domains)
         {
             Day = day;
             Domains = domains;
@@ -43,9 +45,9 @@ namespace Qiniu.CDN
         /// </summary>
         /// <param name="day">日期</param>
         /// <param name="domains">域名列表</param>
-        public LogListRequest(string day,IList<string> domains)
+        public LogListRequest(string day, IList<string> domains)
         {
-            if(string.IsNullOrEmpty(day))
+            if (string.IsNullOrEmpty(day))
             {
                 Day = "";
             }
@@ -53,7 +55,7 @@ namespace Qiniu.CDN
             {
                 Day = day;
             }
-            
+
             if (domains == null)
             {
                 Domains = "";
@@ -61,9 +63,9 @@ namespace Qiniu.CDN
             else
             {
                 List<string> uniqueDomains = new List<string>();
-                foreach(string d in domains)
+                foreach (string d in domains)
                 {
-                    if(!uniqueDomains.Contains(d))
+                    if (!uniqueDomains.Contains(d))
                     {
                         uniqueDomains.Add(d);
                     }
@@ -71,7 +73,7 @@ namespace Qiniu.CDN
 
                 if (uniqueDomains.Count > 0)
                 {
-                    Domains = Util.StringHelper.Join(uniqueDomains, ";");
+                    Domains = string.Join(";", uniqueDomains);
                 }
                 else
                 {
@@ -86,13 +88,7 @@ namespace Qiniu.CDN
         /// <returns>请求内容的JSON字符串</returns>
         public string ToJsonStr()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{ ");
-            sb.AppendFormat("\"day\":\"{0}\", ", Day);
-            sb.AppendFormat("\"domains\":\"{0}\"", Domains);
-            sb.Append(" }");
-
-            return sb.ToString();
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

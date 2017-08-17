@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-
+using Newtonsoft.Json;
 namespace Qiniu.CDN
 {
     /// <summary>
@@ -17,6 +17,7 @@ namespace Qiniu.CDN
         /// 带参数的 url 刷新，根据其域名缓存配置是否忽略参数缓存决定刷新结果。
         /// 如果配置了时间戳防盗链的资源 url 提交时刷新需要去掉 e 和 token 参数
         /// </summary>
+        [JsonProperty("urls", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> Urls { get; set; }
 
         /// <summary>
@@ -24,6 +25,7 @@ namespace Qiniu.CDN
         /// 例如：http://bar.foo.com/dir/，
         /// 也支持在尾部使用通配符，例如：http://bar.foo.com/dir/*
         /// </summary>
+        [JsonProperty("dirs", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> Dirs { get; set; }
 
         /// <summary>
@@ -40,13 +42,13 @@ namespace Qiniu.CDN
         /// </summary>
         /// <param name="urls">URL列表</param>
         /// <param name="dirs">URL目录列表</param>
-        public RefreshRequest(IList<string> urls,IList<string> dirs)
+        public RefreshRequest(IList<string> urls, IList<string> dirs)
         {
             Urls = new List<string>();
             Dirs = new List<string>();
 
             if (urls != null)
-            {                
+            {
                 AddUrls(urls);
             }
 
@@ -64,9 +66,9 @@ namespace Qiniu.CDN
         {
             if (urls != null)
             {
-                foreach(var u in urls)
+                foreach (var u in urls)
                 {
-                    if(!Urls.Contains(u))
+                    if (!Urls.Contains(u))
                     {
                         Urls.Add(u);
                     }
@@ -98,59 +100,7 @@ namespace Qiniu.CDN
         /// <returns>请求内容的JSON字符串</returns>
         public string ToJsonStr()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{ ");
-
-            sb.Append("\"urls\":[");
-            if (Urls != null)
-            {                
-                if (Urls.Count == 1)
-                {
-                    sb.AppendFormat("\"{0}\"", Urls[0]);
-                }
-                else
-                {
-                    for (int i = 0; i < Urls.Count; ++i)
-                    {
-                        if (i < Urls.Count - 1)
-                        {
-                            sb.AppendFormat("\"{0}\",", Urls[i]);
-                        }
-                        else
-                        {
-                            sb.AppendFormat("\"{0}\"", Urls[i]);
-                        }
-                    }
-                }
-            }
-            sb.Append("], ");
-
-            sb.Append("\"dirs\":[");
-            if (Dirs != null)
-            {
-                if (Dirs.Count == 1)
-                {
-                    sb.AppendFormat("\"{0}\"", Dirs[0]);
-                }
-                else
-                {
-                    for (int i = 0; i < Dirs.Count; ++i)
-                    {
-                        if (i < Dirs.Count - 1)
-                        {
-                            sb.AppendFormat("\"{0}\",", Dirs[i]);
-                        }
-                        else
-                        {
-                            sb.AppendFormat("\"{0}\"", Dirs[i]);
-                        }
-                    }
-                }
-            }
-            sb.Append("] }");
-
-            return sb.ToString();
+            return JsonConvert.SerializeObject(this);
         }
-
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System;
 namespace Qiniu.CDN
 {
     /// <summary>
@@ -67,11 +67,11 @@ namespace Qiniu.CDN
         /// <summary>
         /// 国内带宽数据
         /// </summary>
-        public List<int> China { get; set; }
+        public List<UInt64> China { get; set; }
 
         /// <summary>
         /// 海外带宽数据
         /// </summary>
-        public List<int> Oversea { get; set; }
+        public List<UInt64> Oversea { get; set; }
     }
 }

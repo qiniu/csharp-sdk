@@ -1,5 +1,4 @@
-﻿using System.Text;
-
+﻿using Newtonsoft.Json;
 namespace Qiniu.CDN
 {
     /// <summary>
@@ -10,21 +9,25 @@ namespace Qiniu.CDN
         /// <summary>
         /// 起始日期，例如2016-09-01
         /// </summary>
+        [JsonProperty("startDate")]
         public string StartDate { get; set; }
 
         /// <summary>
         /// 结束日期，例如2016-09-10
         /// </summary>
+        [JsonProperty("endDate")]
         public string EndDate { get; set; }
 
         /// <summary>
         /// 时间粒度((取值：5min ／ hour ／day))
         /// </summary>
+        [JsonProperty("granularity")]
         public string Granularity { get; set; }
 
         /// <summary>
         /// 域名列表，以西文半角分号分割
         /// </summary>
+        [JsonProperty("domains")]
         public string Domains { get; set; }
 
         /// <summary>
@@ -59,15 +62,7 @@ namespace Qiniu.CDN
         /// <returns>请求内容的JSON字符串</returns>
         public string ToJsonStr()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{ ");
-            sb.AppendFormat("\"startDate\":\"{0}\", ", StartDate);
-            sb.AppendFormat("\"endDate\":\"{0}\", ", EndDate);
-            sb.AppendFormat("\"granularity\":\"{0}\", ", Granularity);
-            sb.AppendFormat("\"domains\":\"{0}\"", Domains);
-            sb.Append(" }");
-
-            return sb.ToString();
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

@@ -9,49 +9,7 @@ namespace Qiniu.Util
     /// </summary>
     public class StringHelper
     {
-        /// <summary>
-        /// 字符串连接
-        /// </summary>
-        /// <param name="array">字符串数组</param>
-        /// <param name="sep">连接符</param>
-        /// <returns>连接后字符串</returns>
-        public static string Join(IList<string> array, string sep)
-        {
-            if (array == null || sep == null)
-            {
-                return null;
-            }
-            StringBuilder sb = new StringBuilder();
-            int arrayLength = array.Count;
-            for (int i = 0; i < arrayLength; i++)
-            {
-                sb.Append(array[i]);
-                sb.Append(sep);
-            }
-            return sb.ToString(0, sb.Length - sep.Length);
-        }
-
-        /// <summary>
-        /// 以json格式连接字符串
-        /// </summary>
-        /// <param name="array">字符串数组</param>
-        /// <returns>连接后字符串</returns>
-        public static string JsonJoin(IList<string> array)
-        {
-            if (array == null || array.Count == 0)
-            {
-                return "";
-            }
-
-            StringBuilder sb = new StringBuilder();
-            int arrayLength = array.Count;
-
-            for (int i = 0; i < arrayLength; i++)
-            {
-                sb.AppendFormat("\"{0}\",", array[i]);
-            }
-            return sb.ToString(0, sb.Length - 1);
-        }               
+        
 
         /// <summary>
         /// URL编码

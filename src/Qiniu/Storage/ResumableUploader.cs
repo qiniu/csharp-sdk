@@ -453,7 +453,7 @@ namespace Qiniu.Storage
                 string uploadHost = this.config.UpHost(ak, bucket);
             
                 string url = string.Format("{0}/mkfile/{1}{2}{3}{4}{5}", uploadHost, size, mimeTypeStr, fnameStr, keyStr, paramStr);
-                string body = StringHelper.Join(contexts, ",");
+                string body = string.Join(",", contexts);
                 string upTokenStr = string.Format("UpToken {0}", upToken);
 
                 result = httpManager.PostText(url, body, upTokenStr);

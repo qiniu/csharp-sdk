@@ -737,8 +737,16 @@ namespace Qiniu.Storage
         /// <returns>fetch操作字符串</returns>
         public string FetchOp(string url, string bucket, string key)
         {
-            return string.Format("/fetch/{0}/to/{1}", Base64.UrlSafeBase64Encode(url),
-                Base64.UrlSafeBase64Encode(bucket, key));
+            string entry = null;
+            if (key == null)
+            {
+                entry = Base64.UrlSafeBase64Encode(bucket);
+            }
+            else
+            {
+                entry = Base64.UrlSafeBase64Encode(bucket, key);
+            }
+            return string.Format("/fetch/{0}/to/{1}", Base64.UrlSafeBase64Encode(url), entry);
         }
 
         /// <summary>

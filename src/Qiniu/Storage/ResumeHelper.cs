@@ -60,8 +60,7 @@ namespace Qiniu.Storage
         /// <param name="recordFile">断点记录文件</param>
         public static void Save(ResumeInfo resumeInfo, string recordFile)
         {
-            string jsonStr = string.Format("{{\"fileSize\":{0}, \"blockIndex\":{1}, \"blockCount\":{2}, \"contexts\":[{3}]}}",
-                resumeInfo.FileSize, resumeInfo.BlockIndex, resumeInfo.BlockCount, StringHelper.JsonJoin(resumeInfo.Contexts));
+            string jsonStr = resumeInfo.ToJsonStr();
 
             using (FileStream fs = new FileStream(recordFile, FileMode.Create))
             {

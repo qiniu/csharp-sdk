@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Qiniu.CDN
 {
@@ -15,6 +16,7 @@ namespace Qiniu.CDN
         /// 请输入资源 url 完整的绝对路径，由 http:// 或 https:// 开始
         /// 资源 url 不支持通配符，例如：不支持 http://www.test.com/abc/*.*
         /// </summary>
+        [JsonProperty("urls",NullValueHandling=NullValueHandling.Ignore)]
         public List<string> Urls { get; set; }
 
         /// <summary>
@@ -65,34 +67,7 @@ namespace Qiniu.CDN
         /// <returns>请求内容的JSON字符串</returns>
         public string ToJsonStr()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{ ");
-
-            sb.Append("\"urls\":[");
-            if (Urls != null)
-            {
-                if (Urls.Count == 1)
-                {
-                    sb.AppendFormat("\"{0}\"", Urls[0]);
-                }
-                else
-                {
-                    for (int i = 0; i < Urls.Count; ++i)
-                    {
-                        if (i < Urls.Count - 1)
-                        {
-                            sb.AppendFormat("\"{0}\",", Urls[i]);
-                        }
-                        else
-                        {
-                            sb.AppendFormat("\"{0}\"", Urls[i]);
-                        }
-                    }
-                }
-            }
-            sb.Append("] }");
-
-            return sb.ToString();
+            return JsonConvert.SerializeObject(this);
         }
     }
 }
