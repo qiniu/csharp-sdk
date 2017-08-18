@@ -85,7 +85,7 @@ namespace Qiniu.CDN
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
                 result.RefText += sb.ToString();
             }
 
@@ -145,7 +145,7 @@ namespace Qiniu.CDN
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
                 result.RefText += sb.ToString();
             }
 
@@ -192,7 +192,7 @@ namespace Qiniu.CDN
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
                 result.RefText += sb.ToString();
             }
 
@@ -239,7 +239,7 @@ namespace Qiniu.CDN
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
                 result.RefText += sb.ToString();
             }
 
@@ -281,7 +281,7 @@ namespace Qiniu.CDN
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
                 result.RefText += sb.ToString();
             }
 

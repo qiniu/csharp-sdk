@@ -17,7 +17,6 @@ namespace Qiniu.Storage.Tests
             string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
 
             string filePath = LocalFile;
-            System.IO.Stream fs = System.IO.File.OpenRead(filePath);
 
             PutPolicy putPolicy = new PutPolicy();
             putPolicy.Scope = Bucket + ":" + key;
@@ -31,7 +30,7 @@ namespace Qiniu.Storage.Tests
             config.UseCdnDomains = true;
             config.ChunkSize = ChunkUnit.U512K;
             ResumableUploader target = new ResumableUploader(config);
-            HttpResult result = target.UploadStream(fs, key, token, null);
+            HttpResult result = target.UploadFile(filePath, key, token, null);
             Console.WriteLine("chunk upload result: " + result.ToString());
             Assert.AreEqual((int)HttpCode.OK, result.Code);
         }

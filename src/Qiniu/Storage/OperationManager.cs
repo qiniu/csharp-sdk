@@ -70,7 +70,7 @@ namespace Qiniu.Storage
                 HttpResult hr = httpManager.PostForm(pfopUrl, data, token);
                 result.Shadow(hr);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [pfop] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -82,7 +82,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -114,30 +116,12 @@ namespace Qiniu.Storage
         {
             PrefopResult result = new PrefopResult();
 
-            try
-            {
-                string scheme = this.config.UseHttps ? "https://" : "http://";
-                string prefopUrl = string.Format("{0}{1}/status/get/prefop?id={2}", scheme, Config.DefaultApiHost, persistentId);
+            string scheme = this.config.UseHttps ? "https://" : "http://";
+            string prefopUrl = string.Format("{0}{1}/status/get/prefop?id={2}", scheme, Config.DefaultApiHost, persistentId);
 
-                HttpManager httpMgr = new HttpManager();
-                HttpResult httpResult = httpMgr.Get(prefopUrl, null);
-                result.Shadow(httpResult);
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [prefop] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
-            }
+            HttpManager httpMgr = new HttpManager();
+            HttpResult httpResult = httpMgr.Get(prefopUrl, null);
+            result.Shadow(httpResult);
 
             return result;
         }
@@ -170,40 +154,23 @@ namespace Qiniu.Storage
         {
             HttpResult result = new HttpResult();
 
-            try
-            {
-                string scheme = this.config.UseHttps ? "https://" : "http://";
-                string dfopUrl = string.Format("{0}{1}/dfop?fop={2}", scheme, Config.DefaultApiHost, fop);
-                string token = auth.CreateManageToken(dfopUrl);
-                string boundary = HttpManager.CreateFormDataBoundary();
-                string sep = "--" + boundary;
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine(sep);
-                sb.AppendFormat("Content-Type: {0}", ContentType.TEXT_PLAIN);
-                sb.AppendLine();
-                sb.AppendLine("Content-Disposition: form-data; name=data; filename=text");
-                sb.AppendLine();
-                sb.AppendLine(text);
-                sb.AppendLine(sep + "--");
-                byte[] data = Encoding.UTF8.GetBytes(sb.ToString());
+            string scheme = this.config.UseHttps ? "https://" : "http://";
+            string dfopUrl = string.Format("{0}{1}/dfop?fop={2}", scheme, Config.DefaultApiHost, fop);
+            string token = auth.CreateManageToken(dfopUrl);
+            string boundary = HttpManager.CreateFormDataBoundary();
+            string sep = "--" + boundary;
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(sep);
+            sb.AppendFormat("Content-Type: {0}", ContentType.TEXT_PLAIN);
+            sb.AppendLine();
+            sb.AppendLine("Content-Disposition: form-data; name=data; filename=text");
+            sb.AppendLine();
+            sb.AppendLine(text);
+            sb.AppendLine(sep + "--");
+            byte[] data = Encoding.UTF8.GetBytes(sb.ToString());
 
-                result = httpManager.PostMultipart(dfopUrl, data, boundary, token, true);
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [dfop] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
+            result = httpManager.PostMultipart(dfopUrl, data, boundary, token, true);
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
-            }
 
             return result;
         }
@@ -224,7 +191,7 @@ namespace Qiniu.Storage
             }
             else
             {
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.INVALID_FILE;
                 result.RefText = "[dfop-error] File not found: " + textFile;
             }
 
@@ -240,32 +207,12 @@ namespace Qiniu.Storage
         public HttpResult DfopUrl(string fop, string url)
         {
             HttpResult result = new HttpResult();
+            string scheme = this.config.UseHttps ? "https://" : "http://";
+            string encodedUrl = StringHelper.UrlEncode(url);
+            string dfopUrl = string.Format("{0}{1}/dfop?fop={2}&url={3}", scheme, Config.DefaultApiHost, fop, encodedUrl);
+            string token = auth.CreateManageToken(dfopUrl);
 
-            try
-            {
-                string scheme = this.config.UseHttps ? "https://" : "http://";
-                string encodedUrl = StringHelper.UrlEncode(url);
-                string dfopUrl = string.Format("{0}{1}/dfop?fop={2}&url={3}", scheme, Config.DefaultApiHost, fop, encodedUrl);
-                string token = auth.CreateManageToken(dfopUrl);
-
-                result = httpManager.Post(dfopUrl, token, true);
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [dfop] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
-            }
-
+            result = httpManager.Post(dfopUrl, token, true);
             return result;
         }
 
@@ -323,7 +270,7 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
 

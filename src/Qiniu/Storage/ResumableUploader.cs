@@ -230,12 +230,12 @@ namespace Qiniu.Storage
                             result.RefText += string.Format("[{0}] [ResumableUpload] try mkblk#{1}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), iTry);
 
                             hr = MakeBlock(chunkBuffer, blockSize, chunkSize, upToken);
-
                             if (hr.Code == (int)HttpCode.OK && hr.RefCode != (int)HttpCode.USER_NEED_RETRY)
                             {
                                 break;
                             }
                         }
+                       
                         if (hr.Code != (int)HttpCode.OK || hr.RefCode == (int)HttpCode.USER_NEED_RETRY)
                         {
                             result.Shadow(hr);
@@ -248,7 +248,7 @@ namespace Qiniu.Storage
                         if ((rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text)) == null)
                         {
                             result.Shadow(hr);
-                            result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                            result.RefCode = (int)HttpCode.USER_UNDEF;
                             result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
 
@@ -305,7 +305,7 @@ namespace Qiniu.Storage
                                 if ((rc=JsonConvert.DeserializeObject<ResumeContext>(hr.Text))==null)
                                 {
                                     result.Shadow(hr);
-                                    result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                                    result.RefCode = (int)HttpCode.USER_UNDEF;
                                     result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
                                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
 
@@ -372,7 +372,7 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -470,8 +470,19 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
+                if (ex is QiniuException)
+                {
+                    QiniuException qex = (QiniuException)ex;
+                    result.Code = qex.HttpResult.Code;
+                    result.RefCode = qex.HttpResult.Code;
+                    result.Text = qex.HttpResult.Text;
+                    result.RefText += sb.ToString();
+                }
+                else
+                {
+                    result.RefCode = (int)HttpCode.USER_UNDEF;
+                    result.RefText += sb.ToString();
+                }
             }
 
             return result;
@@ -548,8 +559,19 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
+                if (ex is QiniuException)
+                {
+                    QiniuException qex = (QiniuException)ex;
+                    result.Code = qex.HttpResult.Code;
+                    result.RefCode = qex.HttpResult.Code;
+                    result.Text = qex.HttpResult.Text;
+                    result.RefText += sb.ToString();
+                }
+                else
+                {
+                    result.RefCode = (int)HttpCode.USER_UNDEF;
+                    result.RefText += sb.ToString();
+                }
             }
 
             return result;
@@ -628,8 +650,19 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
+                if (ex is QiniuException)
+                {
+                    QiniuException qex = (QiniuException)ex;
+                    result.Code = qex.HttpResult.Code;
+                    result.RefCode = qex.HttpResult.Code;
+                    result.Text = qex.HttpResult.Text;
+                    result.RefText += sb.ToString();
+                }
+                else
+                {
+                    result.RefCode = (int)HttpCode.USER_UNDEF;
+                    result.RefText += sb.ToString();
+                }
             }
 
             return result;

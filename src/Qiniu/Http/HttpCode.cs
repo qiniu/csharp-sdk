@@ -80,7 +80,7 @@
         /// <summary>
         /// 服务端操作失败
         /// </summary>
-        SERVER_OPERATION_FAILED = 599,        
+        SERVER_OPERATION_FAILED = 599,
 
         /// <summary>
         /// 资源内容被修改
@@ -124,32 +124,42 @@
         /// <summary>
         /// 自定义HTTP状态码 (默认值)
         /// </summary>
-        USER_UNDEF = -256,
+        USER_UNDEF = 0,
 
         /// <summary>
         /// 自定义HTTP状态码 (用户取消)
         /// </summary>
-        USER_CANCELED = -255,
+        USER_CANCELED = -2,
 
         /// <summary>
         /// 自定义HTTP状态码 (用户暂停)
         /// </summary>
-        USER_PAUSED = -254,
+        USER_PAUSED = 1,
 
         /// <summary>
         /// 自定义HTTP状态码 (用户继续)
         /// </summary>
-        USER_RESUMED = -253,
+        USER_RESUMED = 2,
 
         /// <summary>
         /// 自定义HTTP状态码 (需要重试)
         /// </summary>
-        USER_NEED_RETRY = -252,
+        USER_NEED_RETRY = 3,
 
         /// <summary>
         /// 自定义HTTP状态码 (异常或错误)
         /// </summary>
-        USER_EXCEPTION = -252,
+        INVALID_ARGUMENT = -4,
+
+        /// <summary>
+        /// 自定义HTTP状态码（文件不合法）
+        /// </summary>
+        INVALID_FILE = -3,
+
+        /// <summary>
+        /// 自定义HTTP状态码（凭证不合法）
+        /// </summary>
+        INVALID_TOKEN = -5,
 
         #endregion _USR_
 

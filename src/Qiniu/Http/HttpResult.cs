@@ -128,7 +128,7 @@ namespace Qiniu.Http
         /// 非法上传凭证错误
         /// </summary>
         public static HttpResult InvalidToken = new HttpResult {
-              Code=(int)HttpCode.USER_CANCELED,
+              Code=(int)HttpCode.INVALID_TOKEN,
               Text="invalid uptoken"
         };
 
@@ -137,7 +137,7 @@ namespace Qiniu.Http
         /// </summary>
         public static HttpResult InvalidFile = new HttpResult
         {
-            Code = (int)HttpCode.USER_CANCELED,
+            Code = (int)HttpCode.INVALID_FILE,
             Text = "invalid file"
         };
     }

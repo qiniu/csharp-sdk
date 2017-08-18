@@ -48,7 +48,7 @@ namespace Qiniu.Storage
                 HttpResult hr = httpManager.Get(statUrl, token);
                 result.Shadow(hr);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [stat] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -60,7 +60,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -91,7 +93,7 @@ namespace Qiniu.Storage
                 HttpResult hr = httpManager.Get(bucketsUrl, token);
                 result.Shadow(hr);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [buckets] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -103,7 +105,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -129,7 +133,7 @@ namespace Qiniu.Storage
 
                 result = httpManager.Post(deleteUrl, token);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [delete] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -141,7 +145,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -182,7 +188,7 @@ namespace Qiniu.Storage
 
                 result = httpManager.Post(copyUrl, token);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [copy] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -194,7 +200,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -235,7 +243,7 @@ namespace Qiniu.Storage
 
                 result = httpManager.Post(moveUrl, token);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [move] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -247,7 +255,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -272,7 +282,7 @@ namespace Qiniu.Storage
                 string token = auth.CreateManageToken(chgmUrl);
                 result = httpManager.Post(chgmUrl, token);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [chgm] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -284,7 +294,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -309,7 +321,7 @@ namespace Qiniu.Storage
                 string token = auth.CreateManageToken(chtypeUrl);
                 result = httpManager.Post(chtypeUrl, token);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [chtype] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -321,7 +333,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -348,7 +362,7 @@ namespace Qiniu.Storage
                 HttpResult hr = httpManager.PostForm(batchUrl, data, token);
                 result.Shadow(hr);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [batch] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -360,7 +374,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -404,7 +420,7 @@ namespace Qiniu.Storage
                 HttpResult httpResult = httpManager.Post(fetchUrl, token);
                 result.Shadow(httpResult);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [fetch] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -416,7 +432,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -440,7 +458,7 @@ namespace Qiniu.Storage
 
                 result = httpManager.Post(prefetchUrl, token);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [prefetch] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -452,7 +470,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -480,7 +500,7 @@ namespace Qiniu.Storage
                 HttpResult hr = httpManager.PostForm(domainsUrl, data, token);
                 result.Shadow(hr);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [domains] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -492,7 +512,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -565,7 +587,7 @@ namespace Qiniu.Storage
                 HttpResult hr = httpManager.Post(listUrl, token);
                 result.Shadow(hr);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [listFiles] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -577,7 +599,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
@@ -602,7 +626,7 @@ namespace Qiniu.Storage
                 string token = auth.CreateManageToken(updateUrl);
                 result = httpManager.Post(updateUrl, token);
             }
-            catch (Exception ex)
+            catch (QiniuException ex)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [deleteAfterDays] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
@@ -614,7 +638,9 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
                 result.RefText += sb.ToString();
             }
 
