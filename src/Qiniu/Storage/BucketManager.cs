@@ -2,7 +2,7 @@
 using System.Text;
 using Qiniu.Http;
 using Qiniu.Util;
-
+using System.Collections.Generic;
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -270,7 +270,6 @@ namespace Qiniu.Storage
                 string chgmUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
                     ChangeMimeOp(bucket, key, mimeType));
                 string token = auth.CreateManageToken(chgmUrl);
-                Console.WriteLine(chgmUrl + ", " + token);
                 result = httpManager.Post(chgmUrl, token);
             }
             catch (Exception ex)
@@ -308,7 +307,6 @@ namespace Qiniu.Storage
                 string chtypeUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
                     ChangeTypeOp(bucket, key, fileType));
                 string token = auth.CreateManageToken(chtypeUrl);
-                Console.WriteLine(chtypeUrl + ", " + token);
                 result = httpManager.Post(chtypeUrl, token);
             }
             catch (Exception ex)
@@ -374,11 +372,11 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="ops">批量操作的操作字符串数组</param>
         /// <returns>状态码为200时表示OK</returns>
-        public BatchResult Batch(string[] ops)
+        public BatchResult Batch(IList<string> ops)
         {
             StringBuilder opsb = new StringBuilder();
             opsb.AppendFormat("op={0}", ops[0]);
-            for (int i = 1; i < ops.Length; ++i)
+            for (int i = 1; i < ops.Count; ++i)
             {
                 opsb.AppendFormat("&op={0}", ops[i]);
             }
@@ -393,9 +391,9 @@ namespace Qiniu.Storage
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
         /// <returns>状态码为200时表示OK</returns>
-        public HttpResult Fetch(string resUrl, string bucket, string key)
+        public FetchResult Fetch(string resUrl, string bucket, string key)
         {
-            HttpResult result = new HttpResult();
+            FetchResult result = new FetchResult();
 
             try
             {
@@ -403,7 +401,8 @@ namespace Qiniu.Storage
                     FetchOp(resUrl, bucket, key));
                 string token = auth.CreateManageToken(fetchUrl);
 
-                result = httpManager.Post(fetchUrl, token);
+                HttpResult httpResult = httpManager.Post(fetchUrl, token);
+                result.Shadow(httpResult);
             }
             catch (Exception ex)
             {

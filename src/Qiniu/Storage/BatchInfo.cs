@@ -23,11 +23,6 @@ namespace Qiniu.Storage
     {
         [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
         public string Error { get; set; }
-        /// <summary>
-        /// 文件名
-        /// </summary>
-        [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
-        public string Key { get; set; }
 
         /// <summary>
         /// 文件hash(ETAG)

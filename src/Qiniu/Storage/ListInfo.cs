@@ -16,7 +16,8 @@ namespace Qiniu.Storage
     ///             "hash":"HASH",
     ///             "fsize":FSIZE,
     ///             "mimeType":"MIME_TYPE",
-    ///             "putTime":PUT_TIME
+    ///             "putTime":PUT_TIME,
+    ///             "type":FILE_TYPE
     ///         },
     ///         {
     ///             ...
