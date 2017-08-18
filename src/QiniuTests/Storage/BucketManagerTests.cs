@@ -9,36 +9,20 @@ namespace Qiniu.Storage.Tests
     [TestFixture]
     public class BucketManagerTests : TestEnv
     {
-
-        [Test]
-        public void ChgmTest()
+        private BucketManager bucketManager;
+        [OneTimeSetUp]
+        public void Init()
         {
             Config config = new Config();
             Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            string key = "qiniu.png";
-            string newMime = "image/x-png";
-            HttpResult chgmRet = bucketManager.ChangeMime(Bucket, key, newMime);
-            if (chgmRet.Code != (int)HttpCode.OK)
-            {
-                Assert.Fail("chgm error: " + chgmRet.ToString());
-            }
-
-            StatResult statRet = bucketManager.Stat(Bucket, key);
-            if (!statRet.Result.MimeType.Equals(newMime))
-            {
-                Assert.Fail("stat error: " + statRet.ToString());
-            }
+            this.bucketManager = new BucketManager(mac, config);
         }
 
         [Test]
         public void StatTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             string key = "qiniu.png";
-            StatResult statRet = bucketManager.Stat(Bucket, key);
+            StatResult statRet = this.bucketManager.Stat(Bucket, key);
             if (statRet.Code != (int)HttpCode.OK)
             {
                 Assert.Fail("stat error: " + statRet.ToString());
@@ -51,12 +35,115 @@ namespace Qiniu.Storage.Tests
         }
 
         [Test]
+        public void DeleteTest()
+        {
+            string newKey = "qiniu-to-delete.png";
+            this.bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey);
+            HttpResult deleteRet = this.bucketManager.Delete(Bucket, newKey);
+            if (deleteRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("delete error: " + deleteRet.ToString());
+            }
+        }
+
+        [Test]
+        public void CopyTest()
+        {
+            string newKey = "qiniu-to-copy.png";
+            HttpResult copyRet = this.bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            if (copyRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("copy error: " + copyRet.ToString());
+            }
+            Console.WriteLine(copyRet.ToString());
+        }
+
+        [Test]
+        public void MoveTest()
+        {
+            string newKey = "qiniu-to-copy.png";
+            HttpResult copyRet = this.bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            if (copyRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("copy error: " + copyRet.ToString());
+            }
+            Console.WriteLine(copyRet.ToString());
+
+            HttpResult moveRet = this.bucketManager.Move(Bucket, newKey, Bucket, "qiniu-move-target.png", true);
+            if (moveRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("move error: " + moveRet.ToString());
+            }
+            Console.WriteLine(moveRet.ToString());
+        }
+
+        [Test]
+        public void ChangeMimeTest()
+        {
+            HttpResult ret = this.bucketManager.ChangeMime(Bucket, "qiniu.png", "image/x-png");
+            if (ret.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("change mime error: " + ret.ToString());
+            }
+            Console.WriteLine(ret.ToString());
+        }
+
+        [Test]
+        public void ChangeTypeTest()
+        {
+            HttpResult ret = this.bucketManager.ChangeType(Bucket, "qiniu.png", 1);
+            if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("already in line stat"))
+            {
+                Assert.Fail("change type error: " + ret.ToString());
+            }
+            Console.WriteLine(ret.ToString());
+        }
+
+        [Test]
+        public void DeleteAfterDaysTest()
+        {
+            string newKey = "qiniu-to-copy.png";
+            HttpResult copyRet = this.bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            if (copyRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("copy error: " + copyRet.ToString());
+            }
+            Console.WriteLine(copyRet.ToString());
+            HttpResult expireRet = this.bucketManager.DeleteAfterDays(Bucket, newKey, 7);
+            if (expireRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("deleteAfterDays error: " + expireRet.ToString());
+            }
+            Console.WriteLine(expireRet.ToString());
+        }
+
+        [Test]
+        public void PrefetchTest()
+        {
+            HttpResult ret = this.bucketManager.Prefetch(Bucket, "qiniu.png");
+            if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("bucket source not set"))
+            { 
+                Assert.Fail("prefetch error: " + ret.ToString());
+            }
+            Console.WriteLine(ret.ToString());
+        }
+
+        [Test]
+        public void DomainsTest()
+        {
+            DomainsResult ret = this.bucketManager.Domains(Bucket);
+            if (ret.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("domains error: " + ret.ToString());
+            }
+            Console.WriteLine(ret.ToString());
+        }
+
+
+        [Test]
         public void BucketsTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            BucketsResult ret = bucketManager.Buckets(true);
+            BucketsResult ret = this.bucketManager.Buckets(true);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.Fail("buckets error: " + ret.ToString());
@@ -68,151 +155,19 @@ namespace Qiniu.Storage.Tests
             }
         }
 
-        [Test]
-        public void DeleteTest()
-        {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            string newKey = "qiniu-to-delete.png";
-            bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey);
-            HttpResult deleteRet = bucketManager.Delete(Bucket, newKey);
-            if (deleteRet.Code != (int)HttpCode.OK)
-            {
-                Assert.Fail("delete error: " + deleteRet.ToString());
-            }
-        }
-
-        [Test]
-        public void CopyTest()
-        {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            string newKey = "qiniu-to-copy.png";
-            HttpResult copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
-            if (copyRet.Code != (int)HttpCode.OK)
-            {
-                Assert.Fail("copy error: " + copyRet.ToString());
-            }
-            Console.WriteLine(copyRet.ToString());
-        }
-
-        [Test]
-        public void MoveTest()
-        {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            string newKey = "qiniu-to-copy.png";
-            HttpResult copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
-            if (copyRet.Code != (int)HttpCode.OK)
-            {
-                Assert.Fail("copy error: " + copyRet.ToString());
-            }
-            Console.WriteLine(copyRet.ToString());
-
-            HttpResult moveRet = bucketManager.Move(Bucket, newKey, Bucket, "qiniu-move-target.png", true);
-            if (moveRet.Code != (int)HttpCode.OK)
-            {
-                Assert.Fail("move error: " + moveRet.ToString());
-            }
-            Console.WriteLine(moveRet.ToString());
-        }
-
-        [Test]
-        public void ChangeMimeTest()
-        {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            HttpResult ret = bucketManager.ChangeMime(Bucket, "qiniu.png", "image/x-png");
-            if (ret.Code != (int)HttpCode.OK)
-            {
-                Assert.Fail("change mime error: " + ret.ToString());
-            }
-            Console.WriteLine(ret.ToString());
-        }
-
-        [Test]
-        public void ChangeTypeTest()
-        {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            HttpResult ret = bucketManager.ChangeType(Bucket, "qiniu.png", 1);
-            if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("already in line stat"))
-            {
-                Assert.Fail("change type error: " + ret.ToString());
-            }
-            Console.WriteLine(ret.ToString());
-        }
-
-        [Test]
-        public void DeleteAfterDaysTest()
-        {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            string newKey = "qiniu-to-copy.png";
-            HttpResult copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
-            if (copyRet.Code != (int)HttpCode.OK)
-            {
-                Assert.Fail("copy error: " + copyRet.ToString());
-            }
-            Console.WriteLine(copyRet.ToString());
-            HttpResult expireRet = bucketManager.DeleteAfterDays(Bucket, newKey, 7);
-            if (expireRet.Code != (int)HttpCode.OK)
-            {
-                Assert.Fail("deleteAfterDays error: " + expireRet.ToString());
-            }
-            Console.WriteLine(expireRet.ToString());
-        }
-
-        [Test]
-        public void PrefetchTest()
-        {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            HttpResult ret = bucketManager.Prefetch(Bucket, "qiniu.png");
-            if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("bucket source not set"))
-            { 
-                Assert.Fail("prefetch error: " + ret.ToString());
-            }
-            Console.WriteLine(ret.ToString());
-        }
-
-        [Test]
-        public void DomainsTest()
-        {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
-            DomainsResult ret = bucketManager.Domains(Bucket);
-            if (ret.Code != (int)HttpCode.OK)
-            {
-                Assert.Fail("domains error: " + ret.ToString());
-            }
-            Console.WriteLine(ret.ToString());
-        }
-
 
         [Test]
         public void FetchTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             string resUrl = "http://devtools.qiniu.com/qiniu.png";
-            FetchResult ret = bucketManager.Fetch(resUrl, Bucket, "qiniu-fetch.png");
+            FetchResult ret = this.bucketManager.Fetch(resUrl, Bucket, "qiniu-fetch.png");
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.Fail("fetch error: " + ret.ToString());
             }
             Console.WriteLine(ret.ToString());
 
-            ret = bucketManager.Fetch(resUrl, Bucket, null);
+            ret = this.bucketManager.Fetch(resUrl, Bucket, null);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.Fail("fetch error: " + ret.ToString());
@@ -223,14 +178,11 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void ListFilesTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             string prefix = "";
             string delimiter = "";
             int limit = 100;
             string marker = "";
-            ListResult listRet = bucketManager.ListFiles(Bucket, prefix, marker, limit, delimiter);
+            ListResult listRet = this.bucketManager.ListFiles(Bucket, prefix, marker, limit, delimiter);
             if (listRet.Code != (int)HttpCode.OK)
             {
                 Assert.Fail("list files error: " + listRet.ToString());
@@ -241,16 +193,13 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void ListBucketTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             string prefix = "";
             string delimiter = "";
             int limit = 100;
             string marker = "";
             do
             {
-                ListResult listRet = bucketManager.ListFiles(Bucket, prefix, marker, limit, delimiter);
+                ListResult listRet = this.bucketManager.ListFiles(Bucket, prefix, marker, limit, delimiter);
                 if (listRet.Code != (int)HttpCode.OK)
                 {
                     Assert.Fail("list files error: " + listRet.ToString());
@@ -266,9 +215,6 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void BatchStatTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             BatchCopyTest();
             string[] keys = {
                 "qiniu-0.png",
@@ -279,11 +225,11 @@ namespace Qiniu.Storage.Tests
             List<string> ops = new List<string>();
             foreach (string key in keys)
             {
-                string op = bucketManager.StatOp(Bucket, key);
+                string op = this.bucketManager.StatOp(Bucket, key);
                 ops.Add(op);
             }
 
-            BatchResult ret = bucketManager.Batch(ops);
+            BatchResult ret = this.bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.Fail("batch error: " + ret.ToString());
@@ -305,9 +251,6 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void BatchDeleteTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             BatchCopyTest();
             string[] keys = {
                 "qiniu-0.png",
@@ -318,11 +261,11 @@ namespace Qiniu.Storage.Tests
             List<string> ops = new List<string>();
             foreach (string key in keys)
             {
-                string op = bucketManager.DeleteOp(Bucket, key);
+                string op = this.bucketManager.DeleteOp(Bucket, key);
                 ops.Add(op);
             }
 
-            BatchResult ret = bucketManager.Batch(ops);
+            BatchResult ret = this.bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.Fail("batch error: " + ret.ToString());
@@ -343,9 +286,6 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void BatchCopyTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
                 "qiniu-0.png",
                 "qiniu-1.png",
@@ -355,11 +295,11 @@ namespace Qiniu.Storage.Tests
             List<string> ops = new List<string>();
             foreach (string key in keys)
             {
-                string op = bucketManager.CopyOp(Bucket, "qiniu.png", Bucket, key, true);
+                string op = this.bucketManager.CopyOp(Bucket, "qiniu.png", Bucket, key, true);
                 ops.Add(op);
             }
 
-            BatchResult ret = bucketManager.Batch(ops);
+            BatchResult ret = this.bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.Fail("batch error: " + ret.ToString());
@@ -380,9 +320,6 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void BatchMoveTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             BatchCopyTest();
             string[] keys = {
                 "qiniu-0.png",
@@ -393,11 +330,11 @@ namespace Qiniu.Storage.Tests
             List<string> ops = new List<string>();
             foreach (string key in keys)
             {
-                string op = bucketManager.MoveOp(Bucket, key, Bucket, key + "-batch-move", true);
+                string op = this.bucketManager.MoveOp(Bucket, key, Bucket, key + "-batch-move", true);
                 ops.Add(op);
             }
 
-            BatchResult ret = bucketManager.Batch(ops);
+            BatchResult ret = this.bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.Fail("batch error: " + ret.ToString());
@@ -418,9 +355,6 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void BatchChangeMimeTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             BatchCopyTest();
             string[] keys = {
                 "qiniu-0.png",
@@ -431,11 +365,11 @@ namespace Qiniu.Storage.Tests
             List<string> ops = new List<string>();
             foreach (string key in keys)
             {
-                string op = bucketManager.ChangeMimeOp(Bucket, key, "image/batch-x-png");
+                string op = this.bucketManager.ChangeMimeOp(Bucket, key, "image/batch-x-png");
                 ops.Add(op);
             }
 
-            BatchResult ret = bucketManager.Batch(ops);
+            BatchResult ret = this.bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.Fail("batch error: " + ret.ToString());
@@ -456,9 +390,6 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void BatchChangeTypeTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             BatchCopyTest();
             string[] keys = {
                 "qiniu-0.png",
@@ -469,11 +400,11 @@ namespace Qiniu.Storage.Tests
             List<string> ops = new List<string>();
             foreach (string key in keys)
             {
-                string op = bucketManager.ChangeTypeOp(Bucket, key, 0);
+                string op = this.bucketManager.ChangeTypeOp(Bucket, key, 0);
                 ops.Add(op);
             }
 
-            BatchResult ret = bucketManager.Batch(ops);
+            BatchResult ret = this.bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.Fail("batch error: " + ret.ToString());
@@ -494,9 +425,6 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void BatchDeleteAfterDaysTest()
         {
-            Config config = new Config();
-            Mac mac = new Mac(AccessKey, SecretKey);
-            BucketManager bucketManager = new BucketManager(mac, config);
             BatchCopyTest();
             string[] keys = {
                 "qiniu-0.png",
@@ -507,11 +435,11 @@ namespace Qiniu.Storage.Tests
             List<string> ops = new List<string>();
             foreach (string key in keys)
             {
-                string op = bucketManager.DeleteAfterDaysOp(Bucket, key, 7);
+                string op = this.bucketManager.DeleteAfterDaysOp(Bucket, key, 7);
                 ops.Add(op);
             }
 
-            BatchResult ret = bucketManager.Batch(ops);
+            BatchResult ret = this.bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.Fail("batch error: " + ret.ToString());
