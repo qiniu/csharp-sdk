@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using Qiniu.Storage;
 using Qiniu.Util;
 using Qiniu.Http;
 using System;
