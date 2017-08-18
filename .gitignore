@@ -28,6 +28,4 @@ obj/
 _ReSharper*/
 [Tt]est[Rr]esult*
 /src/packages
-/src/Qiniu.Net40.TravisTests/bin
 /packages
-/bin
