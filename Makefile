@@ -7,6 +7,6 @@ build-and-test:
 	cp tools/files/1.txt bin
 	cp tools/files/1.jpg bin
 
-	xbuild Qiniu.Net40.Travis.sln
+	xbuild src/Qiniu.sln
 
 	nunit-console bin/Qiniu.UnitTest.dll
