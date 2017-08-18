@@ -123,5 +123,22 @@ namespace Qiniu.Http
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// 非法上传凭证错误
+        /// </summary>
+        public static HttpResult InvalidToken = new HttpResult {
+              Code=(int)HttpCode.USER_CANCELED,
+              Text="invalid uptoken"
+        };
+
+        /// <summary>
+        /// 非法文件错误
+        /// </summary>
+        public static HttpResult InvalidFile = new HttpResult
+        {
+            Code = (int)HttpCode.USER_CANCELED,
+            Text = "invalid file"
+        };
     }
 }

@@ -62,6 +62,27 @@ namespace Qiniu.Util
             return dtBase.AddTicks(ticks);
         }
 
+        /// <summary>
+        /// 检查Ctx是否过期，我们给当前时间加上一天来看看是否超过了过期时间
+        /// 而不是直接比较是否超过了过期时间，是给这个文件最大1天的上传持续时间
+        /// </summary>
+        /// <param name="expiredAt"></param>
+        /// <returns></returns>
+        public static bool IsContextExpired(long expiredAt)
+        {
+            if (expiredAt == 0)
+            {
+                return false;
+            }
+            bool expired = false;
+            DateTime now = DateTime.Now.AddDays(1);
+            long nowTs = ConvertToTimestamp(now);
+            if (nowTs > expiredAt)
+            {
+                expired = true;
+            }
+            return expired;
+        }
 
     }
 }

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("QINIU")]
+[assembly: AssemblyCompany("Qiniu Cloud")]
 
 #if Net20
 
@@ -28,9 +28,9 @@ using System.Runtime.InteropServices;
 
 #elif Net40
 
-[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)")]
-[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)")]
-[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)")]
+[assembly: AssemblyProduct("Qiniu (Cloud) C# SDK")]
+[assembly: AssemblyTitle("Qiniu (Cloud) C# SDK")]
+[assembly: AssemblyDescription("Qiniu (Cloud) C# SDK")]
 
 #elif Net45
 
@@ -75,6 +75,6 @@ using System.Runtime.InteropServices;
 [assembly: Guid("957cd434-8b12-46ce-980b-09ca26ed340d")]
 
 [assembly: AssemblyCopyright("Copyright ©  2017")]
-[assembly: AssemblyVersion("7.2.15")]
-[assembly: AssemblyFileVersion("7.2.15")]
+[assembly: AssemblyVersion("7.3.0")]
+[assembly: AssemblyFileVersion("7.3.0")]
 

@@ -1,66 +1,170 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net46;net45;net40;net35;net20;netstandard1.6</TargetFrameworks>
-        <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
-        <AssemblyVersion>7.2.15</AssemblyVersion>
-		<FileVersion>7.2.15</FileVersion>
-		<VersionPrefix>7.2.15</VersionPrefix>
-		<Company>QINIU</Company>
-		<Copyright>Copyright ©  2017</Copyright>
-		<RootNamespace>Qiniu</RootNamespace>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-		<MinClientVersion>2.12</MinClientVersion>
-    </PropertyGroup>
-    <ItemGroup>
-      <Compile Remove="CDN\Model\HotLinkRequest.cs" />
-      <Compile Remove="Common\Mac.cs" />
-      <Compile Remove="Common\Signature.cs" />
-      <Compile Remove="Http\HttpHelper.cs" />
-      <Compile Remove="Http\UrlHelper.cs" />
-      <Compile Remove="Properties\AssemblyInfo.cs" />
-      <Compile Remove="Util\QETag.cs" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)' == 'net46' OR '$(TargetFramework)' == 'net45'">
-      <Reference Include="System.Net.Http" />
-    </ItemGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
-        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.6)</AssemblyTitle>
-        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.6)</Description>
-		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.6)</Product>
-        <DefineConstants>Net46</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
-        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.5)</AssemblyTitle>
-        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.5)</Description>
-		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.5)</Product>
-        <DefineConstants>Net45</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)</AssemblyTitle>
-        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)</Description>
-		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 4.0)</Product>
-        <DefineConstants>Net40</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 3.5)</AssemblyTitle>
-        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 3.5)</Description>
-		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 3.5)</Product>
-        <DefineConstants>Net35</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net20'">
-        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)</AssemblyTitle>
-        <Description>Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)</Description>
-		<Product>Qiniu (Cloud) C# SDK v7.2.15 (.NET 2.0)</Product>
-        <DefineConstants>Net20</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
-        <AssemblyTitle>Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)</AssemblyTitle>
-		<Description>Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)</Description>
-        <Product>Qiniu (Cloud) C# SDK v7.2.15 (.Net Core)</Product>
-        <DefineConstants>NetCore</DefineConstants>
-    </PropertyGroup>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2F5B0328-DE8B-4B53-A500-3077E340A51B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Qiniu</RootNamespace>
+    <AssemblyName>Qiniu</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <BaseIntermediateOutputPath>..\..\bin\net40\obj\</BaseIntermediateOutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;Net40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\bin\Qiniu.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <BaseIntermediateOutputPath>..\..\bin\net40\obj\</BaseIntermediateOutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>TRACE;Net40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\bin\Qiniu.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>QiniuCSharpSDK.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;Net40</DefineConstants>
+    <DocumentationFile>..\..\bin\net40\Qiniu.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;Net40</DefineConstants>
+    <DocumentationFile>..\..\bin\net40\Qiniu.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <!--
+    <Reference Include="System.Net.Http">
+      <HintPath>..\packages\System.Net.Http.dll</HintPath>
+    </Reference>
+	-->
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="QiniuCSharpSDK.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Storage\Config.cs" />
+    <Compile Include="Storage\FetchInfo.cs" />
+    <Compile Include="Storage\FetchResult.cs" />
+    <Compile Include="Storage\PfopInfo.cs" />
+    <Compile Include="Storage\PrefopResult.cs" />
+    <Compile Include="Storage\PutExtra.cs" />
+    <Compile Include="Storage\Zone.cs" />
+    <Compile Include="Storage\ZoneHelper.cs" />
+    <Compile Include="Storage\ZoneInfo.cs" />
+    <Compile Include="CDN\RefreshRequest.cs" />
+    <Compile Include="CDN\RefreshInfo.cs" />
+    <Compile Include="CDN\RefreshResult.cs" />
+    <Compile Include="CDN\PrefetchRequest.cs" />
+    <Compile Include="CDN\PrefetchInfo.cs" />
+    <Compile Include="CDN\PrefetchResult.cs" />
+    <Compile Include="CDN\BandwidthRequest.cs" />
+    <Compile Include="CDN\BandwidthInfo.cs" />
+    <Compile Include="CDN\BandwidthResult.cs" />
+    <Compile Include="CDN\FluxRequest.cs" />
+    <Compile Include="CDN\FluxInfo.cs" />
+    <Compile Include="CDN\FluxResult.cs" />
+    <Compile Include="CDN\LogListRequest.cs" />
+    <Compile Include="CDN\LogListInfo.cs" />
+    <Compile Include="CDN\LogListResult.cs" />
+    <Compile Include="CDN\CdnManager.cs" />
+    <Compile Include="Util\Auth.cs" />
+    <Compile Include="Util\LabMD5.cs" />
+    <Compile Include="Util\Mac.cs" />
+    <Compile Include="Util\Signature.cs" />
+    <Compile Include="Util\UnixTimestamp.cs" />
+    <Compile Include="Util\UpToken.cs" />
+    <Compile Include="Util\UrlHelper.cs" />
+    <Compile Include="Util\Base64.cs" />
+    <Compile Include="Util\CRC32.cs" />
+    <Compile Include="Util\ETag.cs" />
+    <Compile Include="Util\Hashing.cs" />
+    <Compile Include="Util\StringHelper.cs" />
+    <Compile Include="Util\UserEnv.cs" />
+    <Compile Include="Http\HttpCode.cs" />
+    <Compile Include="Http\ContentType.cs" />
+    <Compile Include="Http\HttpResult.cs" />
+    <Compile Include="Http\HttpManager.cs" />
+    <Compile Include="Storage\ChunkUnit.cs" />
+    <Compile Include="Storage\PutPolicy.cs" />
+    <Compile Include="Storage\ResumeContext.cs" />
+    <Compile Include="Storage\ResumeHelper.cs" />
+    <Compile Include="Storage\ResumeInfo.cs" />
+    <Compile Include="Storage\UploadController.cs" />
+    <Compile Include="Storage\UploadProgressHandler.cs" />
+    <Compile Include="Storage\ResumableUploader.cs" />
+    <Compile Include="Storage\FormUploader.cs" />
+    <Compile Include="Storage\UploadManager.cs" />
+    <Compile Include="Storage\DownloadManager.cs" />
+    <Compile Include="Storage\BatchResult.cs" />
+    <Compile Include="Storage\BucketManager.cs" />
+    <Compile Include="Storage\BatchInfo.cs" />
+    <Compile Include="Storage\BucketsResult.cs" />
+    <Compile Include="Storage\DomainsResult.cs" />
+    <Compile Include="Storage\ListItem.cs" />
+    <Compile Include="Storage\ListInfo.cs" />
+    <Compile Include="Storage\ListResult.cs" />
+    <Compile Include="Storage\FileInfo.cs" />
+    <Compile Include="Storage\StatResult.cs" />
+    <Compile Include="Storage\BucketInfo.cs" />
+    <Compile Include="Storage\BucketResult.cs" />
+    <Compile Include="Storage\PfopResult.cs" />
+    <Compile Include="Storage\OperationManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Packages.Net40.config" />
+    <None Include="packages.config" />
+    <None Include="QiniuCSharpSDK.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>
