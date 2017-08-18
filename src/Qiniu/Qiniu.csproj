@@ -29,12 +29,12 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <BaseIntermediateOutputPath>..\..\bin\net40\obj\</BaseIntermediateOutputPath>
-    <OutputPath>..\..\bin\net40\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>TRACE;Net40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>..\..\bin\net40\Qiniu.xml</DocumentationFile>
+    <DocumentationFile>..\..\bin\Qiniu.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
