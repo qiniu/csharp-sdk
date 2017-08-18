@@ -67,9 +67,9 @@ namespace Qiniu.CDN
                     sb.AppendLine();
                 }
                 sb.AppendFormat("dirQuotaDay:{0}\n", Result.DirQuotaDay);
-                sb.AppendFormat("dirSurplusaDay:{0}\n", Result.DirSurplusaDay);
+                sb.AppendFormat("dirSurplusDay:{0}\n", Result.DirSurplusDay);
                 sb.AppendFormat("urlQuotaDay:{0}\n", Result.UrlQuotaDay);
-                sb.AppendFormat("urlSurplusaDay:{0}\n", Result.UrlSurplusaDay);
+                sb.AppendFormat("urlSurplusDay:{0}\n", Result.UrlSurplusDay);
             }
             else
             {

@@ -57,6 +57,6 @@ namespace Qiniu.CDN
         /// <summary>
         /// 当日剩余额度
         /// </summary>
-        public int SurplusaDay { get; set; }
+        public int SurplusDay { get; set; }
     }
 }

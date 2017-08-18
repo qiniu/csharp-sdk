@@ -58,7 +58,7 @@ namespace Qiniu.CDN
                 }
                 sb.AppendLine();
                 sb.AppendFormat("quotaDay:{0}\n", Result.QuotaDay);
-                sb.AppendFormat("surplusaDay:{0}\n", Result.SurplusaDay);
+                sb.AppendFormat("surplusaDay:{0}\n", Result.SurplusDay);
             }
             else
             {

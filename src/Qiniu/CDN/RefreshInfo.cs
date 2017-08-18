@@ -65,7 +65,7 @@ namespace Qiniu.CDN
         /// <summary>
         /// 当日剩余URL刷新额度
         /// </summary>
-        public int UrlSurplusaDay { get; set; }
+        public int UrlSurplusDay { get; set; }
 
         /// <summary>
         /// 当日URL目录刷新限额
@@ -75,6 +75,6 @@ namespace Qiniu.CDN
         /// <summary>
         /// 当日剩余URL目录刷新额度
         /// </summary>
-        public int DirSurplusaDay { get; set; }
+        public int DirSurplusDay { get; set; }
     }
 }

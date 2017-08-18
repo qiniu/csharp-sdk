@@ -33,8 +33,8 @@ namespace Qiniu.CDN
         /// </summary>
         public RefreshRequest()
         {
-            Urls = new List<string>();
-            Dirs = new List<string>();
+            this.Urls = new List<string>();
+            this.Dirs = new List<string>();
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace Qiniu.CDN
         /// <param name="dirs">URL目录列表</param>
         public RefreshRequest(IList<string> urls, IList<string> dirs)
         {
-            Urls = new List<string>();
-            Dirs = new List<string>();
+            this.Urls = new List<string>();
+            this.Dirs = new List<string>();
 
             if (urls != null)
             {
@@ -68,9 +68,9 @@ namespace Qiniu.CDN
             {
                 foreach (var u in urls)
                 {
-                    if (!Urls.Contains(u))
+                    if (!this.Urls.Contains(u))
                     {
-                        Urls.Add(u);
+                        this.Urls.Add(u);
                     }
                 }
             }
@@ -84,11 +84,11 @@ namespace Qiniu.CDN
         {
             if (dirs != null)
             {
-                foreach (var d in Dirs)
+                foreach (var d in dirs)
                 {
-                    if (!Dirs.Contains(d))
+                    if (!this.Dirs.Contains(d))
                     {
-                        Dirs.Add(d);
+                        this.Dirs.Add(d);
                     }
                 }
             }
