@@ -82,6 +82,7 @@ namespace Qiniu.Http
                 }
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
 
@@ -149,7 +150,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -186,6 +187,7 @@ namespace Qiniu.Http
                 }
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
 
@@ -253,7 +255,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -292,6 +294,7 @@ namespace Qiniu.Http
                 wReq.ContentType = ContentType.APPLICATION_OCTET_STREAM;
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 if (data != null)
                 {
@@ -369,7 +372,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -409,6 +412,7 @@ namespace Qiniu.Http
                 wReq.ContentType = mimeType;
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 if (data != null)
                 {
@@ -486,7 +490,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -525,6 +529,7 @@ namespace Qiniu.Http
                 wReq.ContentType = ContentType.APPLICATION_JSON;
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 if (data != null)
                 {
@@ -602,7 +607,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -641,6 +646,7 @@ namespace Qiniu.Http
                 wReq.ContentType = ContentType.TEXT_PLAIN;
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 if (data != null)
                 {
@@ -718,7 +724,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -757,6 +763,7 @@ namespace Qiniu.Http
                 wReq.ContentType = ContentType.WWW_FORM_URLENC;
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 if (kvData != null)
                 {
@@ -840,7 +847,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -879,6 +886,7 @@ namespace Qiniu.Http
                 wReq.ContentType = ContentType.WWW_FORM_URLENC;
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 if (!string.IsNullOrEmpty(data))
                 {
@@ -956,7 +964,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -995,6 +1003,7 @@ namespace Qiniu.Http
                 wReq.ContentType = ContentType.WWW_FORM_URLENC;
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 if (data != null)
                 {
@@ -1072,7 +1081,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally
@@ -1112,6 +1121,7 @@ namespace Qiniu.Http
                 wReq.ContentType = string.Format("{0}; boundary={1}", ContentType.MULTIPART_FORM_DATA, boundary);
                 wReq.UserAgent = userAgent;
                 wReq.AllowAutoRedirect = allowAutoRedirect;
+                wReq.ServicePoint.Expect100Continue = false;
 
                 wReq.AllowWriteStreamBuffering = true;
                 using (Stream sReq = wReq.GetRequestStream())
@@ -1186,7 +1196,7 @@ namespace Qiniu.Http
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
             finally

@@ -88,6 +88,7 @@
     <Compile Include="Storage\PfopInfo.cs" />
     <Compile Include="Storage\PrefopResult.cs" />
     <Compile Include="Storage\PutExtra.cs" />
+    <Compile Include="Storage\QiniuException.cs" />
     <Compile Include="Storage\Zone.cs" />
     <Compile Include="Storage\ZoneHelper.cs" />
     <Compile Include="Storage\ZoneInfo.cs" />
@@ -158,7 +159,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -40,11 +40,12 @@ namespace Qiniu.Storage
             }
 
             //query from uc api
+            HttpResult hr = null;
             try
             {
                 string queryUrl = string.Format("https://uc.qbox.me/v2/query?ak={0}&bucket={1}", accessKey, bucket);
                 HttpManager httpManager = new HttpManager();
-                var hr = httpManager.Get(queryUrl, null);
+                hr = httpManager.Get(queryUrl, null);
                 if (hr.Code == (int)HttpCode.OK)
                 {
                     ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
@@ -106,7 +107,7 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                throw new Exception(sb.ToString());
+                throw new QiniuException(hr, sb.ToString());
             }
 
             return zone;

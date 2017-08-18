@@ -209,8 +209,19 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
-                result.RefText += sb.ToString();
+                if (ex is QiniuException)
+                {
+                    QiniuException qex = (QiniuException)ex;
+                    result.Code = qex.HttpResult.Code;
+                    result.RefCode = qex.HttpResult.Code;
+                    result.Text = qex.HttpResult.Text;
+                    result.RefText += sb.ToString();
+                }
+                else
+                {
+                    result.RefCode = (int)HttpCode.USER_UNDEF;
+                    result.RefText += sb.ToString();
+                }
             }
             finally
             {

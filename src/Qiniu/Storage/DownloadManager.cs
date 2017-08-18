@@ -94,7 +94,7 @@ namespace Qiniu.Storage
                 }
                 sb.AppendLine();
 
-                result.RefCode = (int)HttpCode.USER_EXCEPTION;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
 
