@@ -3,9 +3,11 @@ using Qiniu.Http;
 using System.Text;
 namespace Qiniu.Storage
 {
+    /// <summary>
+    /// 查询数据处理状态的返回值
+    /// </summary>
     public class PrefopResult:HttpResult
     {
-
         /// <summary>
         /// 持久化任务的状态
         /// </summary>

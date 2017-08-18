@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json;
 namespace Qiniu.Storage
 {
+    /// <summary>
+    /// 资源抓取返回的内容
+    /// </summary>
     public class FetchInfo
     {
         /// <summary>

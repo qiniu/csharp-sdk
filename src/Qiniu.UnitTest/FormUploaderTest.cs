@@ -1,31 +1,42 @@
 ﻿using NUnit.Framework;
 using System.IO;
 using System.Text;
+using Qiniu.Storage;
 using Qiniu.Util;
 using Qiniu.Http;
-using Qiniu.IO;
-using Qiniu.IO.Model;
+using System;
 
 namespace Qiniu.UnitTest
-{    
+{
     [TestFixture]
-    public class FormUploaderTest:QiniuTestEnvars
+    public class FormUploaderTest : QiniuTestEnvars
     {
+        private Mac mac;
+        private Config config;
+
+        [SetUp]
+        public void Init()
+        {
+            this.mac = new Mac(AccessKey, SecretKey);
+            this.config = new Config();
+        }
+
         [Test]
         public void UploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
-            string key = FileKey1;            
-            string filePath = LocalFile1;
+            Random rand = new Random();
+            string key =string.Format("UploadFileTest_{0}.",rand.Next());
+            string filePath = LocalFile;
 
             PutPolicy putPolicy = new PutPolicy();
-            putPolicy.Scope = putPolicy.Scope = Bucket1 + ":" + key;
+            putPolicy.Scope = putPolicy.Scope = Bucket + ":" + key;
             putPolicy.SetExpires(3600);
             putPolicy.DeleteAfterDays = 1;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
 
-            FormUploader target = new FormUploader();
-            HttpResult result = target.UploadFile(filePath, key, token);
+            FormUploader target = new FormUploader(this.config);
+            HttpResult result = target.UploadFile(filePath, key, token, null);
             Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
 
@@ -34,16 +45,17 @@ namespace Qiniu.UnitTest
         {
             Mac mac = new Mac(AccessKey, SecretKey);
             byte[] data = Encoding.UTF8.GetBytes("hello world");
-            string key = FileKey1;
+            Random rand = new Random();
+            string key = string.Format("UploadFileTest_{0}.", rand.Next());
 
             PutPolicy putPolicy = new PutPolicy();
-            putPolicy.Scope = Bucket1 + ":" + key;
+            putPolicy.Scope = Bucket + ":" + key;
             putPolicy.SetExpires(3600);
-            putPolicy.DeleteAfterDays = 1; 
-            string token = Auth.CreateUploadToken(mac,putPolicy.ToJsonString());
+            putPolicy.DeleteAfterDays = 1;
+            string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
 
-            FormUploader target = new FormUploader();
-            HttpResult result = target.UploadData(data, key, token);
+            FormUploader target = new FormUploader(this.config);
+            HttpResult result = target.UploadData(data, key, token, null);
             Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
 
@@ -51,19 +63,20 @@ namespace Qiniu.UnitTest
         public void UploadStreamTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
-            string key = FileKey1;
+            Random rand = new Random();
+            string key = string.Format("UploadFileTest_{0}.", rand.Next());
 
-            string filePath = LocalFile1;
+            string filePath = LocalFile;
             Stream fs = File.OpenRead(filePath);
 
             PutPolicy putPolicy = new PutPolicy();
-            putPolicy.Scope = Bucket1;
+            putPolicy.Scope = Bucket;
             putPolicy.SetExpires(3600);
             putPolicy.DeleteAfterDays = 1;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
 
-            FormUploader target = new FormUploader();
-            HttpResult result = target.UploadStream(fs, key, token);
+            FormUploader target = new FormUploader(this.config);
+            HttpResult result = target.UploadStream(fs, key, token, null);
             Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
     }

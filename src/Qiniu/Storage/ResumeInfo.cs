@@ -36,6 +36,10 @@ namespace Qiniu.Storage
         [JsonProperty("expiredAt")]
         public long ExpiredAt { get; set; }
 
+        /// <summary>
+        /// 上传进度信息序列化
+        /// </summary>
+        /// <returns></returns>
         public string ToJsonStr()
         {
             return JsonConvert.SerializeObject(this);

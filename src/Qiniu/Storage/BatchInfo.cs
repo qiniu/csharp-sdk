@@ -19,8 +19,14 @@ namespace Qiniu.Storage
         public BatchData Data { get; set; }
     }
 
+    /// <summary>
+    /// 批量处理的结果内容
+    /// </summary>
     public class BatchData
     {
+        /// <summary>
+        /// 处理遇到的错误信息
+        /// </summary>
         [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
         public string Error { get; set; }
 

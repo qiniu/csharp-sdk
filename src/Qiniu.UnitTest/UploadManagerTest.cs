@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using Qiniu.Util;
 using Qiniu.Http;
-
+using System;
 
 namespace Qiniu.UnitTest
 {
@@ -25,11 +25,12 @@ namespace Qiniu.UnitTest
         public void UploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
-            string key = FileKey1;
-            string filePath = LocalFile1;
+              Random rand = new Random();
+            string key = string.Format("UploadFileTest_{0}.", rand.Next()); ;
+            string filePath = LocalFile;
 
             PutPolicy putPolicy = new PutPolicy();
-            putPolicy.Scope = putPolicy.Scope = Bucket1 + ":" + key;
+            putPolicy.Scope = putPolicy.Scope = Bucket + ":" + key;
             putPolicy.SetExpires(3600);
             putPolicy.DeleteAfterDays = 1;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
@@ -45,10 +46,11 @@ namespace Qiniu.UnitTest
         {
             Mac mac = new Mac(AccessKey, SecretKey);
             byte[] data = Encoding.UTF8.GetBytes("hello world");
-            string key = FileKey2;
+            Random rand = new Random();
+            string key = string.Format("UploadFileTest_{0}.", rand.Next());
 
             PutPolicy putPolicy = new PutPolicy();
-            putPolicy.Scope = Bucket1 + ":" + key;
+            putPolicy.Scope = Bucket + ":" + key;
             putPolicy.SetExpires(3600);
             putPolicy.DeleteAfterDays = 1;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
@@ -63,13 +65,14 @@ namespace Qiniu.UnitTest
         public void UploadStreamTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
-            string key = FileKey2;
+            Random rand = new Random();
+            string key = string.Format("UploadFileTest_{0}.", rand.Next());
 
-            string filePath = LocalFile1;
+            string filePath = LocalFile;
             Stream fs = File.OpenRead(filePath);
 
             PutPolicy putPolicy = new PutPolicy();
-            putPolicy.Scope = Bucket1 + ":" + key;
+            putPolicy.Scope = Bucket + ":" + key;
             putPolicy.SetExpires(3600);
             putPolicy.DeleteAfterDays = 1;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
