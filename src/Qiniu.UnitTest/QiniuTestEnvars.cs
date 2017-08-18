@@ -82,8 +82,7 @@
 
         public QiniuTestEnvars()
         {
-            //InitSettings();
-            ManualSettings();
+            InitSettings();
         }
     }
 }
