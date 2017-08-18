@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E3EC18BD-450B-4494-A8A3-69E208A3B23F}</ProjectGuid>
+    <ProjectGuid>{E8CB1665-53F7-46A5-9AFD-B85AD08262D0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Qiniu.Net40.TravisTests</RootNamespace>
-    <AssemblyName>Qiniu.Net40.TravisTests</AssemblyName>
+    <RootNamespace>QiniuTests</RootNamespace>
+    <AssemblyName>QiniuTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -62,9 +62,9 @@
     <Compile Include="TestEnv.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Qiniu\Qiniu.Net40.Travis.csproj">
+    <ProjectReference Include="..\Qiniu\Qiniu.csproj">
       <Project>{2F5B0328-DE8B-4B53-A500-3077E340A51B}</Project>
-      <Name>Qiniu.Net40.Travis</Name>
+      <Name>Qiniu</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

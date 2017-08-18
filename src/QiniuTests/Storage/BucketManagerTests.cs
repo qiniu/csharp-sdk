@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Qiniu.Util;
-using Qiniu.Net40.TravisTests;
+using Qiniu.Tests;
 using Qiniu.Http;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿namespace Qiniu.Net40.TravisTests
+﻿namespace Qiniu.Tests
 {
     public class TestEnv
     {

@@ -1,8 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Qiniu.CDN;
 using Qiniu.Util;
-using Qiniu.Net40.TravisTests;
 using Qiniu.Http;
+using Qiniu.Tests;
 using System;
 
 namespace Qiniu.CDN.Tests

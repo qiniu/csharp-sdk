@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Qiniu.Net40.TravisTests")]
+[assembly: AssemblyTitle("QiniuTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Qiniu.Net40.TravisTests")]
+[assembly: AssemblyProduct("QiniuTests")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("e3ec18bd-450b-4494-a8a3-69e208a3b23f")]
+[assembly: Guid("e8cb1665-53f7-46a5-9afd-b85ad08262d0")]
 
 // 程序集的版本信息由下列四个值组成: 
 //

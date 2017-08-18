@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Qiniu.Net40.TravisTests;
+using Qiniu.Tests;
 using Qiniu.Util;
 using System;
 namespace Qiniu.Storage.Tests

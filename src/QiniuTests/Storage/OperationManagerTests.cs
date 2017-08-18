@@ -4,7 +4,7 @@ using System.Text;
 using Qiniu.Util;
 using Qiniu.Http;
 using Qiniu.Storage;
-using Qiniu.Net40.TravisTests;
+using Qiniu.Tests;
 
 namespace Qiniu.Storage.Tests
 {

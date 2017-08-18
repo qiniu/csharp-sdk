@@ -2,7 +2,7 @@
 using Qiniu.Http;
 using System;
 using Qiniu.Util;
-using Qiniu.Net40.TravisTests;
+using Qiniu.Tests;
 
 namespace Qiniu.Storage.Tests
 {
