@@ -26,6 +26,7 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(putPolicy.ToJsonString());
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
             //config.UseHttps = true;
             config.UseCdnDomains = true;
             config.ChunkSize = ChunkUnit.U512K;

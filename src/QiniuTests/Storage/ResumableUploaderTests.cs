@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using Qiniu.Storage;
 using Qiniu.Util;
 using Qiniu.Http;
 using System;
@@ -27,6 +26,7 @@ namespace Qiniu.Storage.Tests
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
 
             Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
             config.UseHttps = true;
             config.UseCdnDomains = true;
             config.ChunkSize = ChunkUnit.U512K;
@@ -54,6 +54,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.UseHttps = true;
+            config.Zone = Zone.ZONE_CN_East;
             config.UseCdnDomains = true;
             config.ChunkSize = ChunkUnit.U512K;
             ResumableUploader target = new ResumableUploader(config);
