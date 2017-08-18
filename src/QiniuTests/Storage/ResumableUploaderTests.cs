@@ -61,7 +61,7 @@ namespace Qiniu.Storage.Tests
             //设置断点续传进度记录文件
             extra.ResumeRecordFile = ResumeHelper.GetDefaultRecordKey(filePath, key);
             Console.WriteLine("record file:" + extra.ResumeRecordFile);
-            extra.ResumeRecordFile = "E:\\test.log";
+            extra.ResumeRecordFile = "test.progress";
             HttpResult result = target.UploadStream(fs, key, token, extra);
             Console.WriteLine("resume upload: " + result.ToString());
             Assert.AreEqual((int)HttpCode.OK, result.Code);
