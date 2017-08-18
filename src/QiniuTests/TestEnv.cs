@@ -21,8 +21,8 @@
             }
             else
             {
-                this.AccessKey = "QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm";
-                this.SecretKey = "Bxckh6FA-Fbs9Yt3i3cbKVK22UPBmAOHJcL95pGz";
+                this.AccessKey = "";
+                this.SecretKey = "";
                 this.Bucket = "csharpsdk";
                 this.Domain = "csharpsdk.qiniudn.com";
                 this.LocalFile = "E:\\VSProjects\\csharp-sdk\\tools\\files\\test.jpg";
