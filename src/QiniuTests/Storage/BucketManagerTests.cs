@@ -14,6 +14,7 @@ namespace Qiniu.Storage.Tests
         public void Init()
         {
             Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
             Mac mac = new Mac(AccessKey, SecretKey);
             this.bucketManager = new BucketManager(mac, config);
         }
