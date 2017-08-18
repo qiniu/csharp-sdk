@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using Qiniu.Http;
 using System;
 using Qiniu.Util;
@@ -6,10 +6,10 @@ using Qiniu.Tests;
 
 namespace Qiniu.Storage.Tests
 {
-    [TestClass()]
+    [TestFixture]
     public class FormUploaderTests : TestEnv
     {
-        [TestMethod()]
+        [Test]
         public void UploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);

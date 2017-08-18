@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using Qiniu.Storage;
 using Qiniu.Util;
 using Qiniu.Http;
@@ -7,10 +7,10 @@ using Qiniu.Tests;
 
 namespace Qiniu.Storage.Tests
 {
-    [TestClass()]
+    [TestFixture]
     public class ResumableUploaderTests : TestEnv
     {
-        [TestMethod()]
+        [Test]
         public void UploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -32,11 +32,11 @@ namespace Qiniu.Storage.Tests
             config.ChunkSize = ChunkUnit.U512K;
             ResumableUploader target = new ResumableUploader(config);
             HttpResult result = target.UploadStream(fs, key, token, null);
-            Assert.AreEqual((int)HttpCode.OK, result.Code);
             Console.WriteLine("chunk upload result: " + result.ToString());
+            Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
 
-        [TestMethod()]
+        [Test]
         public void ResumeUploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -63,8 +63,8 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine("record file:" + extra.ResumeRecordFile);
             extra.ResumeRecordFile = "E:\\test.log";
             HttpResult result = target.UploadStream(fs, key, token, extra);
-            Assert.AreEqual((int)HttpCode.OK, result.Code);
             Console.WriteLine("resume upload: " + result.ToString());
+            Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
     }
 }

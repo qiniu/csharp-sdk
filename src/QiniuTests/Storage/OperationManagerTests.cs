@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using System;
 using System.Text;
 using Qiniu.Util;
@@ -8,11 +8,11 @@ using Qiniu.Tests;
 
 namespace Qiniu.Storage.Tests
 {
-    [TestClass()]
+    [TestFixture]
     public class OperationManagerTests :TestEnv
     {
 
-        [TestMethod()]
+        [Test]
         public void PfopTest()
         {
             string saveMp4Entry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.mp4");
@@ -36,7 +36,7 @@ namespace Qiniu.Storage.Tests
         }
 
 
-        [TestMethod()]
+        [Test]
         public void PrefopTest()
         {
             string persistentId = "z0.59953aaa45a2650c9942144b";

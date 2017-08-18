@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using Qiniu.Util;
 using Qiniu.Http;
 using Qiniu.Tests;
@@ -6,21 +6,21 @@ using System;
 
 namespace Qiniu.CDN.Tests
 {
-    [TestClass()]
+    [TestFixture]
     public class CdnManagerTests : TestEnv
     {
 
-        [TestMethod()]
+        [Test]
         public void RefreshUrlsAndDirsTest()
         {
             string[] urls = {
-                "http://img.example.com/images/1.png",
-                "http://img.example.com/images/2.png"
+                string.Format("http://{0}/images/1.png",Domain),
+                string.Format("http://{0}/images/2.png",Domain)
             };
 
             string[] dirs = {
-                "http://img.example.com/images1/",
-                "http://img.example.com/images2/"
+                string.Format("http://{0}/images1/",Domain),
+                string.Format("http://{0}/images2/",Domain)
             };
 
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -53,12 +53,12 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [TestMethod()]
+        [Test]
         public void RefreshUrlsTest()
         {
             string[] urls = {
-                "http://img.example.com/images/1.png",
-                "http://img.example.com/images/2.png"
+                string.Format("http://{0}/images/1.png",Domain),
+                string.Format("http://{0}/images/2.png",Domain)
             };
 
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -82,12 +82,12 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [TestMethod()]
+        [Test]
         public void RefreshDirsTest()
         {
             string[] dirs = {
-                "http://img.example.com/images1/",
-                "http://img.example.com/images2/"
+                string.Format("http://{0}/images1/",Domain),
+                string.Format("http://{0}/images2/",Domain)
             };
 
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -112,12 +112,12 @@ namespace Qiniu.CDN.Tests
         }
 
 
-        [TestMethod()]
+        [Test]
         public void PrefetchUrlsTest()
         {
             string[] urls = {
-                "http://img.example.com/images/1.png",
-                "http://img.example.com/images/2.png"
+                string.Format("http://{0}/images/1.png",Domain),
+                string.Format("http://{0}/images/2.png",Domain)
             };
 
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -141,13 +141,13 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [TestMethod()]
+        [Test]
         public void GetBandwidthDataTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
             CdnManager manager = new CdnManager(mac);
 
-            string[] domains = new string[] { "img.example.com", "lvideo.example.com" };
+            string[] domains = new string[] { Domain };
             string start = "2017-08-01";
             string end = "2017-08-10";
             string granu = "day";
@@ -192,13 +192,13 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [TestMethod()]
+        [Test]
         public void GetFluxDataTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
             CdnManager manager = new CdnManager(mac);
 
-            string[] domains = new string[] { "img.example.com", "lvideo.example.com" };
+            string[] domains = new string[] { Domain };
             string start = "2017-08-01";
             string end = "2017-08-10";
             string granu = "day";
@@ -243,13 +243,13 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [TestMethod()]
+        [Test]
         public void GetCdnLogListTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
             CdnManager manager = new CdnManager(mac);
             string day = "2017-08-10";
-            string[] domains = new string[] { "img.example.com", "lvideo.example.com" };
+            string[] domains = new string[] { Domain};
             LogListResult ret = manager.GetCdnLogList(domains, day);
             if (ret.Code != (int)HttpCode.OK)
             {
@@ -267,14 +267,14 @@ namespace Qiniu.CDN.Tests
         }
 
 
-        [TestMethod()]
+        [Test]
         public void CreateTimestampAntiLeechUrlTest()
         {
-            string host = "http://qnls.ktvdaren.com";
-            string fileName = "E/ls/0.0/201705/20170628/6000694.ls";
+            string host = "http://qnls.example.com";
+            string fileName = "hello/6000694.ls";
             string query = "";
             int expireInSeconds = 3600;
-            string encryptKey = "b6bae1a969b9be8ac988abb8009a55985d9844b9";
+            string encryptKey = "xxx";
             string finalUrl = CdnManager.CreateTimestampAntiLeechUrl(host, fileName, query, encryptKey, expireInSeconds);
             Console.WriteLine(finalUrl);
         }
