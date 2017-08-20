@@ -53,14 +53,14 @@ namespace Qiniu.Storage
         /// <param name="localFile">本地待上传的文件名</param>
         /// <param name="key">要保存的文件名称</param>
         /// <param name="token">上传凭证</param>
-        /// <param name="extra">上传可选配置</param>
+        /// <param name="putExtra">上传可选配置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadFile(string localFile, string key, string token, PutExtra extra)
+        public HttpResult UploadFile(string localFile, string key, string token, PutExtra putExtra)
         {
             try
             {
                 FileStream fs = new FileStream(localFile, FileMode.Open);
-                return this.UploadStream(fs, key, token, extra);
+                return this.UploadStream(fs, key, token, putExtra);
             }
             catch (Exception ex)
             {
@@ -684,23 +684,6 @@ namespace Qiniu.Storage
                 Console.WriteLine("[{0}] [ResumableUpload] Progress: {1,7:0.000}%\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), 100.0);
             }
         }
-
-        /// <summary>
-        /// 默认的进度处理函数-上传数据流
-        /// </summary>
-        /// <param name="uploadedBytes">已上传的字节数，如果设置为0或负数表示读取完毕</param>
-        public static void DefaultStreamProgressHandler(long uploadedBytes)
-        {
-            if (uploadedBytes > 0)
-            {
-                Console.WriteLine("[{0}] [ResumableUpload] UploadledBytes: {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), uploadedBytes);
-            }
-            else
-            {
-                Console.WriteLine("[{0}] [ResumableUpload] Done.\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-            }
-        }
-
       
         /// <summary>
         /// 默认的上传控制函数，默认不执行任何控制

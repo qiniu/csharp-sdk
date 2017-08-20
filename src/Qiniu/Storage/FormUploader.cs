@@ -76,14 +76,22 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传数据流后的返回结果</returns>
-        public HttpResult UploadStream(Stream stream, string key, string token, PutExtra extra)
+        public HttpResult UploadStream(Stream stream, string key, string token, PutExtra putExtra)
         {
-            if (extra == null)
+            if (putExtra == null)
             {
-                extra = new PutExtra();
+                putExtra = new PutExtra();
             }
-            if (string.IsNullOrEmpty(extra.MimeType )) {
-                extra.MimeType = "application/octet-stream";
+            if (string.IsNullOrEmpty(putExtra.MimeType )) {
+                putExtra.MimeType = "application/octet-stream";
+            }
+            if (putExtra.ProgressHandler == null)
+            {
+                putExtra.ProgressHandler = DefaultUploadProgressHandler;
+            }
+            if (putExtra.UploadController == null)
+            {
+                putExtra.UploadController = DefaultUploadController;
             }
             string fname = key;
             if (string.IsNullOrEmpty(key))
@@ -115,9 +123,9 @@ namespace Qiniu.Storage
                 bodyBuilder.AppendLine("--" + boundary);
 
                 //write extra params
-                if (extra.Params != null && extra.Params.Count > 0)
+                if (putExtra.Params != null && putExtra.Params.Count > 0)
                 {
-                    foreach (var p in extra.Params)
+                    foreach (var p in putExtra.Params)
                     {
                         if (p.Key.StartsWith("x:"))
                         {
@@ -134,6 +142,7 @@ namespace Qiniu.Storage
                 int bufferSize = 1024 * 1024;
                 byte[] buffer = new byte[bufferSize];
                 int bytesRead = 0;
+                putExtra.ProgressHandler(0, stream.Length);
                 MemoryStream dataMS = new MemoryStream();
                 while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
                 {
@@ -149,11 +158,11 @@ namespace Qiniu.Storage
                 bodyBuilder.AppendLine("--" + boundary);
 
                 //write fname
-                bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"",fname); 
+                bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"", fname);
                 bodyBuilder.AppendLine();
 
                 //write mime type
-                bodyBuilder.AppendFormat("Content-Type: {0}", extra.MimeType);
+                bodyBuilder.AppendFormat("Content-Type: {0}", putExtra.MimeType);
                 bodyBuilder.AppendLine();
                 bodyBuilder.AppendLine();
 
@@ -180,8 +189,9 @@ namespace Qiniu.Storage
                 }
 
                 string uploadHost = this.config.UpHost(ak, bucket);
-
+                putExtra.ProgressHandler(stream.Length / 5, stream.Length);
                 result = httpManager.PostMultipart(uploadHost, ms.ToArray(), boundary, null);
+                putExtra.ProgressHandler(stream.Length, stream.Length);
                 if (result.Code == (int)HttpCode.OK)
                 {
                     result.RefText += string.Format("[{0}] [FormUpload] Uploaded: #STREAM# ==> \"{1}\"\n",
@@ -237,6 +247,32 @@ namespace Qiniu.Storage
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 默认的进度处理函数-上传文件
+        /// </summary>
+        /// <param name="uploadedBytes">已上传的字节数</param>
+        /// <param name="totalBytes">文件总字节数</param>
+        public static void DefaultUploadProgressHandler(long uploadedBytes, long totalBytes)
+        {
+            if (uploadedBytes < totalBytes)
+            {
+                Console.WriteLine("[{0}] [FormUpload] Progress: {1,7:0.000}%", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), 100.0 * uploadedBytes / totalBytes);
+            }
+            else
+            {
+                Console.WriteLine("[{0}] [FormUpload] Progress: {1,7:0.000}%\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), 100.0);
+            }
+        }
+
+        /// <summary>
+        /// 默认的上传控制函数，默认不执行任何控制
+        /// </summary>
+        /// <returns>控制状态</returns>
+        public static UploadControllerAction DefaultUploadController()
+        {
+            return UploadControllerAction.Activated;
         }
     }
 
