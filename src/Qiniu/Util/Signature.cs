@@ -30,18 +30,8 @@ namespace Qiniu.Util
 
         private string encodedSign(byte[] data)
         {
-#if WINDOWS_UWP
-            var hma = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha1);
-            var skBuffer = CryptographicBuffer.ConvertStringToBinary(mac.SecretKey, BinaryStringEncoding.Utf8);
-            var hmacKey = hma.CreateKey(skBuffer);
-            var dataBuffer = CryptographicBuffer.CreateFromByteArray(data);
-            var signBuffer = CryptographicEngine.Sign(hmacKey, dataBuffer);
-            byte[] digest;
-            CryptographicBuffer.CopyToByteArray(signBuffer, out digest);
-#else
             HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
             byte[] digest = hmac.ComputeHash(data);         
-#endif
             return Base64.UrlSafeBase64Encode(digest);
         }
 
@@ -114,18 +104,8 @@ namespace Qiniu.Util
                 {
                     buffer.Write(body, 0, body.Length);
                 }
-#if WINDOWS_UWP
-                var hma = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha1);
-                var skBuffer = CryptographicBuffer.ConvertStringToBinary(mac.SecretKey, BinaryStringEncoding.Utf8);
-                var hmacKey = hma.CreateKey(skBuffer);
-                var dataBuffer = CryptographicBuffer.CreateFromByteArray(buffer.ToArray());
-                var signBuffer = CryptographicEngine.Sign(hmacKey, dataBuffer);
-                byte[] digest;
-                CryptographicBuffer.CopyToByteArray(signBuffer, out digest);
-#else
                 HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
                 byte[] digest = hmac.ComputeHash(buffer.ToArray());
-#endif
                 string digestBase64 = Base64.UrlSafeBase64Encode(digest);
                 return string.Format("{0}:{1}", mac.AccessKey, digestBase64);
             }
