@@ -13,12 +13,6 @@ namespace Qiniu.Storage
         public long FileSize { get; set; }
 
         /// <summary>
-        /// 当前块编号
-        /// </summary>
-        [JsonProperty("blockIndex")]
-        public int BlockIndex { get; set; }
-
-        /// <summary>
         /// 文件块总数
         /// </summary>
         [JsonProperty("blockCount")]

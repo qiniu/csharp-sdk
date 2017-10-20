@@ -32,5 +32,10 @@ namespace Qiniu.Storage
         /// 最大重试次数
         /// </summary>
         public int MaxRetryTimes { set; get; }
+
+        /// <summary>
+        /// 块并发上传的线程数量
+        /// </summary>
+        public int BlockUploadThreads { set; get; }
     }
 }
