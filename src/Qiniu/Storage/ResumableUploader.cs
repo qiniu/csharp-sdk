@@ -161,14 +161,7 @@ namespace Qiniu.Storage
                     {
                         string context = resumeInfo.Contexts[blockIndex];
                         if (string.IsNullOrEmpty(context))
-                        {
-                            int blockSize = BLOCK_SIZE;
-                            //calc the block size
-                            if (blockIndex == blockCount - 1)
-                            {
-                                blockSize = blockCount - blockIndex * BLOCK_SIZE;
-                            }
-
+                        { 
                             //check upload controller action before each chunk
                             while (true)
                             {
