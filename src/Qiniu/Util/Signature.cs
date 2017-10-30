@@ -31,7 +31,7 @@ namespace Qiniu.Util
         private string encodedSign(byte[] data)
         {
             HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
-            byte[] digest = hmac.ComputeHash(data);         
+            byte[] digest = hmac.ComputeHash(data);
             return Base64.UrlSafeBase64Encode(digest);
         }
 
@@ -48,7 +48,7 @@ namespace Qiniu.Util
         /// <returns></returns>
         public string Sign(byte[] data)
         {
-            return string.Format("{0}:{1}", mac.AccessKey,encodedSign(data));
+            return string.Format("{0}:{1}", mac.AccessKey, encodedSign(data));
         }
 
         /// <summary>

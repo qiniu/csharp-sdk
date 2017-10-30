@@ -108,7 +108,7 @@ namespace Qiniu.Storage
                 {
                     long uploadedBytes = 0;
                     long fileSize = stream.Length;
-                    int blockCount = (int)((fileSize + BLOCK_SIZE - 1) / BLOCK_SIZE);
+                    long blockCount = (fileSize + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
                     //check resume record file
                     ResumeInfo resumeInfo = null;
@@ -136,7 +136,7 @@ namespace Qiniu.Storage
                     }
 
                     //calc upload progress
-                    for (int blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                    for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
                     {
                         string context = resumeInfo.Contexts[blockIndex];
                         if (!string.IsNullOrEmpty(context))
@@ -152,16 +152,16 @@ namespace Qiniu.Storage
                     //check not finished blocks to upload
                     UploadControllerAction upCtrl = putExtra.UploadController();
                     ManualResetEvent manualResetEvent = new ManualResetEvent(false);
-                    Dictionary<int, byte[]> blockDataDict = new Dictionary<int, byte[]>();
-                    Dictionary<int, HttpResult> blockMakeResults = new Dictionary<int, HttpResult>();
+                    Dictionary<long, byte[]> blockDataDict = new Dictionary<long, byte[]>();
+                    Dictionary<long, HttpResult> blockMakeResults = new Dictionary<long, HttpResult>();
                     Dictionary<string, long> uploadedBytesDict = new Dictionary<string, long>();
                     uploadedBytesDict.Add("UploadProgress", uploadedBytes);
                     byte[] blockBuffer = new byte[BLOCK_SIZE];
-                    for (int blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                    for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
                     {
                         string context = resumeInfo.Contexts[blockIndex];
                         if (string.IsNullOrEmpty(context))
-                        { 
+                        {
                             //check upload controller action before each chunk
                             while (true)
                             {
@@ -200,7 +200,7 @@ namespace Qiniu.Storage
                             {
                                 processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize);
                                 //check mkblk results
-                                foreach(int blkIndex in blockMakeResults.Keys)
+                                foreach (int blkIndex in blockMakeResults.Keys)
                                 {
                                     HttpResult mkblkRet = blockMakeResults[blkIndex];
                                     if (mkblkRet.Code != 200)
@@ -292,15 +292,15 @@ namespace Qiniu.Storage
             return result;
         }
 
-        private void processMakeBlocks(Dictionary<int, byte[]> blockDataDict, string upToken,
-            PutExtra putExtra, ResumeInfo resumeInfo, Dictionary<int, HttpResult> blockMakeResults,
-            Dictionary<string,long> uploadedBytesDict, long fileSize)
+        private void processMakeBlocks(Dictionary<long, byte[]> blockDataDict, string upToken,
+            PutExtra putExtra, ResumeInfo resumeInfo, Dictionary<long, HttpResult> blockMakeResults,
+            Dictionary<string, long> uploadedBytesDict, long fileSize)
         {
             int taskMax = blockDataDict.Count;
             ManualResetEvent[] doneEvents = new ManualResetEvent[taskMax];
             int eventIndex = 0;
             object progressLock = new object();
-            foreach (int blockIndex in blockDataDict.Keys)
+            foreach (long blockIndex in blockDataDict.Keys)
             {
                 //signal task
                 ManualResetEvent doneEvent = new ManualResetEvent(false);
@@ -333,9 +333,9 @@ namespace Qiniu.Storage
         {
             ResumeBlocker resumeBlocker = (ResumeBlocker)resumeBlockerObj;
             ManualResetEvent doneEvent = resumeBlocker.DoneEvent;
-            Dictionary<int, HttpResult> blockMakeResults = resumeBlocker.BlockMakeResults;
+            Dictionary<long, HttpResult> blockMakeResults = resumeBlocker.BlockMakeResults;
             PutExtra putExtra = resumeBlocker.PutExtra;
-            int blockIndex = resumeBlocker.BlockIndex;
+            long blockIndex = resumeBlocker.BlockIndex;
             HttpResult result = new HttpResult();
             //check whether to cancel
             while (true)
@@ -353,8 +353,8 @@ namespace Qiniu.Storage
                     result.Code = (int)HttpCode.USER_CANCELED;
                     result.RefCode = (int)HttpCode.USER_CANCELED;
                     result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted, mkblk {1}\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),blockIndex);
-                    blockMakeResults.Add(blockIndex,result);
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), blockIndex);
+                    blockMakeResults.Add(blockIndex, result);
                     return;
                 }
                 else
@@ -365,7 +365,7 @@ namespace Qiniu.Storage
 
             byte[] blockBuffer = resumeBlocker.BlockBuffer;
             int blockSize = blockBuffer.Length;
-           
+
             string upToken = resumeBlocker.UploadToken;
             Dictionary<string, long> uploadedBytesDict = resumeBlocker.UploadedBytesDict;
             long fileSize = resumeBlocker.FileSize;

@@ -16,7 +16,7 @@ namespace Qiniu.Storage
         /// 文件块总数
         /// </summary>
         [JsonProperty("blockCount")]
-        public int BlockCount { get; set; }
+        public long BlockCount { get; set; }
 
         /// <summary>
         /// 上下文信息列表
