@@ -1,7 +1,7 @@
 ﻿namespace Qiniu.Storage
 {
     /// <summary>
-    /// 目前已支持的区域：华东/华北/华南/北美
+    /// 目前已支持的区域：华东/华北/华南/北美/新加坡
     /// </summary>
     public class Zone
     {
@@ -89,6 +89,19 @@
             IovipHost = "iovip-na0.qbox.me",
             SrcUpHosts = new string[] { "up-na0.qiniup.com" },
             CdnUpHosts = new string[] { "upload-na0.qiniup.com" }
+        };
+
+        /// <summary>
+        /// 新加坡
+        /// </summary>
+        public static Zone ZONE_AS_Singapore = new Zone()
+        {
+            RsHost = "rs-as0.qiniu.com",
+            RsfHost = "rsf-as0.qiniu.com",
+            ApiHost = "api-as0.qiniu.com",
+            IovipHost = "iovip-as0.qbox.me",
+            SrcUpHosts = new string[] { "up-as0.qiniup.com" },
+            CdnUpHosts = new string[] { "upload-as0.qiniup.com" }
         };
     }
 }
