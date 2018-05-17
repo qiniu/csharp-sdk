@@ -40,8 +40,8 @@
         /// </summary>
         public static Zone ZONE_CN_East = new Zone()
         {
-            RsHost = "rs.qiniu.com",
-            RsfHost = "rsf.qiniu.com",
+            RsHost = "rs.qbox.me",
+            RsfHost = "rsf.qbox.me",
             ApiHost = "api.qiniu.com",
             IovipHost = "iovip.qbox.me",
             SrcUpHosts = new string[] { "up.qiniup.com",
@@ -55,8 +55,8 @@
         /// </summary>
         public static Zone ZONE_CN_North = new Zone()
         {
-            RsHost = "rs-z1.qiniu.com",
-            RsfHost = "rsf-z1.qiniu.com",
+            RsHost = "rs-z1.qbox.me",
+            RsfHost = "rsf-z1.qbox.me",
             ApiHost = "api-z1.qiniu.com",
             IovipHost = "iovip-z1.qbox.me",
             SrcUpHosts = new string[] { "up-z1.qiniup.com" },
@@ -68,8 +68,8 @@
         /// </summary>
         public static Zone ZONE_CN_South = new Zone()
         {
-            RsHost = "rs-z2.qiniu.com",
-            RsfHost = "rsf-z2.qiniu.com",
+            RsHost = "rs-z2.qbox.me",
+            RsfHost = "rsf-z2.qbox.me",
             ApiHost = "api-z2.qiniu.com",
             IovipHost = "iovip-z2.qbox.me",
             SrcUpHosts = new string[] { "up-z2.qiniup.com",
@@ -83,8 +83,8 @@
         /// </summary>
         public static Zone ZONE_US_North = new Zone()
         {
-            RsHost = "rs-na0.qiniu.com",
-            RsfHost = "rsf-na0.qiniu.com",
+            RsHost = "rs-na0.qbox.me",
+            RsfHost = "rsf-na0.qbox.me",
             ApiHost = "api-na0.qiniu.com",
             IovipHost = "iovip-na0.qbox.me",
             SrcUpHosts = new string[] { "up-na0.qiniup.com" },
@@ -96,8 +96,8 @@
         /// </summary>
         public static Zone ZONE_AS_Singapore = new Zone()
         {
-            RsHost = "rs-as0.qiniu.com",
-            RsfHost = "rsf-as0.qiniu.com",
+            RsHost = "rs-as0.qbox.me",
+            RsfHost = "rsf-as0.qbox.me",
             ApiHost = "api-as0.qiniu.com",
             IovipHost = "iovip-as0.qbox.me",
             SrcUpHosts = new string[] { "up-as0.qiniup.com" },
