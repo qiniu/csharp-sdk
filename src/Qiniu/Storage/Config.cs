@@ -4,7 +4,7 @@ namespace Qiniu.Storage
     /// <summary>
     /// 配置信息，主要包括Zone配置(另请参阅Zone模块)
     /// 目前已支持的机房包括：
-    /// 华东(CN_East), 华北(CN_North), 华南(CN_South), 北美(US_North)
+    /// 华东(CN_East), 华北(CN_North), 华南(CN_South), 北美(US_North), 新加坡（AS_Singapore）
     /// 默认设置为华东机房(CN_East) 
     /// </summary>
     public class Config
