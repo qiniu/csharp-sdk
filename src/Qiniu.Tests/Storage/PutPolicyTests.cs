@@ -1,13 +1,13 @@
-﻿using NUnit.Framework;
 using Qiniu.Tests;
 using Qiniu.Util;
 using System;
+using Xunit;
+
 namespace Qiniu.Storage.Tests
 {
-    [TestFixture]
     public class PutPolicyTests : TestEnv
     {
-        [Test]
+        [Fact]
         public void CreateUptokenTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);

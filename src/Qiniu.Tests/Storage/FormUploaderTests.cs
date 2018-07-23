@@ -1,15 +1,14 @@
-﻿using NUnit.Framework;
 using Qiniu.Http;
 using System;
 using Qiniu.Util;
 using Qiniu.Tests;
+using Xunit;
 
 namespace Qiniu.Storage.Tests
 {
-    [TestFixture]
     public class FormUploaderTests : TestEnv
     {
-        [Test]
+        [Fact]
         public void UploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -31,7 +30,7 @@ namespace Qiniu.Storage.Tests
             FormUploader target = new FormUploader(config);
             HttpResult result = target.UploadFile(filePath, key, token, null);
             Console.WriteLine("form upload result: " + result.ToString());
-            Assert.AreEqual((int)HttpCode.OK, result.Code);
+            Assert.Equal((int)HttpCode.OK, result.Code);
         }
     }
 }

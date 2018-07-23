@@ -1,16 +1,15 @@
-﻿using NUnit.Framework;
 using Qiniu.Util;
 using Qiniu.Http;
 using Qiniu.Tests;
 using System;
+using Xunit;
 
 namespace Qiniu.CDN.Tests
 {
-    [TestFixture]
     public class CdnManagerTests : TestEnv
     {
 
-        [Test]
+        [Fact]
         public void RefreshUrlsAndDirsTest()
         {
             string[] urls = {
@@ -28,7 +27,7 @@ namespace Qiniu.CDN.Tests
             RefreshResult ret = manager.RefreshUrlsAndDirs(urls, dirs);
             if (ret.Code != (int)HttpCode.OK)
             {
-                Assert.Fail(ret.ToString());
+                Assert.True(false, ret.ToString());
             }
             Console.WriteLine(ret.Result.Code);
             Console.WriteLine(ret.Result.Error);
@@ -53,7 +52,7 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void RefreshUrlsTest()
         {
             string[] urls = {
@@ -66,7 +65,7 @@ namespace Qiniu.CDN.Tests
             RefreshResult ret = manager.RefreshUrls(urls);
             if (ret.Code != (int)HttpCode.OK)
             {
-                Assert.Fail(ret.ToString());
+                Assert.True(false, ret.ToString());
             }
             Console.WriteLine(ret.Result.Code);
             Console.WriteLine(ret.Result.Error);
@@ -82,7 +81,7 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void RefreshDirsTest()
         {
             string[] dirs = {
@@ -95,7 +94,7 @@ namespace Qiniu.CDN.Tests
             RefreshResult ret = manager.RefreshDirs(dirs);
             if (ret.Code != (int)HttpCode.OK)
             {
-                Assert.Fail(ret.ToString());
+                Assert.True(false, ret.ToString());
             }
             Console.WriteLine(ret.Result.Code);
             Console.WriteLine(ret.Result.Error);
@@ -112,7 +111,7 @@ namespace Qiniu.CDN.Tests
         }
 
 
-        [Test]
+        [Fact]
         public void PrefetchUrlsTest()
         {
             string[] urls = {
@@ -125,7 +124,7 @@ namespace Qiniu.CDN.Tests
             PrefetchResult ret = manager.PrefetchUrls(urls);
             if (ret.Code != (int)HttpCode.OK)
             {
-                Assert.Fail(ret.ToString());
+                Assert.True(false, ret.ToString());
             }
             Console.WriteLine(ret.Result.Code);
             Console.WriteLine(ret.Result.Error);
@@ -141,7 +140,7 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void GetBandwidthDataTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -155,7 +154,7 @@ namespace Qiniu.CDN.Tests
             BandwidthResult ret = manager.GetBandwidthData(domains, start, end, granu);
             if (ret.Code != (int)HttpCode.OK)
             {
-                Assert.Fail(ret.ToString());
+                Assert.True(false, ret.ToString());
             }
 
             foreach (string domain in domains)
@@ -192,7 +191,7 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void GetFluxDataTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -206,7 +205,7 @@ namespace Qiniu.CDN.Tests
             FluxResult ret = manager.GetFluxData(domains, start, end, granu);
             if (ret.Code != (int)HttpCode.OK)
             {
-                Assert.Fail(ret.ToString());
+                Assert.True(false, ret.ToString());
             }
 
             foreach (string domain in domains)
@@ -243,7 +242,7 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void GetCdnLogListTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -253,7 +252,7 @@ namespace Qiniu.CDN.Tests
             LogListResult ret = manager.GetCdnLogList(domains, day);
             if (ret.Code != (int)HttpCode.OK)
             {
-                Assert.Fail(ret.ToString());
+                Assert.True(false, ret.ToString());
             }
 
             foreach (string domain in ret.Result.Data.Keys)
@@ -267,7 +266,7 @@ namespace Qiniu.CDN.Tests
         }
 
 
-        [Test]
+        [Fact]
         public void CreateTimestampAntiLeechUrlTest()
         {
             string host = "http://qnls.example.com";

@@ -1,18 +1,15 @@
-﻿using NUnit.Framework;
 using System;
-using System.Text;
 using Qiniu.Util;
 using Qiniu.Http;
-using Qiniu.Storage;
 using Qiniu.Tests;
+using Xunit;
 
 namespace Qiniu.Storage.Tests
 {
-    [TestFixture]
     public class OperationManagerTests :TestEnv
     {
 
-        [Test]
+        [Fact]
         public void PfopTest()
         {
             string saveMp4Entry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.mp4");
@@ -30,13 +27,13 @@ namespace Qiniu.Storage.Tests
             PfopResult pfopRet = manager.Pfop(Bucket, key, fops, pipeline, notifyUrl, force);
             if (pfopRet.Code != (int)HttpCode.OK)
             {
-                Assert.Fail("pfop error: " + pfopRet.ToString());
+                Assert.True(false, "pfop error: " + pfopRet.ToString());
             }
             Console.WriteLine(pfopRet.PersistentId);
         }
 
 
-        [Test]
+        [Fact]
         public void PrefopTest()
         {
             string persistentId = "z0.59953aaa45a2650c9942144b";
@@ -46,7 +43,7 @@ namespace Qiniu.Storage.Tests
             PrefopResult ret = manager.Prefop(persistentId);
             if (ret.Code != (int)HttpCode.OK)
             {
-                Assert.Fail("prefop error: " + ret.ToString());
+                Assert.True(false, "prefop error: " + ret.ToString());
             }
             Console.WriteLine(ret.ToString());
         }
