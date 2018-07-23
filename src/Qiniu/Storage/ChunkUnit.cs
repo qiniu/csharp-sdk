@@ -1,61 +1,61 @@
-﻿namespace Qiniu.Storage
+namespace Qiniu.Storage
 {
     /// <summary>
-    /// 分片大小
+    ///     分片大小
     /// </summary>
     public enum ChunkUnit
     {
         /// <summary>
-        /// 128KB
+        ///     128KB
         /// </summary>
         U128K = 1,
 
         /// <summary>
-        /// 256KB
+        ///     256KB
         /// </summary>
         U256K = 2,
 
         /// <summary>
-        /// 512KB
+        ///     512KB
         /// </summary>
         U512K = 4,
 
         /// <summary>
-        /// 1MB
+        ///     1MB
         /// </summary>
         U1024K = 8,
 
         /// <summary>
-        /// 2MB
+        ///     2MB
         /// </summary>
         U2048K = 16,
 
         /// <summary>
-        /// 4MB
+        ///     4MB
         /// </summary>
         U4096K = 32
-    };
+    }
 
     /// <summary>
-    /// ChunkSize转换
+    ///     ChunkSize转换
     /// </summary>
     public class ResumeChunk
     {
-        private static int N = 128 * 1024;
+        private static readonly int N = 128 * 1024;
 
         /// <summary>
-        /// 计算ChunkSize
+        ///     计算ChunkSize
         /// </summary>
         /// <param name="cu"></param>
         /// <returns></returns>
         public static int GetChunkSize(ChunkUnit cu)
         {
-            int c = (int)cu;
+            var c = (int)cu;
             return c * N;
         }
 
         /// <summary>
-        /// 计算ChunkUnit
+        ///     计算ChunkUnit
         /// </summary>
         /// <param name="chunkSize"></param>
         /// <returns></returns>
@@ -65,38 +65,36 @@
             {
                 return ChunkUnit.U2048K;
             }
+
+            var u = chunkSize / N;
+            int cu;
+
+            if (u == 1)
+            {
+                cu = 1;
+            }
+            else if (u < 4)
+            {
+                cu = 2;
+            }
+            else if (u < 8)
+            {
+                cu = 4;
+            }
+            else if (u < 16)
+            {
+                cu = 8;
+            }
+            else if (u < 32)
+            {
+                cu = 16;
+            }
             else
             {
-                int u = chunkSize / N;
-                int cu;
-
-                if (u == 1)
-                {
-                    cu = 1;
-                }
-                else if (u < 4)
-                {
-                    cu = 2;
-                }
-                else if (u < 8)
-                {
-                    cu = 4;
-                }
-                else if (u < 16)
-                {
-                    cu = 8;
-                }
-                else if (u < 32)
-                {
-                    cu = 16;
-                }
-                else
-                {
-                    cu = 32;
-                }
-
-                return (ChunkUnit)cu;
+                cu = 32;
             }
+
+            return (ChunkUnit)cu;
         }
     }
 }

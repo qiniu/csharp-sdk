@@ -1,7 +1,7 @@
-﻿namespace Qiniu.Storage
+namespace Qiniu.Storage
 {
     /// <summary>
-    /// 从uc.qbox.me返回的消息
+    ///     从uc.qbox.me返回的消息
     /// </summary>
     internal class ZoneInfo
     {
@@ -27,6 +27,7 @@
         public UpDomain Src { set; get; }
         public UpDomain OldSrc { set; get; }
     }
+
     internal class UpDomain
     {
         public string[] Main { set; get; }

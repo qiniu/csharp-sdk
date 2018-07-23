@@ -1,34 +1,34 @@
 using System;
-using Qiniu.Util;
 using Qiniu.Http;
 using Qiniu.Tests;
+using Qiniu.Util;
 using Xunit;
 
 namespace Qiniu.Storage.Tests
 {
-    public class OperationManagerTests :TestEnv
+    public class OperationManagerTests : TestEnv
     {
-
         [Fact]
         public void PfopTest()
         {
-            string saveMp4Entry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.mp4");
-            string saveJpgEntry = Base64.UrlSafeBase64Encode(Bucket + ":vframe_test_target.jpg");
-            string avthumbMp4Fop = "avthumb/mp4|saveas/" + saveMp4Entry;
-            string vframeJpgFop = "vframe/jpg/offset/1|saveas/" + saveJpgEntry;
-            string fops = string.Join(";", new string[] { avthumbMp4Fop, vframeJpgFop });
-            Mac mac = new Mac(AccessKey, SecretKey);
-            Config config = new Config();
-            OperationManager manager = new OperationManager(mac, config);
-            string pipeline = "sdktest";
-            string notifyUrl = "http://api.example.com/qiniu/pfop/notify";
-            string key = "qiniu.mp4";
-            bool force = true;
-            PfopResult pfopRet = manager.Pfop(Bucket, key, fops, pipeline, notifyUrl, force);
+            var saveMp4Entry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.mp4");
+            var saveJpgEntry = Base64.UrlSafeBase64Encode(Bucket + ":vframe_test_target.jpg");
+            var avthumbMp4Fop = "avthumb/mp4|saveas/" + saveMp4Entry;
+            var vframeJpgFop = "vframe/jpg/offset/1|saveas/" + saveJpgEntry;
+            var fops = string.Join(";", avthumbMp4Fop, vframeJpgFop);
+            var mac = new Mac(AccessKey, SecretKey);
+            var config = new Config();
+            var manager = new OperationManager(mac, config);
+            var pipeline = "sdktest";
+            var notifyUrl = "http://api.example.com/qiniu/pfop/notify";
+            var key = "qiniu.mp4";
+            var force = true;
+            var pfopRet = manager.Pfop(Bucket, key, fops, pipeline, notifyUrl, force);
             if (pfopRet.Code != (int)HttpCode.OK)
             {
-                Assert.True(false, "pfop error: " + pfopRet.ToString());
+                Assert.True(false, "pfop error: " + pfopRet);
             }
+
             Console.WriteLine(pfopRet.PersistentId);
         }
 
@@ -36,17 +36,17 @@ namespace Qiniu.Storage.Tests
         [Fact]
         public void PrefopTest()
         {
-            string persistentId = "z0.59953aaa45a2650c9942144b";
-            Mac mac = new Mac(AccessKey, SecretKey);
-            Config config = new Config();
-            OperationManager manager = new OperationManager(mac, config);
-            PrefopResult ret = manager.Prefop(persistentId);
+            var persistentId = "z0.59953aaa45a2650c9942144b";
+            var mac = new Mac(AccessKey, SecretKey);
+            var config = new Config();
+            var manager = new OperationManager(mac, config);
+            var ret = manager.Prefop(persistentId);
             if (ret.Code != (int)HttpCode.OK)
             {
-                Assert.True(false, "prefop error: " + ret.ToString());
+                Assert.True(false, "prefop error: " + ret);
             }
+
             Console.WriteLine(ret.ToString());
         }
-
     }
 }

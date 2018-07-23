@@ -1,24 +1,19 @@
-﻿using System;
+using System;
 using Qiniu.Http;
 
 namespace Qiniu.Storage
 {
-    class QiniuException :Exception
+    internal class QiniuException : Exception
     {
-        public string message;
         public HttpResult HttpResult;
+        public string message;
+
         public QiniuException(HttpResult httpResult, string message)
         {
-            this.HttpResult = httpResult == null ? new HttpResult() : httpResult;
+            HttpResult = httpResult == null ? new HttpResult() : httpResult;
             this.message = message;
         }
 
-        public override string Message
-        {
-            get
-            {
-                return this.message;
-            }
-        }
+        public override string Message => message;
     }
 }

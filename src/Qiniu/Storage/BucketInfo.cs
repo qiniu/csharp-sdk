@@ -1,52 +1,52 @@
-﻿namespace Qiniu.Storage
+namespace Qiniu.Storage
 {
     /// <summary>
-    /// bucket info
+    ///     bucket info
     /// </summary>
     public class BucketInfo
     {
         /// <summary>
-        /// bucket name
+        ///     bucket name
         /// </summary>
         public string tbl { get; set; }
 
         /// <summary>
-        /// itbl
+        ///     itbl
         /// </summary>
         public long itbl { get; set; }
 
         /// <summary>
-        /// deprecated
+        ///     deprecated
         /// </summary>
-        public string phy {get;set;}
+        public string phy { get; set; }
 
         /// <summary>
-        /// id
+        ///     id
         /// </summary>
         public long uid { get; set; }
 
         /// <summary>
-        /// zone
+        ///     zone
         /// </summary>
         public string zone { get; set; }
 
         /// <summary>
-        /// region
+        ///     region
         /// </summary>
         public string region { get; set; }
 
         /// <summary>
-        /// isGlobal
+        ///     isGlobal
         /// </summary>
         public bool global { get; set; }
 
         /// <summary>
-        /// isLineStorage
+        ///     isLineStorage
         /// </summary>
         public bool line { get; set; }
 
         /// <summary>
-        /// creationTime
+        ///     creationTime
         /// </summary>
         public long ctime { get; set; }
     }

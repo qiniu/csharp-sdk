@@ -1,28 +1,28 @@
-﻿namespace Qiniu.Storage
+namespace Qiniu.Storage
 {
     /// <summary>
-    /// 上传任务的状态
+    ///     上传任务的状态
     /// </summary>
     public enum UploadControllerAction
     {
         /// <summary>
-        /// 任务状态:激活
+        ///     任务状态:激活
         /// </summary>
-        Activated,         
+        Activated,
 
         /// <summary>
-        /// 任务状态:暂停
+        ///     任务状态:暂停
         /// </summary>
-        Suspended, 
+        Suspended,
 
         /// <summary>
-        /// 任务状态:退出
+        ///     任务状态:退出
         /// </summary>
-        Aborted 
-    };
+        Aborted
+    }
 
     /// <summary>
-    /// 上传任务的控制函数
+    ///     上传任务的控制函数
     /// </summary>
     /// <returns></returns>
     public delegate UploadControllerAction UploadController();

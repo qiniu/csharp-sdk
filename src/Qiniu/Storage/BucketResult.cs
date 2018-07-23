@@ -1,16 +1,16 @@
-﻿using System.Text;
+using System.Text;
 using Newtonsoft.Json;
 using Qiniu.Http;
 
 namespace Qiniu.Storage
 {
     /// <summary>
-    /// 获取bucket信息-结果
+    ///     获取bucket信息-结果
     /// </summary>
     public class BucketResult : HttpResult
     {
         /// <summary>
-        /// bucket信息
+        ///     bucket信息
         /// </summary>
         public BucketInfo Result
         {
@@ -20,7 +20,7 @@ namespace Qiniu.Storage
 
                 if (Code == (int)HttpCode.OK && !string.IsNullOrEmpty(Text))
                 {
-                   info= JsonConvert.DeserializeObject<BucketInfo>(Text);
+                    info = JsonConvert.DeserializeObject<BucketInfo>(Text);
                 }
 
                 return info;
@@ -28,12 +28,12 @@ namespace Qiniu.Storage
         }
 
         /// <summary>
-        /// 转换为易读字符串格式
+        ///     转换为易读字符串格式
         /// </summary>
         /// <returns>便于打印和阅读的字符串</returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             sb.AppendFormat("code: {0}\n", Code);
 
@@ -54,6 +54,7 @@ namespace Qiniu.Storage
                     sb.AppendLine(Text);
                 }
             }
+
             sb.AppendLine();
 
             sb.AppendFormat("ref-code: {0}\n", RefCode);
@@ -67,10 +68,7 @@ namespace Qiniu.Storage
             if (RefInfo != null)
             {
                 sb.AppendFormat("ref-info:\n");
-                foreach (var d in RefInfo)
-                {
-                    sb.AppendLine(string.Format("{0}: {1}", d.Key, d.Value));
-                }
+                foreach (var d in RefInfo) sb.AppendLine(string.Format("{0}: {1}", d.Key, d.Value));
             }
 
             return sb.ToString();

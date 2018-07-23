@@ -1,17 +1,17 @@
-﻿using System.Text;
 using System.Collections.Generic;
+using System.Text;
 using Newtonsoft.Json;
 using Qiniu.Http;
 
 namespace Qiniu.Storage
 {
     /// <summary>
-    /// 批量处理结果
+    ///     批量处理结果
     /// </summary>
     public class BatchResult : HttpResult
     {
         /// <summary>
-        /// 错误消息
+        ///     错误消息
         /// </summary>
         public string Error
         {
@@ -20,19 +20,19 @@ namespace Qiniu.Storage
                 string ex = null;
                 if (Code != (int)HttpCode.OK && Code != (int)HttpCode.PARTLY_OK)
                 {
-
-                    Dictionary<string, string> ret = JsonConvert.DeserializeObject<Dictionary<string, string>>(Text);
+                    var ret = JsonConvert.DeserializeObject<Dictionary<string, string>>(Text);
                     if (ret.ContainsKey("error"))
                     {
                         ex = ret["error"];
                     }
                 }
+
                 return ex;
             }
         }
 
         /// <summary>
-        /// 获取批量处理结果
+        ///     获取批量处理结果
         /// </summary>
         public List<BatchInfo> Result
         {
@@ -40,21 +40,22 @@ namespace Qiniu.Storage
             {
                 List<BatchInfo> info = null;
                 if ((Code == (int)HttpCode.OK || Code == (int)HttpCode.PARTLY_OK) &&
-                    (!string.IsNullOrEmpty(Text)))
+                    !string.IsNullOrEmpty(Text))
                 {
                     info = JsonConvert.DeserializeObject<List<BatchInfo>>(Text);
                 }
+
                 return info;
             }
         }
 
         /// <summary>
-        /// 转换为易读字符串格式
+        ///     转换为易读字符串格式
         /// </summary>
         /// <returns>便于打印和阅读的字符串></returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             sb.AppendFormat("code: {0}\n", Code);
 
@@ -81,6 +82,7 @@ namespace Qiniu.Storage
                     sb.AppendLine(Text);
                 }
             }
+
             sb.AppendLine();
 
             sb.AppendFormat("ref-code: {0}\n", RefCode);
@@ -94,10 +96,7 @@ namespace Qiniu.Storage
             if (RefInfo != null)
             {
                 sb.AppendFormat("ref-info:\n");
-                foreach (var d in RefInfo)
-                {
-                    sb.AppendLine(string.Format("{0}: {1}", d.Key, d.Value));
-                }
+                foreach (var d in RefInfo) sb.AppendLine(string.Format("{0}: {1}", d.Key, d.Value));
             }
 
             return sb.ToString();
