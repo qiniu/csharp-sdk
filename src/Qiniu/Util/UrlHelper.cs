@@ -1,20 +1,21 @@
-﻿using System.Text.RegularExpressions;
+using System;
+using System.Text.RegularExpressions;
 
 namespace Qiniu.Util
 {
     /// <summary>
-    /// URL辅助工具(RegExp)
+    ///     URL辅助工具(RegExp)
     /// </summary>
     public class UrlHelper
     {
-        private static Regex regx = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?");
+        private static readonly Regex regx = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?");
 
-        private static Regex regu = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,/~\+#]*)?");
+        private static readonly Regex regu = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,/~\+#]*)?");
 
-        private static Regex regd = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,/~\+#]*)?/");
+        private static readonly Regex regd = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,/~\+#]*)?/");
 
         /// <summary>
-        /// 是否合法URL
+        ///     是否合法URL
         /// </summary>
         /// <param name="_url">待判断的url</param>
         /// <returns></returns>
@@ -24,7 +25,7 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// 是否一般URL(不包含？等后缀参数)
+        ///     是否一般URL(不包含？等后缀参数)
         /// </summary>
         /// <param name="_url">待判断的url</param>
         /// <returns></returns>
@@ -34,7 +35,7 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// 是否合法URL目录
+        ///     是否合法URL目录
         /// </summary>
         /// <param name="_dir">待判断的url目录</param>
         /// <returns></returns>
@@ -44,7 +45,7 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// 从原始URL转换为一般URL(根据需要截断)
+        ///     从原始URL转换为一般URL(根据需要截断)
         /// </summary>
         /// <param name="_url">待转换的url</param>
         /// <returns></returns>
@@ -55,7 +56,7 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// URL分析，拆分出Host,Path,File,Query各个部分
+        ///     URL分析，拆分出Host,Path,File,Query各个部分
         /// </summary>
         /// <param name="url">原始URL</param>
         /// <param name="host">host部分</param>
@@ -69,27 +70,27 @@ namespace Qiniu.Util
             file = "";
             query = "";
 
-            if(string.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url))
             {
                 return;
             }
 
-            int start = 0;
+            var start = 0;
 
             try
             {
-                Regex regHost = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+");
+                var regHost = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+");
                 host = regHost.Match(url, start).Value;
                 start += host.Length;
 
-                Regex regPath = new Regex(@"(/(\w|\-)*)+/");
+                var regPath = new Regex(@"(/(\w|\-)*)+/");
                 path = regPath.Match(url, start).Value;
                 if (!string.IsNullOrEmpty(path))
                 {
                     start += path.Length;
                 }
 
-                int index = url.IndexOf('?', start);
+                var index = url.IndexOf('?', start);
                 if (index > 0)
                 {
                     file = url.Substring(start, index - start);
@@ -101,7 +102,7 @@ namespace Qiniu.Util
                     query = "";
                 }
             }
-            catch(System.Exception)
+            catch (Exception)
             {
                 //
             }

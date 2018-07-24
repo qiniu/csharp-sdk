@@ -1,21 +1,21 @@
-﻿using System;
-using System.Text;
+using System;
 using System.Collections.Generic;
-using Qiniu.Http;
+using System.Text;
 using Newtonsoft.Json;
+using Qiniu.Http;
 
 namespace Qiniu.Storage
 {
     /// <summary>
-    /// Zone辅助类，查询及配置Zone
+    ///     Zone辅助类，查询及配置Zone
     /// </summary>
     public class ZoneHelper
     {
-        private static Dictionary<string, Zone> zoneCache = new Dictionary<string, Zone>();
-        private static object rwLock = new object();
+        private static readonly Dictionary<string, Zone> zoneCache = new Dictionary<string, Zone>();
+        private static readonly object rwLock = new object();
 
         /// <summary>
-        /// 从uc.qbox.me查询得到回复后，解析出upHost,然后根据upHost确定Zone
+        ///     从uc.qbox.me查询得到回复后，解析出upHost,然后根据upHost确定Zone
         /// </summary>
         /// <param name="accessKey">AccessKek</param>
         /// <param name="bucket">空间名称</param>
@@ -23,7 +23,7 @@ namespace Qiniu.Storage
         {
             Zone zone = null;
 
-            string cacheKey = string.Format("{0}:{1}", accessKey, bucket);
+            var cacheKey = string.Format("{0}:{1}", accessKey, bucket);
 
             //check from cache
             lock (rwLock)
@@ -43,12 +43,12 @@ namespace Qiniu.Storage
             HttpResult hr = null;
             try
             {
-                string queryUrl = string.Format("https://uc.qbox.me/v2/query?ak={0}&bucket={1}", accessKey, bucket);
-                HttpManager httpManager = new HttpManager();
+                var queryUrl = string.Format("https://uc.qbox.me/v2/query?ak={0}&bucket={1}", accessKey, bucket);
+                var httpManager = new HttpManager();
                 hr = httpManager.Get(queryUrl, null);
                 if (hr.Code == (int)HttpCode.OK)
                 {
-                    ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
+                    var zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
                     if (zInfo != null)
                     {
                         zone = new Zone();
@@ -103,14 +103,15 @@ namespace Qiniu.Storage
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 sb.AppendFormat("[{0}] QueryZone Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
+                var e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 throw new QiniuException(hr, sb.ToString());
@@ -119,5 +120,4 @@ namespace Qiniu.Storage
             return zone;
         }
     }
-
 }

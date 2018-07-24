@@ -1,24 +1,23 @@
-﻿using System;
+using System;
 using System.Text;
-using Qiniu.Util;
 using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.CDN
 {
-
     /// <summary>
-    /// 融合CDN加速-功能模块： 缓存刷新、文件预取、流量/带宽查询、日志查询、时间戳防盗链
-    /// 另请参阅 http://developer.qiniu.com/article/index.html#fusion-api-handbook
-    /// 关于时间戳防盗链可参阅 https://support.qiniu.com/question/195128
+    ///     融合CDN加速-功能模块： 缓存刷新、文件预取、流量/带宽查询、日志查询、时间戳防盗链
+    ///     另请参阅 http://developer.qiniu.com/article/index.html#fusion-api-handbook
+    ///     关于时间戳防盗链可参阅 https://support.qiniu.com/question/195128
     /// </summary>
     public class CdnManager
     {
         private const string FUSION_API_HOST = "http://fusion.qiniuapi.com";
-        private Auth auth;
-        private HttpManager httpManager;
+        private readonly Auth auth;
+        private readonly HttpManager httpManager;
 
         /// <summary>
-        /// 初始化
+        ///     初始化
         /// </summary>
         /// <param name="mac">账号(密钥)</param>
         public CdnManager(Mac mac)
@@ -54,35 +53,36 @@ namespace Qiniu.CDN
 
 
         /// <summary>
-        /// 缓存刷新-刷新URL和URL目录
+        ///     缓存刷新-刷新URL和URL目录
         /// </summary>
         /// <param name="urls">要刷新的URL列表</param>
         /// <param name="dirs">要刷新的URL目录列表</param>
         /// <returns>缓存刷新的结果</returns>
         public RefreshResult RefreshUrlsAndDirs(string[] urls, string[] dirs)
         {
-            RefreshRequest request = new RefreshRequest(urls, dirs);
-            RefreshResult result = new RefreshResult();
+            var request = new RefreshRequest(urls, dirs);
+            var result = new RefreshResult();
 
             try
             {
-                string url = refreshEntry();
-                string body = request.ToJsonStr();
-                string token = auth.CreateManageToken(url);
+                var url = refreshEntry();
+                var body = request.ToJsonStr();
+                var token = auth.CreateManageToken(url);
 
-                HttpResult hr = httpManager.PostJson(url, body, token);
+                var hr = httpManager.PostJson(url, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [refresh] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
+                var e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
@@ -93,7 +93,7 @@ namespace Qiniu.CDN
         }
 
         /// <summary>
-        /// 缓存刷新-刷新URL
+        ///     缓存刷新-刷新URL
         /// </summary>
         /// <param name="urls">要刷新的URL列表</param>
         /// <returns>缓存刷新的结果</returns>
@@ -103,7 +103,7 @@ namespace Qiniu.CDN
         }
 
         /// <summary>
-        /// 缓存刷新-刷新URL目录
+        ///     缓存刷新-刷新URL目录
         /// </summary>
         /// <param name="dirs">要刷新的URL目录列表</param>
         /// <returns>缓存刷新的结果</returns>
@@ -113,36 +113,37 @@ namespace Qiniu.CDN
         }
 
         /// <summary>
-        /// 文件预取
+        ///     文件预取
         /// </summary>
         /// <param name="urls">待预取的文件URL列表</param>
         /// <returns>文件预取的结果</returns>
         public PrefetchResult PrefetchUrls(string[] urls)
         {
-            PrefetchRequest request = new PrefetchRequest();
+            var request = new PrefetchRequest();
             request.AddUrls(urls);
 
-            PrefetchResult result = new PrefetchResult();
+            var result = new PrefetchResult();
 
             try
             {
-                string url = prefetchEntry();
-                string body = request.ToJsonStr();
-                string token = auth.CreateManageToken(url);
+                var url = prefetchEntry();
+                var body = request.ToJsonStr();
+                var token = auth.CreateManageToken(url);
 
-                HttpResult hr = httpManager.PostJson(url, body, token);
+                var hr = httpManager.PostJson(url, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [prefetch] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
+                var e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
@@ -154,7 +155,7 @@ namespace Qiniu.CDN
 
 
         /// <summary>
-        /// 批量查询cdn带宽
+        ///     批量查询cdn带宽
         /// </summary>
         /// <param name="domains">域名列表</param>
         /// <param name="startDate">起始日期，如2017-01-01</param>
@@ -163,33 +164,34 @@ namespace Qiniu.CDN
         /// <returns>带宽查询的结果</returns>
         public BandwidthResult GetBandwidthData(string[] domains, string startDate, string endDate, string granularity)
         {
-            BandwidthRequest request = new BandwidthRequest();
+            var request = new BandwidthRequest();
             request.Domains = string.Join(";", domains);
             request.StartDate = startDate;
             request.EndDate = endDate;
             request.Granularity = granularity;
 
-            BandwidthResult result = new BandwidthResult();
+            var result = new BandwidthResult();
 
             try
             {
-                string url = bandwidthEntry();
-                string body = request.ToJsonStr();
-                string token = auth.CreateManageToken(url);
+                var url = bandwidthEntry();
+                var body = request.ToJsonStr();
+                var token = auth.CreateManageToken(url);
 
-                HttpResult hr = httpManager.PostJson(url, body, token);
+                var hr = httpManager.PostJson(url, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [bandwidth] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
+                var e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
@@ -201,7 +203,7 @@ namespace Qiniu.CDN
 
 
         /// <summary>
-        /// 批量查询cdn流量
+        ///     批量查询cdn流量
         /// </summary>
         /// <param name="domains">域名列表</param>
         /// <param name="startDate">起始日期，如2017-01-01</param>
@@ -210,33 +212,34 @@ namespace Qiniu.CDN
         /// <returns>流量查询的结果</returns>
         public FluxResult GetFluxData(string[] domains, string startDate, string endDate, string granularity)
         {
-            FluxRequest request = new FluxRequest();
+            var request = new FluxRequest();
             request.Domains = string.Join(";", domains);
             request.StartDate = startDate;
             request.EndDate = endDate;
             request.Granularity = granularity;
 
-            FluxResult result = new FluxResult();
+            var result = new FluxResult();
 
             try
             {
-                string url = fluxEntry();
-                string body = request.ToJsonStr();
-                string token = auth.CreateManageToken(url);
+                var url = fluxEntry();
+                var body = request.ToJsonStr();
+                var token = auth.CreateManageToken(url);
 
-                HttpResult hr = httpManager.PostJson(url, body, token);
+                var hr = httpManager.PostJson(url, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [flux] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
+                var e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
@@ -248,37 +251,38 @@ namespace Qiniu.CDN
 
 
         /// <summary>
-        /// 查询日志列表，获取日志的下载外链
+        ///     查询日志列表，获取日志的下载外链
         /// </summary>
         /// <param name="domains">域名列表</param>
         /// <param name="day">具体日期，例如2017-08-12</param>
         /// <returns>日志查询的结果</returns>
         public LogListResult GetCdnLogList(string[] domains, string day)
         {
-            LogListRequest request = new LogListRequest();
+            var request = new LogListRequest();
             request.Domains = string.Join(";", domains);
             request.Day = day;
-            LogListResult result = new LogListResult();
+            var result = new LogListResult();
 
             try
             {
-                string url = logListEntry();
-                string body = request.ToJsonStr();
-                string token = auth.CreateManageToken(url);
+                var url = logListEntry();
+                var body = request.ToJsonStr();
+                var token = auth.CreateManageToken(url);
 
-                HttpResult hr = httpManager.PostJson(url, body, token);
+                var hr = httpManager.PostJson(url, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [loglist] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                Exception e = ex;
+                var e = ex;
                 while (e != null)
                 {
                     sb.Append(e.Message + " ");
                     e = e.InnerException;
                 }
+
                 sb.AppendLine();
 
                 result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
@@ -289,7 +293,7 @@ namespace Qiniu.CDN
         }
 
         /// <summary>
-        /// 时间戳防盗链
+        ///     时间戳防盗链
         /// </summary>
         /// <param name="host">主机，如http://domain.com</param>
         /// <param name="fileName">文件名，如 hello/world/test.jpg</param>
@@ -297,14 +301,18 @@ namespace Qiniu.CDN
         /// <param name="encryptKey">后台提供的key</param>
         /// <param name="expireInSeconds">链接有效时长</param>
         /// <returns>时间戳防盗链接</returns>
-        public static string CreateTimestampAntiLeechUrl(string host, string fileName, string query,
-            string encryptKey, int expireInSeconds)
+        public static string CreateTimestampAntiLeechUrl(
+            string host,
+            string fileName,
+            string query,
+            string encryptKey,
+            int expireInSeconds)
         {
-            long expireAt = UnixTimestamp.GetUnixTimestamp(expireInSeconds);
-            string expireHex = expireAt.ToString("x");
-            string path = string.Format("/{0}", Uri.EscapeUriString(fileName));
-            string toSign = string.Format("{0}{1}{2}", encryptKey, path, expireHex);
-            string sign = Hashing.CalcMD5X(toSign);
+            var expireAt = UnixTimestamp.GetUnixTimestamp(expireInSeconds);
+            var expireHex = expireAt.ToString("x");
+            var path = string.Format("/{0}", Uri.EscapeUriString(fileName));
+            var toSign = string.Format("{0}{1}{2}", encryptKey, path, expireHex);
+            var sign = Hashing.CalcMD5X(toSign);
             string finalUrl = null;
             if (!string.IsNullOrEmpty(query))
             {
@@ -314,8 +322,8 @@ namespace Qiniu.CDN
             {
                 finalUrl = string.Format("{0}{1}?sign={2}&t={3}", host, path, sign, expireHex);
             }
+
             return finalUrl;
         }
-
     }
 }

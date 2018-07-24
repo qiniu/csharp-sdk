@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Text;
 
 namespace Qiniu.Util
 {
     /// <summary>
-    /// Base64 编码/解码
+    ///     Base64 编码/解码
     /// </summary>
     public class Base64
     {
         /// <summary>
-        /// 获取字符串Url安全Base64编码值
+        ///     获取字符串Url安全Base64编码值
         /// </summary>
         /// <param name="text">源字符串</param>
         /// <returns>已编码字符串</returns>
@@ -19,7 +19,7 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// URL安全的base64编码
+        ///     URL安全的base64编码
         /// </summary>
         /// <param name="data">需要编码的字节数据</param>
         /// <returns></returns>
@@ -29,7 +29,7 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// bucket:key 编码
+        ///     bucket:key 编码
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
@@ -40,7 +40,7 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// Base64解码
+        ///     Base64解码
         /// </summary>
         /// <param name="text">待解码的字符串</param>
         /// <returns>已解码字符串</returns>

@@ -1,37 +1,14 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
+
 namespace Qiniu.CDN
 {
     /// <summary>
-    /// 查询流量-请求
+    ///     查询流量-请求
     /// </summary>
     public class FluxRequest
     {
         /// <summary>
-        /// 起始日期，例如2016-09-01
-        /// </summary>
-        [JsonProperty("startDate")]
-        public string StartDate { get; set; }
-
-        /// <summary>
-        /// 结束日期，例如2016-09-10
-        /// </summary>
-        [JsonProperty("endDate")]
-        public string EndDate { get; set; }
-
-        /// <summary>
-        /// 时间粒度((取值：5min ／ hour ／day))
-        /// </summary>
-        [JsonProperty("granularity")]
-        public string Granularity { get; set; }
-
-        /// <summary>
-        /// 域名列表，以西文半角分号分割
-        /// </summary>
-        [JsonProperty("domains")]
-        public string Domains { get; set; }
-
-        /// <summary>
-        /// 初始化(所有成员为空，需要后续赋值)
+        ///     初始化(所有成员为空，需要后续赋值)
         /// </summary>
         public FluxRequest()
         {
@@ -42,7 +19,7 @@ namespace Qiniu.CDN
         }
 
         /// <summary>
-        /// 初始化所有成员
+        ///     初始化所有成员
         /// </summary>
         /// <param name="startDate">起始日期</param>
         /// <param name="endDate">结束日期</param>
@@ -57,7 +34,31 @@ namespace Qiniu.CDN
         }
 
         /// <summary>
-        /// 转换到JSON字符串
+        ///     起始日期，例如2016-09-01
+        /// </summary>
+        [JsonProperty("startDate")]
+        public string StartDate { get; set; }
+
+        /// <summary>
+        ///     结束日期，例如2016-09-10
+        /// </summary>
+        [JsonProperty("endDate")]
+        public string EndDate { get; set; }
+
+        /// <summary>
+        ///     时间粒度((取值：5min ／ hour ／day))
+        /// </summary>
+        [JsonProperty("granularity")]
+        public string Granularity { get; set; }
+
+        /// <summary>
+        ///     域名列表，以西文半角分号分割
+        /// </summary>
+        [JsonProperty("domains")]
+        public string Domains { get; set; }
+
+        /// <summary>
+        ///     转换到JSON字符串
         /// </summary>
         /// <returns>请求内容的JSON字符串</returns>
         public string ToJsonStr()

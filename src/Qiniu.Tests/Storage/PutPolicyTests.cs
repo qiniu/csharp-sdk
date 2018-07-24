@@ -1,21 +1,21 @@
-﻿using NUnit.Framework;
+using System;
 using Qiniu.Tests;
 using Qiniu.Util;
-using System;
+using Xunit;
+
 namespace Qiniu.Storage.Tests
 {
-    [TestFixture]
     public class PutPolicyTests : TestEnv
     {
-        [Test]
+        [Fact]
         public void CreateUptokenTest()
         {
-            Mac mac = new Mac(AccessKey, SecretKey);
+            var mac = new Mac(AccessKey, SecretKey);
             PutPolicy putPolicy = null;
             // 简单上传凭证
             putPolicy = new PutPolicy();
             putPolicy.Scope = Bucket;
-            string upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+            var upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
 
             // 自定义凭证有效期（示例2小时）
@@ -27,7 +27,7 @@ namespace Qiniu.Storage.Tests
 
             // 覆盖上传凭证
             putPolicy = new PutPolicy();
-            string keyToOverwrite = "qiniu.png";
+            var keyToOverwrite = "qiniu.png";
             putPolicy.Scope = string.Format("{0}:{1}", Bucket, keyToOverwrite);
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
@@ -58,11 +58,11 @@ namespace Qiniu.Storage.Tests
 
             // 带数据处理的凭证
             putPolicy = new PutPolicy();
-            string saveMp4Entry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.mp4");
-            string saveJpgEntry = Base64.UrlSafeBase64Encode(Bucket + ":vframe_test_target.jpg");
-            string avthumbMp4Fop = "avthumb/mp4|saveas/" + saveMp4Entry;
-            string vframeJpgFop = "vframe/jpg/offset/1|saveas/" + saveJpgEntry;
-            string fops = string.Join(";", new string[] { avthumbMp4Fop, vframeJpgFop });
+            var saveMp4Entry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.mp4");
+            var saveJpgEntry = Base64.UrlSafeBase64Encode(Bucket + ":vframe_test_target.jpg");
+            var avthumbMp4Fop = "avthumb/mp4|saveas/" + saveMp4Entry;
+            var vframeJpgFop = "vframe/jpg/offset/1|saveas/" + saveJpgEntry;
+            var fops = string.Join(";", avthumbMp4Fop, vframeJpgFop);
             putPolicy.Scope = Bucket;
             putPolicy.PersistentOps = fops;
             putPolicy.PersistentPipeline = "video-pipe";
@@ -70,6 +70,5 @@ namespace Qiniu.Storage.Tests
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
         }
-
     }
 }

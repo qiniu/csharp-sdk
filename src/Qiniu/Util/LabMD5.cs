@@ -1,70 +1,15 @@
-﻿namespace Qiniu.Util
+namespace Qiniu.Util
 {
     /// <summary>
-    /// MD5算法的3rdParty实现
-    /// 参考https://github.com/Dozer74/MD5
+    ///     MD5算法的3rdParty实现
+    ///     参考https://github.com/Dozer74/MD5
     /// </summary>
     public class LabMD5
     {
-        #region Helper
-
-        private sealed class Digest
-        {
-            public uint A;
-            public uint B;
-            public uint C;
-            public uint D;
-
-            public Digest()
-            {
-                A = 0x67452301;
-                B = 0xEFCDAB89;
-                C = 0x98BADCFE;
-                D = 0X10325476;
-            }
-
-            public override string ToString()
-            {
-                string st;
-                st = BitHelper.ReverseByte(A).ToString("x8") +
-                     BitHelper.ReverseByte(B).ToString("x8") +
-                     BitHelper.ReverseByte(C).ToString("x8") +
-                     BitHelper.ReverseByte(D).ToString("x8");
-                return st;
-            }
-        }
-
-        private static class BitHelper
-        {
-            /// <summary>
-            /// rotate
-            /// </summary>
-            /// <param name="num">num</param>
-            /// <param name="shift">shift</param>
-            /// <returns></returns>
-            public static uint RotateLeft(uint num, ushort shift)
-            {
-                return (num >> (32 - shift)) | (num << shift);
-            }
-
-            /// <summary>
-            /// reverse
-            /// </summary>
-            public static uint ReverseByte(uint num)
-            {
-                return ((num & 0x000000ff) << 24) |
-                       (num >> 24) |
-                       ((num & 0x00ff0000) >> 8) |
-                       ((num & 0x0000ff00) << 8);
-            }
-        }
-
-        #endregion Helper
-
         #region Table
 
         /// <summary>
-        /// table 4294967296*sin(i)
+        ///     table 4294967296*sin(i)
         /// </summary>
         private static readonly uint[] T =
         {
@@ -88,10 +33,10 @@
 
         #endregion Table
 
-        private uint[] X = new uint[16];
+        private readonly uint[] X = new uint[16];
 
         /// <summary>
-        /// ComputeHash
+        ///     ComputeHash
         /// </summary>
         public string ComputeHash(byte[] bytes)
         {
@@ -105,6 +50,7 @@
                 CopyBlock(bMsg, i);
                 Transform(ref dg.A, ref dg.B, ref dg.C, ref dg.D);
             }
+
             return dg.ToString();
         }
 
@@ -205,13 +151,11 @@
             var sizeMsg = (ulong)mes.Length * 8;
             var bMsg = new byte[sizeMsgBuff];
 
-            for (var i = 0; i < mes.Length; i++)
-                bMsg[i] = mes[i];
+            for (var i = 0; i < mes.Length; i++) bMsg[i] = mes[i];
 
-            bMsg[mes.Length] |= 0x80; 
+            bMsg[mes.Length] |= 0x80;
 
-            for (var i = 8; i > 0; i--)
-                bMsg[sizeMsgBuff - i] = (byte)((sizeMsg >> ((8 - i) * 8)) & 0x00000000000000ff); 
+            for (var i = 8; i > 0; i--) bMsg[sizeMsgBuff - i] = (byte)((sizeMsg >> ((8 - i) * 8)) & 0x00000000000000ff);
             return bMsg;
         }
 
@@ -224,6 +168,61 @@
                             ((uint)bMsg[block + j + 1] << 8) |
                             bMsg[block + j];
         }
+
+        #region Helper
+
+        private sealed class Digest
+        {
+            public uint A;
+            public uint B;
+            public uint C;
+            public uint D;
+
+            public Digest()
+            {
+                A = 0x67452301;
+                B = 0xEFCDAB89;
+                C = 0x98BADCFE;
+                D = 0X10325476;
+            }
+
+            public override string ToString()
+            {
+                string st;
+                st = BitHelper.ReverseByte(A).ToString("x8") +
+                     BitHelper.ReverseByte(B).ToString("x8") +
+                     BitHelper.ReverseByte(C).ToString("x8") +
+                     BitHelper.ReverseByte(D).ToString("x8");
+                return st;
+            }
+        }
+
+        private static class BitHelper
+        {
+            /// <summary>
+            ///     rotate
+            /// </summary>
+            /// <param name="num">num</param>
+            /// <param name="shift">shift</param>
+            /// <returns></returns>
+            public static uint RotateLeft(uint num, ushort shift)
+            {
+                return (num >> (32 - shift)) | (num << shift);
+            }
+
+            /// <summary>
+            ///     reverse
+            /// </summary>
+            public static uint ReverseByte(uint num)
+            {
+                return ((num & 0x000000ff) << 24) |
+                       (num >> 24) |
+                       ((num & 0x00ff0000) >> 8) |
+                       ((num & 0x0000ff00) << 8);
+            }
+        }
+
+        #endregion Helper
 
         #region Transform
 
@@ -248,6 +247,5 @@
         }
 
         #endregion Transform
-
     }
 }
