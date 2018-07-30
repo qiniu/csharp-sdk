@@ -35,16 +35,16 @@ namespace Qiniu.Storage
         {
             var sb = new StringBuilder();
 
-            sb.AppendFormat("code: {0}\n", Code);
+            sb.AppendLine($"code: {Code}");
 
             if (Result != null)
             {
                 sb.AppendLine("bucket-info:");
-                sb.AppendFormat("tbl={0}\n", Result.tbl);
-                sb.AppendFormat("zone={0}\n", Result.zone);
-                sb.AppendFormat("region={0}\n", Result.region);
-                sb.AppendFormat("isGlobal={0}\n", Result.global);
-                sb.AppendFormat("isLine={0}\n", Result.line);
+                sb.AppendLine($"tbl={Result.Tbl}");
+                sb.AppendLine($"zone={Result.Zone}");
+                sb.AppendLine($"region={Result.Region}");
+                sb.AppendLine($"isGlobal={Result.Global}");
+                sb.AppendLine($"isLine={Result.Line}");
             }
             else
             {
@@ -57,7 +57,7 @@ namespace Qiniu.Storage
 
             sb.AppendLine();
 
-            sb.AppendFormat("ref-code: {0}\n", RefCode);
+            sb.AppendLine($"ref-code: {RefCode}");
 
             if (!string.IsNullOrEmpty(RefText))
             {
@@ -67,8 +67,8 @@ namespace Qiniu.Storage
 
             if (RefInfo != null)
             {
-                sb.AppendFormat("ref-info:\n");
-                foreach (var d in RefInfo) sb.AppendLine(string.Format("{0}: {1}", d.Key, d.Value));
+                sb.AppendLine("ref-info:");
+                foreach (var d in RefInfo) sb.AppendLine($"{d.Key}: {d.Value}");
             }
 
             return sb.ToString();

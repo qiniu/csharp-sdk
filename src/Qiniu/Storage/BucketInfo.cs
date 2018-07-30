@@ -8,46 +8,46 @@ namespace Qiniu.Storage
         /// <summary>
         ///     bucket name
         /// </summary>
-        public string tbl { get; set; }
+        public string Tbl { get; set; }
 
         /// <summary>
         ///     itbl
         /// </summary>
-        public long itbl { get; set; }
+        public long Itbl { get; set; }
 
         /// <summary>
         ///     deprecated
         /// </summary>
-        public string phy { get; set; }
+        public string Phy { get; set; }
 
         /// <summary>
         ///     id
         /// </summary>
-        public long uid { get; set; }
+        public long Uid { get; set; }
 
         /// <summary>
         ///     zone
         /// </summary>
-        public string zone { get; set; }
+        public string Zone { get; set; }
 
         /// <summary>
         ///     region
         /// </summary>
-        public string region { get; set; }
+        public string Region { get; set; }
 
         /// <summary>
         ///     isGlobal
         /// </summary>
-        public bool global { get; set; }
+        public bool Global { get; set; }
 
         /// <summary>
         ///     isLineStorage
         /// </summary>
-        public bool line { get; set; }
+        public bool Line { get; set; }
 
         /// <summary>
         ///     creationTime
         /// </summary>
-        public long ctime { get; set; }
+        public long Ctime { get; set; }
     }
 }

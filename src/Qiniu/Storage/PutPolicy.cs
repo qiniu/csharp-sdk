@@ -19,7 +19,7 @@ namespace Qiniu.Storage
         ///     [可选]若为 1，表示允许用户上传以 scope 的 keyPrefix 为前缀的文件。
         /// </summary>
         [JsonProperty("isPrefixalScope", NullValueHandling = NullValueHandling.Ignore)]
-        public int? isPrefixalScope { get; set; }
+        public int? IsPrefixalScope { get; set; }
 
         /// <summary>
         ///     [必需]上传策略失效时刻，请使用SetExpire来设置它

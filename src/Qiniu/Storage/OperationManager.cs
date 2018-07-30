@@ -1,6 +1,9 @@
 using System;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using Qiniu.Http;
 using Qiniu.Util;
 
@@ -11,10 +14,10 @@ namespace Qiniu.Storage
     /// </summary>
     public class OperationManager
     {
-        private readonly Auth auth;
-        private readonly Config config;
-        private readonly HttpManager httpManager;
-        private readonly Mac mac;
+        private readonly Auth _auth;
+        private readonly Config _config;
+        private readonly HttpManager _httpManager;
+        private readonly Mac _mac;
 
         /// <summary>
         ///     构建新的数据处理对象
@@ -23,10 +26,10 @@ namespace Qiniu.Storage
         /// <param name="config"></param>
         public OperationManager(Mac mac, Config config)
         {
-            this.mac = mac;
-            auth = new Auth(mac);
-            this.config = config;
-            httpManager = new HttpManager();
+            _mac = mac;
+            _auth = new Auth(mac);
+            _config = config;
+            _httpManager = new HttpManager();
         }
 
 
@@ -40,23 +43,20 @@ namespace Qiniu.Storage
         /// <param name="notifyUrl">通知url</param>
         /// <param name="force">forece参数</param>
         /// <returns>pfop操作返回结果，正确返回结果包含persistentId</returns>
-        public PfopResult Pfop(string bucket, string key, string fops, string pipeline, string notifyUrl, bool force)
+        public async Task<PfopResult> Pfop(string bucket, string key, string fops, string pipeline, string notifyUrl, bool force)
         {
             var result = new PfopResult();
 
             try
             {
-                var pfopUrl = string.Format("{0}/pfop/", config.ApiHost(mac.AccessKey, bucket));
+                var host = await _config.ApiHost(_mac.AccessKey, bucket);
+                var pfopUrl = $"{host}/pfop/";
 
                 var sb = new StringBuilder();
-                sb.AppendFormat(
-                    "bucket={0}&key={1}&fops={2}",
-                    StringHelper.UrlEncode(bucket),
-                    StringHelper.UrlEncode(key),
-                    StringHelper.UrlEncode(fops));
+                sb.Append($"bucket={StringHelper.UrlEncode(bucket)}&key={StringHelper.UrlEncode(key)}&fops={StringHelper.UrlEncode(fops)}");
                 if (!string.IsNullOrEmpty(notifyUrl))
                 {
-                    sb.AppendFormat("&notifyURL={0}", StringHelper.UrlEncode(notifyUrl));
+                    sb.Append($"&notifyURL={StringHelper.UrlEncode(notifyUrl)}");
                 }
 
                 if (force)
@@ -66,19 +66,19 @@ namespace Qiniu.Storage
 
                 if (!string.IsNullOrEmpty(pipeline))
                 {
-                    sb.AppendFormat("&pipeline={0}", pipeline);
+                    sb.Append($"&pipeline={pipeline}");
                 }
 
                 var data = Encoding.UTF8.GetBytes(sb.ToString());
-                var token = auth.CreateManageToken(pfopUrl, data);
+                var token = _auth.CreateManageToken(pfopUrl, data);
 
-                var hr = httpManager.PostForm(pfopUrl, data, token);
+                var hr = await _httpManager.PostFormAsync(pfopUrl, data, token);
                 result.Shadow(hr);
             }
             catch (QiniuException ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [pfop] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [pfop] Error:  ");
                 Exception e = ex;
                 while (e != null)
                 {
@@ -107,7 +107,7 @@ namespace Qiniu.Storage
         /// <param name="notifyUrl">通知url</param>
         /// <param name="force">forece参数</param>
         /// <returns>操作返回结果，正确返回结果包含persistentId</returns>
-        public PfopResult Pfop(string bucket, string key, string[] fops, string pipeline, string notifyUrl, bool force)
+        public Task<PfopResult> Pfop(string bucket, string key, string[] fops, string pipeline, string notifyUrl, bool force)
         {
             var ops = string.Join(";", fops);
             return Pfop(bucket, key, ops, pipeline, notifyUrl, force);
@@ -118,15 +118,15 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="persistentId">持久化ID</param>
         /// <returns>操作结果</returns>
-        public PrefopResult Prefop(string persistentId)
+        public async Task<PrefopResult> Prefop(string persistentId)
         {
             var result = new PrefopResult();
 
-            var scheme = config.UseHttps ? "https://" : "http://";
-            var prefopUrl = string.Format("{0}{1}/status/get/prefop?id={2}", scheme, Config.DefaultApiHost, persistentId);
+            var scheme = _config.UseHttps ? "https://" : "http://";
+            var prefopUrl = $"{scheme}{Config.DefaultApiHost}/status/get/prefop?id={persistentId}";
 
             var httpMgr = new HttpManager();
-            var httpResult = httpMgr.Get(prefopUrl, null);
+            var httpResult = await httpMgr.GetAsync(prefopUrl);
             result.Shadow(httpResult);
 
             return result;
@@ -138,14 +138,14 @@ namespace Qiniu.Storage
         /// <param name="fop">文件处理命令</param>
         /// <param name="uri">资源/文件URI</param>
         /// <returns>操作结果/返回数据</returns>
-        public HttpResult Dfop(string fop, string uri)
+        public Task<HttpResult> Dfop(string fop, string uri)
         {
             if (UrlHelper.IsValidUrl(uri))
             {
                 return DfopUrl(fop, uri);
             }
 
-            return DfopData(fop, uri);
+            return DfopFile(fop, uri);
         }
 
         /// <summary>
@@ -154,118 +154,30 @@ namespace Qiniu.Storage
         /// <param name="fop">文本处理命令</param>
         /// <param name="text">文本内容</param>
         /// <returns></returns>
-        public HttpResult DfopText(string fop, string text)
-        {
-            var result = new HttpResult();
-
-            var scheme = config.UseHttps ? "https://" : "http://";
-            var dfopUrl = string.Format("{0}{1}/dfop?fop={2}", scheme, Config.DefaultApiHost, fop);
-            var token = auth.CreateManageToken(dfopUrl);
-            var boundary = HttpManager.CreateFormDataBoundary();
-            var sep = "--" + boundary;
-            var sb = new StringBuilder();
-            sb.AppendLine(sep);
-            sb.AppendFormat("Content-Type: {0}", ContentType.TEXT_PLAIN);
-            sb.AppendLine();
-            sb.AppendLine("Content-Disposition: form-data; name=data; filename=text");
-            sb.AppendLine();
-            sb.AppendLine(text);
-            sb.AppendLine(sep + "--");
-            var data = Encoding.UTF8.GetBytes(sb.ToString());
-
-            result = httpManager.PostMultipart(dfopUrl, data, boundary, token, true);
-
-
-            return result;
-        }
-
-        /// <summary>
-        ///     文本处理(从文件读取文本)
-        /// </summary>
-        /// <param name="fop">文本处理命令</param>
-        /// <param name="textFile">文本文件</param>
-        /// <returns></returns>
-        public HttpResult DfopTextFile(string fop, string textFile)
-        {
-            var result = new HttpResult();
-
-            if (File.Exists(textFile))
-            {
-                result = DfopText(fop, File.ReadAllText(textFile));
-            }
-            else
-            {
-                result.RefCode = (int)HttpCode.INVALID_FILE;
-                result.RefText = "[dfop-error] File not found: " + textFile;
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        ///     如果uri是网络url则使用此方法
-        /// </summary>
-        /// <param name="fop">文件处理命令</param>
-        /// <param name="url">资源URL</param>
-        /// <returns>处理结果</returns>
-        public HttpResult DfopUrl(string fop, string url)
-        {
-            var result = new HttpResult();
-            var scheme = config.UseHttps ? "https://" : "http://";
-            var encodedUrl = StringHelper.UrlEncode(url);
-            var dfopUrl = string.Format("{0}{1}/dfop?fop={2}&url={3}", scheme, Config.DefaultApiHost, fop, encodedUrl);
-            var token = auth.CreateManageToken(dfopUrl);
-
-            result = httpManager.Post(dfopUrl, token, true);
-            return result;
-        }
-
-        /// <summary>
-        ///     如果uri是本地文件路径则使用此方法
-        /// </summary>
-        /// <param name="fop">文件处理命令</param>
-        /// <param name="localFile">文件名</param>
-        /// <returns>处理结果</returns>
-        public HttpResult DfopData(string fop, string localFile)
+        public async Task<HttpResult> DfopText(string fop, string text)
         {
             var result = new HttpResult();
 
             try
             {
-                var scheme = config.UseHttps ? "https://" : "http://";
-                var dfopUrl = string.Format("{0}{1}/dfop?fop={2}", scheme, Config.DefaultApiHost, fop);
-                var token = auth.CreateManageToken(dfopUrl);
+                var scheme = _config.UseHttps ? "https://" : "http://";
+                var dfopUrl = $"{scheme}{Config.DefaultApiHost}/dfop?fop={fop}";
+                var token = _auth.CreateManageToken(dfopUrl);
                 var boundary = HttpManager.CreateFormDataBoundary();
-                var sep = "--" + boundary;
+                var part = new StringContent(text);
+                part.Headers.ContentType = MediaTypeHeaderValue.Parse(ContentType.TEXT_PLAIN);
 
-                var sbp1 = new StringBuilder();
-                sbp1.AppendLine(sep);
-                var filename = Path.GetFileName(localFile);
-                sbp1.AppendFormat("Content-Type: {0}", ContentType.APPLICATION_OCTET_STREAM);
-                sbp1.AppendLine();
-                sbp1.AppendFormat("Content-Disposition: form-data; name=\"data\"; filename={0}", filename);
-                sbp1.AppendLine();
-                sbp1.AppendLine();
+                var content = new MultipartFormDataContent(boundary)
+                {
+                    { part, "data", "text" }
+                };
 
-                var sbp3 = new StringBuilder();
-                sbp3.AppendLine();
-                sbp3.AppendLine(sep + "--");
-
-                var partData1 = Encoding.UTF8.GetBytes(sbp1.ToString());
-                var partData2 = File.ReadAllBytes(localFile);
-                var partData3 = Encoding.UTF8.GetBytes(sbp3.ToString());
-
-                var ms = new MemoryStream();
-                ms.Write(partData1, 0, partData1.Length);
-                ms.Write(partData2, 0, partData2.Length);
-                ms.Write(partData3, 0, partData3.Length);
-
-                result = httpManager.PostMultipart(dfopUrl, ms.ToArray(), boundary, token, true);
+                result = await _httpManager.PostAsync(dfopUrl, content, token, true);
             }
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [dfop] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [dfop] Error:  ");
                 var e = ex;
                 while (e != null)
                 {
@@ -279,6 +191,110 @@ namespace Qiniu.Storage
                 result.RefText += sb.ToString();
             }
 
+            return result;
+        }
+
+        /// <summary>
+        ///     文本处理(从文件读取文本)
+        /// </summary>
+        /// <param name="fop">文本处理命令</param>
+        /// <param name="textFile">文本文件</param>
+        /// <returns></returns>
+        public Task<HttpResult> DfopTextFile(string fop, string textFile)
+        {
+            return DfopFile(fop, textFile, ContentType.TEXT_PLAIN);
+        }
+
+        [Obsolete("请使用DfopFile方法")]
+        public Task<HttpResult> DfopData(string fop, string localFile)
+        {
+            return DfopFile(fop, localFile);
+        }
+
+        /// <summary>
+        ///     如果uri是本地文件路径则使用此方法
+        /// </summary>
+        /// <param name="fop">文件处理命令</param>
+        /// <param name="localFile">文件名</param>
+        /// <param name="mimeType">数据内容类型</param>
+        /// <returns>处理结果</returns>
+        public Task<HttpResult> DfopFile(string fop, string localFile, string mimeType = "application/octet-stream")
+        {
+            if (File.Exists(localFile))
+            {
+                return DfopStream(fop, new FileStream(localFile, FileMode.Open), mimeType, Path.GetFileName(localFile));
+            }
+
+            var result = new HttpResult
+            {
+                RefCode = (int)HttpCode.INVALID_FILE,
+                RefText = $"[dfop-error] File not found: {localFile}"
+            };
+            return Task.FromResult(result);
+        }
+
+        /// <summary>
+        ///     如果处理内容是流则使用此方法
+        /// </summary>
+        /// <param name="fop">文件处理命令</param>
+        /// <param name="stream">数据流</param>
+        /// <param name="mimeType">数据内容类型</param>
+        /// <param name="fileName">文件名</param>
+        /// <returns>处理结果</returns>
+        public async Task<HttpResult> DfopStream(string fop, Stream stream, string mimeType, string fileName)
+        {
+            var result = new HttpResult();
+
+            try
+            {
+                var scheme = _config.UseHttps ? "https://" : "http://";
+                var dfopUrl = $"{scheme}{Config.DefaultApiHost}/dfop?fop={fop}";
+                var token = _auth.CreateManageToken(dfopUrl);
+                var boundary = HttpManager.CreateFormDataBoundary();
+                var part = new StreamContent(stream);
+                part.Headers.ContentType = MediaTypeHeaderValue.Parse(mimeType);
+
+                var content = new MultipartFormDataContent(boundary)
+                {
+                    { part, "data", fileName }
+                };
+
+                result = await _httpManager.PostAsync(dfopUrl, content, token, true);
+            }
+            catch (Exception ex)
+            {
+                var sb = new StringBuilder();
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [dfop] Error:  ");
+                var e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_UNDEF;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        ///     如果uri是网络url则使用此方法
+        /// </summary>
+        /// <param name="fop">文件处理命令</param>
+        /// <param name="url">资源URL</param>
+        /// <returns>处理结果</returns>
+        public async Task<HttpResult> DfopUrl(string fop, string url)
+        {
+            var scheme = _config.UseHttps ? "https://" : "http://";
+            var encodedUrl = StringHelper.UrlEncode(url);
+            var dfopUrl = $"{scheme}{Config.DefaultApiHost}/dfop?fop={fop}&url={encodedUrl}";
+            var token = _auth.CreateManageToken(dfopUrl);
+
+            var result = await _httpManager.PostAsync(dfopUrl, token, true);
             return result;
         }
     }

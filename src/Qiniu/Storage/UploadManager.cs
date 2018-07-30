@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using Qiniu.Http;
 
 namespace Qiniu.Storage
@@ -8,7 +9,7 @@ namespace Qiniu.Storage
     /// </summary>
     public class UploadManager
     {
-        private readonly Config config;
+        private readonly Config _config;
 
         /// <summary>
         ///     初始化
@@ -16,7 +17,7 @@ namespace Qiniu.Storage
         /// <param name="config">文件上传的配置信息</param>
         public UploadManager(Config config)
         {
-            this.config = config;
+            _config = config;
         }
 
         /// <summary>
@@ -27,9 +28,9 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadData(byte[] data, string key, string token, PutExtra extra)
+        public Task<HttpResult> UploadData(byte[] data, string key, string token, PutExtra extra)
         {
-            var formUploader = new FormUploader(config);
+            var formUploader = new FormUploader(_config);
             return formUploader.UploadData(data, key, token, extra);
         }
 
@@ -42,23 +43,17 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadFile(string localFile, string key, string token, PutExtra extra)
+        public Task<HttpResult> UploadFile(string localFile, string key, string token, PutExtra extra)
         {
-            var result = new HttpResult();
-
             var fi = new System.IO.FileInfo(localFile);
-            if (fi.Length > config.PutThreshold)
+            if (fi.Length > _config.PutThreshold)
             {
-                var resumeUploader = new ResumableUploader(config);
-                result = resumeUploader.UploadFile(localFile, key, token, extra);
-            }
-            else
-            {
-                var formUploader = new FormUploader(config);
-                result = formUploader.UploadFile(localFile, key, token, extra);
+                var resumeUploader = new ResumableUploader(_config);
+                return resumeUploader.UploadFile(localFile, key, token, extra);
             }
 
-            return result;
+            var formUploader = new FormUploader(_config);
+            return formUploader.UploadFile(localFile, key, token, extra);
         }
 
 
@@ -71,22 +66,16 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadStream(Stream stream, string key, string token, PutExtra extra)
+        public Task<HttpResult> UploadStream(Stream stream, string key, string token, PutExtra extra)
         {
-            var result = new HttpResult();
-
-            if (stream.Length > config.PutThreshold)
+            if (stream.Length > _config.PutThreshold)
             {
-                var resumeUploader = new ResumableUploader(config);
-                result = resumeUploader.UploadStream(stream, key, token, extra);
-            }
-            else
-            {
-                var formUploader = new FormUploader(config);
-                result = formUploader.UploadStream(stream, key, token, extra);
+                var resumeUploader = new ResumableUploader(_config);
+                return resumeUploader.UploadStream(stream, key, token, extra);
             }
 
-            return result;
+            var formUploader = new FormUploader(_config);
+            return formUploader.UploadStream(stream, key, token, extra);
         }
     }
 }

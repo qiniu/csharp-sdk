@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Qiniu.Http;
 
@@ -11,26 +12,26 @@ namespace Qiniu.Storage
     /// </summary>
     public class ZoneHelper
     {
-        private static readonly Dictionary<string, Zone> zoneCache = new Dictionary<string, Zone>();
-        private static readonly object rwLock = new object();
+        private static readonly Dictionary<string, Zone> ZoneCache = new Dictionary<string, Zone>();
+        private static readonly object RwLock = new object();
 
         /// <summary>
         ///     从uc.qbox.me查询得到回复后，解析出upHost,然后根据upHost确定Zone
         /// </summary>
         /// <param name="accessKey">AccessKek</param>
         /// <param name="bucket">空间名称</param>
-        public static Zone QueryZone(string accessKey, string bucket)
+        public static async Task<Zone> QueryZone(string accessKey, string bucket)
         {
             Zone zone = null;
 
-            var cacheKey = string.Format("{0}:{1}", accessKey, bucket);
+            var cacheKey = $"{accessKey}:{bucket}";
 
             //check from cache
-            lock (rwLock)
+            lock (RwLock)
             {
-                if (zoneCache.ContainsKey(cacheKey))
+                if (ZoneCache.ContainsKey(cacheKey))
                 {
-                    zone = zoneCache[cacheKey];
+                    zone = ZoneCache[cacheKey];
                 }
             }
 
@@ -43,18 +44,19 @@ namespace Qiniu.Storage
             HttpResult hr = null;
             try
             {
-                var queryUrl = string.Format("https://uc.qbox.me/v2/query?ak={0}&bucket={1}", accessKey, bucket);
-                var httpManager = new HttpManager();
-                hr = httpManager.Get(queryUrl, null);
+                var queryUrl = $"https://uc.qbox.me/v2/query?ak={accessKey}&bucket={bucket}";
+                hr = await HttpManager.SharedInstance.GetAsync(queryUrl);
                 if (hr.Code == (int)HttpCode.OK)
                 {
                     var zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
                     if (zInfo != null)
                     {
-                        zone = new Zone();
-                        zone.SrcUpHosts = zInfo.Up.Src.Main;
-                        zone.CdnUpHosts = zInfo.Up.Acc.Main;
-                        zone.IovipHost = zInfo.Io.Src.Main[0];
+                        zone = new Zone
+                        {
+                            SrcUpHosts = zInfo.Up.Src.Main,
+                            CdnUpHosts = zInfo.Up.Acc.Main,
+                            IovipHost = zInfo.Io.Src.Main[0]
+                        };
                         if (zone.IovipHost.Contains("z1"))
                         {
                             zone.ApiHost = "api-z1.qiniu.com";
@@ -86,9 +88,9 @@ namespace Qiniu.Storage
                             zone.RsfHost = "rsf.qiniu.com";
                         }
 
-                        lock (rwLock)
+                        lock (RwLock)
                         {
-                            zoneCache[cacheKey] = zone;
+                            ZoneCache[cacheKey] = zone;
                         }
                     }
                     else
@@ -104,7 +106,7 @@ namespace Qiniu.Storage
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] QueryZone Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] QueryZone Error:  ");
                 var e = ex;
                 while (e != null)
                 {

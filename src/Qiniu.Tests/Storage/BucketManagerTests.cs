@@ -1,21 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Qiniu.Http;
-using Qiniu.Tests;
+using Qiniu.Storage;
 using Qiniu.Util;
 using Xunit;
 
-namespace Qiniu.Storage.Tests
+namespace Qiniu.Tests.Storage
 {
     public class BucketManagerTests : TestEnv
     {
         [Fact]
-        public void BatchChangeMimeTest()
+        public async Task BatchChangeMimeTest()
         {
-            BatchCopyTest();
+            await BatchCopyTest();
 
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             string[] keys =
@@ -25,20 +26,16 @@ namespace Qiniu.Storage.Tests
                 "qiniu-2.png"
             };
 
-            var ops = new List<string>();
-            foreach (var key in keys)
-            {
-                var op = bucketManager.ChangeMimeOp(Bucket, key, "image/batch-x-png");
-                ops.Add(op);
-            }
+            var ops = keys.Select(key => bucketManager.ChangeMimeOp(Bucket, key, "image/batch-x-png")).ToList();
 
-            var ret = bucketManager.Batch(ops);
+            var ret = await bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.True(false, "batch error: " + ret);
             }
 
             foreach (var info in ret.Result)
+            {
                 if (info.Code == (int)HttpCode.OK)
                 {
                     Console.WriteLine("chgm success");
@@ -47,15 +44,15 @@ namespace Qiniu.Storage.Tests
                 {
                     Console.WriteLine(info.Data.Error);
                 }
+            }
         }
 
         [Fact]
-        public void BatchChangeTypeTest()
+        public async Task BatchChangeTypeTestAsync()
         {
-            BatchCopyTest();
+            await BatchCopyTest();
 
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             string[] keys =
@@ -65,20 +62,16 @@ namespace Qiniu.Storage.Tests
                 "qiniu-2.png"
             };
 
-            var ops = new List<string>();
-            foreach (var key in keys)
-            {
-                var op = bucketManager.ChangeTypeOp(Bucket, key, 0);
-                ops.Add(op);
-            }
+            var ops = keys.Select(key => bucketManager.ChangeTypeOp(Bucket, key, 0)).ToList();
 
-            var ret = bucketManager.Batch(ops);
+            var ret = await bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.True(false, "batch error: " + ret);
             }
 
             foreach (var info in ret.Result)
+            {
                 if (info.Code == (int)HttpCode.OK)
                 {
                     Console.WriteLine("chtype success");
@@ -87,13 +80,13 @@ namespace Qiniu.Storage.Tests
                 {
                     Console.WriteLine(info.Data.Error);
                 }
+            }
         }
 
         [Fact]
-        public void BatchCopyTest()
+        public async Task BatchCopyTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             string[] keys =
@@ -103,20 +96,16 @@ namespace Qiniu.Storage.Tests
                 "qiniu-2.png"
             };
 
-            var ops = new List<string>();
-            foreach (var key in keys)
-            {
-                var op = bucketManager.CopyOp(Bucket, "qiniu.png", Bucket, key, true);
-                ops.Add(op);
-            }
+            var ops = keys.Select(key => bucketManager.CopyOp(Bucket, "qiniu.png", Bucket, key, true)).ToList();
 
-            var ret = bucketManager.Batch(ops);
+            var ret = await bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.True(false, "batch error: " + ret);
             }
 
             foreach (var info in ret.Result)
+            {
                 if (info.Code == (int)HttpCode.OK)
                 {
                     Console.WriteLine("copy success");
@@ -125,15 +114,15 @@ namespace Qiniu.Storage.Tests
                 {
                     Console.WriteLine(info.Data.Error);
                 }
+            }
         }
 
         [Fact]
-        public void BatchDeleteAfterDaysTest()
+        public async Task BatchDeleteAfterDaysTest()
         {
-            BatchCopyTest();
+            await BatchCopyTest();
 
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             string[] keys =
@@ -150,13 +139,14 @@ namespace Qiniu.Storage.Tests
                 ops.Add(op);
             }
 
-            var ret = bucketManager.Batch(ops);
+            var ret = await bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.True(false, "batch error: " + ret);
             }
 
             foreach (var info in ret.Result)
+            {
                 if (info.Code == (int)HttpCode.OK)
                 {
                     Console.WriteLine("deleteAfterDays success");
@@ -165,15 +155,15 @@ namespace Qiniu.Storage.Tests
                 {
                     Console.WriteLine(info.Data.Error);
                 }
+            }
         }
 
         [Fact]
-        public void BatchDeleteTest()
+        public async Task BatchDeleteTest()
         {
-            BatchCopyTest();
+            await BatchCopyTest();
 
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             string[] keys =
@@ -183,20 +173,16 @@ namespace Qiniu.Storage.Tests
                 "qiniu-2.png"
             };
 
-            var ops = new List<string>();
-            foreach (var key in keys)
-            {
-                var op = bucketManager.DeleteOp(Bucket, key);
-                ops.Add(op);
-            }
+            var ops = keys.Select(key => bucketManager.DeleteOp(Bucket, key)).ToList();
 
-            var ret = bucketManager.Batch(ops);
+            var ret = await bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.True(false, "batch error: " + ret);
             }
 
             foreach (var info in ret.Result)
+            {
                 if (info.Code == (int)HttpCode.OK)
                 {
                     Console.WriteLine("delete success");
@@ -205,15 +191,15 @@ namespace Qiniu.Storage.Tests
                 {
                     Console.WriteLine(info.Data.Error);
                 }
+            }
         }
 
         [Fact]
-        public void BatchMoveTest()
+        public async Task BatchMoveTest()
         {
-            BatchCopyTest();
+            await BatchCopyTest();
 
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             string[] keys =
@@ -223,20 +209,16 @@ namespace Qiniu.Storage.Tests
                 "qiniu-2.png"
             };
 
-            var ops = new List<string>();
-            foreach (var key in keys)
-            {
-                var op = bucketManager.MoveOp(Bucket, key, Bucket, key + "-batch-move", true);
-                ops.Add(op);
-            }
+            var ops = keys.Select(key => bucketManager.MoveOp(Bucket, key, Bucket, key + "-batch-move", true)).ToList();
 
-            var ret = bucketManager.Batch(ops);
+            var ret = await bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.True(false, "batch error: " + ret);
             }
 
             foreach (var info in ret.Result)
+            {
                 if (info.Code == (int)HttpCode.OK)
                 {
                     Console.WriteLine("move success");
@@ -245,17 +227,17 @@ namespace Qiniu.Storage.Tests
                 {
                     Console.WriteLine(info.Data.Error);
                 }
+            }
         }
 
         // batch stat, delete, copy, move, chtype, chgm, deleteAfterDays
         // 批量操作每次不能超过1000个指令
         [Fact]
-        public void BatchStatTest()
+        public async Task BatchStatTest()
         {
-            BatchCopyTest();
+            await BatchCopyTest();
 
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             string[] keys =
@@ -265,45 +247,34 @@ namespace Qiniu.Storage.Tests
                 "qiniu-2.png"
             };
 
-            var ops = new List<string>();
-            foreach (var key in keys)
-            {
-                var op = bucketManager.StatOp(Bucket, key);
-                ops.Add(op);
-            }
+            var ops = keys.Select(key => bucketManager.StatOp(Bucket, key)).ToList();
 
-            var ret = bucketManager.Batch(ops);
+            var ret = await bucketManager.Batch(ops);
             if (ret.Code / 100 != 2)
             {
                 Assert.True(false, "batch error: " + ret);
             }
 
             foreach (var info in ret.Result)
+            {
                 if (info.Code == (int)HttpCode.OK)
                 {
-                    Console.WriteLine(
-                        "{0}, {1}, {2}, {3}, {4}",
-                        info.Data.MimeType,
-                        info.Data.PutTime,
-                        info.Data.Hash,
-                        info.Data.Fsize,
-                        info.Data.FileType);
+                    Console.WriteLine($"{info.Data.MimeType}, {info.Data.PutTime}, {info.Data.Hash}, {info.Data.Fsize}, {info.Data.FileType}");
                 }
                 else
                 {
                     Console.WriteLine(info.Data.Error);
                 }
+            }
         }
 
-
         [Fact]
-        public void BucketsTest()
+        public async Task BucketsTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
-            var ret = bucketManager.Buckets(true);
+            var ret = await bucketManager.Buckets(true);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "buckets error: " + ret);
@@ -313,13 +284,12 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void ChangeMimeTest()
+        public async Task ChangeMimeTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
-            var ret = bucketManager.ChangeMime(Bucket, "qiniu.png", "image/x-png");
+            var ret = await bucketManager.ChangeMime(Bucket, "qiniu.png", "image/x-png");
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "change mime error: " + ret);
@@ -329,13 +299,12 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void ChangeTypeTest()
+        public async Task ChangeTypeTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
-            var ret = bucketManager.ChangeType(Bucket, "qiniu.png", 1);
+            var ret = await bucketManager.ChangeType(Bucket, "qiniu.png", 1);
             if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("already in line stat"))
             {
                 Assert.True(false, "change type error: " + ret);
@@ -345,14 +314,13 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void CopyTest()
+        public async Task CopyTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             var newKey = "qiniu-to-copy.png";
-            var copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            var copyRet = await bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
             if (copyRet.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "copy error: " + copyRet);
@@ -362,21 +330,20 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void DeleteAfterDaysTest()
+        public async Task DeleteAfterDaysTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             var newKey = "qiniu-to-copy.png";
-            var copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            var copyRet = await bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
             if (copyRet.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "copy error: " + copyRet);
             }
 
             Console.WriteLine(copyRet.ToString());
-            var expireRet = bucketManager.DeleteAfterDays(Bucket, newKey, 7);
+            var expireRet = await bucketManager.DeleteAfterDays(Bucket, newKey, 7);
             if (expireRet.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "deleteAfterDays error: " + expireRet);
@@ -386,15 +353,14 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void DeleteTest()
+        public async Task DeleteTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             var newKey = "qiniu-to-delete.png";
-            bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey);
-            var deleteRet = bucketManager.Delete(Bucket, newKey);
+            await bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey);
+            var deleteRet = await bucketManager.Delete(Bucket, newKey);
             if (deleteRet.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "delete error: " + deleteRet);
@@ -402,13 +368,12 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void DomainsTest()
+        public async Task DomainsTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
-            var ret = bucketManager.Domains(Bucket);
+            var ret = await bucketManager.Domains(Bucket);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "domains error: " + ret);
@@ -419,14 +384,13 @@ namespace Qiniu.Storage.Tests
 
 
         [Fact]
-        public void FetchTest()
+        public async Task FetchTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             var resUrl = "http://devtools.qiniu.com/qiniu.png";
-            var ret = bucketManager.Fetch(resUrl, Bucket, "qiniu-fetch.png");
+            var ret = await bucketManager.Fetch(resUrl, Bucket, "qiniu-fetch.png");
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "fetch error: " + ret);
@@ -434,7 +398,7 @@ namespace Qiniu.Storage.Tests
 
             Console.WriteLine(ret.ToString());
 
-            ret = bucketManager.Fetch(resUrl, Bucket, null);
+            ret = await bucketManager.Fetch(resUrl, Bucket, null);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "fetch error: " + ret);
@@ -444,10 +408,9 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void ListBucketTest()
+        public async Task ListBucketTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             var prefix = "";
@@ -456,7 +419,7 @@ namespace Qiniu.Storage.Tests
             var marker = "";
             do
             {
-                var listRet = bucketManager.ListFiles(Bucket, prefix, marker, limit, delimiter);
+                var listRet = await bucketManager.ListFiles(Bucket, prefix, marker, limit, delimiter);
                 if (listRet.Code != (int)HttpCode.OK)
                 {
                     Assert.True(false, "list files error: " + listRet);
@@ -469,17 +432,16 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void ListFilesTest()
+        public async Task ListFilesTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             var prefix = "";
             var delimiter = "";
             var limit = 100;
             var marker = "";
-            var listRet = bucketManager.ListFiles(Bucket, prefix, marker, limit, delimiter);
+            var listRet = await bucketManager.ListFiles(Bucket, prefix, marker, limit, delimiter);
             if (listRet.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "list files error: " + listRet);
@@ -489,14 +451,13 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void MoveTest()
+        public async Task MoveTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             var newKey = "qiniu-to-copy.png";
-            var copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            var copyRet = await bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
             if (copyRet.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "copy error: " + copyRet);
@@ -504,7 +465,7 @@ namespace Qiniu.Storage.Tests
 
             Console.WriteLine(copyRet.ToString());
 
-            var moveRet = bucketManager.Move(Bucket, newKey, Bucket, "qiniu-move-target.png", true);
+            var moveRet = await bucketManager.Move(Bucket, newKey, Bucket, "qiniu-move-target.png", true);
             if (moveRet.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "move error: " + moveRet);
@@ -514,13 +475,12 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void PrefetchTest()
+        public async Task PrefetchTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
-            var ret = bucketManager.Prefetch(Bucket, "qiniu.png");
+            var ret = await bucketManager.Prefetch(Bucket, "qiniu.png");
             if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("bucket source not set"))
             {
                 Assert.True(false, "prefetch error: " + ret);
@@ -530,14 +490,13 @@ namespace Qiniu.Storage.Tests
         }
 
         [Fact]
-        public void StatTest()
+        public async Task StatTest()
         {
-            var config = new Config();
-            config.Zone = Zone.ZONE_CN_East;
+            var config = new Config { Zone = Zone.ZoneCnEast };
             var mac = new Mac(AccessKey, SecretKey);
             var bucketManager = new BucketManager(mac, config);
             var key = "qiniu.png";
-            var statRet = bucketManager.Stat(Bucket, key);
+            var statRet = await bucketManager.Stat(Bucket, key);
             if (statRet.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "stat error: " + statRet);

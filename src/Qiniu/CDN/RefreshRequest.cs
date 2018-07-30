@@ -67,10 +67,12 @@ namespace Qiniu.CDN
             if (urls != null)
             {
                 foreach (var u in urls)
+                {
                     if (!Urls.Contains(u))
                     {
                         Urls.Add(u);
                     }
+                }
             }
         }
 
@@ -83,10 +85,12 @@ namespace Qiniu.CDN
             if (dirs != null)
             {
                 foreach (var d in dirs)
+                {
                     if (!Dirs.Contains(d))
                     {
                         Dirs.Add(d);
                     }
+                }
             }
         }
 

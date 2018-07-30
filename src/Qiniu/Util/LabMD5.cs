@@ -4,7 +4,7 @@ namespace Qiniu.Util
     ///     MD5算法的3rdParty实现
     ///     参考https://github.com/Dozer74/MD5
     /// </summary>
-    public class LabMD5
+    public class LabMd5
     {
         #region Table
 
@@ -33,7 +33,7 @@ namespace Qiniu.Util
 
         #endregion Table
 
-        private readonly uint[] X = new uint[16];
+        private readonly uint[] _x = new uint[16];
 
         /// <summary>
         ///     ComputeHash
@@ -54,89 +54,89 @@ namespace Qiniu.Util
             return dg.ToString();
         }
 
-        private void Transform(ref uint A, ref uint B, ref uint C, ref uint D)
+        private void Transform(ref uint a, ref uint b, ref uint c, ref uint d)
         {
-            var AA = A;
-            var BB = B;
-            var CC = C;
-            var DD = D;
+            var aa = a;
+            var bb = b;
+            var cc = c;
+            var dd = d;
 
             /* Round 1 */
-            F(ref A, B, C, D, 0, 7, 1);
-            F(ref D, A, B, C, 1, 12, 2);
-            F(ref C, D, A, B, 2, 17, 3);
-            F(ref B, C, D, A, 3, 22, 4);
-            F(ref A, B, C, D, 4, 7, 5);
-            F(ref D, A, B, C, 5, 12, 6);
-            F(ref C, D, A, B, 6, 17, 7);
-            F(ref B, C, D, A, 7, 22, 8);
-            F(ref A, B, C, D, 8, 7, 9);
-            F(ref D, A, B, C, 9, 12, 10);
-            F(ref C, D, A, B, 10, 17, 11);
-            F(ref B, C, D, A, 11, 22, 12);
-            F(ref A, B, C, D, 12, 7, 13);
-            F(ref D, A, B, C, 13, 12, 14);
-            F(ref C, D, A, B, 14, 17, 15);
-            F(ref B, C, D, A, 15, 22, 16);
+            F(ref a, b, c, d, 0, 7, 1);
+            F(ref d, a, b, c, 1, 12, 2);
+            F(ref c, d, a, b, 2, 17, 3);
+            F(ref b, c, d, a, 3, 22, 4);
+            F(ref a, b, c, d, 4, 7, 5);
+            F(ref d, a, b, c, 5, 12, 6);
+            F(ref c, d, a, b, 6, 17, 7);
+            F(ref b, c, d, a, 7, 22, 8);
+            F(ref a, b, c, d, 8, 7, 9);
+            F(ref d, a, b, c, 9, 12, 10);
+            F(ref c, d, a, b, 10, 17, 11);
+            F(ref b, c, d, a, 11, 22, 12);
+            F(ref a, b, c, d, 12, 7, 13);
+            F(ref d, a, b, c, 13, 12, 14);
+            F(ref c, d, a, b, 14, 17, 15);
+            F(ref b, c, d, a, 15, 22, 16);
 
             /* Round 2 */
-            G(ref A, B, C, D, 1, 5, 17);
-            G(ref D, A, B, C, 6, 9, 18);
-            G(ref C, D, A, B, 11, 14, 19);
-            G(ref B, C, D, A, 0, 20, 20);
-            G(ref A, B, C, D, 5, 5, 21);
-            G(ref D, A, B, C, 10, 9, 22);
-            G(ref C, D, A, B, 15, 14, 23);
-            G(ref B, C, D, A, 4, 20, 24);
-            G(ref A, B, C, D, 9, 5, 25);
-            G(ref D, A, B, C, 14, 9, 26);
-            G(ref C, D, A, B, 3, 14, 27);
-            G(ref B, C, D, A, 8, 20, 28);
-            G(ref A, B, C, D, 13, 5, 29);
-            G(ref D, A, B, C, 2, 9, 30);
-            G(ref C, D, A, B, 7, 14, 31);
-            G(ref B, C, D, A, 12, 20, 32);
+            G(ref a, b, c, d, 1, 5, 17);
+            G(ref d, a, b, c, 6, 9, 18);
+            G(ref c, d, a, b, 11, 14, 19);
+            G(ref b, c, d, a, 0, 20, 20);
+            G(ref a, b, c, d, 5, 5, 21);
+            G(ref d, a, b, c, 10, 9, 22);
+            G(ref c, d, a, b, 15, 14, 23);
+            G(ref b, c, d, a, 4, 20, 24);
+            G(ref a, b, c, d, 9, 5, 25);
+            G(ref d, a, b, c, 14, 9, 26);
+            G(ref c, d, a, b, 3, 14, 27);
+            G(ref b, c, d, a, 8, 20, 28);
+            G(ref a, b, c, d, 13, 5, 29);
+            G(ref d, a, b, c, 2, 9, 30);
+            G(ref c, d, a, b, 7, 14, 31);
+            G(ref b, c, d, a, 12, 20, 32);
 
             /* Round 3 */
-            H(ref A, B, C, D, 5, 4, 33);
-            H(ref D, A, B, C, 8, 11, 34);
-            H(ref C, D, A, B, 11, 16, 35);
-            H(ref B, C, D, A, 14, 23, 36);
-            H(ref A, B, C, D, 1, 4, 37);
-            H(ref D, A, B, C, 4, 11, 38);
-            H(ref C, D, A, B, 7, 16, 39);
-            H(ref B, C, D, A, 10, 23, 40);
-            H(ref A, B, C, D, 13, 4, 41);
-            H(ref D, A, B, C, 0, 11, 42);
-            H(ref C, D, A, B, 3, 16, 43);
-            H(ref B, C, D, A, 6, 23, 44);
-            H(ref A, B, C, D, 9, 4, 45);
-            H(ref D, A, B, C, 12, 11, 46);
-            H(ref C, D, A, B, 15, 16, 47);
-            H(ref B, C, D, A, 2, 23, 48);
+            H(ref a, b, c, d, 5, 4, 33);
+            H(ref d, a, b, c, 8, 11, 34);
+            H(ref c, d, a, b, 11, 16, 35);
+            H(ref b, c, d, a, 14, 23, 36);
+            H(ref a, b, c, d, 1, 4, 37);
+            H(ref d, a, b, c, 4, 11, 38);
+            H(ref c, d, a, b, 7, 16, 39);
+            H(ref b, c, d, a, 10, 23, 40);
+            H(ref a, b, c, d, 13, 4, 41);
+            H(ref d, a, b, c, 0, 11, 42);
+            H(ref c, d, a, b, 3, 16, 43);
+            H(ref b, c, d, a, 6, 23, 44);
+            H(ref a, b, c, d, 9, 4, 45);
+            H(ref d, a, b, c, 12, 11, 46);
+            H(ref c, d, a, b, 15, 16, 47);
+            H(ref b, c, d, a, 2, 23, 48);
 
             /* Round 4 */
-            I(ref A, B, C, D, 0, 6, 49);
-            I(ref D, A, B, C, 7, 10, 50);
-            I(ref C, D, A, B, 14, 15, 51);
-            I(ref B, C, D, A, 5, 21, 52);
-            I(ref A, B, C, D, 12, 6, 53);
-            I(ref D, A, B, C, 3, 10, 54);
-            I(ref C, D, A, B, 10, 15, 55);
-            I(ref B, C, D, A, 1, 21, 56);
-            I(ref A, B, C, D, 8, 6, 57);
-            I(ref D, A, B, C, 15, 10, 58);
-            I(ref C, D, A, B, 6, 15, 59);
-            I(ref B, C, D, A, 13, 21, 60);
-            I(ref A, B, C, D, 4, 6, 61);
-            I(ref D, A, B, C, 11, 10, 62);
-            I(ref C, D, A, B, 2, 15, 63);
-            I(ref B, C, D, A, 9, 21, 64);
+            I(ref a, b, c, d, 0, 6, 49);
+            I(ref d, a, b, c, 7, 10, 50);
+            I(ref c, d, a, b, 14, 15, 51);
+            I(ref b, c, d, a, 5, 21, 52);
+            I(ref a, b, c, d, 12, 6, 53);
+            I(ref d, a, b, c, 3, 10, 54);
+            I(ref c, d, a, b, 10, 15, 55);
+            I(ref b, c, d, a, 1, 21, 56);
+            I(ref a, b, c, d, 8, 6, 57);
+            I(ref d, a, b, c, 15, 10, 58);
+            I(ref c, d, a, b, 6, 15, 59);
+            I(ref b, c, d, a, 13, 21, 60);
+            I(ref a, b, c, d, 4, 6, 61);
+            I(ref d, a, b, c, 11, 10, 62);
+            I(ref c, d, a, b, 2, 15, 63);
+            I(ref b, c, d, a, 9, 21, 64);
 
-            A = A + AA;
-            B = B + BB;
-            C = C + CC;
-            D = D + DD;
+            a = a + aa;
+            b = b + bb;
+            c = c + cc;
+            d = d + dd;
         }
 
         private byte[] CreatePaddedBuffer(byte[] mes)
@@ -163,10 +163,12 @@ namespace Qiniu.Util
         {
             block = block << 6;
             for (uint j = 0; j < 61; j += 4)
-                X[j >> 2] = ((uint)bMsg[block + j + 3] << 24) |
-                            ((uint)bMsg[block + j + 2] << 16) |
-                            ((uint)bMsg[block + j + 1] << 8) |
-                            bMsg[block + j];
+            {
+                _x[j >> 2] = ((uint)bMsg[block + j + 3] << 24) |
+                             ((uint)bMsg[block + j + 2] << 16) |
+                             ((uint)bMsg[block + j + 1] << 8) |
+                             bMsg[block + j];
+            }
         }
 
         #region Helper
@@ -228,22 +230,22 @@ namespace Qiniu.Util
 
         private void F(ref uint a, uint b, uint c, uint d, uint k, ushort s, uint i)
         {
-            a = b + BitHelper.RotateLeft(a + ((b & c) | (~b & d)) + X[k] + T[i - 1], s);
+            a = b + BitHelper.RotateLeft(a + ((b & c) | (~b & d)) + _x[k] + T[i - 1], s);
         }
 
         private void G(ref uint a, uint b, uint c, uint d, uint k, ushort s, uint i)
         {
-            a = b + BitHelper.RotateLeft(a + ((b & d) | (c & ~d)) + X[k] + T[i - 1], s);
+            a = b + BitHelper.RotateLeft(a + ((b & d) | (c & ~d)) + _x[k] + T[i - 1], s);
         }
 
         private void H(ref uint a, uint b, uint c, uint d, uint k, ushort s, uint i)
         {
-            a = b + BitHelper.RotateLeft(a + (b ^ c ^ d) + X[k] + T[i - 1], s);
+            a = b + BitHelper.RotateLeft(a + (b ^ c ^ d) + _x[k] + T[i - 1], s);
         }
 
         private void I(ref uint a, uint b, uint c, uint d, uint k, ushort s, uint i)
         {
-            a = b + BitHelper.RotateLeft(a + (c ^ (b | ~d)) + X[k] + T[i - 1], s);
+            a = b + BitHelper.RotateLeft(a + (c ^ (b | ~d)) + _x[k] + T[i - 1], s);
         }
 
         #endregion Transform

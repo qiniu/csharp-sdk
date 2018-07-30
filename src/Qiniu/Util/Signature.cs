@@ -6,6 +6,7 @@ using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 #else
 using System.Security.Cryptography;
+
 #endif
 
 namespace Qiniu.Util
@@ -17,7 +18,7 @@ namespace Qiniu.Util
     /// </summary>
     public class Signature
     {
-        private readonly Mac mac;
+        private readonly Mac _mac;
 
         /// <summary>
         ///     初始化
@@ -25,20 +26,20 @@ namespace Qiniu.Util
         /// <param name="mac">账号(密钥)</param>
         public Signature(Mac mac)
         {
-            this.mac = mac;
+            _mac = mac;
         }
 
-        private string encodedSign(byte[] data)
+        private string EncodedSign(byte[] data)
         {
-            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
+            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_mac.SecretKey));
             var digest = hmac.ComputeHash(data);
             return Base64.UrlSafeBase64Encode(digest);
         }
 
-        private string encodedSign(string str)
+        private string EncodedSign(string str)
         {
             var data = Encoding.UTF8.GetBytes(str);
-            return encodedSign(data);
+            return EncodedSign(data);
         }
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace Qiniu.Util
         /// <returns></returns>
         public string Sign(byte[] data)
         {
-            return string.Format("{0}:{1}", mac.AccessKey, encodedSign(data));
+            return $"{_mac.AccessKey}:{EncodedSign(data)}";
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace Qiniu.Util
         public string SignWithData(byte[] data)
         {
             var sstr = Base64.UrlSafeBase64Encode(data);
-            return string.Format("{0}:{1}:{2}", mac.AccessKey, encodedSign(sstr), sstr);
+            return $"{_mac.AccessKey}:{EncodedSign(sstr)}:{sstr}";
         }
 
         /// <summary>
@@ -105,10 +106,10 @@ namespace Qiniu.Util
                     buffer.Write(body, 0, body.Length);
                 }
 
-                var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
+                var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_mac.SecretKey));
                 var digest = hmac.ComputeHash(buffer.ToArray());
                 var digestBase64 = Base64.UrlSafeBase64Encode(digest);
-                return string.Format("{0}:{1}", mac.AccessKey, digestBase64);
+                return $"{_mac.AccessKey}:{digestBase64}";
             }
         }
 

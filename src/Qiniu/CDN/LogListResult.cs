@@ -34,16 +34,16 @@ namespace Qiniu.CDN
         {
             var sb = new StringBuilder();
 
-            sb.AppendFormat("code:{0}\n", Code);
+            sb.AppendLine($"code:{Code}");
             sb.AppendLine();
 
             if (Result != null)
             {
                 sb.AppendLine("result:");
-                sb.AppendFormat("code:{0}\n", Result.Code);
+                sb.AppendLine($"code:{Result.Code}");
                 if (!string.IsNullOrEmpty(Result.Error))
                 {
-                    sb.AppendFormat("error:{0}\n", Result.Error);
+                    sb.AppendLine($"error:{Result.Error}");
                 }
 
                 if (Result.Data != null && Result.Data.Count > 0)
@@ -51,17 +51,25 @@ namespace Qiniu.CDN
                     sb.AppendLine("log:");
                     foreach (var key in Result.Data.Keys)
                     {
-                        sb.AppendFormat("{0}:\n", key);
+                        sb.AppendLine($"{key}:");
                         foreach (var d in Result.Data)
+                        {
                             if (d.Value != null)
                             {
-                                sb.AppendFormat("Domain:{0}\n", d.Key);
+                                sb.AppendLine($"Domain:{d.Key}");
                                 foreach (var s in d.Value)
+                                {
                                     if (s != null)
                                     {
-                                        sb.AppendFormat("Name:{0}\nSize:{1}\nMtime:{2}\nUrl:{3}\n\n", s.Name, s.Size, s.Mtime, s.Url);
+                                        sb.AppendLine($"Name:{s.Name}");
+                                        sb.AppendLine($"Size:{s.Size}");
+                                        sb.AppendLine($"Mtime:{s.Mtime}");
+                                        sb.AppendLine($"Url:{s.Url}");
+                                        sb.AppendLine();
                                     }
+                                }
                             }
+                        }
 
                         sb.AppendLine();
                     }
@@ -78,7 +86,7 @@ namespace Qiniu.CDN
 
             sb.AppendLine();
 
-            sb.AppendFormat("ref-code:{0}\n", RefCode);
+            sb.Append($"ref-code:{RefCode}");
 
             if (!string.IsNullOrEmpty(RefText))
             {
@@ -88,8 +96,8 @@ namespace Qiniu.CDN
 
             if (RefInfo != null)
             {
-                sb.AppendFormat("ref-info:\n");
-                foreach (var d in RefInfo) sb.AppendLine(string.Format("{0}:{1}", d.Key, d.Value));
+                sb.AppendLine("ref-info:");
+                foreach (var d in RefInfo) sb.AppendLine($"{d.Key}:{d.Value}");
             }
 
             return sb.ToString();

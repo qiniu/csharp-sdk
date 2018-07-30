@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Qiniu.Util
 {
@@ -26,11 +26,7 @@ namespace Qiniu.Util
         /// <returns>URL编码的键值对数据</returns>
         public static string UrlFormEncode(Dictionary<string, string> values)
         {
-            var urlValuesBuilder = new StringBuilder();
-
-            foreach (var kvp in values) urlValuesBuilder.AppendFormat("{0}={1}&", Uri.EscapeDataString(kvp.Key), Uri.EscapeDataString(kvp.Value));
-            var encodedStr = urlValuesBuilder.ToString();
-            return encodedStr.Substring(0, encodedStr.Length - 1);
+            return string.Join("&", values.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
         }
     }
 }

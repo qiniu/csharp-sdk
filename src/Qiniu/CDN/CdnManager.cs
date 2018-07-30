@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using Qiniu.Http;
 using Qiniu.Util;
 
@@ -12,9 +13,10 @@ namespace Qiniu.CDN
     /// </summary>
     public class CdnManager
     {
-        private const string FUSION_API_HOST = "http://fusion.qiniuapi.com";
-        private readonly Auth auth;
-        private readonly HttpManager httpManager;
+        private const string FusionApiHost = "http://fusion.qiniuapi.com";
+
+        private readonly Auth _auth;
+        private readonly HttpManager _httpManager;
 
         /// <summary>
         ///     初始化
@@ -22,35 +24,15 @@ namespace Qiniu.CDN
         /// <param name="mac">账号(密钥)</param>
         public CdnManager(Mac mac)
         {
-            auth = new Auth(mac);
-            httpManager = new HttpManager();
+            _auth = new Auth(mac);
+            _httpManager = new HttpManager();
         }
 
-        private string refreshEntry()
-        {
-            return string.Format("{0}/v2/tune/refresh", FUSION_API_HOST);
-        }
-
-        private string prefetchEntry()
-        {
-            return string.Format("{0}/v2/tune/prefetch", FUSION_API_HOST);
-        }
-
-        private string bandwidthEntry()
-        {
-            return string.Format("{0}/v2/tune/bandwidth", FUSION_API_HOST);
-        }
-
-        private string fluxEntry()
-        {
-            return string.Format("{0}/v2/tune/flux", FUSION_API_HOST);
-        }
-
-        private string logListEntry()
-        {
-            return string.Format("{0}/v2/tune/log/list", FUSION_API_HOST);
-        }
-
+        private static string RefreshEntry => $"{FusionApiHost}/v2/tune/refresh";
+        private static string PrefetchEntry => $"{FusionApiHost}/v2/tune/prefetch";
+        private static string BandwidthEntry => $"{FusionApiHost}/v2/tune/bandwidth";
+        private static string FluxEntry => $"{FusionApiHost}/v2/tune/flux";
+        private static string LogListEntry => $"{FusionApiHost}/v2/tune/log/list";
 
         /// <summary>
         ///     缓存刷新-刷新URL和URL目录
@@ -58,24 +40,24 @@ namespace Qiniu.CDN
         /// <param name="urls">要刷新的URL列表</param>
         /// <param name="dirs">要刷新的URL目录列表</param>
         /// <returns>缓存刷新的结果</returns>
-        public RefreshResult RefreshUrlsAndDirs(string[] urls, string[] dirs)
+        public async Task<RefreshResult> RefreshUrlsAndDirs(string[] urls, string[] dirs)
         {
             var request = new RefreshRequest(urls, dirs);
             var result = new RefreshResult();
 
             try
             {
-                var url = refreshEntry();
+                var url = RefreshEntry;
                 var body = request.ToJsonStr();
-                var token = auth.CreateManageToken(url);
+                var token = _auth.CreateManageToken(url);
 
-                var hr = httpManager.PostJson(url, body, token);
+                var hr = await _httpManager.PostJsonAsync(RefreshEntry, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [refresh] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [refresh] Error:  ");
                 var e = ex;
                 while (e != null)
                 {
@@ -97,7 +79,7 @@ namespace Qiniu.CDN
         /// </summary>
         /// <param name="urls">要刷新的URL列表</param>
         /// <returns>缓存刷新的结果</returns>
-        public RefreshResult RefreshUrls(string[] urls)
+        public Task<RefreshResult> RefreshUrls(string[] urls)
         {
             return RefreshUrlsAndDirs(urls, null);
         }
@@ -107,7 +89,7 @@ namespace Qiniu.CDN
         /// </summary>
         /// <param name="dirs">要刷新的URL目录列表</param>
         /// <returns>缓存刷新的结果</returns>
-        public RefreshResult RefreshDirs(string[] dirs)
+        public Task<RefreshResult> RefreshDirs(string[] dirs)
         {
             return RefreshUrlsAndDirs(null, dirs);
         }
@@ -117,7 +99,7 @@ namespace Qiniu.CDN
         /// </summary>
         /// <param name="urls">待预取的文件URL列表</param>
         /// <returns>文件预取的结果</returns>
-        public PrefetchResult PrefetchUrls(string[] urls)
+        public async Task<PrefetchResult> PrefetchUrls(string[] urls)
         {
             var request = new PrefetchRequest();
             request.AddUrls(urls);
@@ -126,17 +108,17 @@ namespace Qiniu.CDN
 
             try
             {
-                var url = prefetchEntry();
+                var url = PrefetchEntry;
                 var body = request.ToJsonStr();
-                var token = auth.CreateManageToken(url);
+                var token = _auth.CreateManageToken(url);
 
-                var hr = httpManager.PostJson(url, body, token);
+                var hr = await _httpManager.PostJsonAsync(url, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [prefetch] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [prefetch] Error:  ");
                 var e = ex;
                 while (e != null)
                 {
@@ -152,7 +134,6 @@ namespace Qiniu.CDN
 
             return result;
         }
-
 
         /// <summary>
         ///     批量查询cdn带宽
@@ -162,29 +143,31 @@ namespace Qiniu.CDN
         /// <param name="endDate">结束日期，如2017-01-02</param>
         /// <param name="granularity">时间粒度，如day</param>
         /// <returns>带宽查询的结果</returns>
-        public BandwidthResult GetBandwidthData(string[] domains, string startDate, string endDate, string granularity)
+        public async Task<BandwidthResult> GetBandwidthData(string[] domains, string startDate, string endDate, string granularity)
         {
-            var request = new BandwidthRequest();
-            request.Domains = string.Join(";", domains);
-            request.StartDate = startDate;
-            request.EndDate = endDate;
-            request.Granularity = granularity;
+            var request = new BandwidthRequest
+            {
+                Domains = string.Join(";", domains),
+                StartDate = startDate,
+                EndDate = endDate,
+                Granularity = granularity
+            };
 
             var result = new BandwidthResult();
 
             try
             {
-                var url = bandwidthEntry();
+                var url = BandwidthEntry;
                 var body = request.ToJsonStr();
-                var token = auth.CreateManageToken(url);
+                var token = _auth.CreateManageToken(url);
 
-                var hr = httpManager.PostJson(url, body, token);
+                var hr = await _httpManager.PostJsonAsync(url, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [bandwidth] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [bandwidth] Error:  ");
                 var e = ex;
                 while (e != null)
                 {
@@ -200,7 +183,6 @@ namespace Qiniu.CDN
 
             return result;
         }
-
 
         /// <summary>
         ///     批量查询cdn流量
@@ -210,29 +192,31 @@ namespace Qiniu.CDN
         /// <param name="endDate">结束日期，如2017-01-02</param>
         /// <param name="granularity">时间粒度，如day</param>
         /// <returns>流量查询的结果</returns>
-        public FluxResult GetFluxData(string[] domains, string startDate, string endDate, string granularity)
+        public async Task<FluxResult> GetFluxData(string[] domains, string startDate, string endDate, string granularity)
         {
-            var request = new FluxRequest();
-            request.Domains = string.Join(";", domains);
-            request.StartDate = startDate;
-            request.EndDate = endDate;
-            request.Granularity = granularity;
+            var request = new FluxRequest
+            {
+                Domains = string.Join(";", domains),
+                StartDate = startDate,
+                EndDate = endDate,
+                Granularity = granularity
+            };
 
             var result = new FluxResult();
 
             try
             {
-                var url = fluxEntry();
+                var url = FluxEntry;
                 var body = request.ToJsonStr();
-                var token = auth.CreateManageToken(url);
+                var token = _auth.CreateManageToken(url);
 
-                var hr = httpManager.PostJson(url, body, token);
+                var hr = await _httpManager.PostJsonAsync(url, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [flux] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [flux] Error:  ");
                 var e = ex;
                 while (e != null)
                 {
@@ -249,33 +233,34 @@ namespace Qiniu.CDN
             return result;
         }
 
-
         /// <summary>
         ///     查询日志列表，获取日志的下载外链
         /// </summary>
         /// <param name="domains">域名列表</param>
         /// <param name="day">具体日期，例如2017-08-12</param>
         /// <returns>日志查询的结果</returns>
-        public LogListResult GetCdnLogList(string[] domains, string day)
+        public async Task<LogListResult> GetCdnLogList(string[] domains, string day)
         {
-            var request = new LogListRequest();
-            request.Domains = string.Join(";", domains);
-            request.Day = day;
+            var request = new LogListRequest
+            {
+                Domains = string.Join(";", domains),
+                Day = day
+            };
             var result = new LogListResult();
 
             try
             {
-                var url = logListEntry();
+                var url = LogListEntry;
                 var body = request.ToJsonStr();
-                var token = auth.CreateManageToken(url);
+                var token = _auth.CreateManageToken(url);
 
-                var hr = httpManager.PostJson(url, body, token);
+                var hr = await _httpManager.PostJsonAsync(url, body, token);
                 result.Shadow(hr);
             }
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [loglist] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [loglist] Error:  ");
                 var e = ex;
                 while (e != null)
                 {
@@ -310,17 +295,17 @@ namespace Qiniu.CDN
         {
             var expireAt = UnixTimestamp.GetUnixTimestamp(expireInSeconds);
             var expireHex = expireAt.ToString("x");
-            var path = string.Format("/{0}", Uri.EscapeUriString(fileName));
-            var toSign = string.Format("{0}{1}{2}", encryptKey, path, expireHex);
-            var sign = Hashing.CalcMD5X(toSign);
-            string finalUrl = null;
+            var path = $"/{Uri.EscapeUriString(fileName)}";
+            var toSign = $"{encryptKey}{path}{expireHex}";
+            var sign = Hashing.CalcMd5X(toSign);
+            string finalUrl;
             if (!string.IsNullOrEmpty(query))
             {
-                finalUrl = string.Format("{0}{1}?{2}&sign={3}&t={4}", host, path, query, sign, expireHex);
+                finalUrl = $"{host}{path}?{query}&sign={sign}&t={expireHex}";
             }
             else
             {
-                finalUrl = string.Format("{0}{1}?sign={2}&t={3}", host, path, sign, expireHex);
+                finalUrl = $"{host}{path}?sign={sign}&t={expireHex}";
             }
 
             return finalUrl;

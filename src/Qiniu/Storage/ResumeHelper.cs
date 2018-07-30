@@ -20,8 +20,8 @@ namespace Qiniu.Storage
         {
             var tempDir = Environment.GetEnvironmentVariable("TEMP");
             var fileInfo = new System.IO.FileInfo(localFile);
-            var uniqueKey = string.Format("{0}:{1}:{2}", localFile, key, fileInfo.LastWriteTime.ToFileTime());
-            return string.Format("{0}\\{1}", tempDir, "QiniuResume_" + Hashing.CalcMD5X(uniqueKey));
+            var uniqueKey = $"{localFile}:{key}:{fileInfo.LastWriteTime.ToFileTime()}";
+            return $"{tempDir}\\{"QiniuResume_" + Hashing.CalcMd5X(uniqueKey)}";
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Qiniu.Storage
         /// <returns>断点信息</returns>
         public static ResumeInfo Load(string recordFile)
         {
-            ResumeInfo resumeInfo = null;
+            ResumeInfo resumeInfo;
 
             try
             {

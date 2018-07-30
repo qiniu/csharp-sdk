@@ -5,7 +5,7 @@ namespace Qiniu.Util
     /// </summary>
     public class Auth
     {
-        private readonly Signature signature;
+        private readonly Signature _signature;
 
         /// <summary>
         ///     一般初始化
@@ -13,7 +13,7 @@ namespace Qiniu.Util
         /// <param name="mac">账号(密钥)</param>
         public Auth(Mac mac)
         {
-            signature = new Signature(mac);
+            _signature = new Signature(mac);
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Qiniu.Util
         /// <returns>生成的管理凭证</returns>
         public string CreateManageToken(string url, byte[] body)
         {
-            return string.Format("QBox {0}", signature.SignRequest(url, body));
+            return $"QBox {_signature.SignRequest(url, body)}";
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Qiniu.Util
         /// <returns>生成的上传凭证</returns>
         public string CreateUploadToken(string jsonStr)
         {
-            return signature.SignWithData(jsonStr);
+            return _signature.SignWithData(jsonStr);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Qiniu.Util
         /// <returns></returns>
         public string CreateDownloadToken(string url)
         {
-            return signature.Sign(url);
+            return _signature.Sign(url);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Qiniu.Util
         /// <returns></returns>
         public string CreateStreamPublishToken(string path)
         {
-            return signature.Sign(path);
+            return _signature.Sign(path);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Qiniu.Util
         /// <returns></returns>
         public string CreateStreamManageToken(string data)
         {
-            return string.Format("Qiniu {0}", signature.SignWithData(data));
+            return $"Qiniu {_signature.SignWithData(data)}";
         }
 
         #region STATIC
@@ -93,7 +93,7 @@ namespace Qiniu.Util
         public static string CreateManageToken(Mac mac, string url, byte[] body)
         {
             var sx = new Signature(mac);
-            return string.Format("QBox {0}", sx.SignRequest(url, body));
+            return $"QBox {sx.SignRequest(url, body)}";
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Qiniu.Util
         public static string CreateStreamManageToken(Mac mac, string data)
         {
             var sx = new Signature(mac);
-            return string.Format("Qiniu {0}", sx.Sign(data));
+            return $"Qiniu {sx.Sign(data)}";
         }
 
         #endregion STATIC

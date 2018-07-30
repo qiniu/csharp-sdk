@@ -1,6 +1,9 @@
 using System;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using Qiniu.Http;
 using Qiniu.Util;
 
@@ -17,8 +20,8 @@ namespace Qiniu.Storage
     /// </summary>
     public class FormUploader
     {
-        private readonly Config config;
-        private readonly HttpManager httpManager;
+        private readonly Config _config;
+        private readonly HttpManager _httpManager;
 
         /// <summary>
         ///     初始化
@@ -26,8 +29,8 @@ namespace Qiniu.Storage
         /// <param name="config">表单上传的配置信息</param>
         public FormUploader(Config config)
         {
-            this.config = config;
-            httpManager = new HttpManager();
+            _config = config;
+            _httpManager = new HttpManager();
         }
 
         /// <summary>
@@ -38,12 +41,12 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadFile(string localFile, string key, string token, PutExtra extra)
+        public async Task<HttpResult> UploadFile(string localFile, string key, string token, PutExtra extra)
         {
             try
             {
                 var fs = new FileStream(localFile, FileMode.Open);
-                return UploadStream(fs, key, token, extra);
+                return await UploadStream(fs, key, token, extra);
             }
             catch (Exception ex)
             {
@@ -53,7 +56,6 @@ namespace Qiniu.Storage
             }
         }
 
-
         /// <summary>
         ///     上传数据
         /// </summary>
@@ -62,7 +64,7 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传数据后的返回结果</returns>
-        public HttpResult UploadData(byte[] data, string key, string token, PutExtra extra)
+        public Task<HttpResult> UploadData(byte[] data, string key, string token, PutExtra extra)
         {
             var stream = new MemoryStream(data);
             return UploadStream(stream, key, token, extra);
@@ -74,9 +76,9 @@ namespace Qiniu.Storage
         /// <param name="stream">(确定长度的)数据流</param>
         /// <param name="key">要保存的key</param>
         /// <param name="token">上传凭证</param>
-        /// <param name="extra">上传可选设置</param>
+        /// <param name="putExtra">上传可选设置</param>
         /// <returns>上传数据流后的返回结果</returns>
-        public HttpResult UploadStream(Stream stream, string key, string token, PutExtra putExtra)
+        public async Task<HttpResult> UploadStream(Stream stream, string key, string token, PutExtra putExtra)
         {
             if (putExtra == null)
             {
@@ -85,7 +87,7 @@ namespace Qiniu.Storage
 
             if (string.IsNullOrEmpty(putExtra.MimeType))
             {
-                putExtra.MimeType = "application/octet-stream";
+                putExtra.MimeType = ContentType.APPLICATION_OCTET_STREAM;
             }
 
             if (putExtra.ProgressHandler == null)
@@ -98,148 +100,105 @@ namespace Qiniu.Storage
                 putExtra.UploadController = DefaultUploadController;
             }
 
-            var fname = key;
+            var fileName = key;
             if (string.IsNullOrEmpty(key))
             {
-                fname = "fname_temp";
+                fileName = "fname_temp";
             }
 
             var result = new HttpResult();
 
-            using (stream)
+            try
             {
-                try
+                var boundary = HttpManager.CreateFormDataBoundary();
+                var content = new MultipartFormDataContent(boundary);
+                var length = stream.Length;
+                putExtra.ProgressHandler(0, length);
+
+                // Key
+                if (!string.IsNullOrEmpty(key))
                 {
-                    var boundary = HttpManager.CreateFormDataBoundary();
-                    var bodyBuilder = new StringBuilder();
-                    bodyBuilder.AppendLine("--" + boundary);
-
-                    if (key != null)
-                    {
-                        //write key when it is not null
-                        bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"key\"");
-                        bodyBuilder.AppendLine();
-                        bodyBuilder.AppendLine(key);
-                        bodyBuilder.AppendLine("--" + boundary);
-                    }
-
-                    //write token
-                    bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"token\"");
-                    bodyBuilder.AppendLine();
-                    bodyBuilder.AppendLine(token);
-                    bodyBuilder.AppendLine("--" + boundary);
-
-                    //write extra params
-                    if (putExtra.Params != null && putExtra.Params.Count > 0)
-                    {
-                        foreach (var p in putExtra.Params)
-                            if (p.Key.StartsWith("x:"))
-                            {
-                                bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"{0}\"", p.Key);
-                                bodyBuilder.AppendLine();
-                                bodyBuilder.AppendLine();
-                                bodyBuilder.AppendLine(p.Value);
-                                bodyBuilder.AppendLine("--" + boundary);
-                            }
-                    }
-
-                    //prepare data buffer
-                    var bufferSize = 1024 * 1024;
-                    var buffer = new byte[bufferSize];
-                    var bytesRead = 0;
-                    putExtra.ProgressHandler(0, stream.Length);
-                    var dataMS = new MemoryStream();
-                    while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0) dataMS.Write(buffer, 0, bytesRead);
-
-                    //write crc32
-                    var crc32 = CRC32.CheckSumBytes(dataMS.ToArray());
-                    //write key when it is not null
-                    bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"crc32\"");
-                    bodyBuilder.AppendLine();
-                    bodyBuilder.AppendLine(crc32.ToString());
-                    bodyBuilder.AppendLine("--" + boundary);
-
-                    //write fname
-                    bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"", fname);
-                    bodyBuilder.AppendLine();
-
-                    //write mime type
-                    bodyBuilder.AppendFormat("Content-Type: {0}", putExtra.MimeType);
-                    bodyBuilder.AppendLine();
-                    bodyBuilder.AppendLine();
-
-                    //write file data
-                    var bodyEnd = new StringBuilder();
-                    bodyEnd.AppendLine();
-                    bodyEnd.AppendLine("--" + boundary + "--");
-
-                    var partData1 = Encoding.UTF8.GetBytes(bodyBuilder.ToString());
-                    var partData2 = dataMS.ToArray();
-                    var partData3 = Encoding.UTF8.GetBytes(bodyEnd.ToString());
-
-                    var ms = new MemoryStream();
-                    ms.Write(partData1, 0, partData1.Length);
-                    ms.Write(partData2, 0, partData2.Length);
-                    ms.Write(partData3, 0, partData3.Length);
-
-                    //get upload host
-                    var ak = UpToken.GetAccessKeyFromUpToken(token);
-                    var bucket = UpToken.GetBucketFromUpToken(token);
-                    if (ak == null || bucket == null)
-                    {
-                        return HttpResult.InvalidToken;
-                    }
-
-                    var uploadHost = config.UpHost(ak, bucket);
-                    putExtra.ProgressHandler(stream.Length / 5, stream.Length);
-                    result = httpManager.PostMultipart(uploadHost, ms.ToArray(), boundary, null);
-                    putExtra.ProgressHandler(stream.Length, stream.Length);
-                    if (result.Code == (int)HttpCode.OK)
-                    {
-                        result.RefText += string.Format(
-                            "[{0}] [FormUpload] Uploaded: #STREAM# ==> \"{1}\"\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                            key);
-                    }
-                    else
-                    {
-                        result.RefText += string.Format(
-                            "[{0}] [FormUpload] Failed: code = {1}, text = {2}\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                            result.Code,
-                            result.Text);
-                    }
-
-                    //close memory stream
-                    ms.Close();
-                    dataMS.Close();
+                    content.Add(new StringContent(key), "key");
                 }
-                catch (Exception ex)
+
+                // Token
+                content.Add(new StringContent(token), "token");
+
+                // Other params
+                if (putExtra.Params != null)
                 {
-                    var sb = new StringBuilder();
-                    sb.AppendFormat("[{0}] [FormUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    var e = ex;
-                    while (e != null)
+                    foreach (var param in putExtra.Params)
                     {
-                        sb.Append(e.Message + " ");
-                        e = e.InnerException;
+                        content.Add(new StringContent(param.Value), param.Key);
                     }
+                }
 
-                    sb.AppendLine();
+                // Reuse stream
+                if (!stream.CanSeek)
+                {
+                    var ms = new MemoryStream((int)stream.Length);
+                    stream.CopyTo(ms);
+                    stream.Dispose();
+                    stream = ms;
+                }
 
-                    if (ex is QiniuException)
-                    {
-                        var qex = (QiniuException)ex;
-                        result.Code = qex.HttpResult.Code;
-                        result.RefCode = qex.HttpResult.Code;
-                        result.Text = qex.HttpResult.Text;
-                        result.RefText += sb.ToString();
-                    }
-                    else
-                    {
-                        result.RefCode = (int)HttpCode.USER_UNDEF;
-                        result.RefText += sb.ToString();
-                    }
+                // CRC32
+                var crc32 = Crc32.CheckSumStream(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                content.Add(new StringContent(crc32.ToString()), "crc32");
+
+                // Primary content
+                var part = new StreamContent(stream);
+                part.Headers.ContentType = MediaTypeHeaderValue.Parse(putExtra.MimeType);
+                content.Add(part, "file", fileName);
+
+                // Get upload host
+                var ak = UpToken.GetAccessKeyFromUpToken(token);
+                var bucket = UpToken.GetBucketFromUpToken(token);
+                if (ak == null || bucket == null)
+                {
+                    return HttpResult.InvalidToken;
+                }
+
+                var uploadHost = await _config.UpHost(ak, bucket);
+
+                // TODO: Real progress
+                putExtra.ProgressHandler(length / 5, length);
+                result = await _httpManager.PostAsync(uploadHost, content, boundary);
+                putExtra.ProgressHandler(length, length);
+                if (result.Code == (int)HttpCode.OK)
+                {
+                    result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [FormUpload] Uploaded: #STREAM# ==> \"{key}\"\n";
+                }
+                else
+                {
+                    result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [FormUpload] Failed: code = {result.Code}, text = {result.Text}\n";
+                }
+            }
+            catch (Exception ex)
+            {
+                var sb = new StringBuilder();
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [FormUpload] Error: ");
+                var e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+
+                sb.AppendLine();
+
+                if (ex is QiniuException qex)
+                {
+                    result.Code = qex.HttpResult.Code;
+                    result.RefCode = qex.HttpResult.Code;
+                    result.Text = qex.HttpResult.Text;
+                    result.RefText += sb.ToString();
+                }
+                else
+                {
+                    result.RefCode = (int)HttpCode.USER_UNDEF;
+                    result.RefText += sb.ToString();
                 }
             }
 
@@ -255,11 +214,11 @@ namespace Qiniu.Storage
         {
             if (uploadedBytes < totalBytes)
             {
-                Console.WriteLine("[{0}] [FormUpload] Progress: {1,7:0.000}%", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), 100.0 * uploadedBytes / totalBytes);
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [FormUpload] Progress: {100.0 * uploadedBytes / totalBytes,7:0.000}%");
             }
             else
             {
-                Console.WriteLine("[{0}] [FormUpload] Progress: {1,7:0.000}%\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), 100.0);
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [FormUpload] Progress: {100.0,7:0.000}%\n");
             }
         }
 

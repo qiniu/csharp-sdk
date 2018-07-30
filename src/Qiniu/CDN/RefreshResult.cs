@@ -34,21 +34,21 @@ namespace Qiniu.CDN
         {
             var sb = new StringBuilder();
 
-            sb.AppendFormat("code:{0}\n", Code);
+            sb.AppendLine($"code:{Code}");
             sb.AppendLine();
 
             if (Result != null)
             {
                 sb.AppendLine("result:");
-                sb.AppendFormat("code:{0}\n", Result.Code);
+                sb.AppendLine($"code:{Result.Code}");
                 if (!string.IsNullOrEmpty(Result.Error))
                 {
-                    sb.AppendFormat("error:{0}\n", Result.Error);
+                    sb.AppendLine($"error:{Result.Error}");
                 }
 
                 if (!string.IsNullOrEmpty(Result.RequestId))
                 {
-                    sb.AppendFormat("requestId:{0}\n", Result.RequestId);
+                    sb.AppendLine($"requestId:{Result.RequestId}");
                 }
 
                 if (Result.InvalidDirs != null && Result.InvalidDirs.Count > 0)
@@ -65,10 +65,10 @@ namespace Qiniu.CDN
                     sb.AppendLine();
                 }
 
-                sb.AppendFormat("dirQuotaDay:{0}\n", Result.DirQuotaDay);
-                sb.AppendFormat("dirSurplusDay:{0}\n", Result.DirSurplusDay);
-                sb.AppendFormat("urlQuotaDay:{0}\n", Result.UrlQuotaDay);
-                sb.AppendFormat("urlSurplusDay:{0}\n", Result.UrlSurplusDay);
+                sb.AppendLine($"dirQuotaDay:{Result.DirQuotaDay}");
+                sb.AppendLine($"dirSurplusDay:{Result.DirSurplusDay}");
+                sb.AppendLine($"urlQuotaDay:{Result.UrlQuotaDay}");
+                sb.AppendLine($"urlSurplusDay:{Result.UrlSurplusDay}");
             }
             else
             {
@@ -81,7 +81,7 @@ namespace Qiniu.CDN
 
             sb.AppendLine();
 
-            sb.AppendFormat("ref-code:{0}\n", RefCode);
+            sb.AppendLine($"ref-code:{RefCode}");
 
             if (!string.IsNullOrEmpty(RefText))
             {
@@ -91,8 +91,8 @@ namespace Qiniu.CDN
 
             if (RefInfo != null)
             {
-                sb.AppendFormat("ref-info:\n");
-                foreach (var d in RefInfo) sb.AppendLine(string.Format("{0}:{1}", d.Key, d.Value));
+                sb.AppendLine("ref-info:");
+                foreach (var d in RefInfo) sb.AppendLine($"{d.Key}:{d.Value}");
             }
 
             return sb.ToString();

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Qiniu.Http;
 using Qiniu.Util;
@@ -21,30 +23,22 @@ namespace Qiniu.Storage
     public class ResumableUploader
     {
         //分片上传块的大小，固定为4M，不可修改
-        private const int BLOCK_SIZE = 4 * 1024 * 1024;
-        private readonly Config config;
+        private const int BlockSize = 4 * 1024 * 1024;
+        private readonly Config _config;
 
         // HTTP请求管理器(GET/POST等)
-        private readonly HttpManager httpManager;
+        private readonly HttpManager _httpManager;
 
         /// <summary>
         ///     初始化
         /// </summary>
         /// <param name="config">分片上传的配置信息</param>
-        public ResumableUploader(Config config)
+        public ResumableUploader(Config config = null)
         {
-            if (config == null)
-            {
-                this.config = new Config();
-            }
-            else
-            {
-                this.config = config;
-            }
+            _config = config ?? new Config();
 
-            httpManager = new HttpManager();
+            _httpManager = new HttpManager();
         }
-
 
         /// <summary>
         ///     分片上传，支持断点续上传，带有自定义进度处理、高级控制功能
@@ -54,12 +48,12 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="putExtra">上传可选配置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadFile(string localFile, string key, string token, PutExtra putExtra)
+        public async Task<HttpResult> UploadFile(string localFile, string key, string token, PutExtra putExtra)
         {
             try
             {
                 var fs = new FileStream(localFile, FileMode.Open);
-                return UploadStream(fs, key, token, putExtra);
+                return await UploadStream(fs, key, token, putExtra);
             }
             catch (Exception ex)
             {
@@ -69,7 +63,6 @@ namespace Qiniu.Storage
             }
         }
 
-
         /// <summary>
         ///     分片上传/断点续上传，带有自定义进度处理和上传控制，检查CRC32，可自动重试
         /// </summary>
@@ -78,7 +71,7 @@ namespace Qiniu.Storage
         /// <param name="upToken">上传凭证</param>
         /// <param name="putExtra">可选配置参数</param>
         /// <returns>上传文件后返回结果</returns>
-        public HttpResult UploadStream(Stream stream, string key, string upToken, PutExtra putExtra)
+        public async Task<HttpResult> UploadStream(Stream stream, string key, string upToken, PutExtra putExtra)
         {
             var result = new HttpResult();
 
@@ -110,7 +103,7 @@ namespace Qiniu.Storage
                 {
                     long uploadedBytes = 0;
                     var fileSize = stream.Length;
-                    var blockCount = (fileSize + BLOCK_SIZE - 1) / BLOCK_SIZE;
+                    var blockCount = (fileSize + BlockSize - 1) / BlockSize;
 
                     //check resume record file
                     ResumeInfo resumeInfo = null;
@@ -144,7 +137,7 @@ namespace Qiniu.Storage
                         var context = resumeInfo.Contexts[blockIndex];
                         if (!string.IsNullOrEmpty(context))
                         {
-                            uploadedBytes += BLOCK_SIZE;
+                            uploadedBytes += BlockSize;
                         }
                     }
 
@@ -157,9 +150,8 @@ namespace Qiniu.Storage
                     var manualResetEvent = new ManualResetEvent(false);
                     var blockDataDict = new Dictionary<long, byte[]>();
                     var blockMakeResults = new Dictionary<long, HttpResult>();
-                    var uploadedBytesDict = new Dictionary<string, long>();
-                    uploadedBytesDict.Add("UploadProgress", uploadedBytes);
-                    var blockBuffer = new byte[BLOCK_SIZE];
+                    var uploadedBytesDict = new Dictionary<string, long> { { "UploadProgress", uploadedBytes } };
+                    var blockBuffer = new byte[BlockSize];
                     for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
                     {
                         var context = resumeInfo.Contexts[blockIndex];
@@ -174,9 +166,7 @@ namespace Qiniu.Storage
                                 {
                                     result.Code = (int)HttpCode.USER_CANCELED;
                                     result.RefCode = (int)HttpCode.USER_CANCELED;
-                                    result.RefText += string.Format(
-                                        "[{0}] [ResumableUpload] Info: upload task is aborted\n",
-                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                                    result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [ResumableUpload] Info: upload task is aborted\n";
                                     manualResetEvent.Set();
                                     return result;
                                 }
@@ -184,9 +174,7 @@ namespace Qiniu.Storage
                                 if (upCtrl == UploadControllerAction.Suspended)
                                 {
                                     result.RefCode = (int)HttpCode.USER_PAUSED;
-                                    result.RefText += string.Format(
-                                        "[{0}] [ResumableUpload] Info: upload task is paused\n",
-                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                                    result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [ResumableUpload] Info: upload task is paused\n";
                                     manualResetEvent.WaitOne(1000);
                                 }
                                 else if (upCtrl == UploadControllerAction.Activated)
@@ -195,18 +183,18 @@ namespace Qiniu.Storage
                                 }
                             }
 
-                            var offset = blockIndex * BLOCK_SIZE;
+                            var offset = blockIndex * BlockSize;
                             stream.Seek(offset, SeekOrigin.Begin);
-                            var blockLen = stream.Read(blockBuffer, 0, BLOCK_SIZE);
+                            var blockLen = stream.Read(blockBuffer, 0, BlockSize);
                             var blockData = new byte[blockLen];
                             Array.Copy(blockBuffer, blockData, blockLen);
                             blockDataDict.Add(blockIndex, blockData);
 
                             if (blockDataDict.Count == putExtra.BlockUploadThreads)
                             {
-                                processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize);
+                                ProcessMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize);
                                 //check mkblk results
-                                foreach (int blkIndex in blockMakeResults.Keys)
+                                foreach (var blkIndex in blockMakeResults.Keys)
                                 {
                                     var mkblkRet = blockMakeResults[blkIndex];
                                     if (mkblkRet.Code != 200)
@@ -229,9 +217,9 @@ namespace Qiniu.Storage
 
                     if (blockDataDict.Count > 0)
                     {
-                        processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize);
+                        ProcessMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize);
                         //check mkblk results
-                        foreach (int blkIndex in blockMakeResults.Keys)
+                        foreach (var blkIndex in blockMakeResults.Keys)
                         {
                             var mkblkRet = blockMakeResults[blkIndex];
                             if (mkblkRet.Code != 200)
@@ -252,15 +240,11 @@ namespace Qiniu.Storage
 
                     if (upCtrl == UploadControllerAction.Activated)
                     {
-                        var hr = MakeFile(key, fileSize, key, upToken, putExtra, resumeInfo.Contexts);
+                        var hr = await MakeFile(key, fileSize, key, upToken, putExtra, resumeInfo.Contexts);
                         if (hr.Code != (int)HttpCode.OK)
                         {
                             result.Shadow(hr);
-                            result.RefText += string.Format(
-                                "[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
-                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                                hr.Code,
-                                hr.Text);
+                            result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [ResumableUpload] Error: mkfile: code = {hr.Code}, text = {hr.Text}\n";
                         }
 
                         if (File.Exists(putExtra.ResumeRecordFile))
@@ -269,19 +253,13 @@ namespace Qiniu.Storage
                         }
 
                         result.Shadow(hr);
-                        result.RefText += string.Format(
-                            "[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                            putExtra.ResumeRecordFile,
-                            key);
+                        result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [ResumableUpload] Uploaded: \"{putExtra.ResumeRecordFile}\" ==> \"{key}\"\n";
                     }
                     else
                     {
                         result.Code = (int)HttpCode.USER_CANCELED;
                         result.RefCode = (int)HttpCode.USER_CANCELED;
-                        result.RefText += string.Format(
-                            "[{0}] [ResumableUpload] Info: upload task is aborted, mkfile\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                        result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [ResumableUpload] Info: upload task is aborted, mkfile\n";
                     }
 
                     manualResetEvent.Set();
@@ -291,7 +269,7 @@ namespace Qiniu.Storage
                 {
                     Console.WriteLine(ex.StackTrace);
                     var sb = new StringBuilder();
-                    sb.AppendFormat("[{0}] [ResumableUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [ResumableUpload] Error: ");
                     var e = ex;
                     while (e != null)
                     {
@@ -309,7 +287,7 @@ namespace Qiniu.Storage
             return result;
         }
 
-        private void processMakeBlocks(
+        private void ProcessMakeBlocks(
             Dictionary<long, byte[]> blockDataDict,
             string upToken,
             PutExtra putExtra,
@@ -322,31 +300,36 @@ namespace Qiniu.Storage
             var doneEvents = new ManualResetEvent[taskMax];
             var eventIndex = 0;
             var progressLock = new object();
-            foreach (var blockIndex in blockDataDict.Keys)
-            {
-                //signal task
-                var doneEvent = new ManualResetEvent(false);
-                doneEvents[eventIndex] = doneEvent;
-                eventIndex += 1;
 
-                //queue task
-                var blockData = blockDataDict[blockIndex];
-                var resumeBlocker = new ResumeBlocker(
-                    doneEvent,
-                    blockData,
-                    blockIndex,
-                    upToken,
-                    putExtra,
-                    resumeInfo,
-                    blockMakeResults,
-                    progressLock,
-                    uploadedBytesDict,
-                    fileSize);
-                ThreadPool.QueueUserWorkItem(MakeBlock, resumeBlocker);
-            }
+            var makeBlockTasks = blockDataDict.Keys.Select(
+                blockIndex =>
+                {
+                    //signal task
+                    var doneEvent = new ManualResetEvent(false);
+                    doneEvents[eventIndex] = doneEvent;
+                    eventIndex += 1;
+
+                    //queue task
+                    var blockData = blockDataDict[blockIndex];
+                    var resumeBlocker = new ResumeBlocker(
+                        doneEvent,
+                        blockData,
+                        blockIndex,
+                        upToken,
+                        putExtra,
+                        resumeInfo,
+                        blockMakeResults,
+                        progressLock,
+                        uploadedBytesDict,
+                        fileSize);
+
+                    return MakeBlock(resumeBlocker);
+                }).ToArray();
 
             try
             {
+                Task.WaitAll(makeBlockTasks);
+                // ReSharper disable once CoVariantArrayConversion
                 WaitHandle.WaitAll(doneEvents);
             }
             catch (Exception ex)
@@ -360,7 +343,7 @@ namespace Qiniu.Storage
         ///     创建块(携带首片数据),同时检查CRC32
         /// </summary>
         /// <param name="resumeBlockerObj">创建分片上次的块请求</param>
-        private void MakeBlock(object resumeBlockerObj)
+        private async Task MakeBlock(object resumeBlockerObj)
         {
             var resumeBlocker = (ResumeBlocker)resumeBlockerObj;
             var doneEvent = resumeBlocker.DoneEvent;
@@ -382,10 +365,7 @@ namespace Qiniu.Storage
 
                     result.Code = (int)HttpCode.USER_CANCELED;
                     result.RefCode = (int)HttpCode.USER_CANCELED;
-                    result.RefText += string.Format(
-                        "[{0}] [ResumableUpload] Info: upload task is aborted, mkblk {1}\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                        blockIndex);
+                    result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [ResumableUpload] Info: upload task is aborted, mkblk {blockIndex}\n";
                     blockMakeResults.Add(blockIndex, result);
                     return;
                 }
@@ -416,15 +396,15 @@ namespace Qiniu.Storage
                     return;
                 }
 
-                var uploadHost = config.UpHost(ak, bucket);
+                var uploadHost = await _config.UpHost(ak, bucket);
 
-                var url = string.Format("{0}/mkblk/{1}", uploadHost, blockSize);
-                var upTokenStr = string.Format("UpToken {0}", upToken);
+                var url = $"{uploadHost}/mkblk/{blockSize}";
+                var upTokenStr = $"UpToken {upToken}";
                 using (var ms = new MemoryStream(blockBuffer, 0, blockSize))
                 {
                     var data = ms.ToArray();
 
-                    result = httpManager.PostData(url, data, upTokenStr);
+                    result = await _httpManager.PostDataAsync(url, data, token: upTokenStr);
 
                     if (result.Code == (int)HttpCode.OK)
                     {
@@ -432,12 +412,12 @@ namespace Qiniu.Storage
 
                         if (rc.Crc32 > 0)
                         {
-                            var crc_1 = rc.Crc32;
-                            var crc_2 = CRC32.CheckSumSlice(blockBuffer, 0, blockSize);
-                            if (crc_1 != crc_2)
+                            var crc1 = rc.Crc32;
+                            var crc2 = Crc32.CheckSumSlice(blockBuffer, 0, blockSize);
+                            if (crc1 != crc2)
                             {
                                 result.RefCode = (int)HttpCode.USER_NEED_RETRY;
-                                result.RefText += string.Format(" CRC32: remote={0}, local={1}\n", crc_1, crc_2);
+                                result.RefText += $" CRC32: remote={crc1}, local={crc2}\n";
                             }
                             else
                             {
@@ -454,10 +434,7 @@ namespace Qiniu.Storage
                         }
                         else
                         {
-                            result.RefText += string.Format(
-                                "[{0}] JSON Decode Error: text = {1}",
-                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                                result.Text);
+                            result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] JSON Decode Error: text = {result.Text}";
                             result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                         }
                     }
@@ -470,7 +447,7 @@ namespace Qiniu.Storage
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] mkblk Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] mkblk Error: ");
                 var e = ex;
                 while (e != null)
                 {
@@ -480,9 +457,8 @@ namespace Qiniu.Storage
 
                 sb.AppendLine();
 
-                if (ex is QiniuException)
+                if (ex is QiniuException qex)
                 {
-                    var qex = (QiniuException)ex;
                     result.Code = qex.HttpResult.Code;
                     result.RefCode = qex.HttpResult.Code;
                     result.Text = qex.HttpResult.Text;
@@ -510,7 +486,7 @@ namespace Qiniu.Storage
         /// <param name="upToken">上传凭证</param>
         /// <param name="putExtra">用户指定的额外参数</param>
         /// <returns>此操作执行后的返回结果</returns>
-        private HttpResult MakeFile(string fileName, long size, string key, string upToken, PutExtra putExtra, string[] contexts)
+        private async Task<HttpResult> MakeFile(string fileName, long size, string key, string upToken, PutExtra putExtra, string[] contexts)
         {
             var result = new HttpResult();
 
@@ -523,19 +499,19 @@ namespace Qiniu.Storage
                 //check file name
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));
+                    fnameStr = $"/fname/{Base64.UrlSafeBase64Encode(fileName)}";
                 }
 
                 //check mime type
                 if (!string.IsNullOrEmpty(putExtra.MimeType))
                 {
-                    mimeTypeStr = string.Format("/mimeType/{0}", Base64.UrlSafeBase64Encode(putExtra.MimeType));
+                    mimeTypeStr = $"/mimeType/{Base64.UrlSafeBase64Encode(putExtra.MimeType)}";
                 }
 
                 //check key
                 if (!string.IsNullOrEmpty(key))
                 {
-                    keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(key));
+                    keyStr = $"/key/{Base64.UrlSafeBase64Encode(key)}";
                 }
 
                 //check extra params
@@ -548,7 +524,7 @@ namespace Qiniu.Storage
                         var v = kvp.Value;
                         if (k.StartsWith("x:") && !string.IsNullOrEmpty(v))
                         {
-                            sb.AppendFormat("/{0}/{1}", k, v);
+                            sb.Append($"/{k}/{v}");
                         }
                     }
 
@@ -563,18 +539,18 @@ namespace Qiniu.Storage
                     return HttpResult.InvalidToken;
                 }
 
-                var uploadHost = config.UpHost(ak, bucket);
+                var uploadHost = await _config.UpHost(ak, bucket);
 
-                var url = string.Format("{0}/mkfile/{1}{2}{3}{4}{5}", uploadHost, size, mimeTypeStr, fnameStr, keyStr, paramStr);
+                var url = $"{uploadHost}/mkfile/{size}{mimeTypeStr}{fnameStr}{keyStr}{paramStr}";
                 var body = string.Join(",", contexts);
-                var upTokenStr = string.Format("UpToken {0}", upToken);
+                var upTokenStr = $"UpToken {upToken}";
 
-                result = httpManager.PostText(url, body, upTokenStr);
+                result = await _httpManager.PostTextAsync(url, body, upTokenStr);
             }
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] mkfile Error: ");
                 var e = ex;
                 while (e != null)
                 {
@@ -584,9 +560,8 @@ namespace Qiniu.Storage
 
                 sb.AppendLine();
 
-                if (ex is QiniuException)
+                if (ex is QiniuException qex)
                 {
-                    var qex = (QiniuException)ex;
                     result.Code = qex.HttpResult.Code;
                     result.RefCode = qex.HttpResult.Code;
                     result.Text = qex.HttpResult.Text;
@@ -612,11 +587,11 @@ namespace Qiniu.Storage
         {
             if (uploadedBytes < totalBytes)
             {
-                Console.WriteLine("[{0}] [ResumableUpload] Progress: {1,7:0.000}%", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), 100.0 * uploadedBytes / totalBytes);
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [ResumableUpload] Progress: {100.0 * uploadedBytes / totalBytes,7:0.000}%");
             }
             else
             {
-                Console.WriteLine("[{0}] [ResumableUpload] Progress: {1,7:0.000}%\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), 100.0);
+                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [ResumableUpload] Progress: {100.0,7:0.000}%\n");
             }
         }
 

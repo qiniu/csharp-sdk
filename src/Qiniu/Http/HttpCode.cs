@@ -1,8 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Qiniu.Http
 {
     /// <summary>
     ///     HTTP 状态码
     /// </summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum HttpCode
     {
         #region _PRE_

@@ -52,6 +52,7 @@ namespace Qiniu.Util
                 }
                 catch (Exception)
                 {
+                    // ignored
                 }
             }
 

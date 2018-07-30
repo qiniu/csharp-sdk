@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Qiniu.Http;
 using Qiniu.Util;
 
@@ -27,15 +28,15 @@ namespace Qiniu.Storage
             var sb = new StringBuilder(publicUrl);
             if (publicUrl.Contains("?"))
             {
-                sb.AppendFormat("&e={0}", deadline);
+                sb.Append($"&e={deadline}");
             }
             else
             {
-                sb.AppendFormat("?e={0}", deadline);
+                sb.Append($"?e={deadline}");
             }
 
             var token = Auth.CreateDownloadToken(mac, sb.ToString());
-            sb.AppendFormat("&token={0}", token);
+            sb.Append($"&token={token}");
 
             return sb.ToString();
         }
@@ -48,7 +49,7 @@ namespace Qiniu.Storage
         /// <returns>公开空间文件下载链接</returns>
         public static string CreatePublishUrl(string domain, string fileName)
         {
-            return string.Format("{0}/{1}", domain, Uri.EscapeUriString(fileName));
+            return $"{domain}/{Uri.EscapeUriString(fileName)}";
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace Qiniu.Storage
         /// <param name="url">(可访问的或者已授权的)链接</param>
         /// <param name="saveasFile">(另存为)本地文件名</param>
         /// <returns>下载资源的结果</returns>
-        public static HttpResult Download(string url, string saveasFile)
+        public static async Task<HttpResult> Download(string url, string saveasFile)
         {
             var result = new HttpResult();
 
@@ -65,7 +66,7 @@ namespace Qiniu.Storage
             {
                 var httpManager = new HttpManager();
 
-                result = httpManager.Get(url, null, true);
+                result = await httpManager.GetAsync(url, null, true);
                 if (result.Code == (int)HttpCode.OK)
                 {
                     using (var fs = File.Create(saveasFile, result.Data.Length))
@@ -74,23 +75,17 @@ namespace Qiniu.Storage
                         fs.Flush();
                     }
 
-                    result.RefText += string.Format(
-                        "[{0}] [Download] Success: (Remote file) ==> \"{1}\"\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                        saveasFile);
+                    result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [Download] Success: (Remote file) ==> \"{saveasFile}\"\n";
                 }
                 else
                 {
-                    result.RefText += string.Format(
-                        "[{0}] [Download] Error: code = {1}\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                        result.Code);
+                    result.RefText += $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [Download] Error: code = {result.Code}\n";
                 }
             }
             catch (Exception ex)
             {
                 var sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [Download] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [Download] Error:  ");
                 var e = ex;
                 while (e != null)
                 {
