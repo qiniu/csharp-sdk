@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -54,16 +56,16 @@ namespace Qiniu.Storage
         /// <param name="ak"></param>
         /// <param name="bucket"></param>
         /// <returns></returns>
-        public string RsHost(string ak, string bucket)
+        public async Task<string> RsHost(string ak, string bucket)
         {
             var scheme = UseHttps ? "https://" : "http://";
             var z = Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = await ZoneHelper.QueryZone(ak, bucket);
             }
 
-            return string.Format("{0}{1}", scheme, z.RsHost);
+            return $"{scheme}{z.RsHost}";
         }
 
         /// <summary>
@@ -72,16 +74,16 @@ namespace Qiniu.Storage
         /// <param name="ak"></param>
         /// <param name="bucket"></param>
         /// <returns></returns>
-        public string RsfHost(string ak, string bucket)
+        public async Task<string> RsfHost(string ak, string bucket)
         {
             var scheme = UseHttps ? "https://" : "http://";
             var z = Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = await ZoneHelper.QueryZone(ak, bucket);
             }
 
-            return string.Format("{0}{1}", scheme, z.RsfHost);
+            return $"{scheme}{z.RsfHost}";
         }
 
         /// <summary>
@@ -90,16 +92,16 @@ namespace Qiniu.Storage
         /// <param name="ak"></param>
         /// <param name="bucket"></param>
         /// <returns></returns>
-        public string ApiHost(string ak, string bucket)
+        public async Task<string> ApiHost(string ak, string bucket)
         {
             var scheme = UseHttps ? "https://" : "http://";
             var z = Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = await ZoneHelper.QueryZone(ak, bucket);
             }
 
-            return string.Format("{0}{1}", scheme, z.ApiHost);
+            return $"{scheme}{z.ApiHost}";
         }
 
         /// <summary>
@@ -108,16 +110,16 @@ namespace Qiniu.Storage
         /// <param name="ak"></param>
         /// <param name="bucket"></param>
         /// <returns></returns>
-        public string IovipHost(string ak, string bucket)
+        public async Task<string> IovipHost(string ak, string bucket)
         {
             var scheme = UseHttps ? "https://" : "http://";
             var z = Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = await ZoneHelper.QueryZone(ak, bucket);
             }
 
-            return string.Format("{0}{1}", scheme, z.IovipHost);
+            return $"{scheme}{z.IovipHost}";
         }
 
         /// <summary>
@@ -126,13 +128,13 @@ namespace Qiniu.Storage
         /// <param name="ak"></param>
         /// <param name="bucket"></param>
         /// <returns></returns>
-        public string UpHost(string ak, string bucket)
+        public async Task<string> UpHost(string ak, string bucket)
         {
             var scheme = UseHttps ? "https://" : "http://";
             var z = Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = await ZoneHelper.QueryZone(ak, bucket);
             }
 
             var upHost = z.SrcUpHosts[0];
@@ -141,7 +143,7 @@ namespace Qiniu.Storage
                 upHost = z.CdnUpHosts[0];
             }
 
-            return string.Format("{0}{1}", scheme, upHost);
+            return $"{scheme}{upHost}";
         }
     }
 }

@@ -6,14 +6,10 @@ namespace Qiniu.Storage
     internal class QiniuException : Exception
     {
         public HttpResult HttpResult;
-        public string message;
 
-        public QiniuException(HttpResult httpResult, string message)
+        public QiniuException(HttpResult httpResult, string message) : base(message)
         {
-            HttpResult = httpResult == null ? new HttpResult() : httpResult;
-            this.message = message;
+            HttpResult = httpResult ?? new HttpResult();
         }
-
-        public override string Message => message;
     }
 }

@@ -1,9 +1,9 @@
 using System;
-using Qiniu.Tests;
+using Qiniu.Storage;
 using Qiniu.Util;
 using Xunit;
 
-namespace Qiniu.Storage.Tests
+namespace Qiniu.Tests.Storage
 {
     public class DownloadManagerTests : TestEnv
     {
@@ -13,7 +13,7 @@ namespace Qiniu.Storage.Tests
             var mac = new Mac(AccessKey, SecretKey);
             var domain = "http://if-pri.qiniudn.com";
             var key = "hello/world/七牛/test.png";
-            var privateUrl = DownloadManager.CreatePrivateUrl(mac, domain, key, 3600);
+            var privateUrl = DownloadManager.CreatePrivateUrl(mac, domain, key);
             Console.WriteLine(privateUrl);
         }
 

@@ -57,7 +57,7 @@ namespace Qiniu.Storage
         {
             var sb = new StringBuilder();
 
-            sb.AppendFormat("code: {0}\n", Code);
+            sb.AppendLine($"code: {Code}");
 
             if (Result != null)
             {
@@ -65,16 +65,16 @@ namespace Qiniu.Storage
                 int i = 0, n = Result.Count;
                 foreach (var v in Result)
                 {
-                    sb.AppendFormat("#{0}/{1}\n", ++i, n);
-                    sb.AppendFormat("code: {0}\n", v.Code);
-                    sb.AppendFormat("data:\n{0}\n\n", v.Data);
+                    sb.AppendLine($"#{++i}/{n}");
+                    sb.AppendLine($"code: {v.Code}");
+                    sb.AppendLine($"data:\n{v.Data}\n");
                 }
             }
             else
             {
                 if (!string.IsNullOrEmpty(Error))
                 {
-                    sb.AppendFormat("Error: {0}\n", Error);
+                    sb.AppendLine($"Error: {Error}");
                 }
                 else if (!string.IsNullOrEmpty(Text))
                 {
@@ -85,7 +85,7 @@ namespace Qiniu.Storage
 
             sb.AppendLine();
 
-            sb.AppendFormat("ref-code: {0}\n", RefCode);
+            sb.AppendLine($"ref-code: {RefCode}");
 
             if (!string.IsNullOrEmpty(RefText))
             {
@@ -95,8 +95,8 @@ namespace Qiniu.Storage
 
             if (RefInfo != null)
             {
-                sb.AppendFormat("ref-info:\n");
-                foreach (var d in RefInfo) sb.AppendLine(string.Format("{0}: {1}", d.Key, d.Value));
+                sb.AppendLine("ref-info:");
+                foreach (var d in RefInfo) sb.AppendLine($"{d.Key}: {d.Value}");
             }
 
             return sb.ToString();

@@ -40,11 +40,11 @@ namespace Qiniu.Storage
         {
             var sb = new StringBuilder();
 
-            sb.AppendFormat("code: {0}\n", Code);
+            sb.AppendLine($"code: {Code}");
 
             if (!string.IsNullOrEmpty(PersistentId))
             {
-                sb.AppendFormat("PersistentId: {0}\n", PersistentId);
+                sb.AppendLine($"PersistentId: {PersistentId}");
             }
             else
             {
@@ -57,7 +57,7 @@ namespace Qiniu.Storage
 
             sb.AppendLine();
 
-            sb.AppendFormat("ref-code:{0}\n", RefCode);
+            sb.AppendLine($"ref-code:{RefCode}");
 
             if (!string.IsNullOrEmpty(RefText))
             {
@@ -67,8 +67,8 @@ namespace Qiniu.Storage
 
             if (RefInfo != null)
             {
-                sb.AppendFormat("ref-info:\n");
-                foreach (var d in RefInfo) sb.AppendLine(string.Format("{0}:{1}", d.Key, d.Value));
+                sb.AppendLine("ref-info:");
+                foreach (var d in RefInfo) sb.AppendLine($"{d.Key}:{d.Value}");
             }
 
             return sb.ToString();

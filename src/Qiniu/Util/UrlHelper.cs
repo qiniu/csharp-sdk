@@ -8,50 +8,50 @@ namespace Qiniu.Util
     /// </summary>
     public class UrlHelper
     {
-        private static readonly Regex regx = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?");
+        private static readonly Regex Regx = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?");
 
-        private static readonly Regex regu = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,/~\+#]*)?");
+        private static readonly Regex Regu = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,/~\+#]*)?");
 
-        private static readonly Regex regd = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,/~\+#]*)?/");
+        private static readonly Regex Regd = new Regex(@"(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,/~\+#]*)?/");
 
         /// <summary>
         ///     是否合法URL
         /// </summary>
-        /// <param name="_url">待判断的url</param>
+        /// <param name="url">待判断的url</param>
         /// <returns></returns>
-        public static bool IsValidUrl(string _url)
+        public static bool IsValidUrl(string url)
         {
-            return regx.IsMatch(_url);
+            return Regx.IsMatch(url);
         }
 
         /// <summary>
         ///     是否一般URL(不包含？等后缀参数)
         /// </summary>
-        /// <param name="_url">待判断的url</param>
+        /// <param name="url">待判断的url</param>
         /// <returns></returns>
-        public static bool IsNormalUrl(string _url)
+        public static bool IsNormalUrl(string url)
         {
-            return regu.IsMatch(_url);
+            return Regu.IsMatch(url);
         }
 
         /// <summary>
         ///     是否合法URL目录
         /// </summary>
-        /// <param name="_dir">待判断的url目录</param>
+        /// <param name="dir">待判断的url目录</param>
         /// <returns></returns>
-        public static bool IsValidDir(string _dir)
+        public static bool IsValidDir(string dir)
         {
-            return regd.IsMatch(_dir);
+            return Regd.IsMatch(dir);
         }
 
         /// <summary>
         ///     从原始URL转换为一般URL(根据需要截断)
         /// </summary>
-        /// <param name="_url">待转换的url</param>
+        /// <param name="url">待转换的url</param>
         /// <returns></returns>
-        public static string GetNormalUrl(string _url)
+        public static string GetNormalUrl(string url)
         {
-            var m = regu.Match(_url);
+            var m = Regu.Match(url);
             return m.Value;
         }
 

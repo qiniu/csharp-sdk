@@ -34,20 +34,20 @@ namespace Qiniu.Storage
         {
             var sb = new StringBuilder();
 
-            sb.AppendFormat("code: {0}\n", Code);
+            sb.AppendLine($"code: {Code}");
 
             if (Result != null)
             {
                 if (Result.CommonPrefixes != null)
                 {
                     sb.Append("commonPrefixes:");
-                    foreach (var p in Result.CommonPrefixes) sb.AppendFormat("{0} ", p);
+                    foreach (var p in Result.CommonPrefixes) sb.Append($"{p} ");
                     sb.AppendLine();
                 }
 
                 if (!string.IsNullOrEmpty(Result.Marker))
                 {
-                    sb.AppendFormat("marker: {0}\n", Result.Marker);
+                    sb.AppendLine($"marker: {Result.Marker}");
                 }
 
                 if (Result.Items != null)
@@ -55,16 +55,9 @@ namespace Qiniu.Storage
                     sb.AppendLine("items:");
                     int i = 0, n = Result.Items.Count;
                     foreach (var item in Result.Items)
-                        sb.AppendFormat(
-                            "#{0}/{1}:Key={2}, Size={3}, Mime={4}, Hash={5}, Time={6}, Type={7}\n",
-                            ++i,
-                            n,
-                            item.Key,
-                            item.Fsize,
-                            item.MimeType,
-                            item.Hash,
-                            item.PutTime,
-                            item.FileType);
+                    {
+                        sb.AppendLine($"#{++i}/{n}:Key={item.Key}, Size={item.Fsize}, Mime={item.MimeType}, Hash={item.Hash}, Time={item.PutTime}, Type={item.FileType}");
+                    }
                 }
             }
             else
@@ -78,7 +71,7 @@ namespace Qiniu.Storage
 
             sb.AppendLine();
 
-            sb.AppendFormat("ref-code: {0}\n", RefCode);
+            sb.AppendLine($"ref-code: {RefCode}");
 
             if (!string.IsNullOrEmpty(RefText))
             {
@@ -88,8 +81,8 @@ namespace Qiniu.Storage
 
             if (RefInfo != null)
             {
-                sb.AppendFormat("ref-info:\n");
-                foreach (var d in RefInfo) sb.AppendLine(string.Format("{0}: {1}", d.Key, d.Value));
+                sb.AppendLine("ref-info:");
+                foreach (var d in RefInfo) sb.AppendLine($"{d.Key}: {d.Value}");
             }
 
             return sb.ToString();

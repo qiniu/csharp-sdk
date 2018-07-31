@@ -51,10 +51,12 @@ namespace Qiniu.CDN
             if (urls != null)
             {
                 foreach (var u in urls)
+                {
                     if (!Urls.Contains(u))
                     {
                         Urls.Add(u);
                     }
+                }
             }
         }
 

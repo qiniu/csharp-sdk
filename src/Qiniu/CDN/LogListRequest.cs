@@ -52,10 +52,12 @@ namespace Qiniu.CDN
             {
                 var uniqueDomains = new List<string>();
                 foreach (var d in domains)
+                {
                     if (!uniqueDomains.Contains(d))
                     {
                         uniqueDomains.Add(d);
                     }
+                }
 
                 if (uniqueDomains.Count > 0)
                 {

@@ -1,37 +1,38 @@
 using System;
+using System.Threading.Tasks;
+using Qiniu.CDN;
 using Qiniu.Http;
-using Qiniu.Tests;
 using Qiniu.Util;
 using Xunit;
 
-namespace Qiniu.CDN.Tests
+namespace Qiniu.Tests.CDN
 {
     public class CdnManagerTests : TestEnv
     {
         [Fact]
         public void CreateTimestampAntiLeechUrlTest()
         {
-            var host = "http://qnls.example.com";
-            var fileName = "hello/6000694.ls";
-            var query = "";
-            var expireInSeconds = 3600;
-            var encryptKey = "xxx";
+            const string host = "http://qnls.example.com";
+            const string fileName = "hello/6000694.ls";
+            const string query = "";
+            const int expireInSeconds = 3600;
+            const string encryptKey = "xxx";
             var finalUrl = CdnManager.CreateTimestampAntiLeechUrl(host, fileName, query, encryptKey, expireInSeconds);
             Console.WriteLine(finalUrl);
         }
 
         [Fact]
-        public void GetBandwidthDataTest()
+        public async Task GetBandwidthDataTest()
         {
             var mac = new Mac(AccessKey, SecretKey);
             var manager = new CdnManager(mac);
 
-            var domains = new [] { Domain };
+            var domains = new[] { Domain };
             var start = "2017-08-01";
             var end = "2017-08-10";
             var granu = "day";
 
-            var ret = manager.GetBandwidthData(domains, start, end, granu);
+            var ret = await manager.GetBandwidthData(domains, start, end, granu);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, ret.ToString());
@@ -40,14 +41,13 @@ namespace Qiniu.CDN.Tests
             foreach (var domain in domains)
             {
                 Console.WriteLine("bandwidth data of domain: " + domain);
-                foreach (var t in ret.Result.Time) Console.Write(t + "\t");
-                Console.WriteLine();
+                if (ret.Result.Time != null) Console.WriteLine(string.Join("\t", ret.Result.Time));
                 if (ret.Result.Data.ContainsKey(domain))
                 {
                     if (ret.Result.Data[domain].China != null)
                     {
                         Console.WriteLine("China:");
-                        foreach (int v in ret.Result.Data[domain].China) Console.Write(v + "\t");
+                        foreach (var v in ret.Result.Data[domain].China) Console.Write(v + "\t");
                         Console.WriteLine();
                     }
 
@@ -63,13 +63,13 @@ namespace Qiniu.CDN.Tests
         }
 
         [Fact]
-        public void GetCdnLogListTest()
+        public async Task GetCdnLogListTest()
         {
             var mac = new Mac(AccessKey, SecretKey);
             var manager = new CdnManager(mac);
             var day = "2017-08-10";
-            var domains = new [] { Domain };
-            var ret = manager.GetCdnLogList(domains, day);
+            var domains = new[] { Domain };
+            var ret = await manager.GetCdnLogList(domains, day);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, ret.ToString());
@@ -78,22 +78,22 @@ namespace Qiniu.CDN.Tests
             foreach (var domain in ret.Result.Data.Keys)
             {
                 Console.WriteLine("log list for domain: " + domain);
-                foreach (var data in ret.Result.Data[domain]) Console.WriteLine(data.Name + "\t" + data.Size + "\t" + data.Mtime + "\t" + data.Url);
+                foreach (var data in ret.Result.Data[domain]) Console.WriteLine($"{data.Name}\t{data.Size}\t{data.Mtime}\t{data.Url}");
             }
         }
 
         [Fact]
-        public void GetFluxDataTest()
+        public async Task GetFluxDataTest()
         {
             var mac = new Mac(AccessKey, SecretKey);
             var manager = new CdnManager(mac);
 
-            var domains = new [] { Domain };
+            var domains = new[] { Domain };
             var start = "2017-08-01";
             var end = "2017-08-10";
             var granu = "day";
 
-            var ret = manager.GetFluxData(domains, start, end, granu);
+            var ret = await manager.GetFluxData(domains, start, end, granu);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, ret.ToString());
@@ -102,8 +102,7 @@ namespace Qiniu.CDN.Tests
             foreach (var domain in domains)
             {
                 Console.WriteLine("flux data of domain: " + domain);
-                foreach (var t in ret.Result.Time) Console.Write(t + "\t");
-                Console.WriteLine();
+                if (ret.Result.Time != null) Console.WriteLine(string.Join("\t", ret.Result.Time));
                 if (ret.Result.Data.ContainsKey(domain))
                 {
                     if (ret.Result.Data[domain].China != null)
@@ -117,7 +116,7 @@ namespace Qiniu.CDN.Tests
                     if (ret.Result.Data[domain].Oversea != null)
                     {
                         Console.WriteLine("Oversea:");
-                        foreach (int v in ret.Result.Data[domain].Oversea) Console.Write(v + "\t");
+                        foreach (var v in ret.Result.Data[domain].Oversea) Console.Write(v + "\t");
                         Console.WriteLine();
                     }
                 }
@@ -126,17 +125,17 @@ namespace Qiniu.CDN.Tests
 
 
         [Fact]
-        public void PrefetchUrlsTest()
+        public async Task PrefetchUrlsTest()
         {
             string[] urls =
             {
-                string.Format("http://{0}/images/1.png", Domain),
-                string.Format("http://{0}/images/2.png", Domain)
+                $"http://{Domain}/images/1.png",
+                $"http://{Domain}/images/2.png"
             };
 
             var mac = new Mac(AccessKey, SecretKey);
             var manager = new CdnManager(mac);
-            var ret = manager.PrefetchUrls(urls);
+            var ret = await manager.PrefetchUrls(urls);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, ret.ToString());
@@ -154,17 +153,17 @@ namespace Qiniu.CDN.Tests
         }
 
         [Fact]
-        public void RefreshDirsTest()
+        public async Task RefreshDirsTest()
         {
             string[] dirs =
             {
-                string.Format("http://{0}/images1/", Domain),
-                string.Format("http://{0}/images2/", Domain)
+                $"http://{Domain}/images1/",
+                $"http://{Domain}/images2/"
             };
 
             var mac = new Mac(AccessKey, SecretKey);
             var manager = new CdnManager(mac);
-            var ret = manager.RefreshDirs(dirs);
+            var ret = await manager.RefreshDirs(dirs);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, ret.ToString());
@@ -182,23 +181,23 @@ namespace Qiniu.CDN.Tests
         }
 
         [Fact]
-        public void RefreshUrlsAndDirsTest()
+        public async Task RefreshUrlsAndDirsTest()
         {
             string[] urls =
             {
-                string.Format("http://{0}/images/1.png", Domain),
-                string.Format("http://{0}/images/2.png", Domain)
+                $"http://{Domain}/images/1.png",
+                $"http://{Domain}/images/2.png"
             };
 
             string[] dirs =
             {
-                string.Format("http://{0}/images1/", Domain),
-                string.Format("http://{0}/images2/", Domain)
+                $"http://{Domain}/images1/",
+                $"http://{Domain}/images2/"
             };
 
             var mac = new Mac(AccessKey, SecretKey);
             var manager = new CdnManager(mac);
-            var ret = manager.RefreshUrlsAndDirs(urls, dirs);
+            var ret = await manager.RefreshUrlsAndDirs(urls, dirs);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, ret.ToString());
@@ -223,17 +222,17 @@ namespace Qiniu.CDN.Tests
         }
 
         [Fact]
-        public void RefreshUrlsTest()
+        public async Task RefreshUrlsTest()
         {
             string[] urls =
             {
-                string.Format("http://{0}/images/1.png", Domain),
-                string.Format("http://{0}/images/2.png", Domain)
+                $"http://{Domain}/images/1.png",
+                $"http://{Domain}/images/2.png"
             };
 
             var mac = new Mac(AccessKey, SecretKey);
             var manager = new CdnManager(mac);
-            var ret = manager.RefreshUrls(urls);
+            var ret = await manager.RefreshUrls(urls);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, ret.ToString());

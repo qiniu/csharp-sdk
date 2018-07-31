@@ -8,7 +8,7 @@ namespace Qiniu.Storage
         /// <summary>
         ///     华东
         /// </summary>
-        public static Zone ZONE_CN_East = new Zone
+        public static Zone ZoneCnEast = new Zone
         {
             RsHost = "rs.qbox.me",
             RsfHost = "rsf.qbox.me",
@@ -29,7 +29,7 @@ namespace Qiniu.Storage
         /// <summary>
         ///     华北
         /// </summary>
-        public static Zone ZONE_CN_North = new Zone
+        public static Zone ZoneCnNorth = new Zone
         {
             RsHost = "rs-z1.qbox.me",
             RsfHost = "rsf-z1.qbox.me",
@@ -42,7 +42,7 @@ namespace Qiniu.Storage
         /// <summary>
         ///     华南
         /// </summary>
-        public static Zone ZONE_CN_South = new Zone
+        public static Zone ZoneCnSouth = new Zone
         {
             RsHost = "rs-z2.qbox.me",
             RsfHost = "rsf-z2.qbox.me",
@@ -63,7 +63,7 @@ namespace Qiniu.Storage
         /// <summary>
         ///     北美
         /// </summary>
-        public static Zone ZONE_US_North = new Zone
+        public static Zone ZoneUsNorth = new Zone
         {
             RsHost = "rs-na0.qbox.me",
             RsfHost = "rsf-na0.qbox.me",
@@ -76,7 +76,7 @@ namespace Qiniu.Storage
         /// <summary>
         ///     新加坡
         /// </summary>
-        public static Zone ZONE_AS_Singapore = new Zone
+        public static Zone ZoneAsSingapore = new Zone
         {
             RsHost = "rs-as0.qbox.me",
             RsfHost = "rsf-as0.qbox.me",

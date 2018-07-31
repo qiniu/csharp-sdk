@@ -1,15 +1,16 @@
 using System;
+using System.Threading.Tasks;
 using Qiniu.Http;
-using Qiniu.Tests;
+using Qiniu.Storage;
 using Qiniu.Util;
 using Xunit;
 
-namespace Qiniu.Storage.Tests
+namespace Qiniu.Tests.Storage
 {
     public class OperationManagerTests : TestEnv
     {
         [Fact]
-        public void PfopTest()
+        public async Task PfopTest()
         {
             var saveMp4Entry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.mp4");
             var saveJpgEntry = Base64.UrlSafeBase64Encode(Bucket + ":vframe_test_target.jpg");
@@ -23,7 +24,7 @@ namespace Qiniu.Storage.Tests
             var notifyUrl = "http://api.example.com/qiniu/pfop/notify";
             var key = "qiniu.mp4";
             var force = true;
-            var pfopRet = manager.Pfop(Bucket, key, fops, pipeline, notifyUrl, force);
+            var pfopRet = await manager.Pfop(Bucket, key, fops, pipeline, notifyUrl, force);
             if (pfopRet.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "pfop error: " + pfopRet);
@@ -34,13 +35,13 @@ namespace Qiniu.Storage.Tests
 
 
         [Fact]
-        public void PrefopTest()
+        public async Task PrefopTest()
         {
             var persistentId = "z0.59953aaa45a2650c9942144b";
             var mac = new Mac(AccessKey, SecretKey);
             var config = new Config();
             var manager = new OperationManager(mac, config);
-            var ret = manager.Prefop(persistentId);
+            var ret = await manager.Prefop(persistentId);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.True(false, "prefop error: " + ret);

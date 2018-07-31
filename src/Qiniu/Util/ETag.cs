@@ -9,10 +9,10 @@ namespace Qiniu.Util
     public class ETag
     {
         // 块大小(固定为4MB)
-        private const int BLOCK_SIZE = 4 * 1024 * 1024;
+        private const int BlockSize = 4 * 1024 * 1024;
 
         // 计算时以20B为单位
-        private static readonly int BLOCK_SHA1_SIZE = 20;
+        private static readonly int BlockSha1Size = 20;
 
         /// <summary>
         ///     计算文件hash(ETAG)
@@ -28,35 +28,35 @@ namespace Qiniu.Util
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     var fileLength = stream.Length;
-                    var buffer = new byte[BLOCK_SIZE];
-                    var finalBuffer = new byte[BLOCK_SHA1_SIZE + 1];
-                    if (fileLength <= BLOCK_SIZE)
+                    var buffer = new byte[BlockSize];
+                    var finalBuffer = new byte[BlockSha1Size + 1];
+                    if (fileLength <= BlockSize)
                     {
-                        var readByteCount = stream.Read(buffer, 0, BLOCK_SIZE);
+                        var readByteCount = stream.Read(buffer, 0, BlockSize);
                         var readBuffer = new byte[readByteCount];
                         Array.Copy(buffer, readBuffer, readByteCount);
 
-                        var sha1Buffer = Hashing.CalcSHA1(readBuffer);
+                        var sha1Buffer = Hashing.CalcSha1(readBuffer);
 
                         finalBuffer[0] = 0x16;
                         Array.Copy(sha1Buffer, 0, finalBuffer, 1, sha1Buffer.Length);
                     }
                     else
                     {
-                        var blockCount = fileLength % BLOCK_SIZE == 0 ? fileLength / BLOCK_SIZE : fileLength / BLOCK_SIZE + 1;
-                        var sha1AllBuffer = new byte[BLOCK_SHA1_SIZE * blockCount];
+                        var blockCount = fileLength % BlockSize == 0 ? fileLength / BlockSize : fileLength / BlockSize + 1;
+                        var sha1AllBuffer = new byte[BlockSha1Size * blockCount];
 
                         for (var i = 0; i < blockCount; i++)
                         {
-                            var readByteCount = stream.Read(buffer, 0, BLOCK_SIZE);
+                            var readByteCount = stream.Read(buffer, 0, BlockSize);
                             var readBuffer = new byte[readByteCount];
                             Array.Copy(buffer, readBuffer, readByteCount);
 
-                            var sha1Buffer = Hashing.CalcSHA1(readBuffer);
-                            Array.Copy(sha1Buffer, 0, sha1AllBuffer, i * BLOCK_SHA1_SIZE, sha1Buffer.Length);
+                            var sha1Buffer = Hashing.CalcSha1(readBuffer);
+                            Array.Copy(sha1Buffer, 0, sha1AllBuffer, i * BlockSha1Size, sha1Buffer.Length);
                         }
 
-                        var sha1AllBufferSha1 = Hashing.CalcSHA1(sha1AllBuffer);
+                        var sha1AllBufferSha1 = Hashing.CalcSha1(sha1AllBuffer);
 
                         finalBuffer[0] = 0x96;
                         Array.Copy(sha1AllBufferSha1, 0, finalBuffer, 1, sha1AllBufferSha1.Length);
@@ -67,6 +67,7 @@ namespace Qiniu.Util
             }
             catch (Exception)
             {
+                // ignored
             }
 
             return qetag;

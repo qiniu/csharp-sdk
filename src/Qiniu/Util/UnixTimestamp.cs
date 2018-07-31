@@ -10,12 +10,12 @@ namespace Qiniu.Util
         /// <summary>
         ///     时间戳末尾7位(补0或截断)
         /// </summary>
-        private const long TICK_BASE = 10000000;
+        private const long TickBase = 10000000;
 
         /// <summary>
         ///     基准时间
         /// </summary>
-        private static readonly DateTime dtBase = new DateTime(1970, 1, 1).ToLocalTime();
+        private static readonly DateTime DtBase = new DateTime(1970, 1, 1).ToLocalTime();
 
         /// <summary>
         ///     从现在(调用此函数时刻)起若干秒以后那个时间点的时间戳
@@ -25,8 +25,8 @@ namespace Qiniu.Util
         public static long GetUnixTimestamp(long secondsAfterNow)
         {
             var dt = DateTime.Now.AddSeconds(secondsAfterNow).ToLocalTime();
-            var tsx = dt.Subtract(dtBase);
-            return tsx.Ticks / TICK_BASE;
+            var tsx = dt.Subtract(DtBase);
+            return tsx.Ticks / TickBase;
         }
 
         /// <summary>
@@ -36,8 +36,8 @@ namespace Qiniu.Util
         /// <returns>时间戳</returns>
         public static long ConvertToTimestamp(DateTime dt)
         {
-            var tsx = dt.Subtract(dtBase);
-            return tsx.Ticks / TICK_BASE;
+            var tsx = dt.Subtract(DtBase);
+            return tsx.Ticks / TickBase;
         }
 
         /// <summary>
@@ -47,8 +47,8 @@ namespace Qiniu.Util
         /// <returns>日期时间</returns>
         public static DateTime ConvertToDateTime(string timestamp)
         {
-            var ticks = long.Parse(timestamp) * TICK_BASE;
-            return dtBase.AddTicks(ticks);
+            var ticks = long.Parse(timestamp) * TickBase;
+            return DtBase.AddTicks(ticks);
         }
 
         /// <summary>
@@ -58,8 +58,8 @@ namespace Qiniu.Util
         /// <returns>日期时间</returns>
         public static DateTime ConvertToDateTime(long timestamp)
         {
-            var ticks = timestamp * TICK_BASE;
-            return dtBase.AddTicks(ticks);
+            var ticks = timestamp * TickBase;
+            return DtBase.AddTicks(ticks);
         }
 
         /// <summary>

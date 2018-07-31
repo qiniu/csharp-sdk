@@ -1,9 +1,9 @@
 using System;
-using Qiniu.Tests;
+using Qiniu.Storage;
 using Qiniu.Util;
 using Xunit;
 
-namespace Qiniu.Storage.Tests
+namespace Qiniu.Tests.Storage
 {
     public class PutPolicyTests : TestEnv
     {
@@ -11,48 +11,58 @@ namespace Qiniu.Storage.Tests
         public void CreateUptokenTest()
         {
             var mac = new Mac(AccessKey, SecretKey);
-            PutPolicy putPolicy = null;
             // 简单上传凭证
-            putPolicy = new PutPolicy();
-            putPolicy.Scope = Bucket;
+            var putPolicy = new PutPolicy
+            {
+                Scope = Bucket
+            };
             var upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
 
             // 自定义凭证有效期（示例2小时）
-            putPolicy = new PutPolicy();
-            putPolicy.Scope = Bucket;
+            putPolicy = new PutPolicy
+            {
+                Scope = Bucket
+            };
             putPolicy.SetExpires(7200);
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
 
             // 覆盖上传凭证
-            putPolicy = new PutPolicy();
-            var keyToOverwrite = "qiniu.png";
-            putPolicy.Scope = string.Format("{0}:{1}", Bucket, keyToOverwrite);
+            putPolicy = new PutPolicy
+            {
+                Scope = $"{Bucket}:qiniu.png"
+            };
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
 
             // 自定义上传回复（非callback模式）凭证
-            putPolicy = new PutPolicy();
-            putPolicy.Scope = Bucket;
-            putPolicy.ReturnBody = "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fsiz\":$(fsize),\"bucket\":\"$(bucket)\",\"name\":\"$(x:name)\"}";
+            putPolicy = new PutPolicy
+            {
+                Scope = Bucket,
+                ReturnBody = "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fsiz\":$(fsize),\"bucket\":\"$(bucket)\",\"name\":\"$(x:name)\"}"
+            };
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
 
             // 带回调业务服务器的凭证（application/json）
-            putPolicy = new PutPolicy();
-            putPolicy.Scope = Bucket;
-            putPolicy.CallbackUrl = "http://api.example.com/qiniu/upload/callback";
-            putPolicy.CallbackBody = "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fsiz\":$(fsize),\"bucket\":\"$(bucket)\",\"name\":\"$(x:name)\"}";
-            putPolicy.CallbackBodyType = "application/json";
+            putPolicy = new PutPolicy
+            {
+                Scope = Bucket,
+                CallbackUrl = "http://api.example.com/qiniu/upload/callback",
+                CallbackBody = "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fsiz\":$(fsize),\"bucket\":\"$(bucket)\",\"name\":\"$(x:name)\"}",
+                CallbackBodyType = "application/json"
+            };
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
 
             // 带回调业务服务器的凭证（application/x-www-form-urlencoded）
-            putPolicy = new PutPolicy();
-            putPolicy.Scope = Bucket;
-            putPolicy.CallbackUrl = "http://api.example.com/qiniu/upload/callback";
-            putPolicy.CallbackBody = "key=$(key)&hash=$(etag)&bucket=$(bucket)&fsize=$(fsize)&name=$(x:name)";
+            putPolicy = new PutPolicy
+            {
+                Scope = Bucket,
+                CallbackUrl = "http://api.example.com/qiniu/upload/callback",
+                CallbackBody = "key=$(key)&hash=$(etag)&bucket=$(bucket)&fsize=$(fsize)&name=$(x:name)"
+            };
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
 

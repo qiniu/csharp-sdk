@@ -34,16 +34,16 @@ namespace Qiniu.CDN
         {
             var sb = new StringBuilder();
 
-            sb.AppendFormat("code:{0}\n", Code);
+            sb.AppendLine($"code:{Code}");
             sb.AppendLine();
 
             if (Result != null)
             {
                 sb.AppendLine("result:");
-                sb.AppendFormat("code:{0}\n", Result.Code);
+                sb.AppendLine($"code:{Result.Code}");
                 if (!string.IsNullOrEmpty(Result.Error))
                 {
-                    sb.AppendFormat("error:{0}\n", Result.Error);
+                    sb.AppendLine($"error:{Result.Error}");
                 }
 
                 if (Result.Time != null)
@@ -56,7 +56,12 @@ namespace Qiniu.CDN
                 if (Result.Data != null && Result.Data.Count > 0)
                 {
                     sb.Append("flux:");
-                    foreach (var kvp in Result.Data) sb.AppendFormat("{0}:\nChina: {1}, Oversea={2}\n", kvp.Key, kvp.Value.China, kvp.Value.Oversea);
+                    foreach (var kvp in Result.Data)
+                    {
+                        sb.AppendLine($"{kvp.Key}:");
+                        sb.AppendLine($"China: {kvp.Value.China}, Oversea={kvp.Value.Oversea}");
+                    }
+
                     sb.AppendLine();
                 }
             }
@@ -71,7 +76,7 @@ namespace Qiniu.CDN
 
             sb.AppendLine();
 
-            sb.AppendFormat("ref-code:{0}\n", RefCode);
+            sb.AppendLine($"ref-code:{RefCode}");
 
             if (!string.IsNullOrEmpty(RefText))
             {
@@ -81,8 +86,8 @@ namespace Qiniu.CDN
 
             if (RefInfo != null)
             {
-                sb.AppendFormat("ref-info:\n");
-                foreach (var d in RefInfo) sb.AppendLine(string.Format("{0}:{1}", d.Key, d.Value));
+                sb.AppendLine("ref-info:");
+                foreach (var d in RefInfo) sb.AppendLine($"{d.Key}:{d.Value}");
             }
 
             return sb.ToString();

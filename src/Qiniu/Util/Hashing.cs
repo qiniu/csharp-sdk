@@ -21,7 +21,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="data">字节数据</param>
         /// <returns>SHA1</returns>
-        public static byte[] CalcSHA1(byte[] data)
+        public static byte[] CalcSha1(byte[] data)
         {
 #if WINDOWS_UWP
             var sha = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1);
@@ -41,7 +41,7 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="str">待计算的字符串</param>
         /// <returns>MD5结果</returns>
-        public static string CalcMD5(string str)
+        public static string CalcMd5(string str)
         {
 #if WINDOWS_UWP
             var md5 = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
@@ -53,7 +53,7 @@ namespace Qiniu.Util
             var data = Encoding.UTF8.GetBytes(str);
             var hashData = md5.ComputeHash(data);
             var sb = new StringBuilder(hashData.Length * 2);
-            foreach (var b in hashData) sb.AppendFormat("{0:x2}", b);
+            foreach (var b in hashData) sb.Append($"{b:x2}");
             return sb.ToString();
 #endif
         }
@@ -63,10 +63,10 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="str">待计算的字符串,避免FIPS-Exception</param>
         /// <returns>MD5结果</returns>
-        public static string CalcMD5X(string str)
+        public static string CalcMd5X(string str)
         {
             var data = Encoding.UTF8.GetBytes(str);
-            var md5 = new LabMD5();
+            var md5 = new LabMd5();
             return md5.ComputeHash(data);
         }
     }
