@@ -19,6 +19,6 @@
 5. 然后到 github 网站的该 git 远程仓库的 my-new-feature 分支下发起 Pull Request
 
 
-## 许可证
+## 许可证书
 
 Copyright (c) 2017 [qiniu.com](www.qiniu.com)
