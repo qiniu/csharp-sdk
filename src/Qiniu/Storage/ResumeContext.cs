@@ -40,6 +40,6 @@ namespace Qiniu.Storage
         /// ctx失效时刻
         /// </summary>
         [JsonProperty("expired_at")]
-        public long ExpiredAt { get; set; }
+        public long Expired_At { get; set; }
     }
 }

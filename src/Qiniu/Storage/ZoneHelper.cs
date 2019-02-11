@@ -61,7 +61,7 @@ namespace Qiniu.Storage
                             zone.RsHost = "rs-z1.qiniu.com";
                             zone.RsfHost = "rsf-z1.qiniu.com";
                         }
-                        else if (zone.IovipHost.Contains("z2"))
+                        else if (zone.IovipHost.Contains("z1"))
                         {
                             zone.ApiHost = "api-z2.qiniu.com";
                             zone.RsHost = "rs-z2.qiniu.com";
@@ -72,12 +72,6 @@ namespace Qiniu.Storage
                             zone.ApiHost = "api-na0.qiniu.com";
                             zone.RsHost = "rs-na0.qiniu.com";
                             zone.RsfHost = "rsf-na0.qiniu.com";
-                        }
-                        else if (zone.IovipHost.Contains("as0"))
-                        {
-                            zone.ApiHost = "api-as0.qiniu.com";
-                            zone.RsHost = "rs-as0.qiniu.com";
-                            zone.RsfHost = "rsf-as0.qiniu.com";
                         }
                         else
                         {
