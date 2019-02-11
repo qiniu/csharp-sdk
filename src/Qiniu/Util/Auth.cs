@@ -38,6 +38,15 @@
         {
             return CreateManageToken(url, null);
         }
+        /// <param name="url">请求的URL</param>
+        /// <param name="method">请求的URL</param>
+        /// <param name="body">请求的主体内容</param>
+        /// <param name="contentType">请求的URL</param>
+        /// <returns>生成的管理凭证</returns>
+        public string CreateQiniuToken(string url, string method, byte[] body, string contentType)
+        {
+            return CreateQiniuToken(url, method,body, contentType);
+        }
 
         /// <summary>
         /// 生成上传凭证
@@ -94,6 +103,17 @@
         {
             Signature sx = new Signature(mac);
             return string.Format("QBox {0}", sx.SignRequest(url, body));
+        }
+        /// <param name="mac">账号(密钥)</param>
+        /// <param name="url">访问的URL</param>
+        /// <param name="method">访问的URL</param>
+        /// <param name="body">请求的body</param>
+       /// <param name="contentType">请求的body</param>
+        /// <returns>生成的管理凭证</returns>
+        public static string CreateQiniuToken(Mac mac, string url, string method, byte[] body, string contentType)
+        {
+            Signature sx = new Signature(mac);
+            return string.Format("Qiniu {0}",sx.SignRequest(url, method, body,contentType));
         }
 
         /// <summary>

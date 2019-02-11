@@ -22,7 +22,9 @@ namespace Qiniu.Storage
     {
         private Config config;
         //分片上传块的大小，固定为4M，不可修改
-        private const int BLOCK_SIZE = 4 * 1024 * 1024;
+        private const long BLOCK_SIZE = 4 * 1024 * 1024;
+        private const int DEFAULT_MAX_RETRY_TIMES = 3;
+        private long CHUNK_SIZE;
 
         // HTTP请求管理器(GET/POST等)
         private HttpManager httpManager;
@@ -36,12 +38,12 @@ namespace Qiniu.Storage
             if (config == null)
             {
                 this.config = new Config();
-            }
-            else
+            }else
             {
                 this.config = config;
             }
             this.httpManager = new HttpManager();
+            this.CHUNK_SIZE = ResumeChunk.GetChunkSize(this.config.ChunkSize);
         }
 
 
@@ -68,7 +70,7 @@ namespace Qiniu.Storage
             }
         }
 
-
+       
 
         /// <summary>
         /// 分片上传/断点续上传，带有自定义进度处理和上传控制，检查CRC32，可自动重试
@@ -95,195 +97,389 @@ namespace Qiniu.Storage
             {
                 putExtra.UploadController = DefaultUploadController;
             }
-
-            if (!(putExtra.BlockUploadThreads > 0 && putExtra.BlockUploadThreads <= 64))
+            if (putExtra.MaxRetryTimes == 0)
             {
-                putExtra.BlockUploadThreads = 1;
+                putExtra.MaxRetryTimes = DEFAULT_MAX_RETRY_TIMES;
             }
 
-            using (stream)
+            //start to upload
+            try
             {
-                //start to upload
-                try
+                long fileSize = stream.Length;
+                long chunkSize = CHUNK_SIZE;
+                long blockSize = BLOCK_SIZE;
+                byte[] chunkBuffer = new byte[chunkSize];
+                int blockCount = (int)((fileSize + blockSize - 1) / blockSize);
+                int index = 0; // zero block
+
+                //check resume record file
+                ResumeInfo resumeInfo = null;
+                if (File.Exists(putExtra.ResumeRecordFile))
                 {
-                    long uploadedBytes = 0;
-                    long fileSize = stream.Length;
-                    long blockCount = (fileSize + BLOCK_SIZE - 1) / BLOCK_SIZE;
-
-                    //check resume record file
-                    ResumeInfo resumeInfo = null;
-                    if (File.Exists(putExtra.ResumeRecordFile))
+                    bool useLastRecord = false;
+                    resumeInfo = ResumeHelper.Load(putExtra.ResumeRecordFile);
+                    if (resumeInfo != null && fileSize==resumeInfo.FileSize)
                     {
-                        resumeInfo = ResumeHelper.Load(putExtra.ResumeRecordFile);
-                        if (resumeInfo != null && fileSize == resumeInfo.FileSize)
+                        //check whether ctx expired
+                        if (!UnixTimestamp.IsContextExpired(resumeInfo.ExpiredAt))
                         {
-                            //check whether ctx expired
-                            if (UnixTimestamp.IsContextExpired(resumeInfo.ExpiredAt))
-                            {
-                                resumeInfo = null;
-                            }
-                        }
-                    }
-                    if (resumeInfo == null)
-                    {
-                        resumeInfo = new ResumeInfo()
-                        {
-                            FileSize = fileSize,
-                            BlockCount = blockCount,
-                            Contexts = new string[blockCount],
-                            ExpiredAt = 0,
-                        };
-                    }
-
-                    //calc upload progress
-                    for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
-                    {
-                        string context = resumeInfo.Contexts[blockIndex];
-                        if (!string.IsNullOrEmpty(context))
-                        {
-                            uploadedBytes += BLOCK_SIZE;
+                            useLastRecord = true;
                         }
                     }
 
-                    //set upload progress
-                    putExtra.ProgressHandler(uploadedBytes, fileSize);
-
-                    //init block upload error
-                    //check not finished blocks to upload
-                    UploadControllerAction upCtrl = putExtra.UploadController();
-                    ManualResetEvent manualResetEvent = new ManualResetEvent(false);
-                    Dictionary<long, byte[]> blockDataDict = new Dictionary<long, byte[]>();
-                    Dictionary<long, HttpResult> blockMakeResults = new Dictionary<long, HttpResult>();
-                    Dictionary<string, long> uploadedBytesDict = new Dictionary<string, long>();
-                    uploadedBytesDict.Add("UploadProgress", uploadedBytes);
-                    byte[] blockBuffer = new byte[BLOCK_SIZE];
-                    for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                    if (useLastRecord)
                     {
-                        string context = resumeInfo.Contexts[blockIndex];
-                        if (string.IsNullOrEmpty(context))
+                        index = resumeInfo.BlockIndex;
+                    }
+                }
+                if (resumeInfo == null)
+                {
+                    resumeInfo = new ResumeInfo()
+                    {
+                        FileSize = fileSize,
+                        BlockIndex = 0,
+                        BlockCount = blockCount,
+                        Contexts = new string[blockCount],
+                        ExpiredAt = 0,
+                    };
+                }
+
+                //read from offset
+                long offset = index * blockSize;
+                string context = null;
+                long expiredAt = 0;
+                long leftBytes = fileSize - offset;
+                long blockLeft = 0;
+                long blockOffset = 0;
+                HttpResult hr = null;
+                ResumeContext rc = null;
+
+                stream.Seek(offset, SeekOrigin.Begin);
+
+                var upts = UploadControllerAction.Activated;
+                bool bres = true;
+                var manualResetEvent = new ManualResetEvent(true);
+                int iTry = 0;
+
+                while (leftBytes > 0)
+                {
+                    // 每上传一个BLOCK之前，都要检查一下UPTS
+                    upts = putExtra.UploadController();
+
+                    if (upts == UploadControllerAction.Aborted)
+                    {
+                        result.Code = (int)HttpCode.USER_CANCELED;
+                        result.RefCode = (int)HttpCode.USER_CANCELED;
+                        result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+
+                        return result;
+                    }
+                    else if (upts == UploadControllerAction.Suspended)
+                    {
+                        if (bres)
                         {
-                            //check upload controller action before each chunk
-                            while (true)
-                            {
-                                upCtrl = putExtra.UploadController();
+                            bres = false;
+                            manualResetEvent.Reset();
 
-                                if (upCtrl == UploadControllerAction.Aborted)
-                                {
-                                    result.Code = (int)HttpCode.USER_CANCELED;
-                                    result.RefCode = (int)HttpCode.USER_CANCELED;
-                                    result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted\n",
-                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                    manualResetEvent.Set();
-                                    return result;
-                                }
-                                else if (upCtrl == UploadControllerAction.Suspended)
-                                {
-                                    result.RefCode = (int)HttpCode.USER_PAUSED;
-                                    result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is paused\n",
-                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                    manualResetEvent.WaitOne(1000);
-                                }
-                                else if (upCtrl == UploadControllerAction.Activated)
-                                {
-                                    break;
-                                }
+                            result.RefCode = (int)HttpCode.USER_PAUSED;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is paused\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                        }
+                        manualResetEvent.WaitOne(1000);
+                    }
+                    else
+                    {
+                        if (!bres)
+                        {
+                            bres = true;
+                            manualResetEvent.Set();
+
+                            result.RefCode = (int)HttpCode.USER_RESUMED;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is resumed\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                        }
+
+                        #region one-block
+
+                        #region mkblk
+                        if (leftBytes < BLOCK_SIZE)
+                        {
+                            blockSize = leftBytes;
+                        }
+                        else
+                        {
+                            blockSize = BLOCK_SIZE;
+                        }
+
+                        if (leftBytes < CHUNK_SIZE)
+                        {
+                            chunkSize = leftBytes;
+                        }
+                        else
+                        {
+                            chunkSize = CHUNK_SIZE;
+                        }
+
+                        //read data buffer
+                        stream.Read(chunkBuffer, 0, (int)chunkSize);
+
+                        iTry = 0;
+                        while (++iTry <= putExtra.MaxRetryTimes)
+                        {
+                            result.RefText += string.Format("[{0}] [ResumableUpload] try mkblk#{1}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), iTry);
+
+                            hr = MakeBlock(chunkBuffer, blockSize, chunkSize, upToken);
+                            if (hr.Code == (int)HttpCode.OK && hr.RefCode != (int)HttpCode.USER_NEED_RETRY)
+                            {
+                                break;
                             }
+                        }
+                       
+                        if (hr.Code != (int)HttpCode.OK || hr.RefCode == (int)HttpCode.USER_NEED_RETRY)
+                        {
+                            result.Shadow(hr);
+                            result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkblk: code = {1}, text = {2}, offset = {3}, blockSize = {4}, chunkSize = {5}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockSize, chunkSize);
 
-                            long offset = blockIndex * BLOCK_SIZE;
-                            stream.Seek(offset, SeekOrigin.Begin);
-                            int blockLen = stream.Read(blockBuffer, 0, BLOCK_SIZE);
-                            byte[] blockData = new byte[blockLen];
-                            Array.Copy(blockBuffer, blockData, blockLen);
-                            blockDataDict.Add(blockIndex, blockData);
+                            return result;
+                        }
 
-                            if (blockDataDict.Count == putExtra.BlockUploadThreads)
+                        if ((rc = JsonConvert.DeserializeObject<ResumeContext>(hr.Text)) == null)
+                        {
+                            result.Shadow(hr);
+                            result.RefCode = (int)HttpCode.USER_UNDEF;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] mkblk Error: JSON Decode Error: text = {1}\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                            return result;
+                        }
+
+                        context = rc.Ctx;
+                        offset += chunkSize;
+                        leftBytes -= chunkSize;
+
+                        #endregion mkblk
+                        putExtra.ProgressHandler(offset, fileSize);
+                        
+                        if (leftBytes > 0)
+                        {
+                            blockLeft = blockSize - chunkSize;
+                            blockOffset = chunkSize;
+                            while (blockLeft > 0)
                             {
-                                processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize);
-                                //check mkblk results
-                                foreach (int blkIndex in blockMakeResults.Keys)
+                                #region bput-loop
+
+                                if (blockLeft < CHUNK_SIZE)
                                 {
-                                    HttpResult mkblkRet = blockMakeResults[blkIndex];
-                                    if (mkblkRet.Code != 200)
+                                    chunkSize = blockLeft;
+                                }
+                                else
+                                {
+                                    chunkSize = CHUNK_SIZE;
+                                }
+
+                                stream.Read(chunkBuffer, 0, (int)chunkSize);
+
+                                iTry = 0;
+                                while (++iTry <= putExtra.MaxRetryTimes)
+                                {
+                                    result.RefText += string.Format("[{0}] [ResumableUpload] try bput#{1}\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), iTry);
+
+                                    hr = BputChunk(chunkBuffer, blockOffset, chunkSize, context, upToken);
+
+                                    if (hr.Code == (int)HttpCode.OK && hr.RefCode != (int)HttpCode.USER_NEED_RETRY)
                                     {
-                                        result = mkblkRet;
-                                        manualResetEvent.Set();
-                                        return result;
+                                        break;
                                     }
                                 }
-                                blockDataDict.Clear();
-                                blockMakeResults.Clear();
-                                if (!string.IsNullOrEmpty(putExtra.ResumeRecordFile))
+                                if (hr.Code != (int)HttpCode.OK || hr.RefCode == (int)HttpCode.USER_NEED_RETRY)
                                 {
-                                    ResumeHelper.Save(resumeInfo, putExtra.ResumeRecordFile);
-                                }
-                            }
-                        }
-                    }
+                                    result.Shadow(hr);
+                                    result.RefText += string.Format("[{0}] [ResumableUpload] Error: bput: code = {1}, text = {2}, offset = {3}, blockOffset = {4}, chunkSize = {5}\n",
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text, offset, blockOffset, chunkSize);
 
-                    if (blockDataDict.Count > 0)
-                    {
-                        processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize);
-                        //check mkblk results
-                        foreach (int blkIndex in blockMakeResults.Keys)
-                        {
-                            HttpResult mkblkRet = blockMakeResults[blkIndex];
-                            if (mkblkRet.Code != 200)
-                            {
-                                result = mkblkRet;
-                                manualResetEvent.Set();
-                                return result;
+                                    return result;
+                                }
+
+                                if ((rc=JsonConvert.DeserializeObject<ResumeContext>(hr.Text))==null)
+                                {
+                                    result.Shadow(hr);
+                                    result.RefCode = (int)HttpCode.USER_UNDEF;
+                                    result.RefText += string.Format("[{0}] [ResumableUpload] bput Error: JSON Decode Error: text = {1}\n",
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Text);
+
+                                    return result;
+                                }
+
+                                context = rc.Ctx;
+                                if (expiredAt == 0)
+                                {
+                                    expiredAt = rc.Expired_At;
+                                }
+
+                                offset += chunkSize;
+                                leftBytes -= chunkSize;
+                                blockOffset += chunkSize;
+                                blockLeft -= chunkSize;
+                                #endregion bput-loop
+
+                                putExtra.ProgressHandler(offset, fileSize);
                             }
                         }
-                        blockDataDict.Clear();
-                        blockMakeResults.Clear();
+
+                        #endregion one-block
+
+                        resumeInfo.BlockIndex = index;
+                        resumeInfo.Contexts[index] = context;
+                        resumeInfo.ExpiredAt = expiredAt;
                         if (!string.IsNullOrEmpty(putExtra.ResumeRecordFile))
                         {
                             ResumeHelper.Save(resumeInfo, putExtra.ResumeRecordFile);
                         }
+                        ++index;
                     }
+                }
 
-                    if (upCtrl == UploadControllerAction.Activated)
-                    {
-                        HttpResult hr = MakeFile(key, fileSize, key, upToken, putExtra, resumeInfo.Contexts);
-                        if (hr.Code != (int)HttpCode.OK)
-                        {
-                            result.Shadow(hr);
-                            result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
-                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
-                        }
+                hr = MakeFile(key, fileSize, key, upToken, putExtra, resumeInfo.Contexts);
+                if (hr.Code != (int)HttpCode.OK)
+                {
+                    result.Shadow(hr);
+                    result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
 
-                        if (File.Exists(putExtra.ResumeRecordFile))
-                        {
-                            File.Delete(putExtra.ResumeRecordFile);
-                        }
-                        result.Shadow(hr);
-                        result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), putExtra.ResumeRecordFile, key);
-                    }
-                    else
-                    {
-                        result.Code = (int)HttpCode.USER_CANCELED;
-                        result.RefCode = (int)HttpCode.USER_CANCELED;
-                        result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted, mkfile\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    }
-
-                    manualResetEvent.Set();
                     return result;
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.StackTrace);
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendFormat("[{0}] [ResumableUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    Exception e = ex;
-                    while (e != null)
-                    {
-                        sb.Append(e.Message + " ");
-                        e = e.InnerException;
-                    }
-                    sb.AppendLine();
 
+                if (File.Exists(putExtra.ResumeRecordFile))
+                {
+                    File.Delete(putExtra.ResumeRecordFile);
+                }
+                result.Shadow(hr);
+                result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), putExtra.ResumeRecordFile, key);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [ResumableUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_UNDEF;
+                result.RefText += sb.ToString();
+            }
+            finally
+            {
+                if (stream != null)
+                {
+                    stream.Close();
+                    stream.Dispose();
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 根据已上传的所有分片数据创建文件
+        /// </summary>
+        /// <param name="fileName">源文件名</param>
+        /// <param name="size">文件大小</param>
+        /// <param name="key">要保存的文件名</param>
+        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="upToken">上传凭证</param>
+        /// <param name="putExtra">用户指定的额外参数</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private HttpResult MakeFile(string fileName, long size, string key, string upToken, PutExtra putExtra, string[] contexts)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string fnameStr = "fname";
+                string mimeTypeStr = "";
+                string keyStr = "";
+                string paramStr = "";
+                //check file name
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                   fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));
+                }
+
+                //check mime type
+                if (!string.IsNullOrEmpty(putExtra.MimeType))
+                {
+                    mimeTypeStr = string.Format("/mimeType/{0}", Base64.UrlSafeBase64Encode(putExtra.MimeType));
+                }
+
+                //check key
+                if (!string.IsNullOrEmpty(key))
+                {
+                      keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(key));
+                }
+                
+                //check extra params
+                if (putExtra.Params != null && putExtra.Params.Count > 0)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var kvp in putExtra.Params)
+                    {
+                        string k = kvp.Key;
+                        string v = kvp.Value;
+                        if (k.StartsWith("x:") && !string.IsNullOrEmpty(v))
+                        {
+                            sb.AppendFormat("/{0}/{1}", k,v);
+                        }
+                    }
+
+                    paramStr = sb.ToString();
+                }
+
+                //get upload host
+                string ak = UpToken.GetAccessKeyFromUpToken(upToken);
+                string bucket = UpToken.GetBucketFromUpToken(upToken);
+                if (ak == null || bucket == null)
+                {
+                    return HttpResult.InvalidToken;
+                }
+
+                string uploadHost = this.config.UpHost(ak, bucket);
+            
+                string url = string.Format("{0}/mkfile/{1}{2}{3}{4}{5}", uploadHost, size, mimeTypeStr, fnameStr, keyStr, paramStr);
+                string body = string.Join(",", contexts);
+                string upTokenStr = string.Format("UpToken {0}", upToken);
+
+                result = httpManager.PostText(url, body, upTokenStr);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                if (ex is QiniuException)
+                {
+                    QiniuException qex = (QiniuException)ex;
+                    result.Code = qex.HttpResult.Code;
+                    result.RefCode = qex.HttpResult.Code;
+                    result.Text = qex.HttpResult.Text;
+                    result.RefText += sb.ToString();
+                }
+                else
+                {
                     result.RefCode = (int)HttpCode.USER_UNDEF;
                     result.RefText += sb.ToString();
                 }
@@ -292,85 +488,17 @@ namespace Qiniu.Storage
             return result;
         }
 
-        private void processMakeBlocks(Dictionary<long, byte[]> blockDataDict, string upToken,
-            PutExtra putExtra, ResumeInfo resumeInfo, Dictionary<long, HttpResult> blockMakeResults,
-            Dictionary<string, long> uploadedBytesDict, long fileSize)
-        {
-            int taskMax = blockDataDict.Count;
-            ManualResetEvent[] doneEvents = new ManualResetEvent[taskMax];
-            int eventIndex = 0;
-            object progressLock = new object();
-            foreach (long blockIndex in blockDataDict.Keys)
-            {
-                //signal task
-                ManualResetEvent doneEvent = new ManualResetEvent(false);
-                doneEvents[eventIndex] = doneEvent;
-                eventIndex += 1;
-
-                //queue task
-                byte[] blockData = blockDataDict[blockIndex];
-                ResumeBlocker resumeBlocker = new ResumeBlocker(doneEvent, blockData, blockIndex, upToken, putExtra,
-                    resumeInfo, blockMakeResults, progressLock, uploadedBytesDict, fileSize);
-                ThreadPool.QueueUserWorkItem(new WaitCallback(this.MakeBlock), resumeBlocker);
-            }
-
-            try
-            {
-                WaitHandle.WaitAll(doneEvents);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("wait all exceptions:" + ex.StackTrace);
-                //pass
-            }
-        }
-
         /// <summary>
         /// 创建块(携带首片数据),同时检查CRC32
         /// </summary>
-        /// <param name="resumeBlockerObj">创建分片上次的块请求</param>
-        private void MakeBlock(object resumeBlockerObj)
+        /// <param name="chunkBuffer">数据片，此操作都会携带第一个数据片</param>
+        /// <param name="blockSize">块大小，除了最后一块可能不足4MB，前面的所有数据块恒定位4MB</param>
+        /// <param name="chunkSize">分片大小，一个块可以被分为若干片依次上传然后拼接或者不分片直接上传整块</param>
+        /// <param name="upToken">上传凭证</param>
+        /// <returns>此操作执行后的返回结果</returns>
+        private HttpResult MakeBlock(byte[] chunkBuffer, long blockSize, long chunkSize, string upToken)
         {
-            ResumeBlocker resumeBlocker = (ResumeBlocker)resumeBlockerObj;
-            ManualResetEvent doneEvent = resumeBlocker.DoneEvent;
-            Dictionary<long, HttpResult> blockMakeResults = resumeBlocker.BlockMakeResults;
-            PutExtra putExtra = resumeBlocker.PutExtra;
-            long blockIndex = resumeBlocker.BlockIndex;
             HttpResult result = new HttpResult();
-            //check whether to cancel
-            while (true)
-            {
-                UploadControllerAction upCtl = resumeBlocker.PutExtra.UploadController();
-                if (upCtl == UploadControllerAction.Suspended)
-                {
-                    doneEvent.WaitOne(1000);
-                    continue;
-                }
-                else if (upCtl == UploadControllerAction.Aborted)
-                {
-                    doneEvent.Set();
-
-                    result.Code = (int)HttpCode.USER_CANCELED;
-                    result.RefCode = (int)HttpCode.USER_CANCELED;
-                    result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted, mkblk {1}\n",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), blockIndex);
-                    blockMakeResults.Add(blockIndex, result);
-                    return;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            byte[] blockBuffer = resumeBlocker.BlockBuffer;
-            int blockSize = blockBuffer.Length;
-
-            string upToken = resumeBlocker.UploadToken;
-            Dictionary<string, long> uploadedBytesDict = resumeBlocker.UploadedBytesDict;
-            long fileSize = resumeBlocker.FileSize;
-            object progressLock = resumeBlocker.ProgressLock;
-            ResumeInfo resumeInfo = resumeBlocker.ResumeInfo;
 
             try
             {
@@ -379,16 +507,14 @@ namespace Qiniu.Storage
                 string bucket = UpToken.GetBucketFromUpToken(upToken);
                 if (ak == null || bucket == null)
                 {
-                    result = HttpResult.InvalidToken;
-                    doneEvent.Set();
-                    return;
+                    return HttpResult.InvalidToken;
                 }
 
                 string uploadHost = this.config.UpHost(ak, bucket);
 
                 string url = string.Format("{0}/mkblk/{1}", uploadHost, blockSize);
                 string upTokenStr = string.Format("UpToken {0}", upToken);
-                using (MemoryStream ms = new MemoryStream(blockBuffer, 0, blockSize))
+                using (MemoryStream ms = new MemoryStream(chunkBuffer, 0, (int)chunkSize))
                 {
                     byte[] data = ms.ToArray();
 
@@ -401,22 +527,11 @@ namespace Qiniu.Storage
                         if (rc.Crc32 > 0)
                         {
                             uint crc_1 = rc.Crc32;
-                            uint crc_2 = CRC32.CheckSumSlice(blockBuffer, 0, blockSize);
+                            uint crc_2 = CRC32.CheckSumSlice(chunkBuffer, 0, (int)chunkSize);
                             if (crc_1 != crc_2)
                             {
                                 result.RefCode = (int)HttpCode.USER_NEED_RETRY;
                                 result.RefText += string.Format(" CRC32: remote={0}, local={1}\n", crc_1, crc_2);
-                            }
-                            else
-                            {
-                                //write the mkblk context
-                                resumeInfo.Contexts[blockIndex] = rc.Ctx;
-                                resumeInfo.ExpiredAt = rc.ExpiredAt;
-                                lock (progressLock)
-                                {
-                                    uploadedBytesDict["UploadProgress"] += blockSize;
-                                }
-                                putExtra.ProgressHandler(uploadedBytesDict["UploadProgress"], fileSize);
                             }
                         }
                         else
@@ -459,66 +574,25 @@ namespace Qiniu.Storage
                 }
             }
 
-            //return the http result
-            blockMakeResults.Add(blockIndex, result);
-            doneEvent.Set();
+            return result;
         }
 
+
         /// <summary>
-        /// 根据已上传的所有分片数据创建文件
+        /// 上传数据片,同时检查CRC32
         /// </summary>
-        /// <param name="fileName">源文件名</param>
-        /// <param name="size">文件大小</param>
-        /// <param name="key">要保存的文件名</param>
-        /// <param name="contexts">所有数据块的Context</param>
+        /// <param name="chunkBuffer">数据片</param>
+        /// <param name="offset">当前片在块中的偏移位置</param>
+        /// <param name="chunkSize">当前片的大小</param>
+        /// <param name="context">承接前一片数据用到的Context</param>
         /// <param name="upToken">上传凭证</param>
-        /// <param name="putExtra">用户指定的额外参数</param>
         /// <returns>此操作执行后的返回结果</returns>
-        private HttpResult MakeFile(string fileName, long size, string key, string upToken, PutExtra putExtra, string[] contexts)
+        private HttpResult BputChunk(byte[] chunkBuffer, long offset, long chunkSize, string context, string upToken)
         {
             HttpResult result = new HttpResult();
 
             try
             {
-                string fnameStr = "fname";
-                string mimeTypeStr = "";
-                string keyStr = "";
-                string paramStr = "";
-                //check file name
-                if (!string.IsNullOrEmpty(fileName))
-                {
-                    fnameStr = string.Format("/fname/{0}", Base64.UrlSafeBase64Encode(fileName));
-                }
-
-                //check mime type
-                if (!string.IsNullOrEmpty(putExtra.MimeType))
-                {
-                    mimeTypeStr = string.Format("/mimeType/{0}", Base64.UrlSafeBase64Encode(putExtra.MimeType));
-                }
-
-                //check key
-                if (!string.IsNullOrEmpty(key))
-                {
-                    keyStr = string.Format("/key/{0}", Base64.UrlSafeBase64Encode(key));
-                }
-
-                //check extra params
-                if (putExtra.Params != null && putExtra.Params.Count > 0)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    foreach (var kvp in putExtra.Params)
-                    {
-                        string k = kvp.Key;
-                        string v = kvp.Value;
-                        if (k.StartsWith("x:") && !string.IsNullOrEmpty(v))
-                        {
-                            sb.AppendFormat("/{0}/{1}", k, v);
-                        }
-                    }
-
-                    paramStr = sb.ToString();
-                }
-
                 //get upload host
                 string ak = UpToken.GetAccessKeyFromUpToken(upToken);
                 string bucket = UpToken.GetBucketFromUpToken(upToken);
@@ -529,16 +603,45 @@ namespace Qiniu.Storage
 
                 string uploadHost = this.config.UpHost(ak, bucket);
 
-                string url = string.Format("{0}/mkfile/{1}{2}{3}{4}{5}", uploadHost, size, mimeTypeStr, fnameStr, keyStr, paramStr);
-                string body = string.Join(",", contexts);
+                string url = string.Format("{0}/bput/{1}/{2}", uploadHost, context, offset);
                 string upTokenStr = string.Format("UpToken {0}", upToken);
 
-                result = httpManager.PostText(url, body, upTokenStr);
+                using (MemoryStream ms = new MemoryStream(chunkBuffer, 0, (int)chunkSize))
+                {
+                    byte[] data = ms.ToArray();
+
+                    result = httpManager.PostData(url, data, upTokenStr);
+
+                    if (result.Code == (int)HttpCode.OK)
+                    {
+                       Dictionary<string, string> rd=JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+                        if (rd.ContainsKey("crc32"))
+                        {
+                            uint crc_1 = Convert.ToUInt32(rd["crc32"]);
+                            uint crc_2 = CRC32.CheckSumSlice(chunkBuffer, 0, (int)chunkSize);
+                            if (crc_1 != crc_2)
+                            {
+                                result.RefCode = (int)HttpCode.USER_NEED_RETRY;
+                                result.RefText += string.Format(" CRC32: remote={0}, local={1}\n", crc_1, crc_2);
+                            }
+                        }
+                        else
+                        {
+                            result.RefText += string.Format("[{0}] JSON Decode Error: text = {1}",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Text);
+                            result.RefCode = (int)HttpCode.USER_NEED_RETRY;
+                        }
+                    }
+                    else
+                    {
+                        result.RefCode = (int)HttpCode.USER_NEED_RETRY;
+                    }
+                }
             }
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] mkfile Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                sb.AppendFormat("[{0}] bput Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -565,7 +668,6 @@ namespace Qiniu.Storage
             return result;
         }
 
-
         /// <summary>
         /// 默认的进度处理函数-上传文件
         /// </summary>
@@ -582,7 +684,7 @@ namespace Qiniu.Storage
                 Console.WriteLine("[{0}] [ResumableUpload] Progress: {1,7:0.000}%\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), 100.0);
             }
         }
-
+      
         /// <summary>
         /// 默认的上传控制函数，默认不执行任何控制
         /// </summary>

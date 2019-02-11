@@ -1,4 +1,3 @@
-﻿
 namespace Qiniu.Storage
 {
     /// <summary>

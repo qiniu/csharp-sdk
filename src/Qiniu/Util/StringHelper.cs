@@ -37,6 +37,5 @@ namespace Qiniu.Util
             string encodedStr=urlValuesBuilder.ToString();
             return encodedStr.Substring(0, encodedStr.Length - 1);
         }
-
     }
 }
