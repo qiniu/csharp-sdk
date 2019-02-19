@@ -1,0 +1,1 @@
+C:\Git_BU\csharp-sdk\src\QiniuTests\obj\Debug\QiniuTests.csprojResolveAssemblyReference.cache
