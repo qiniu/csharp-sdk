@@ -1,0 +1,6 @@
+C:\Git_BU\csharp-sdk\bin\net40\obj\Debug\Qiniu.csprojResolveAssemblyReference.cache
+C:\Git_BU\csharp-sdk\bin\net40\obj\Debug\Qiniu.dll
+C:\Git_BU\csharp-sdk\bin\Qiniu.xml
+C:\Git_BU\csharp-sdk\bin\net40\obj\Debug\Qiniu.pdb
+C:\Git_BU\csharp-sdk\bin\Qiniu.dll
+C:\Git_BU\csharp-sdk\bin\Qiniu.pdb
