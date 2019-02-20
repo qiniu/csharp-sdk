@@ -4,16 +4,17 @@ using Qiniu.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using Qiniu.Tests;
+using NUnit.Framework;
 
 namespace QiniuTests.Storage
-{   
-    class tokensTest
+{
+    [TestFixture]
+    class tokensTest:TestEnv
     {
-        public static void getQiniuToken()
+        [Test]
+        public void getQiniuToken()
         {  
-            // input accessKey secretKey
-            string ak = "";
-            string sk = "";
             // input url
             string strUrl = "";
             // input method(POST/GET)
@@ -25,16 +26,13 @@ namespace QiniuTests.Storage
             //input contentType
             string contentType = "";
 
-            Mac mac = new Mac(ak, sk);
+            Mac mac = new Mac(AccessKey, SecretKey);
             Auth auth = new Auth(mac);
             string qiniuToken = auth.CreateQiniuToken(strUrl, method, body, contentType);
             Console.WriteLine(qiniuToken);
         }
-        public static void getQboxToken()
+        public void getQboxToken()
         {
-            // input accessKey secretKey
-            string ak = "";
-            string sk = "";
             // input url
             string strUrl = "";
             //input body
@@ -42,15 +40,10 @@ namespace QiniuTests.Storage
             string jsonobj = JsonConvert.SerializeObject(jsonBody);
             byte[] body = jsonobj.ToString().GetBytes("UTF-8");
 
-            Mac mac = new Mac(ak, sk);
+            Mac mac = new Mac(AccessKey, SecretKey);
             Auth auth = new Auth(mac);
             string qboxToken = auth.CreateManageToken(strUrl,body);
             Console.WriteLine(qboxToken);
-        }
-        public static void Main(String[] args)
-        {
-            //getQiniuToken();
-            //getQboxToken();
         }
     }
 }

@@ -28,7 +28,5 @@
                 this.LocalFile = "E:\\VSProjects\\csharp-sdk\\tools\\files\\test.jpg";
             }
         }
-
-
     }
 }
