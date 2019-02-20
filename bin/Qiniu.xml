@@ -31,7 +31,7 @@
         </member>
         <member name="T:Qiniu.Storage.Config">
             <summary>
-            配置信息，主要包括Zone配置(另请参阅Zone模块)
+            配置信息，主要包括Region配置(另请参阅Region模块)
             目前已支持的机房包括：
             华东(CN_East), 华北(CN_North), 华南(CN_South), 北美(US_North), 新加坡（AS_Singapore）
             默认设置为华东机房(CN_East) 
@@ -50,6 +50,11 @@
         <member name="F:Qiniu.Storage.Config.Zone">
             <summary>
             空间所在的区域(Zone)
+            </summary>
+        </member>
+        <member name="F:Qiniu.Storage.Config.Region">
+            <summary>
+            空间所在的区域(Region)
             </summary>
         </member>
         <member name="F:Qiniu.Storage.Config.UseHttps">
@@ -299,39 +304,64 @@
             最大重试次数
             </summary>
         </member>
-        <member name="T:Qiniu.Storage.Zone">
+        <member name="T:Qiniu.Storage.Region">
             <summary>
             目前已支持的区域：华东/华北/华南/北美
             </summary>
         </member>
-        <member name="P:Qiniu.Storage.Zone.RsHost">
+        <member name="P:Qiniu.Storage.Region.RsHost">
             <summary>
             资源管理
             </summary>
         </member>
-        <member name="P:Qiniu.Storage.Zone.RsfHost">
+        <member name="P:Qiniu.Storage.Region.RsfHost">
             <summary>
-            源列表
+             资源列表
             </summary>
         </member>
-        <member name="P:Qiniu.Storage.Zone.ApiHost">
+        <member name="P:Qiniu.Storage.Region.ApiHost">
             <summary>
             数据处理
             </summary>
         </member>
-        <member name="P:Qiniu.Storage.Zone.IovipHost">
+        <member name="P:Qiniu.Storage.Region.IovipHost">
             <summary>
             镜像刷新、资源抓取
             </summary>
         </member>
-        <member name="P:Qiniu.Storage.Zone.SrcUpHosts">
+        <member name="P:Qiniu.Storage.Region.SrcUpHosts">
             <summary>
             资源上传
             </summary>
         </member>
-        <member name="P:Qiniu.Storage.Zone.CdnUpHosts">
+        <member name="P:Qiniu.Storage.Region.CdnUpHosts">
             <summary>
             CDN加速
+            </summary>
+        </member>
+        <member name="F:Qiniu.Storage.Region.Region_CN_East">
+            <summary>
+            华东
+            </summary>
+        </member>
+        <member name="F:Qiniu.Storage.Region.Region_CN_North">
+            <summary>
+            华北
+            </summary>
+        </member>
+        <member name="F:Qiniu.Storage.Region.Region_CN_South">
+            <summary>
+            华南
+            </summary>
+        </member>
+        <member name="F:Qiniu.Storage.Region.Region_US_North">
+            <summary>
+            北美
+            </summary>
+        </member>
+        <member name="T:Qiniu.Storage.Zone">
+            <summary>
+            目前已支持的区域：华东/华北/华南/北美
             </summary>
         </member>
         <member name="F:Qiniu.Storage.Zone.ZONE_CN_East">
@@ -354,19 +384,19 @@
             北美
             </summary>
         </member>
-        <member name="T:Qiniu.Storage.ZoneHelper">
+        <member name="T:Qiniu.Storage.RegionHelper">
             <summary>
             Zone辅助类，查询及配置Zone
             </summary>
         </member>
-        <member name="M:Qiniu.Storage.ZoneHelper.QueryZone(System.String,System.String)">
+        <member name="M:Qiniu.Storage.RegionHelper.QueryRegion(System.String,System.String)">
             <summary>
-            从uc.qbox.me查询得到回复后，解析出upHost,然后根据upHost确定Zone
+            从api.qiniu.com查询得到回复后，解析出upHost,然后根据upHost确定Zone
             </summary>
             <param name="accessKey">AccessKek</param>
             <param name="bucket">空间名称</param>
         </member>
-        <member name="T:Qiniu.Storage.ZoneInfo">
+        <member name="T:Qiniu.Storage.RegionInfo">
             <summary>
             从uc.qbox.me返回的消息
             </summary>

@@ -1,25 +1,23 @@
-﻿namespace Qiniu.Storage
+﻿using System;
+namespace Qiniu.Storage
 {
     /// <summary>
     /// 从uc.qbox.me返回的消息
     /// </summary>
-    internal class ZoneInfo
+    internal class RegionInfo
     {
         public int Ttl { get; set; }
         public Io Io { set; get; }
         public Up Up { set; get; }
     }
-
     internal class Io
     {
         public Src Src { set; get; }
     }
-
     internal class Src
     {
         public string[] Main { set; get; }
     }
-
     internal class Up
     {
         public UpDomain Acc { set; get; }

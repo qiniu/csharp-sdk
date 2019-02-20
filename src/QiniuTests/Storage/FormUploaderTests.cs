@@ -15,9 +15,7 @@ namespace Qiniu.Storage.Tests
             Mac mac = new Mac(AccessKey, SecretKey);
             Random rand = new Random();
             string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
-
             string filePath = LocalFile;
-
             PutPolicy putPolicy = new PutPolicy();
             putPolicy.Scope = Bucket + ":" + key;
             putPolicy.SetExpires(3600);
@@ -25,6 +23,7 @@ namespace Qiniu.Storage.Tests
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             config.UseHttps = true;
             config.UseCdnDomains = true;
             config.ChunkSize = ChunkUnit.U512K;

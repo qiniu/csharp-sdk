@@ -1,1 +1,6 @@
+C:\Git_BU\csharp-sdk\bin\QiniuTests.xml
 C:\Git_BU\csharp-sdk\src\QiniuTests\obj\Debug\QiniuTests.csprojResolveAssemblyReference.cache
+C:\Git_BU\csharp-sdk\bin\QiniuTests.exe
+C:\Git_BU\csharp-sdk\bin\QiniuTests.pdb
+C:\Git_BU\csharp-sdk\src\QiniuTests\obj\Debug\QiniuTests.exe
+C:\Git_BU\csharp-sdk\src\QiniuTests\obj\Debug\QiniuTests.pdb

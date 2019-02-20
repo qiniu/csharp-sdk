@@ -14,6 +14,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string key = "qiniu.png";
@@ -34,6 +35,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string newKey = "qiniu-to-delete.png";
@@ -50,6 +52,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string newKey = "qiniu-to-copy.png";
@@ -66,6 +69,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string newKey = "qiniu-to-copy.png";
@@ -89,6 +93,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             HttpResult ret = bucketManager.ChangeMime(Bucket, "qiniu.png", "image/x-png");
@@ -104,6 +109,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             HttpResult ret = bucketManager.ChangeType(Bucket, "qiniu.png", 1);
@@ -119,6 +125,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string newKey = "qiniu-to-copy.png";
@@ -141,6 +148,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             HttpResult ret = bucketManager.Prefetch(Bucket, "qiniu.png");
@@ -156,6 +164,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             DomainsResult ret = bucketManager.Domains(Bucket);
@@ -172,6 +181,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             BucketsResult ret = bucketManager.Buckets(true);
@@ -192,6 +202,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string resUrl = "http://devtools.qiniu.com/qiniu.png";
@@ -215,6 +226,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string prefix = "";
@@ -234,6 +246,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string prefix = "";
@@ -262,6 +275,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -303,6 +317,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -341,6 +356,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -381,6 +397,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -421,6 +438,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -461,6 +479,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -501,6 +520,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {

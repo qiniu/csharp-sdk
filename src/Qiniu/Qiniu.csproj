@@ -98,9 +98,10 @@
     <Compile Include="Storage\PrefopResult.cs" />
     <Compile Include="Storage\PutExtra.cs" />
     <Compile Include="Storage\QiniuException.cs" />
+    <Compile Include="Storage\Region.cs" />
     <Compile Include="Storage\Zone.cs" />
-    <Compile Include="Storage\ZoneHelper.cs" />
-    <Compile Include="Storage\ZoneInfo.cs" />
+    <Compile Include="Storage\RegionHelper.cs" />
+    <Compile Include="Storage\RegionInfo.cs" />
     <Compile Include="CDN\RefreshRequest.cs" />
     <Compile Include="CDN\RefreshInfo.cs" />
     <Compile Include="CDN\RefreshResult.cs" />
