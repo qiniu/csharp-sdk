@@ -69,8 +69,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
@@ -119,7 +119,6 @@
     <Compile Include="CDN\LogListResult.cs" />
     <Compile Include="CDN\CdnManager.cs" />
     <Compile Include="Util\Auth.cs" />
-    <Compile Include="Util\Config.cs" />
     <Compile Include="Util\LabMD5.cs" />
     <Compile Include="Util\Mac.cs" />
     <Compile Include="Util\Signature.cs" />
@@ -162,7 +161,6 @@
     <Compile Include="Storage\BucketResult.cs" />
     <Compile Include="Storage\PfopResult.cs" />
     <Compile Include="Storage\OperationManager.cs" />
-    <Compile Include="Util\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Packages.Net40.config" />
