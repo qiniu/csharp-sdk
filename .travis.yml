@@ -1,0 +1,13 @@
+language: csharp
+
+install:
+
+ - sudo apt-get install nunit
+ 
+before_script:
+
+  - export isTravisTest=true
+ 
+script: 
+
+ - make build-and-test
