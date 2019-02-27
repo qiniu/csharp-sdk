@@ -4,9 +4,16 @@ using Qiniu.Util;
 using System;
 namespace Qiniu.Storage.Tests
 {
+    /// <summary>
+    ///  PutPolicyTests
+    /// </summary>
     [TestFixture]
     public class PutPolicyTests : TestEnv
     {
+        /// <summary>
+        /// CreateUptokenTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void CreateUptokenTest()
         {
@@ -70,6 +77,5 @@ namespace Qiniu.Storage.Tests
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
         }
-
     }
 }

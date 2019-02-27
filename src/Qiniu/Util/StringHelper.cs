@@ -32,7 +32,7 @@ namespace Qiniu.Util
            
             foreach (KeyValuePair<string, string> kvp in values)
             {
-                urlValuesBuilder.AppendFormat("{0}={1}&", Uri.EscapeDataString(kvp.Key), Uri.EscapeDataString(kvp.Value));
+                urlValuesBuilder.AppendFormat("{0}={1}&", kvp.Key, kvp.Value);
             }
             string encodedStr=urlValuesBuilder.ToString();
             return encodedStr.Substring(0, encodedStr.Length - 1);

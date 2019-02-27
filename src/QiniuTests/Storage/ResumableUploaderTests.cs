@@ -6,9 +6,16 @@ using Qiniu.Tests;
 
 namespace Qiniu.Storage.Tests
 {
+    /// <summary>
+    /// ResumableUploaderTests
+    /// </summary>
     [TestFixture]
     public class ResumableUploaderTests : TestEnv
     {
+        /// <summary>
+        /// UploadFileTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void UploadFileTest()
         {
@@ -34,7 +41,10 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine("chunk upload result: " + result.ToString());
             Assert.AreEqual((int)HttpCode.OK, result.Code);
         }
-
+        /// <summary>
+        /// ResumeUploadFileTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void ResumeUploadFileTest()
         {

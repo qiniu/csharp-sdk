@@ -1,13 +1,39 @@
 ﻿namespace Qiniu.Tests
 {
+    /// <summary>
+    /// TestEnv
+    /// </summary>
     public class TestEnv
     {
+        /// <summary>
+        /// AccessKey
+        /// </summary>
         public string AccessKey;
+        /// <summary>
+        /// SecretKey
+        /// </summary>
         public string SecretKey;
+        /// <summary>
+        /// Bucket
+        /// </summary>
         public string Bucket;
+        /// <summary>
+        /// Domain
+        /// </summary>
         public string Domain;
+        /// <summary>
+        /// LocalFile
+        /// </summary>
         public string LocalFile;
+        /// <summary>
+        /// Region
+        /// </summary>
+        public string Region;
 
+        /// <summary>
+        /// TestEnv
+        /// </summary>
+        /// <returns>void</returns>
         public TestEnv()
         {
             string isTravisTest = System.Environment.GetEnvironmentVariable("isTravisTest");
@@ -26,6 +52,7 @@
                 this.Bucket = "";
                 this.Domain = "csharpsdk.qiniudn.com";
                 this.LocalFile = "E:\\VSProjects\\csharp-sdk\\tools\\files\\test.jpg";
+                this.Region = "";
             }
         }
     }

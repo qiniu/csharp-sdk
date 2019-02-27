@@ -185,8 +185,7 @@ namespace Qiniu.Util
             sb.Append("\n\n");
             if (body != null && contentType != null && !"application/octet-stream".Equals(contentType))
             {
-                sb.Append(StringHelperClass.NewString(body));
-
+                sb.Append(Encoding.UTF8.GetString((byte[])(object)body, 0, body.Length));
             }
             return string.Format("{1}:{2}", mac.AccessKey, encodedSign(sb.ToString()));
         }

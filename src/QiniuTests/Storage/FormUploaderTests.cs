@@ -6,9 +6,16 @@ using Qiniu.Tests;
 
 namespace Qiniu.Storage.Tests
 {
+    /// <summary>
+    /// FormUploaderTests
+    /// </summary>
     [TestFixture]
     public class FormUploaderTests : TestEnv
     {
+        /// <summary>
+        /// UploadFileTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void UploadFileTest()
         {
