@@ -6,9 +6,16 @@ using Qiniu.Tests;
 
 namespace Qiniu.Storage.Tests
 {
+    /// <summary>
+    ///  DownloadManagerTests
+    /// </summary>
     [TestFixture]
     public class DownloadManagerTests:TestEnv
     {
+        /// <summary>
+        ///  CreatePrivateUrlTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public  void CreatePrivateUrlTest()
         {
@@ -19,6 +26,10 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(privateUrl);
         }
 
+        /// <summary>
+        /// CreatePublishUrlTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void CreatePublishUrlTest()
         {
@@ -26,10 +37,6 @@ namespace Qiniu.Storage.Tests
             string key = "hello/world/七牛/test.png";
             string publicUrl = DownloadManager.CreatePublishUrl(domain, key);
             Console.WriteLine(publicUrl);
-        }
-        public static void Main(string[] args)
-        {
-
         }
     }
 }

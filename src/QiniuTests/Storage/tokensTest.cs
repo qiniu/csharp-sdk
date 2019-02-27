@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Net;
 using Qiniu.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.IO;
 using Qiniu.Tests;
 using NUnit.Framework;
+using System.Text;
 
 namespace QiniuTests.Storage
 {
     [TestFixture]
-    class tokensTest:TestEnv
+    class TokensTest:TestEnv
     {
         [Test]
         public void getQiniuToken()
@@ -22,7 +21,7 @@ namespace QiniuTests.Storage
             // input byte[] body
             JObject jsonBody = new JObject();
             string jsonobj = JsonConvert.SerializeObject(jsonBody);
-            byte[] body = jsonobj.ToString().GetBytes("UTF-8");
+            byte[] body = Encoding.UTF8.GetBytes(jsonobj);
             //input contentType
             string contentType = "";
 
@@ -38,7 +37,7 @@ namespace QiniuTests.Storage
             //input body
             JObject jsonBody = new JObject();
             string jsonobj = JsonConvert.SerializeObject(jsonBody);
-            byte[] body = jsonobj.ToString().GetBytes("UTF-8");
+            byte[] body = Encoding.UTF8.GetBytes(jsonobj);
 
             Mac mac = new Mac(AccessKey, SecretKey);
             Auth auth = new Auth(mac);
