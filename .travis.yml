@@ -3,6 +3,7 @@ language: csharp
 install:
 
  - sudo apt-get install nunit
+ - sudo apt-get install Newtonsoft.Json
  
 before_script:
 
