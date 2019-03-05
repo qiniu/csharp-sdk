@@ -3,8 +3,7 @@ language: csharp
 install:
 
  - sudo apt-get install nunit
- - sudo apt-get install libnewtonsoft-json-cil-dev  monodoc-newtonsoft-json-manual
-
+ - sudo apt-get Newtonsoft.Json
 before_script:
 
   - export isTravisTest=true
