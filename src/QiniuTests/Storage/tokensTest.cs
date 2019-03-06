@@ -8,9 +8,16 @@ using System.Text;
 
 namespace QiniuTests.Storage
 {
+    /// <summary>
+    /// TokensTest
+    /// </summary>
     [TestFixture]
-    class TokensTest:TestEnv
+    public class TokensTest:TestEnv
     {
+        /// <summary>
+        /// getQiniuToken
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void getQiniuToken()
         {  
@@ -23,13 +30,17 @@ namespace QiniuTests.Storage
             string jsonobj = JsonConvert.SerializeObject(jsonBody);
             byte[] body = Encoding.UTF8.GetBytes(jsonobj);
             //input contentType
-            string contentType = "";
+            string contentType = ""; 
 
             Mac mac = new Mac(AccessKey, SecretKey);
             Auth auth = new Auth(mac);
             string qiniuToken = auth.CreateQiniuToken(strUrl, method, body, contentType);
             Console.WriteLine(qiniuToken);
         }
+        /// <summary>
+        /// getQboxToken
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void getQboxToken()
         {
