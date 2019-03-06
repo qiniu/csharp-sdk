@@ -70,7 +70,6 @@
     <Compile Include="Storage\OperationManagerTests.cs" />
     <Compile Include="Storage\PutPolicyTests.cs" />
     <Compile Include="Storage\ResumableUploaderTests.cs" />
-    <Compile Include="Storage\TokensTests.cs" />
     <Compile Include="TestEnv.cs" />
   </ItemGroup>
   <ItemGroup>

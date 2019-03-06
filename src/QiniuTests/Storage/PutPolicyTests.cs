@@ -77,5 +77,14 @@ namespace Qiniu.Storage.Tests
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
         }
+        /// <summary>
+        /// Main
+        /// </summary>
+        /// <returns>void</returns>
+        [Test]
+        public static void Main(string[] args)
+        {
+
+        }
     }
 }
