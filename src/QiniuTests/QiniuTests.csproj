@@ -70,7 +70,7 @@
     <Compile Include="Storage\OperationManagerTests.cs" />
     <Compile Include="Storage\PutPolicyTests.cs" />
     <Compile Include="Storage\ResumableUploaderTests.cs" />
-    <Compile Include="Storage\TokensTest.cs" />
+    <Compile Include="Storage\TokensTests.cs" />
     <Compile Include="TestEnv.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -78,9 +78,6 @@
       <Project>{2F5B0328-DE8B-4B53-A500-3077E340A51B}</Project>
       <Name>Qiniu</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
