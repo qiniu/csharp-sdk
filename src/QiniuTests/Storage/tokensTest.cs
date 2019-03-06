@@ -30,6 +30,7 @@ namespace QiniuTests.Storage
             string qiniuToken = auth.CreateQiniuToken(strUrl, method, body, contentType);
             Console.WriteLine(qiniuToken);
         }
+        [Test]
         public void getQboxToken()
         {
             // input url
