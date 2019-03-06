@@ -4,4 +4,4 @@ build-and-test:
 	cp tools/net40/nunit.framework.dll bin/
 	cp tools/files/* bin/
 	msbuild src/Qiniu.sln	
-	nunit-console src/QiniuTests/QiniuTests.csproj
+	nunit-console bin/Qiniu.dll
