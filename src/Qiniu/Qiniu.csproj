@@ -99,6 +99,7 @@
     <Compile Include="Storage\PutExtra.cs" />
     <Compile Include="Storage\QiniuException.cs" />
     <Compile Include="Storage\Region.cs" />
+    <Compile Include="Storage\Tokens.cs" />
     <Compile Include="Storage\Zone.cs" />
     <Compile Include="Storage\RegionHelper.cs" />
     <Compile Include="Storage\RegionInfo.cs" />
@@ -160,10 +161,6 @@
     <Compile Include="Storage\BucketResult.cs" />
     <Compile Include="Storage\PfopResult.cs" />
     <Compile Include="Storage\OperationManager.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Packages.Net40.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
