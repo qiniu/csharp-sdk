@@ -6,5 +6,6 @@ build-and-test:
 
 
 	msbuild src/Qiniu.sln
+	ls bin/
 	
 	nunit-console bin/Qiniu.dll
