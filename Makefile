@@ -5,7 +5,5 @@ build-and-test:
 	cp tools/files/* bin/
 
 
-	msbuild src/Qiniu.sln
-	ls bin/
-	
+	msbuild src/Qiniu.sln	
 	nunit-console bin/QiniuTests.exe
