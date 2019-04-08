@@ -94,6 +94,9 @@
     <Compile Include="Storage\Config.cs" />
     <Compile Include="Storage\FetchInfo.cs" />
     <Compile Include="Storage\FetchResult.cs" />
+    <Compile Include="Storage\ListInfoV2.cs" />
+    <Compile Include="Storage\ListItemV2.cs" />
+    <Compile Include="Storage\ListResultV2.cs" />
     <Compile Include="Storage\PfopInfo.cs" />
     <Compile Include="Storage\PrefopResult.cs" />
     <Compile Include="Storage\PutExtra.cs" />

@@ -600,6 +600,93 @@ namespace Qiniu.Storage
 
             return result;
         }
+        /// <summary>
+        /// 
+        /// 获取空间文件列表 
+        /// listFilesV2(bucket, prefix, marker, limit, delimiter)
+        /// 
+        /// bucket:    目标空间名称
+        /// 
+        /// prefix:    返回指定文件名前缀的文件列表(prefix可设为null)
+        /// 
+        /// marker:    考虑到设置limit后返回的文件列表可能不全(需要重复执行listFiles操作)
+        ///            执行listFiles操作时使用marker标记来追加新的结果
+        ///            特别注意首次执行listFiles操作时marker为null
+        ///            
+        /// limit:     每次返回结果所包含的文件总数限制(limit最大值1000，建议值100)
+        /// 
+        /// delimiter: 分隔符，比如-或者/等等，可以模拟作为目录结构(参考下述示例)
+        ///            假设指定空间中有2个文件 fakepath/1.txt fakepath/2.txt
+        ///            现设置分隔符delimiter = / 得到返回结果items =[]，commonPrefixes = [fakepath/]
+        ///            然后调整prefix = fakepath/ delimiter = null 得到所需结果items = [1.txt,2.txt]
+        ///            于是可以在本地先创建一个目录fakepath,然后在该目录下写入items中的文件
+        ///            
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="prefix">前缀</param>
+        /// <param name="marker">标记</param>
+        /// <param name="limit">数量限制</param>
+        /// <param name="delimiter">分隔符</param>
+        /// <returns>文件列表获取结果</returns>
+        public ListResultV2 ListFilesV2(string bucket, string prefix, string marker, int limit, string delimiter)
+        {
+            ListResultV2 result = new ListResultV2();
+            try
+            {
+                StringBuilder sb = new StringBuilder("/v2/list?bucket=" + bucket);
+
+                if (!string.IsNullOrEmpty(marker))
+                {
+                    sb.Append("&marker=" + marker);
+                }
+
+                if (!string.IsNullOrEmpty(prefix))
+                {
+                    sb.Append("&prefix=" + prefix);
+                }
+
+                if (!string.IsNullOrEmpty(delimiter))
+                {
+                    sb.Append("&delimiter=" + delimiter);
+                }
+
+                if (limit > 1000 || limit < 1)
+                {
+                    sb.Append("&limit=1000");
+                }
+                else
+                {
+                    sb.Append("&limit=" + limit);
+                }
+
+                string listUrl = string.Format("{0}{1}", this.config.RsfHost(this.mac.AccessKey, bucket), sb.ToString());
+                string token = auth.CreateManageToken(listUrl);
+
+
+                HttpResult hr = httpManager.Post(listUrl, token);
+                result.Shadow(hr);
+                      
+            }
+            catch (QiniuException ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [listFiles] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// 
@@ -665,6 +752,7 @@ namespace Qiniu.Storage
                 string token = auth.CreateManageToken(listUrl);
 
                 HttpResult hr = httpManager.Post(listUrl, token);
+                Console.WriteLine(hr);
                 result.Shadow(hr);
             }
             catch (QiniuException ex)

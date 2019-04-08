@@ -362,6 +362,35 @@ namespace Qiniu.Storage.Tests
             } while (!string.IsNullOrEmpty(marker));
         }
 
+        /// <summary>
+        ///   ListBucketV2Test
+        /// </summary>
+        /// <returns>void</returns>
+        [Test]
+        public void ListBucketV2Test()
+        {
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac, config);
+            string prefix = "";
+            string delimiter = "";
+            int limit = 100;
+            string marker = "";
+            do
+            {
+                ListResultV2 listRet = bucketManager.ListFilesV2(Bucket, prefix, marker, limit, delimiter);
+                if (listRet.Code != (int)HttpCode.OK)
+                {
+                    Assert.Fail("list files error: " + listRet.ToString());
+                }
+                Console.WriteLine(listRet.ToString());
+
+                marker = listRet.Result[listRet.Result.Length - 1].Marker;
+            } while (!string.IsNullOrEmpty(marker));
+        }
+
         // batch stat, delete, copy, move, chtype, chgm, deleteAfterDays
         // 批量操作每次不能超过1000个指令
         /// <summary>
