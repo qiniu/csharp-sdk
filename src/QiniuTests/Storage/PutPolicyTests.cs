@@ -81,7 +81,6 @@ namespace Qiniu.Storage.Tests
         /// Main
         /// </summary>
         /// <returns>void</returns>
-        [Test]
         public static void Main(string[] args)
         {
 

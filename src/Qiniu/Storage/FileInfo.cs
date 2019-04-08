@@ -35,6 +35,5 @@ namespace Qiniu.Storage
         /// </summary>
         [JsonProperty("type")]
         public int FileType { get; set; }
-
     }
 }

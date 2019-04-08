@@ -5,7 +5,7 @@ namespace Qiniu.Storage
     /// 文件描述(stat操作返回消息中包含的有效内容)
     /// 与StatInfo一致
     /// </summary>
-    public class ListItem
+    public class ListItemV2
     {
         /// <summary>
         /// 文件名
@@ -43,11 +43,11 @@ namespace Qiniu.Storage
         [JsonProperty("type")]
         public int FileType { get; set; }
 
-
         /// <summary>
-        /// EndUser字段
+        /// status
         /// </summary>
-        [JsonProperty("endUser")]
-        public string EndUser { get; set; }
+        [JsonProperty("status")]
+        public int Status { get; set; }
     }
 }
+
