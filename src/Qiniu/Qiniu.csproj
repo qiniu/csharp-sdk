@@ -79,8 +79,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Pili\PiliManager.cs" />
+    <Compile Include="Pili\SaveAsInfo.cs" />
+    <Compile Include="Pili\SaveAsRequest.cs" />
+    <Compile Include="Pili\SaveAsResult.cs" />
     <Compile Include="QiniuCSharpSDK.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RTC\RoomTokenRequest.cs" />
+    <Compile Include="RTC\RTCManager.cs" />
     <Compile Include="Storage\Config.cs" />
     <Compile Include="Storage\FetchInfo.cs" />
     <Compile Include="Storage\FetchResult.cs" />
@@ -156,6 +162,7 @@
     <None Include="packages.config" />
     <None Include="QiniuCSharpSDK.snk" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

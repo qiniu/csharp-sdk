@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Qiniu.Http;
+using System;
 using System.IO;
 #if WINDOWS_UWP
 using Windows.Security.Cryptography;
@@ -109,6 +110,34 @@ namespace Qiniu.Util
                 string digestBase64 = Base64.UrlSafeBase64Encode(digest);
                 return string.Format("{0}:{1}", mac.AccessKey, digestBase64);
             }
+        }
+
+        /// <summary>
+        /// 直播流管理请求签名
+        /// </summary>
+        /// <param name="url">请求目标的URL</param>
+        /// <param name="body">请求的主体数据</param>
+        /// <returns>直播流管理请求签名</returns>
+        public string SignStreamManageRequest(string url, string body)
+        {
+            string data = "POST ";
+
+            Uri u = new Uri(url);
+            string pathAndQuery = u.PathAndQuery;
+
+            data += pathAndQuery;
+            data += string.Format("\nHost: {0}", u.Host);
+            data += string.Format("\nContent-Type: {0}",ContentType.APPLICATION_JSON);
+            data += "\n\n";
+            if (!string.IsNullOrWhiteSpace(body))
+            {
+                data += body;
+            }
+
+            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
+            byte[] digest = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
+            string digestBase64 = Base64.UrlSafeBase64Encode(digest);
+            return string.Format("{0}:{1}", mac.AccessKey, digestBase64);
         }
 
         /// <summary>

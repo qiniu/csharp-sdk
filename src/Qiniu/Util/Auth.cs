@@ -24,7 +24,7 @@
         /// <param name="url">请求的URL</param>
         /// <param name="body">请求的主体内容</param>
         /// <returns>生成的管理凭证</returns>
-        public string CreateManageToken(string url,byte[] body)
+        public string CreateManageToken(string url, byte[] body)
         {
             return string.Format("QBox {0}", signature.SignRequest(url, body));
         }
@@ -72,11 +72,12 @@
         /// <summary>
         /// 生成流管理凭证
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public string CreateStreamManageToken(string data)
+        /// <param name="url">访问的URL</param>
+        /// <param name="data">请求的数据</param>
+        /// <returns>生成的流管理凭证</returns>
+        public string CreateStreamManageToken(string url, string data)
         {
-            return string.Format("Qiniu {0}", signature.SignWithData(data));
+            return string.Format("Qiniu {0}", signature.SignStreamManageRequest(url, data));
         }
 
         #region STATIC
@@ -137,7 +138,7 @@
         /// <param name="mac">账号(密钥)</param>
         /// <param name="path">URL路径</param>
         /// <returns></returns>
-        public static string CreateStreamPublishToken(Mac mac,string path)
+        public static string CreateStreamPublishToken(Mac mac, string path)
         {
             Signature sx = new Signature(mac);
             return sx.Sign(path);
