@@ -30,3 +30,4 @@ _ReSharper*/
 /src/packages
 /packages
 /bin
+/src/.vs/Qiniu/v16/Server/sqlite3
