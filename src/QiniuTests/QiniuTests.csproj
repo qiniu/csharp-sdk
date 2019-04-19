@@ -73,7 +73,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CDN\CdnManagerTests.cs" />
-    <Compile Include="Pili\PiliManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storage\BucketManagerTests.cs" />
     <Compile Include="Storage\DownloadManagerTests.cs" />
