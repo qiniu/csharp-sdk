@@ -38,16 +38,8 @@
         {
             return CreateManageToken(url, null);
         }
-        /// <param name="url">请求的URL</param>
-        /// <param name="method">请求的URL</param>
-        /// <param name="body">请求的主体内容</param>
-        /// <param name="contentType">请求的URL</param>
-        /// <returns>生成的管理凭证</returns>
-        public string CreateQiniuToken(string url, string method, byte[] body, string contentType)
-        {
-            return CreateQiniuToken(url, method,body, contentType);
-        }
-
+       
+        
         /// <summary>
         /// 生成上传凭证
         /// </summary>

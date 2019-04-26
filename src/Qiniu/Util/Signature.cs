@@ -187,7 +187,7 @@ namespace Qiniu.Util
             {
                 sb.Append(Encoding.UTF8.GetString((byte[])(object)body, 0, body.Length));
             }
-            return string.Format("{1}:{2}", mac.AccessKey, encodedSign(sb.ToString()));
+            return string.Format("{0}:{1}", mac.AccessKey, encodedSign(sb.ToString()));
         }
     }
 }
