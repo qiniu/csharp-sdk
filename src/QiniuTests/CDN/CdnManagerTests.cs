@@ -6,10 +6,16 @@ using System;
 
 namespace Qiniu.CDN.Tests
 {
+    /// <summary>
+    ///  CdnManagerTest
+    /// </summary>
     [TestFixture]
     public class CdnManagerTests : TestEnv
     {
-
+        /// <summary>
+        /// RefreshUrlsAndDirsTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void RefreshUrlsAndDirsTest()
         {
@@ -53,6 +59,10 @@ namespace Qiniu.CDN.Tests
             }
         }
 
+        /// <summary>
+        /// RefreshUrlsTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void RefreshUrlsTest()
         {
@@ -81,7 +91,10 @@ namespace Qiniu.CDN.Tests
                 }
             }
         }
-
+        /// <summary>
+        /// RefreshDirsTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void RefreshDirsTest()
         {
@@ -111,7 +124,10 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-
+        /// <summary>
+        /// PrefetchUrlsTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void PrefetchUrlsTest()
         {
@@ -140,7 +156,10 @@ namespace Qiniu.CDN.Tests
                 }
             }
         }
-
+        /// <summary>
+        /// GetBandwidthDataTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void GetBandwidthDataTest()
         {
@@ -191,7 +210,10 @@ namespace Qiniu.CDN.Tests
                 }
             }
         }
-
+        /// <summary>
+        /// GetFluxDataTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void GetFluxDataTest()
         {
@@ -243,6 +265,10 @@ namespace Qiniu.CDN.Tests
             }
         }
 
+        /// <summary>
+        /// GetCdnLogListTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void GetCdnLogListTest()
         {
@@ -266,7 +292,10 @@ namespace Qiniu.CDN.Tests
             }
         }
 
-
+        /// <summary>
+        ///  CreateTimestampAntiLeechUrlTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void CreateTimestampAntiLeechUrlTest()
         {

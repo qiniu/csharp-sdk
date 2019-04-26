@@ -13,11 +13,35 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <BaseIntermediateOutputPath>..\..\bin\net40\obj\</BaseIntermediateOutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;Net40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\bin\Qiniu.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <BaseIntermediateOutputPath>..\..\bin\net40\obj\</BaseIntermediateOutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>TRACE;Net40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\bin\Qiniu.xml</DocumentationFile>
+  </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>QiniuCSharpSDK.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -28,6 +52,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -38,33 +63,18 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;Net40</DefineConstants>
-    <DocumentationFile>..\..\bin\net40\Qiniu.xml</DocumentationFile>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE;Net40</DefineConstants>
-    <DocumentationFile>..\..\bin\net40\Qiniu.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.8.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.8.1\lib\net40\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.7.1\lib\net40\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -84,14 +94,18 @@
     <Compile Include="Storage\Config.cs" />
     <Compile Include="Storage\FetchInfo.cs" />
     <Compile Include="Storage\FetchResult.cs" />
+    <Compile Include="Storage\ListInfoV2.cs" />
+    <Compile Include="Storage\ListItemV2.cs" />
+    <Compile Include="Storage\ListResultV2.cs" />
     <Compile Include="Storage\PfopInfo.cs" />
     <Compile Include="Storage\PrefopResult.cs" />
     <Compile Include="Storage\PutExtra.cs" />
     <Compile Include="Storage\QiniuException.cs" />
-    <Compile Include="Storage\ResumeBlocker.cs" />
+    <Compile Include="Storage\Region.cs" />
+    <Compile Include="Storage\Tokens.cs" />
     <Compile Include="Storage\Zone.cs" />
-    <Compile Include="Storage\ZoneHelper.cs" />
-    <Compile Include="Storage\ZoneInfo.cs" />
+    <Compile Include="Storage\RegionHelper.cs" />
+    <Compile Include="Storage\RegionInfo.cs" />
     <Compile Include="CDN\RefreshRequest.cs" />
     <Compile Include="CDN\RefreshInfo.cs" />
     <Compile Include="CDN\RefreshResult.cs" />
@@ -152,9 +166,7 @@
     <Compile Include="Storage\OperationManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Packages.Net40.config" />
-    <None Include="packages.config" />
-    <None Include="QiniuCSharpSDK.snk" />
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

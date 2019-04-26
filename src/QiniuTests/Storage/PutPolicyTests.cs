@@ -4,9 +4,16 @@ using Qiniu.Util;
 using System;
 namespace Qiniu.Storage.Tests
 {
+    /// <summary>
+    ///  PutPolicyTests
+    /// </summary>
     [TestFixture]
     public class PutPolicyTests : TestEnv
     {
+        /// <summary>
+        /// CreateUptokenTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void CreateUptokenTest()
         {
@@ -69,7 +76,6 @@ namespace Qiniu.Storage.Tests
             putPolicy.PersistentNotifyUrl = "http://api.example.com/qiniu/pfop/notify";
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
-        }
-
+        }    
     }
 }

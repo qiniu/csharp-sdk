@@ -6,14 +6,22 @@ using System;
 using System.Collections.Generic;
 namespace Qiniu.Storage.Tests
 {
+    /// <summary>
+    ///  BucketManagerTests
+    /// </summary>
     [TestFixture]
     public class BucketManagerTests : TestEnv
     {
+        /// <summary>
+        ///  StatTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void StatTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string key = "qiniu.png";
@@ -29,11 +37,16 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(statRet.Result.FileType);
         }
 
+        /// <summary>
+        ///  DeleteTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void DeleteTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string newKey = "qiniu-to-delete.png";
@@ -45,11 +58,16 @@ namespace Qiniu.Storage.Tests
             }
         }
 
+        /// <summary>
+        ///  CopyTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void CopyTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string newKey = "qiniu-to-copy.png";
@@ -60,12 +78,16 @@ namespace Qiniu.Storage.Tests
             }
             Console.WriteLine(copyRet.ToString());
         }
-
+        /// <summary>
+        ///  MoveTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void MoveTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string newKey = "qiniu-to-copy.png";
@@ -83,12 +105,16 @@ namespace Qiniu.Storage.Tests
             }
             Console.WriteLine(moveRet.ToString());
         }
-
+        /// <summary>
+        ///   ChangeMimeTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void ChangeMimeTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             HttpResult ret = bucketManager.ChangeMime(Bucket, "qiniu.png", "image/x-png");
@@ -98,12 +124,16 @@ namespace Qiniu.Storage.Tests
             }
             Console.WriteLine(ret.ToString());
         }
-
+        /// <summary>
+        ///  ChangeTypeTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void ChangeTypeTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             HttpResult ret = bucketManager.ChangeType(Bucket, "qiniu.png", 1);
@@ -113,12 +143,43 @@ namespace Qiniu.Storage.Tests
             }
             Console.WriteLine(ret.ToString());
         }
+        /// <summary>
+        ///  ChangeStatusTest
+        /// </summary>
+        /// <returns>void</returns>
+        [Test]
+        public void ChangeStatusTest()
+        {
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac, config);
+            //条件匹配，只有匹配上才会执行修改操作
+            //cond 可以填写 空，一个或者多个
+            Dictionary<string, string> cond = new Dictionary<string, string>();
+            cond.Add("fsize", "186371");
+            cond.Add("putTime", "14899798962573916");
+            cond.Add("hash", "FiRxWzeeD6ofGTpwTZub5Fx1ozvi");
+            cond.Add("mime", "application/vnd.apple.mpegurl");
+            HttpResult ret = bucketManager.ChangeStatus(Bucket, "qiniu.png", 1,cond);
+            if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("already disabled"))
+            {
+                Assert.Fail("change status error: " + ret.ToString());
+            }
+            Console.WriteLine(ret.ToString());
+        }
 
+        /// <summary>
+        ///  DeleteAfterDaysTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void DeleteAfterDaysTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string newKey = "qiniu-to-copy.png";
@@ -136,11 +197,16 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(expireRet.ToString());
         }
 
+        /// <summary>
+        ///   PrefetchTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void PrefetchTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             HttpResult ret = bucketManager.Prefetch(Bucket, "qiniu.png");
@@ -151,11 +217,16 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(ret.ToString());
         }
 
+        /// <summary>
+        ///   DomainsTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void DomainsTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             DomainsResult ret = bucketManager.Domains(Bucket);
@@ -166,12 +237,16 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(ret.ToString());
         }
 
-
+        /// <summary>
+        ///  BucketsTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void BucketsTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             BucketsResult ret = bucketManager.Buckets(true);
@@ -186,12 +261,16 @@ namespace Qiniu.Storage.Tests
             }
         }
 
-
+        /// <summary>
+        ///   FetchTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void FetchTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string resUrl = "http://devtools.qiniu.com/qiniu.png";
@@ -210,11 +289,36 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(ret.ToString());
         }
 
+        /// <summary>
+        ///  CreateBucketTest
+        /// </summary>
+        /// <returns>void</returns>
+        [Test]
+        public void CreateBucketTest()
+        {
+            Config config = new Config();
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac,config);
+            // 填写存储区域代号   z0:华东  z1:华北 z2:华南  na0:北美
+            // Region = "z0"
+            HttpResult ret = bucketManager.CreateBucket(Bucket, Region);
+            if (ret.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("create bucket error: " + ret.ToString());
+            }
+            Console.WriteLine(ret.ToString());
+        } 
+
+        /// <summary>
+        ///   ListFilesTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void ListFilesTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string prefix = "";
@@ -229,11 +333,16 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(listRet.ToString());
         }
 
+        /// <summary>
+        ///   ListBucketTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void ListBucketTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string prefix = "";
@@ -253,8 +362,41 @@ namespace Qiniu.Storage.Tests
             } while (!string.IsNullOrEmpty(marker));
         }
 
+        /// <summary>
+        ///   ListBucketV2Test
+        /// </summary>
+        /// <returns>void</returns>
+        [Test]
+        public void ListBucketV2Test()
+        {
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac, config);
+            string prefix = "";
+            string delimiter = "";
+            int limit = 100;
+            string marker = "";
+            do
+            {
+                ListResultV2 listRet = bucketManager.ListFilesV2(Bucket, prefix, marker, limit, delimiter);
+                if (listRet.Code != (int)HttpCode.OK)
+                {
+                    Assert.Fail("list files error: " + listRet.ToString());
+                }
+                Console.WriteLine(listRet.ToString());
+
+                marker = listRet.Result[listRet.Result.Length - 1].Marker;
+            } while (!string.IsNullOrEmpty(marker));
+        }
+
         // batch stat, delete, copy, move, chtype, chgm, deleteAfterDays
         // 批量操作每次不能超过1000个指令
+        /// <summary>
+        ///  BatchStatTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void BatchStatTest()
         {
@@ -262,6 +404,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -295,7 +438,10 @@ namespace Qiniu.Storage.Tests
                 }
             }
         }
-
+        /// <summary>
+        ///  BatchDeleteTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void BatchDeleteTest()
         {
@@ -303,6 +449,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -335,12 +482,16 @@ namespace Qiniu.Storage.Tests
                 }
             }
         }
-
+        /// <summary>
+        ///  BatchCopyTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void BatchCopyTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -373,7 +524,10 @@ namespace Qiniu.Storage.Tests
                 }
             }
         }
-
+        /// <summary>
+        ///  BatchMoveTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void BatchMoveTest()
         {
@@ -381,6 +535,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -413,7 +568,10 @@ namespace Qiniu.Storage.Tests
                 }
             }
         }
-
+        /// <summary>
+        ///   BatchChangeMimeTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void BatchChangeMimeTest()
         {
@@ -421,6 +579,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -453,7 +612,10 @@ namespace Qiniu.Storage.Tests
                 }
             }
         }
-
+        /// <summary>
+        ///   BatchChangeTypeTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void BatchChangeTypeTest()
         {
@@ -461,6 +623,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {
@@ -493,7 +656,10 @@ namespace Qiniu.Storage.Tests
                 }
             }
         }
-
+        /// <summary>
+        ///  BatchDeleteAfterDaysTes
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void BatchDeleteAfterDaysTest()
         {
@@ -501,6 +667,7 @@ namespace Qiniu.Storage.Tests
 
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            //config.Region = Region.Region_CN_East;  
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string[] keys = {

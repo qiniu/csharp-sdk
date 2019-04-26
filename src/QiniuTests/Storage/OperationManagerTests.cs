@@ -8,10 +8,16 @@ using Qiniu.Tests;
 
 namespace Qiniu.Storage.Tests
 {
+    /// <summary>
+    /// OperationManagerTests
+    /// </summary>
     [TestFixture]
     public class OperationManagerTests :TestEnv
     {
-
+        /// <summary>
+        /// PfopTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void PfopTest()
         {
@@ -35,7 +41,10 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(pfopRet.PersistentId);
         }
 
-
+        /// <summary>
+        /// PrefopTest
+        /// </summary>
+        /// <returns>void</returns>
         [Test]
         public void PrefopTest()
         {

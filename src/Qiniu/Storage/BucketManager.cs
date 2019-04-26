@@ -3,6 +3,7 @@ using System.Text;
 using Qiniu.Http;
 using Qiniu.Util;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -27,7 +28,6 @@ namespace Qiniu.Storage
             this.httpManager = new HttpManager();
             this.config = config;
         }
-
 
         /// <summary>
         /// 获取空间文件信息
@@ -343,6 +343,46 @@ namespace Qiniu.Storage
         }
 
         /// <summary>
+        /// 修改文件状态
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="key">文件key</param>
+        /// <param name="status">修改后的文件状态，0表示普通存储，1表示低频存储</param>
+        /// <param name="cond">匹配条件</param>
+        /// <returns>状态码为200时表示OK</returns>
+        public HttpResult ChangeStatus(string bucket, string key, int status,Dictionary<string,string> cond)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string chstatusUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
+                    ChangeStatusOp(bucket, key, status,cond));
+                string token = auth.CreateManageToken(chstatusUrl);
+                result = httpManager.Post(chstatusUrl, token);
+            }
+            catch (QiniuException ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [chStatus] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 批处理
         /// </summary>
         /// <param name="batchOps">批量操作的操作字符串</param>
@@ -522,6 +562,133 @@ namespace Qiniu.Storage
         }
 
         /// <summary>
+        /// 创建空间
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="region">存储区域</param>
+        /// <returns>状态码为200时表示OK</returns>
+        public HttpResult CreateBucket(string bucket, string region)
+        {
+            HttpResult result = new HttpResult();
+            try
+            {
+                string scheme = this.config.UseHttps ? "https://" : "http://";
+                string rsHost = string.Format("{0}{1}", scheme, Config.DefaultRsHost);
+                string mkbucketv2Url = string.Format("{0}{1}", rsHost,
+                    CreateBucketOp(bucket, region));
+                Console.WriteLine(mkbucketv2Url);
+                string token = auth.CreateManageToken(mkbucketv2Url);
+                result = httpManager.Post(mkbucketv2Url, token);
+            }
+            catch (QiniuException ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [createBucket] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+        /// <summary>
+        /// 
+        /// 获取空间文件列表 
+        /// listFilesV2(bucket, prefix, marker, limit, delimiter)
+        /// 
+        /// bucket:    目标空间名称
+        /// 
+        /// prefix:    返回指定文件名前缀的文件列表(prefix可设为null)
+        /// 
+        /// marker:    考虑到设置limit后返回的文件列表可能不全(需要重复执行listFiles操作)
+        ///            执行listFiles操作时使用marker标记来追加新的结果
+        ///            特别注意首次执行listFiles操作时marker为null
+        ///            
+        /// limit:     每次返回结果所包含的文件总数限制(limit最大值1000，建议值100)
+        /// 
+        /// delimiter: 分隔符，比如-或者/等等，可以模拟作为目录结构(参考下述示例)
+        ///            假设指定空间中有2个文件 fakepath/1.txt fakepath/2.txt
+        ///            现设置分隔符delimiter = / 得到返回结果items =[]，commonPrefixes = [fakepath/]
+        ///            然后调整prefix = fakepath/ delimiter = null 得到所需结果items = [1.txt,2.txt]
+        ///            于是可以在本地先创建一个目录fakepath,然后在该目录下写入items中的文件
+        ///            
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="prefix">前缀</param>
+        /// <param name="marker">标记</param>
+        /// <param name="limit">数量限制</param>
+        /// <param name="delimiter">分隔符</param>
+        /// <returns>文件列表获取结果</returns>
+        public ListResultV2 ListFilesV2(string bucket, string prefix, string marker, int limit, string delimiter)
+        {
+            ListResultV2 result = new ListResultV2();
+            try
+            {
+                StringBuilder sb = new StringBuilder("/v2/list?bucket=" + bucket);
+
+                if (!string.IsNullOrEmpty(marker))
+                {
+                    sb.Append("&marker=" + marker);
+                }
+
+                if (!string.IsNullOrEmpty(prefix))
+                {
+                    sb.Append("&prefix=" + prefix);
+                }
+
+                if (!string.IsNullOrEmpty(delimiter))
+                {
+                    sb.Append("&delimiter=" + delimiter);
+                }
+
+                if (limit > 1000 || limit < 1)
+                {
+                    sb.Append("&limit=1000");
+                }
+                else
+                {
+                    sb.Append("&limit=" + limit);
+                }
+
+                string listUrl = string.Format("{0}{1}", this.config.RsfHost(this.mac.AccessKey, bucket), sb.ToString());
+                string token = auth.CreateManageToken(listUrl);
+
+
+                HttpResult hr = httpManager.Post(listUrl, token);
+                result.Shadow(hr);
+                      
+            }
+            catch (QiniuException ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [listFiles] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 
         /// 获取空间文件列表 
         /// listFiles(bucket, prefix, marker, limit, delimiter)
@@ -585,6 +752,7 @@ namespace Qiniu.Storage
                 string token = auth.CreateManageToken(listUrl);
 
                 HttpResult hr = httpManager.Post(listUrl, token);
+                Console.WriteLine(hr);
                 result.Shadow(hr);
             }
             catch (QiniuException ex)
@@ -753,6 +921,40 @@ namespace Qiniu.Storage
                 fileType);
         }
 
+        /// <summary>
+        /// 生成chstatus操作字符串
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="key">文件key</param>
+        /// <param name="status">修改后文件状态</param>
+        ///  <param name="cond">匹配条件</param>
+        /// <returns>chstatus操作字符串</returns>
+        public string ChangeStatusOp(string bucket, string key, int status,Dictionary<string,string> cond)
+        {
+            if(cond==null||cond.Keys.Count==0)
+            {
+                return string.Format("/chstatus/{0}/status/{1}", Base64.UrlSafeBase64Encode(bucket, key),
+                status);
+            }
+            else
+            {
+                string condstr = Base64.UrlSafeBase64Encode(StringHelper.UrlFormEncode(cond));
+                return string.Format("/chstatus/{0}/status/{1}/cond/{2}", Base64.UrlSafeBase64Encode(bucket, key),
+                status,condstr);
+            } 
+        }
+
+        /// <summary>
+        /// 生成mkbucketv2操作字符串
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        ///  <param name="region">存储区域</param>
+        /// <returns>mkbucketv2操作字符串</returns>
+        public string CreateBucketOp(string bucket, string region)
+        {
+            return string.Format("/mkbucketv2/{0}/region/{1}", Base64.UrlSafeBase64Encode(bucket),
+                region);
+        }
         /// <summary>
         /// 生成fetch操作字符串
         /// </summary>

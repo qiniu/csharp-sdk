@@ -2,7 +2,7 @@
 
 ## 使用
 
-* 参考文档：[七牛云存储 C# SDK 使用指南](https://developer.qiniu.com/kodo/sdk/1237/csharp)
+* 参考文档：[七牛云存储 C# SDK 使用指南](https://developer.qiniu.com/kodo/sdk/4055/csharp-sdk)
 * 可以参考我们为大家精心准备的使用 [实例](https://github.com/qiniu/csharp-sdk/tree/master/src/QiniuTests)
 
 
@@ -21,4 +21,4 @@
 
 ## 许可证
 
-Copyright (c) 2017 [qiniu.com](www.qiniu.com)
+Copyright (c) 2019 [qiniu.com](www.qiniu.com)

@@ -1,8 +1,7 @@
-﻿
 namespace Qiniu.Storage
 {
     /// <summary>
-    /// 配置信息，主要包括Zone配置(另请参阅Zone模块)
+    /// 配置信息，主要包括Region配置(另请参阅Region模块)
     /// 目前已支持的机房包括：
     /// 华东(CN_East), 华北(CN_North), 华南(CN_South), 北美(US_North), 新加坡（AS_Singapore）
     /// 默认设置为华东机房(CN_East) 
@@ -20,7 +19,11 @@ namespace Qiniu.Storage
         /// <summary>
         /// 空间所在的区域(Zone)
         /// </summary>
-        public Zone Zone = null;
+        public Region Zone = null;
+        /// <summary>
+        /// 空间所在的区域(Region)
+        /// </summary>
+        public Region Region = null;
         /// <summary>
         /// 是否采用https域名
         /// </summary>
@@ -51,12 +54,20 @@ namespace Qiniu.Storage
         public string RsHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
-            if (z == null)
+            Region r = null;
+            if (this.Zone!=null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+               r = this.Zone;
+            }else
+            {
+                r = this.Region;
             }
-            return string.Format("{0}{1}", scheme, z.RsHost);
+           
+            if (r == null)
+            {
+                r = RegionHelper.QueryRegion(ak, bucket);
+            }
+            return string.Format("{0}{1}", scheme, r.RsHost);
         }
 
         /// <summary>
@@ -68,12 +79,20 @@ namespace Qiniu.Storage
         public string RsfHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
-            if (z == null)
+            Region r = null;
+            if (this.Zone != null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                r = this.Zone;
             }
-            return string.Format("{0}{1}", scheme, z.RsfHost);
+            else
+            {
+                r = this.Region;
+            }
+            if (r == null)
+            {
+                r = RegionHelper.QueryRegion(ak, bucket);
+            }
+            return string.Format("{0}{1}", scheme, r.RsfHost);
         }
 
         /// <summary>
@@ -85,12 +104,20 @@ namespace Qiniu.Storage
         public string ApiHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
-            if (z == null)
+            Region r = null;
+            if (this.Zone != null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                r = this.Zone;
             }
-            return string.Format("{0}{1}", scheme, z.ApiHost);
+            else
+            {
+                r = this.Region;
+            }
+            if (r == null)
+            {
+                r = RegionHelper.QueryRegion(ak, bucket);
+            }
+            return string.Format("{0}{1}", scheme, r.ApiHost);
         }
 
         /// <summary>
@@ -102,12 +129,20 @@ namespace Qiniu.Storage
         public string IovipHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
-            if (z == null)
+            Region r = null;
+            if (this.Zone != null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                r = this.Zone;
             }
-            return string.Format("{0}{1}", scheme, z.IovipHost);
+            else
+            {
+                r = this.Region;
+            }
+            if (r == null)
+            {
+                r = RegionHelper.QueryRegion(ak, bucket);
+            }
+            return string.Format("{0}{1}", scheme, r.IovipHost);
         }
 
         /// <summary>
@@ -119,15 +154,23 @@ namespace Qiniu.Storage
         public string UpHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
-            if (z == null)
+            Region r = null;
+            if (this.Zone != null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                r = this.Zone;
             }
-            string upHost = z.SrcUpHosts[0];
+            else
+            {
+                r = this.Region;
+            }
+            if (r == null)
+            {
+                r = RegionHelper.QueryRegion(ak, bucket);
+            }
+            string upHost = r.SrcUpHosts[0];
             if (this.UseCdnDomains)
             {
-                upHost = z.CdnUpHosts[0];
+                upHost = r.CdnUpHosts[0];
             }
 
             return string.Format("{0}{1}", scheme, upHost);

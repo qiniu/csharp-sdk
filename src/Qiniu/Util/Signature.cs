@@ -7,6 +7,9 @@ using Windows.Security.Cryptography.Core;
 using System.Security.Cryptography;
 #endif
 using System.Text;
+using System.Collections.Generic;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace Qiniu.Util
 {
@@ -18,7 +21,6 @@ namespace Qiniu.Util
     public class Signature
     {
         private Mac mac;
-
         /// <summary>
         /// 初始化
         /// </summary>
@@ -30,8 +32,18 @@ namespace Qiniu.Util
 
         private string encodedSign(byte[] data)
         {
+#if WINDOWS_UWP
+            var hma = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha1);
+            var skBuffer = CryptographicBuffer.ConvertStringToBinary(mac.SecretKey, BinaryStringEncoding.Utf8);
+            var hmacKey = hma.CreateKey(skBuffer);
+            var dataBuffer = CryptographicBuffer.CreateFromByteArray(data);
+            var signBuffer = CryptographicEngine.Sign(hmacKey, dataBuffer);
+            byte[] digest;
+            CryptographicBuffer.CopyToByteArray(signBuffer, out digest);
+#else
             HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
-            byte[] digest = hmac.ComputeHash(data);
+            byte[] digest = hmac.ComputeHash(data);         
+#endif
             return Base64.UrlSafeBase64Encode(digest);
         }
 
@@ -48,7 +60,7 @@ namespace Qiniu.Util
         /// <returns></returns>
         public string Sign(byte[] data)
         {
-            return string.Format("{0}:{1}", mac.AccessKey, encodedSign(data));
+            return string.Format("{0}:{1}", mac.AccessKey,encodedSign(data));
         }
 
         /// <summary>
@@ -74,7 +86,7 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// 附带数据的签名
+        /// 附带数据的签名ttttt
         /// </summary>
         /// <param name="str">待签名的数据</param>
         /// <returns>签名结果</returns>
@@ -104,8 +116,18 @@ namespace Qiniu.Util
                 {
                     buffer.Write(body, 0, body.Length);
                 }
+#if WINDOWS_UWP
+                var hma = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha1);
+                var skBuffer = CryptographicBuffer.ConvertStringToBinary(mac.SecretKey, BinaryStringEncoding.Utf8);
+                var hmacKey = hma.CreateKey(skBuffer);
+                var dataBuffer = CryptographicBuffer.CreateFromByteArray(buffer.ToArray());
+                var signBuffer = CryptographicEngine.Sign(hmacKey, dataBuffer);
+                byte[] digest;
+                CryptographicBuffer.CopyToByteArray(signBuffer, out digest);
+#else
                 HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
                 byte[] digest = hmac.ComputeHash(buffer.ToArray());
+#endif
                 string digestBase64 = Base64.UrlSafeBase64Encode(digest);
                 return string.Format("{0}:{1}", mac.AccessKey, digestBase64);
             }
@@ -121,6 +143,51 @@ namespace Qiniu.Util
         {
             byte[] data = Encoding.UTF8.GetBytes(body);
             return SignRequest(url, data);
+        }
+
+        /// <summary>
+        /// HTTP请求签名
+        /// </summary>
+        /// <param name="url">请求目标的URL</param>
+        /// <param name="method"></param>
+        /// <param name="body">请求的主体数据</param>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+
+        public string SignRequest(string url, string method, byte[] body, string contentType)
+        {
+            StringBuilder sb = new StringBuilder();
+            Uri u = new Uri(url);
+            // <Method> <Path><?Query>
+            string line = string.Format("{0} {1}", method, u.LocalPath);
+            sb.Append(line);
+            if (u.Query != "")
+            {
+                sb.Append(u.Query);
+            }
+
+            // Host: <Host>
+            sb.Append(string.Format("\nHost: {0}", u.Host));
+
+
+
+            if (u.Port != 80)
+            {
+                sb.Append(string.Format(":{0}", u.Port));
+            }
+            // Content-Type: <Content-Type>
+            if (contentType != null)
+            {
+                sb.Append(string.Format("\nContent-Type: {0}", contentType));
+            }
+
+            // body
+            sb.Append("\n\n");
+            if (body != null && contentType != null && !"application/octet-stream".Equals(contentType))
+            {
+                sb.Append(Encoding.UTF8.GetString((byte[])(object)body, 0, body.Length));
+            }
+            return string.Format("{0}:{1}", mac.AccessKey, encodedSign(sb.ToString()));
         }
     }
 }
