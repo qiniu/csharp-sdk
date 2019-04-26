@@ -31,7 +31,7 @@ namespace Qiniu.Storage
 
             Mac mac = new Mac("", "");
             Auth auth = new Auth(mac);
-            string qiniuToken = auth.CreateQiniuToken(strUrl, method, body, contentType);
+            string qiniuToken = Auth.CreateQiniuToken(mac,strUrl, method, body, contentType);
             Console.WriteLine(qiniuToken);
         }
         /// <summary>
@@ -49,7 +49,7 @@ namespace Qiniu.Storage
 
             Mac mac = new Mac("", "");
             Auth auth = new Auth(mac);
-            string qboxToken = auth.CreateManageToken(strUrl, body);
+            string qboxToken = Auth.CreateManageToken(mac,strUrl, body);
             Console.WriteLine(qboxToken);
         }
     }

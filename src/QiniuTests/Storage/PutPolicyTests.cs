@@ -76,14 +76,6 @@ namespace Qiniu.Storage.Tests
             putPolicy.PersistentNotifyUrl = "http://api.example.com/qiniu/pfop/notify";
             upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             Console.WriteLine(upToken);
-        }
-        /// <summary>
-        /// Main
-        /// </summary>
-        /// <returns>void</returns>
-        public static void Main(string[] args)
-        {
-
-        }
+        }    
     }
 }
