@@ -3,6 +3,7 @@ using Qiniu.Util;
 using Qiniu.Http;
 using Qiniu.Tests;
 using System;
+using System.Diagnostics;
 
 namespace Qiniu.CDN.Tests
 {
@@ -161,9 +162,11 @@ namespace Qiniu.CDN.Tests
             foreach (string domain in domains)
             {
                 Console.WriteLine("bandwidth data of domain: " + domain);
-                foreach (string t in ret.Result.Time)
-                {
-                    Console.Write(t + "\t");
+                if (ret.Result.Time != null) {
+                    foreach (string t in ret.Result.Time)
+                    {
+                        Console.Write(t + "\t");
+                    }
                 }
                 Console.WriteLine();
                 if (ret.Result.Data.ContainsKey(domain))
@@ -212,9 +215,11 @@ namespace Qiniu.CDN.Tests
             foreach (string domain in domains)
             {
                 Console.WriteLine("flux data of domain: " + domain);
-                foreach (string t in ret.Result.Time)
-                {
-                    Console.Write(t + "\t");
+                if (ret.Result.Time != null) {
+                    foreach (string t in ret.Result.Time)
+                    {
+                        Console.Write(t + "\t");
+                    }
                 }
                 Console.WriteLine();
                 if (ret.Result.Data.ContainsKey(domain))

@@ -95,7 +95,7 @@ namespace Qiniu.Http
         public static string createFormDataBoundary()
         {
             string now = DateTime.UtcNow.Ticks.ToString();
-            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, StringHelper.calcMD5(now));
+            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.CalcMD5(now));
         }
     }
 }

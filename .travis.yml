@@ -1,13 +1,8 @@
 language: csharp
+mono: none
+dotnet: 2.1.502
 
-install:
-
- - sudo apt-get install nunit
- 
 before_script:
-
   - export isTravisTest=true
- 
 script: 
-
- - make build-and-test
+  - make build-and-test publish
