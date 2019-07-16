@@ -21,8 +21,8 @@
             }
             else
             {
-                this.AccessKey = "";
-                this.SecretKey = "";
+                this.AccessKey = " ";
+                this.SecretKey = " ";
                 this.Bucket = "csharpsdk";
                 this.Domain = "csharpsdk.qiniudn.com";
                 this.LocalFile = "E:\\VSProjects\\csharp-sdk\\tools\\files\\test.jpg";
