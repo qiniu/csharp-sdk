@@ -27,6 +27,9 @@
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
+    <Version>7.4.0</Version>
+    <Company>Shanghai Qiniu Information Technology Co., Ltd.</Company>
+    <Description>Qiniu Resource (Cloud) Storage SDK for C#</Description>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
