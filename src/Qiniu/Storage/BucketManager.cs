@@ -798,5 +798,43 @@ namespace Qiniu.Storage
                 Base64.UrlSafeBase64Encode(bucket, key), deleteAfterDays);
         }
 
+        /// <summary>
+        /// 解冻归档文件
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="key">文件key</param>
+        /// <param name="freezeAfterDays">解冻多少天后冻结</param>
+        /// <returns>状态码为200时表示OK</returns>
+        public HttpResult Thaw(string bucket,string key,int freezeAfterDays)
+        {
+
+            HttpResult result = new HttpResult();
+            try
+            {
+                string EncodedEntry = Base64.UrlSafeBase64Encode(bucket + ":" + key);
+                string url = string.Format("http://rs.qbox.me/restoreAr/{0}/freezeAfterDays/{1}", EncodedEntry, Convert.ToString(freezeAfterDays));
+                var token = auth.CreateManageToken(url, null);
+                result = httpManager.Post(url, token);
+            }
+            catch (QiniuException ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [Thaw] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
     }
 }
