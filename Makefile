@@ -7,4 +7,6 @@ build-and-test:
 
 	xbuild src/Qiniu.sln
 
-	nunit-console bin/QiniuTests.dll
+	nunit-console bin/QiniuTests.dll 
+
+
