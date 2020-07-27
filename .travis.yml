@@ -3,6 +3,9 @@ language: csharp
 install:
 
  - sudo apt-get install nunit
+ - npm install -g codecov
+ - sudo apt-get install lcov
+
  
 before_script:
 
@@ -11,3 +14,9 @@ before_script:
 script: 
 
  - make build-and-test
+ - gcc -fprofile-arcs -ftest-coverage -fPIC -O0 ./src/Qiniu/QiniuCSharpSDK.cs -o program
+ - ./program
+ - gcov program.cs
+ - codecov 
+
+

@@ -1,5 +1,10 @@
 # Qiniu (Cloud) C# SDK
 
+[![LICENSE](https://img.shields.io/github/license/qiniu/csharp-sdk.svg)](https://github.com/qiniu/csharp-sdk/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/qiniu/csharp-sdk.svg?branch=master)](https://travis-ci.org/qiniu/csharp-sdk)
+[![GitHub release](https://img.shields.io/github/v/tag/qiniu/csharp-sdk.svg?label=release)](https://github.com/qiniu/csharp-sdk/releases)
+[![Coverage Status](https://codecov.io/gh/qiniu/csharp-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/qiniu/csharp-sdk)
+
 ## 使用
 
 * 参考文档：[七牛云存储 C# SDK 使用指南](https://developer.qiniu.com/kodo/sdk/1237/csharp)
