@@ -89,26 +89,31 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="url">请求目标的URL</param>
         /// <param name="body">请求的主体数据</param>
+        /// <param name="method">
+        /// <param name="contentType"> 
         /// <returns></returns>
-        public string SignRequest(string url, byte[] body)
+        public string SignRequest(string url, byte[] body, string method="POST", string contentType= "application/octet-stream")
         {
             Uri u = new Uri(url);
-            string pathAndQuery = u.PathAndQuery;
-            byte[] pathAndQueryBytes = Encoding.UTF8.GetBytes(pathAndQuery);
-
-            using (MemoryStream buffer = new MemoryStream())
-            {
-                buffer.Write(pathAndQueryBytes, 0, pathAndQueryBytes.Length);
-                buffer.WriteByte((byte)'\n');
-                if (body != null && body.Length > 0)
-                {
-                    buffer.Write(body, 0, body.Length);
-                }
-                HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
-                byte[] digest = hmac.ComputeHash(buffer.ToArray());
-                string digestBase64 = Base64.UrlSafeBase64Encode(digest);
-                return string.Format("{0}:{1}", mac.AccessKey, digestBase64);
-            }
+            string path = u.AbsolutePath;
+            string host = u.Host;
+            string rawquery = u.Query;
+            var data = new System.Text.StringBuilder();
+            data.AppendFormat("{0} {1}", method, path);
+            if (rawquery != String.Empty)
+                data.AppendFormat("{0}", rawquery);
+            data.AppendFormat("\nHost: {0}", host);
+            if (contentType != String.Empty)
+                data.AppendFormat("\nContent-Type: {0}", contentType);
+            data.Append("\n\n");
+            if (contentType != String.Empty && contentType != "application/octet-stream")
+                data.Append(body);
+            String sdata = data.ToString();
+            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
+            byte[] digest = hmac.ComputeHash(Encoding.UTF8.GetBytes(sdata));
+            string qiniuToken = String.Format("Qiniu {0}:{1}", mac.AccessKey, Base64.UrlSafeBase64Encode(digest));
+            Console.WriteLine(qiniuToken);
+            return qiniuToken;
         }
 
         /// <summary>
