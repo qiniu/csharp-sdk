@@ -10,8 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       max-parallel: 1
-      matrix:
-      csharp-versions: ['2.1.502']
+
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -20,10 +19,7 @@ jobs:
       - name: Setup
         uses: actions/setup-dotnet@v1
         with:
-          csharp-version: ${{ matrix.csharp-versions }}
-
-      - name: before test
-        run: export isTravisTest=true
+          dotnet-version: 2.1.502
 
       - name: build-and-test
         run: make build-and-test publish
