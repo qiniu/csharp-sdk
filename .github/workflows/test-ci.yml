@@ -33,7 +33,6 @@ jobs:
           QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
           QINIU_TEST_BUCKET: ${{ secrets.QINIU_TEST_BUCKET }}
           QINIU_TEST_DOMAIN: ${{ secrets.QINIU_TEST_DOMAIN }}
-          QINIU_LOCAL_FILE: ${{ secrets.QINIU_LOCAL_FILE }}
 
       - name: After_success
         run: bash <(curl -s https://codecov.io/bash)
