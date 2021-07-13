@@ -1,0 +1,39 @@
+name: CSHARP CI
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+      csharp-versions: ['2.1.502']
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup
+        uses: actions/setup-dotnet@v1
+        with:
+          csharp-version: ${{ matrix.csharp-versions }}
+
+      - name: before test
+        run: export isTravisTest=true
+
+      - name: build-and-test
+        run: make build-and-test publish
+
+        env:
+          QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
+          QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
+          QINIU_TEST_BUCKET: ${{ secrets.QINIU_TEST_BUCKET }}
+          QINIU_TEST_DOMAIN: ${{ secrets.QINIU_TEST_DOMAIN }}
+          QINIU_LOCAL_FILE: ${{ secrets.QINIU_LOCAL_FILE }}
+
+      - name: After_success
+        run: bash <(curl -s https://codecov.io/bash)
