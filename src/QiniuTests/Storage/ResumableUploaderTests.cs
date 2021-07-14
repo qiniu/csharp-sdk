@@ -47,6 +47,9 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void ResumeUploadFileTest()
         {
+            string ak = AccessKey;
+            string sk = SecretKey;
+            string bkt = Bucket;
             Mac mac = new Mac(AccessKey, SecretKey);
             Random rand = new Random();
             string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
@@ -67,7 +70,11 @@ namespace Qiniu.Storage.Tests
             putPolicy.SetExpires(3600);
             putPolicy.DeleteAfterDays = 1;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
-            Console.WriteLine(token);
+            string uptoken = token;
+            Console.WriteLine(uptoken);
+            Console.WriteLine(ak);
+            Console.WriteLine(sk);
+            Console.WriteLine(bkt);
 
             Config config = new Config();
             config.UseHttps = true;
