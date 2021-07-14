@@ -21,16 +21,14 @@ jobs:
         with:
           dotnet-version: 2.1.502
 
-      - name: Build
-        run: dotnet build src/Qiniu/Qiniu.csproj
-      
-      - name: Test
-        run: |
-          export QINIU_ACCESS_KEY=qhtbC5YmDCO-WiPriuoCG_t4hZ1LboSOtRYSJXo_
-          export QINIU_SECRET_KEY=3sSWVQQ_HvD6pVJSjfEsRQMl9ZRnNRf0-G5iomNV
-          export QINIU_TEST_BUCKET=z0-bucket
-          export QINIU_TEST_DOMAIN=http://up.qiniup.com
-          dotnet build src/Qiniu/Qiniu.csproj
+      - name: Build and Test
+        run: make build-and-test
         
+        env:
+          QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
+          QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
+          QINIU_TEST_BUCKET: ${{ secrets.QINIU_TEST_BUCKET }}
+          QINIU_TEST_DOMAIN: ${{ secrets.QINIU_TEST_DOMAIN }}
+
       - name: After_success
         run: bash <(curl -s https://codecov.io/bash)
