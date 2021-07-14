@@ -21,8 +21,11 @@ jobs:
         with:
           dotnet-version: 2.1.502
 
-      - name: Build and Test
-        run: make build-and-test
+      - name: Build
+        run: dotnet build src/Qiniu/Qiniu.csproj
+      
+      - name: Test
+        run: dotnet test src/QiniuTests/QiniuTests.csproj
         
         env:
           QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
