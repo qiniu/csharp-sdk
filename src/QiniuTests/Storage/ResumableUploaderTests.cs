@@ -48,6 +48,8 @@ namespace Qiniu.Storage.Tests
         public void ResumeUploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
+            Console.WriteLine(AccessKey);
+            Console.WriteLine(this.AccessKey = System.Environment.GetEnvironmentVariable("QINIU_ACCESS_KEY"));
             Random rand = new Random();
             string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
             
