@@ -47,9 +47,7 @@ namespace Qiniu.Storage.Tests
         [Test]
         public void ResumeUploadFileTest()
         {
-            string AccessKey = "qhtbC5YmDCO-WiPriuoCG_t4hZ1LboSOtRYSJXo_";
-            string SecretKey = "3sSWVQQ_HvD6pVJSjfEsRQMl9ZRnNRf0-G5iomNV";
-            string Bucket = "z0-bucket";
+            Console.WriteLine(AccessKey.Length);
             Mac mac = new Mac(AccessKey, SecretKey);
             Random rand = new Random();
             string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
