@@ -13,6 +13,7 @@
             this.SecretKey = System.Environment.GetEnvironmentVariable("QINIU_SECRET_KEY");
             this.Bucket = System.Environment.GetEnvironmentVariable("QINIU_TEST_BUCKET");
             this.Domain = System.Environment.GetEnvironmentVariable("QINIU_TEST_DOMAIN");
+	     
         }
     }
 }
