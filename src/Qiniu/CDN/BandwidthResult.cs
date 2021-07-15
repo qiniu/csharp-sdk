@@ -19,7 +19,7 @@ namespace Qiniu.CDN
                 BandwidthInfo info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info=JsonConvert.DeserializeObject<BandwidthInfo>(Text);
+                    info = JsonConvert.DeserializeObject<BandwidthInfo>(Text);
                 }
                 return info;
             }
@@ -63,7 +63,7 @@ namespace Qiniu.CDN
                         sb.AppendFormat("{0}:\nChina: {1}, Oversea={2}\n", kvp.Key, kvp.Value.China, kvp.Value.Oversea);
                     }
                     sb.AppendLine();
-                }          
+                }
             }
             else
             {

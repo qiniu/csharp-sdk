@@ -16,7 +16,15 @@ namespace Qiniu.Storage.Tests
             Random rand = new Random();
             string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
 
-            string filePath = LocalFile;
+            string tempPath = System.IO.Path.GetTempPath();
+            int rnd = new Random().Next(1, 100000); 
+            string filePath = tempPath + "resumeFile" + rnd.ToString();
+            char[] testBody = new char[4 * 1024 * 1024]; 
+            System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(stream, System.Text.Encoding.Default);
+            sw.Write(testBody);
+            sw.Close();
+            stream.Close();
 
             PutPolicy putPolicy = new PutPolicy();
             putPolicy.Scope = Bucket + ":" + key;
@@ -33,6 +41,7 @@ namespace Qiniu.Storage.Tests
             HttpResult result = target.UploadFile(filePath, key, token, null);
             Console.WriteLine("chunk upload result: " + result.ToString());
             Assert.AreEqual((int)HttpCode.OK, result.Code);
+            System.IO.File.Delete(filePath);
         }
 
         [Test]
@@ -41,8 +50,16 @@ namespace Qiniu.Storage.Tests
             Mac mac = new Mac(AccessKey, SecretKey);
             Random rand = new Random();
             string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
-
-            string filePath = LocalFile;
+            
+            string tempPath = System.IO.Path.GetTempPath();
+            int rnd = new Random().Next(1, 100000); 
+            string filePath = tempPath + "resumeFile" + rnd.ToString();
+            char[] testBody = new char[4 * 1024 * 1024]; 
+            System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(stream, System.Text.Encoding.Default);
+            sw.Write(testBody);
+            sw.Close();
+            stream.Close();
             System.IO.Stream fs = System.IO.File.OpenRead(filePath);
 
             PutPolicy putPolicy = new PutPolicy();
@@ -65,6 +82,7 @@ namespace Qiniu.Storage.Tests
             HttpResult result = target.UploadStream(fs, key, token, extra);
             Console.WriteLine("resume upload: " + result.ToString());
             Assert.AreEqual((int)HttpCode.OK, result.Code);
+            System.IO.File.Delete(filePath);
         }
     }
 }

@@ -33,23 +33,13 @@ namespace Qiniu.Storage.Tests
                 Assert.Fail("pfop error: " + pfopRet.ToString());
             }
             Console.WriteLine(pfopRet.PersistentId);
-        }
 
-
-        [Test]
-        public void PrefopTest()
-        {
-            string persistentId = "z0.59953aaa45a2650c9942144b";
-            Mac mac = new Mac(AccessKey, SecretKey);
-            Config config = new Config();
-            OperationManager manager = new OperationManager(mac, config);
-            PrefopResult ret = manager.Prefop(persistentId);
+            PrefopResult ret = manager.Prefop(pfopRet.PersistentId);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.Fail("prefop error: " + ret.ToString());
             }
             Console.WriteLine(ret.ToString());
         }
-
     }
 }

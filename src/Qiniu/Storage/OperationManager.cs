@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using Qiniu.Util;
 using Qiniu.Http;
+using UrlHelper = Qiniu.Util.UrlHelper;
 
 namespace Qiniu.Storage
 {

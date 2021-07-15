@@ -30,3 +30,6 @@ _ReSharper*/
 /src/packages
 /packages
 /bin
+.vs
+/src/QiniuTests/TestEnv.cs
+/src/QiniuTests/coverage.json

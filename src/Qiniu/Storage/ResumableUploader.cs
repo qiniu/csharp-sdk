@@ -391,7 +391,7 @@ namespace Qiniu.Storage
                 using (MemoryStream ms = new MemoryStream(blockBuffer, 0, blockSize))
                 {
                     byte[] data = ms.ToArray();
-
+                    
                     result = httpManager.PostData(url, data, upTokenStr);
 
                     if (result.Code == (int)HttpCode.OK)

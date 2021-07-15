@@ -1,10 +1,9 @@
-build-and-test:
-	mkdir -p bin/
-	cp tools/net40/Newtonsoft.Json.dll bin/
-	cp tools/net40/nunit.framework.dll bin/
-	cp tools/files/* bin/
+.PHONY: build-and-test build test publish
 
-
-	xbuild src/Qiniu.sln
-
-	nunit-console bin/QiniuTests.dll
+build-and-test: build test
+build:
+	dotnet build src/Qiniu/Qiniu.csproj
+test:
+	dotnet test src/QiniuTests/QiniuTests.csproj
+publish:
+	dotnet publish src/Qiniu/Qiniu.csproj -c Release -f netstandard2.0
