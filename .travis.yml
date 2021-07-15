@@ -1,8 +1,0 @@
-language: csharp
-mono: none
-dotnet: 2.1.502
-
-before_script:
-  - export isTravisTest=true
-script: 
-  - make build-and-test publish
