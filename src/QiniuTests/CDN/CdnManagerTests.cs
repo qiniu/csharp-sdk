@@ -253,7 +253,7 @@ namespace Qiniu.CDN.Tests
         {
             Mac mac = new Mac(AccessKey, SecretKey);
             CdnManager manager = new CdnManager(mac);
-            string day = "2021-07-12";
+            string day = DateTime.Now.ToString("yyyy-MM-dd"); ;
             string[] domains = new string[] { Domain};
             LogListResult ret = manager.GetCdnLogList(domains, day);
             if (ret.Code != (int)HttpCode.OK)

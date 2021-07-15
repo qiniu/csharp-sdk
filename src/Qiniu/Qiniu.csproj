@@ -27,7 +27,7 @@
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
-    <Version>7.4.0</Version>
+    <Version>8.0.0</Version>
     <Company>Shanghai Qiniu Information Technology Co., Ltd.</Company>
     <Description>Qiniu Resource (Cloud) Storage SDK for C#</Description>
   </PropertyGroup>
