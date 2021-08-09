@@ -16,10 +16,11 @@ namespace Qiniu.Storage
         public object ProgressLock { set; get; }
         public Dictionary<string, long> UploadedBytesDict { set; get; }
         public long FileSize { set; get; }
+        public string encodedObjectName { set; get; }
 
         public ResumeBlocker(ManualResetEvent doneEvent, byte[] blockBuffer, long blockIndex, string uploadToken,
             PutExtra putExtra, ResumeInfo resumeInfo, Dictionary<long, HttpResult> blockMakeResults,
-            object progressLock, Dictionary<string, long> uploadedBytesDict, long fileSize)
+            object progressLock, Dictionary<string, long> uploadedBytesDict, long fileSize, string encodedObjectName)
         {
             this.DoneEvent = doneEvent;
             this.BlockBuffer = blockBuffer;
@@ -31,6 +32,7 @@ namespace Qiniu.Storage
             this.ProgressLock = progressLock;
             this.UploadedBytesDict = uploadedBytesDict;
             this.FileSize = fileSize;
+            this.encodedObjectName = encodedObjectName;
         }
     }
 }

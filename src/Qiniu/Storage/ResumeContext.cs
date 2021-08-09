@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -41,5 +43,17 @@ namespace Qiniu.Storage
         /// </summary>
         [JsonProperty("expired_at")]
         public long ExpiredAt { get; set; }
+
+        /// <summary>
+        /// 新版分片上传上下文etag
+        /// </summary>
+        [JsonProperty("etag")]
+        public Dictionary<string, object> Etag { get; set; }
+
+        /// <summary>
+        /// 新版分片上传md5校验值
+        /// </summary>
+        [JsonProperty("md5")]
+        public string Md5 { get; set; }
     }
 }
