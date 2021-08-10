@@ -57,7 +57,7 @@ namespace Qiniu.Util
         public static string GetEncodedObjectName(string key)
         {
             string encodedObjectName = "~";
-            if (key != "")
+            if (!string.IsNullOrEmpty(key))
             {
                 encodedObjectName = UrlSafeBase64Encode(key);
             }
