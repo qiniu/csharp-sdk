@@ -79,13 +79,10 @@ namespace Qiniu.Storage
         public HttpResult UploadStream(Stream stream, string key, string upToken, PutExtra putExtra)
         {
             HttpResult result = new HttpResult();
-            string encodedObjectName = "~";
+            string encodedObjectName = "";
             if (putExtra != null && putExtra.Version == "v2")
             {
-                if (key != null)
-                {
-                    encodedObjectName = Base64.UrlSafeBase64Encode(key);
-                }
+                encodedObjectName = Base64.GetEncodedObjectName(key);
             }
 
             //check put extra
@@ -209,12 +206,19 @@ namespace Qiniu.Storage
                     byte[] blockBuffer = new byte[putExtra.PartSize];
                     for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
                     {
-                        // if (putExtra.Version == "v1")
-                        // {
-                        //     string context = resumeInfo.Contexts[blockIndex];
-                        // }
-                        // string context = resumeInfo.Contexts[blockIndex];
                         string context = null;
+                        if (putExtra.Version == "v1")
+                        {
+                            context = resumeInfo.Contexts[blockIndex];
+                        }
+                        else 
+                        {
+                            if (resumeInfo.Etags[blockIndex].Count > 0)
+                            {
+                                context = "~";
+                            }
+                        }
+                       
                         if (string.IsNullOrEmpty(context))
                         {
                             //check upload controller action before each chunk

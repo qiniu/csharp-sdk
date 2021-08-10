@@ -1211,10 +1211,11 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(包含body数据)
+        /// HTTP-PUT方法(包含body数据, headers)
         /// </summary>
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据(字节数据)</param>
+        /// <param name="headers">上传设置的headers</param>
         /// <param name="token">令牌(凭证)[可选->设置为null]</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
         /// <returns>HTTP-POST的响应结果</returns>
@@ -1308,7 +1309,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
+                sb.AppendFormat("[{0}] [{1}] [HTTP-PUT-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
                 Exception e = ex;
                 while (e != null)
                 {
