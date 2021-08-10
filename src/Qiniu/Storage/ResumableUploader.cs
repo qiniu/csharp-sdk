@@ -84,7 +84,7 @@ namespace Qiniu.Storage
             {
                 encodedObjectName = Base64.GetEncodedObjectName(key);
             }
-
+    
             //check put extra
             if (putExtra == null)
             {
@@ -213,7 +213,8 @@ namespace Qiniu.Storage
                         }
                         else 
                         {
-                            if (resumeInfo.Etags[blockIndex].Count > 0)
+                            Dictionary<string, object> etag = resumeInfo.Etags[blockIndex];
+                            if (etag != null && etag.Count > 0)
                             {
                                 context = "~";
                             }
