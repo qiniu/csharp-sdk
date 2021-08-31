@@ -48,5 +48,20 @@ namespace Qiniu.Util
         {
             return Convert.FromBase64String(text.Replace('-', '+').Replace('_', '/'));
         }
+
+        /// <summary>
+        /// 获取EncodedObjectName
+        /// </summary>
+        /// <param name="key">待加密的字符串</param>
+        /// <returns>已加密的字符串</returns>
+        public static string GetEncodedObjectName(string key)
+        {
+            string encodedObjectName = "~";
+            if (!string.IsNullOrEmpty(key))
+            {
+                encodedObjectName = UrlSafeBase64Encode(key);
+            }
+            return encodedObjectName;
+        }
     }
 }

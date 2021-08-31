@@ -22,7 +22,7 @@ namespace Qiniu.Storage
             string tempDir = System.Environment.GetEnvironmentVariable("TEMP");
             System.IO.FileInfo fileInfo = new System.IO.FileInfo(localFile);
             string uniqueKey = string.Format("{0}:{1}:{2}", localFile, key, fileInfo.LastWriteTime.ToFileTime());
-            return string.Format("{0}\\{1}",tempDir,"QiniuResume_" + Hashing.CalcMD5X(uniqueKey));
+            return Path.Combine(tempDir, "QiniuResume_" + Hashing.CalcMD5X(uniqueKey));
         }
 
         /// <summary>

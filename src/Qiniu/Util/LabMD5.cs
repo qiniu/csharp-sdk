@@ -1,4 +1,5 @@
-﻿namespace Qiniu.Util
+﻿using System.Security.Cryptography;
+namespace Qiniu.Util
 {
     /// <summary>
     /// MD5算法的3rdParty实现
@@ -249,5 +250,23 @@
 
         #endregion Transform
 
+        /// <summary>
+        /// 计算字节数据md5值
+        /// </summary>
+        /// <param name="data">字节数据</param>
+        /// <param name="offset">偏移位置</param>
+        /// <param name="count">字节数</param>
+        /// <returns></returns>
+        public static string GenerateMD5(byte[] data)
+        {
+            MD5 md5 = MD5.Create();
+            byte[] md5buffer = md5.ComputeHash(data);
+            string str = null;
+            foreach (byte b in md5buffer)
+            {
+                str += b.ToString("x2");
+            }
+            return str;
+        }
     }
 }

@@ -37,5 +37,15 @@ namespace Qiniu.Storage
         /// 块并发上传的线程数量
         /// </summary>
         public int BlockUploadThreads { set; get; }
-    }
+
+        /// <summary>
+        /// 分片上传版本 目前支持v1/v2版本 默认v1
+        /// </summary>
+        public string Version = "v1";
+
+        /// <summary>
+        /// 分片上传v2字段 默认大小为4MB 分片大小范围为1 MB - 1 GB
+        /// </summary>
+        public int PartSize = 4 * 1024 * 1024;
+}
 }

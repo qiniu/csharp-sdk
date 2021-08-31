@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -34,6 +35,25 @@ namespace Qiniu.Storage
         /// 上传进度信息序列化
         /// </summary>
         /// <returns></returns>
+
+        /// <summary>
+        /// 新版分片上下文信息列表
+        /// </summary>
+        [JsonProperty("etags")]
+        public Dictionary<string, object>[] Etags { get; set; }
+
+        /// <summary>
+        /// 新版分片上传id
+        /// </summary>
+        [JsonProperty("uploadId")]
+        public string UploadId { get; set; }
+
+        /// <summary>
+        /// 完成上传的字节数
+        /// </summary>
+        [JsonProperty("uploaded")]
+        public long Uploaded { get; set; }
+
         public string ToJsonStr()
         {
             return JsonConvert.SerializeObject(this);
