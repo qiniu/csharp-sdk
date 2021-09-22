@@ -1,3 +1,20 @@
+**2021-09-22**
+
+最新版本v7.4.0
+
+新增：新增支持 [分片上传 V2](https://developer.qiniu.com/kodo/6364/multipartupload-interface)，可在上传时指定分片上传版本，参考 [使用手册](https://developer.qiniu.com/kodo/1237/csharp)
+
+
+
+**2017-09-15**
+
+最新版本v7.3.0
+
+优化：重构C# SDK的核心代码，扩充详细的使用案例
+
+新增：增加上传策略的新参数fileType等
+
+
 **2017-03-08**
 
 最新版本v7.2.15，适用于.NET Framework 2.0+
