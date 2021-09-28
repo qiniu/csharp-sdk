@@ -17,9 +17,9 @@ namespace Qiniu.Storage.Tests
             string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
 
             string tempPath = System.IO.Path.GetTempPath();
-            int rnd = new Random().Next(1, 100000); 
+            int rnd = new Random().Next(1, 100000);
             string filePath = tempPath + "resumeFile" + rnd.ToString();
-            char[] testBody = new char[4 * 1024 * 1024]; 
+            char[] testBody = new char[4 * 1024 * 1024];
             System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
             System.IO.StreamWriter sw = new System.IO.StreamWriter(stream, System.Text.Encoding.Default);
             sw.Write(testBody);
@@ -51,9 +51,9 @@ namespace Qiniu.Storage.Tests
             string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
 
             string tempPath = System.IO.Path.GetTempPath();
-            int rnd = new Random().Next(1, 100000); 
+            int rnd = new Random().Next(1, 100000);
             string filePath = tempPath + "resumeFile" + rnd.ToString();
-            char[] testBody = new char[4 * 1024 * 1024]; 
+            char[] testBody = new char[4 * 1024 * 1024];
             System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
             System.IO.StreamWriter sw = new System.IO.StreamWriter(stream, System.Text.Encoding.Default);
             sw.Write(testBody);

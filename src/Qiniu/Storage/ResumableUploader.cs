@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace Qiniu.Storage
 {
     /// <summary>
-    /// 分片上传/断点续上传，适合于以下"情形2~3":  
+    /// 分片上传/断点续上传，适合于以下"情形2~3":
     /// (1)网络较好并且待上传的文件体积较小时(比如100MB或更小一点)使用简单上传;
     /// (2)文件较大或者网络状况不理想时请使用分片上传;
     /// (3)文件较大并且需要支持断点续上传，请使用分片上传(断点续上传)
@@ -84,7 +84,7 @@ namespace Qiniu.Storage
             {
                 encodedObjectName = Base64.GetEncodedObjectName(key);
             }
-    
+
             //check put extra
             if (putExtra == null)
             {
@@ -142,7 +142,7 @@ namespace Qiniu.Storage
                                 ExpiredAt = 0,
                             };
                         }
-                        else
+                        else if (putExtra.Version == "v2")
                         {
                             HttpResult res = initReq(encodedObjectName, upToken);
                             Dictionary<string, string> responseBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(res.Text);
@@ -150,7 +150,7 @@ namespace Qiniu.Storage
                             {
                                 return res;
                             }
-                            
+
                             resumeInfo = new ResumeInfo()
                             {
                                 FileSize = fileSize,
@@ -160,14 +160,15 @@ namespace Qiniu.Storage
                                 ExpiredAt = long.Parse(responseBody["expireAt"]),
                                 UploadId = responseBody["uploadId"]
                             };
+                        } else {
+                            throw new Exception("Invalid Version, only supports v1 / v2");
                         }
-                        
                     }
 
                     //calc upload progress
                     for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
                     {
-                        
+
                         if (putExtra.Version == "v1")
                         {
                             string context = resumeInfo.Contexts[blockIndex];
@@ -176,7 +177,7 @@ namespace Qiniu.Storage
                                 uploadedBytes += putExtra.PartSize;
                             }
                         }
-                        else
+                        else if (putExtra.Version == "v2")
                         {
                             Dictionary<string, object> etag = resumeInfo.Etags[blockIndex];
                             if (etag != null)
@@ -188,8 +189,10 @@ namespace Qiniu.Storage
                                 uploadedBytes += putExtra.PartSize;
                                 resumeInfo.Uploaded = uploadedBytes;
                             }
+                        } else {
+                            throw new Exception("Invalid Version, only supports v1 / v2");
                         }
-                        
+
                     }
 
                     //set upload progress
@@ -211,15 +214,17 @@ namespace Qiniu.Storage
                         {
                             context = resumeInfo.Contexts[blockIndex];
                         }
-                        else 
+                        else if (putExtra.Version == "v2")
                         {
                             Dictionary<string, object> etag = resumeInfo.Etags[blockIndex];
                             if (etag != null && etag.Count > 0)
                             {
                                 context = "~";
                             }
+                        } else {
+                            throw new Exception("Invalid Version, only supports v1 / v2");
                         }
-                       
+
                         if (string.IsNullOrEmpty(context))
                         {
                             //check upload controller action before each chunk
@@ -258,7 +263,7 @@ namespace Qiniu.Storage
 
                             if (blockDataDict.Count == putExtra.BlockUploadThreads)
                             {
-                    
+
                                 processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize,
                                                   encodedObjectName);
                                 //check mkblk results
@@ -312,11 +317,13 @@ namespace Qiniu.Storage
                         {
                             hr = MakeFile(key, fileSize, key, upToken, putExtra, resumeInfo.Contexts);
                         }
-                        else 
+                        else if (putExtra.Version == "v2")
                         {
                             hr = completeParts(key, resumeInfo, key, upToken, putExtra, encodedObjectName);
+                        } else {
+                            throw new Exception("Invalid Version, only supports v1 / v2");
                         }
-                        
+
                         if (hr.Code != (int)HttpCode.OK)
                         {
                             result.Shadow(hr);
@@ -462,12 +469,14 @@ namespace Qiniu.Storage
                 {
                     url = string.Format("{0}/mkblk/{1}", uploadHost, blockSize);
                 }
-                else
+                else if (putExtra.Version == "v2")
                 {
                     url = string.Format("{0}/buckets/{1}/objects/{2}/uploads/{3}/{4}", uploadHost, bucket, resumeBlocker.encodedObjectName,
                                         resumeInfo.UploadId, blockIndex+1);
+                } else {
+                    throw new Exception("Invalid Version, only supports v1 / v2");
                 }
-                
+
                 string upTokenStr = string.Format("UpToken {0}", upToken);
                 using (MemoryStream ms = new MemoryStream(blockBuffer, 0, blockSize))
                 {
@@ -476,7 +485,7 @@ namespace Qiniu.Storage
                     {
                         result = httpManager.PostData(url, data, upTokenStr);
                     }
-                    else
+                    else if (putExtra.Version == "v2")
                     {
                         Dictionary<string, string> headers = new Dictionary<string, string>();
                         headers.Add("Authorization", upTokenStr);
@@ -484,9 +493,11 @@ namespace Qiniu.Storage
                         string md5 = LabMD5.GenerateMD5(blockBuffer);
                         headers.Add("Content-MD5", md5);
                         result = httpManager.PutDataWithHeaders(url, data, headers);
+                    } else {
+                        throw new Exception("Invalid Version, only supports v1 / v2");
                     }
-                    
-                    
+
+
                     if (result.Code == (int)HttpCode.OK)
                     {
                         if (putExtra.Version == "v1")
@@ -514,14 +525,16 @@ namespace Qiniu.Storage
                                     putExtra.ProgressHandler(uploadedBytesDict["UploadProgress"], fileSize);
                                 }
                             }
-                            else
+                            else if (putExtra.Version == "v2")
                             {
                                 result.RefText += string.Format("[{0}] JSON Decode Error: text = {1}",
                                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Text);
                                 result.RefCode = (int)HttpCode.USER_NEED_RETRY;
+                            } else {
+                                throw new Exception("Invalid Version, only supports v1 / v2");
                             }
                         }
-                        else
+                        else if (putExtra.Version == "v2")
                         {
                             Dictionary<string, string> rc = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
                             string md5 = LabMD5.GenerateMD5(blockBuffer);
@@ -543,6 +556,8 @@ namespace Qiniu.Storage
                                     }
                                     putExtra.ProgressHandler(uploadedBytesDict["UploadProgress"], fileSize);
                             }
+                        } else {
+                            throw new Exception("Invalid Version, only supports v1 / v2");
                         }
 
                     }
@@ -632,7 +647,7 @@ namespace Qiniu.Storage
                         string v = kvp.Value;
                         if (k.StartsWith("x:") && !string.IsNullOrEmpty(v))
                         {
-                            sb.AppendFormat("/{0}/{1}", k, v);
+                            sb.AppendFormat("/{0}/{1}", k, Base64.UrlSafeBase64Encode(v));
                         }
                     }
 
@@ -694,7 +709,7 @@ namespace Qiniu.Storage
         private HttpResult initReq(string encodedObjectName, string upToken)
         {
             HttpResult result = new HttpResult();
-            
+
             try
             {
                 string ak = UpToken.GetAccessKeyFromUpToken(upToken);
@@ -751,24 +766,19 @@ namespace Qiniu.Storage
         private HttpResult completeParts(string fileName, ResumeInfo resumeInfo, string key, string upToken, PutExtra putExtra, string encodedObjectName)
         {
             HttpResult result = new HttpResult();
-            
+
             try
             {
-                string paramStr = "{}";
                 if (string.IsNullOrEmpty(fileName)) {
                     fileName = "fname";
                 }
-                if (string.IsNullOrEmpty(putExtra.MimeType)) 
+                if (string.IsNullOrEmpty(putExtra.MimeType))
                 {
                     putExtra.MimeType = "";
                 }
                 if (string.IsNullOrEmpty(key))
                 {
                     key = "";
-                }
-                if (putExtra.Params != null)
-                {
-                    paramStr = JsonConvert.SerializeObject(putExtra.Params);
                 }
                 //get upload host
                 string ak = UpToken.GetAccessKeyFromUpToken(upToken);
@@ -784,7 +794,7 @@ namespace Qiniu.Storage
                 Dictionary<string, object> body = new Dictionary<string, object>();
                 body.Add("fname", fileName);
                 body.Add("mimeType", putExtra.MimeType);
-                body.Add("customVars", null);
+                body.Add("customVars", putExtra.Params);
                 body.Add("parts", resumeInfo.Etags);
                 string url = string.Format("{0}/buckets/{1}/objects/{2}/uploads/{3}", uploadHost, bucket, encodedObjectName, resumeInfo.UploadId);
                 string bodyStr = JsonConvert.SerializeObject(body);
