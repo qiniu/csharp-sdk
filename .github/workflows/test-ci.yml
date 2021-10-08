@@ -23,10 +23,10 @@ jobs:
 
       - name: Build
         run: dotnet build src/Qiniu/Qiniu.csproj
-      
+
       - name: Test
-        run: dotnet test src/QiniuTests/QiniuTests.csproj
-        
+        run: dotnet test -v n src/QiniuTests/QiniuTests.csproj
+
         env:
           QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
           QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}

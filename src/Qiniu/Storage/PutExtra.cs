@@ -27,7 +27,7 @@ namespace Qiniu.Storage
         /// 设置文件上传的状态控制器
         /// </summary>
         public UploadController UploadController { set; get; }
-        
+
         /// <summary>
         /// 最大重试次数
         /// </summary>
