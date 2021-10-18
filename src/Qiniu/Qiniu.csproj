@@ -27,11 +27,13 @@
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
+    <ProjectId>Qiniu</ProjectId>
     <Version>8.0.0</Version>
+    <Authors>Rong Zhou, Qiniu SDK</Authors>
     <Company>Shanghai Qiniu Information Technology Co., Ltd.</Company>
     <Description>Qiniu Resource (Cloud) Storage SDK for C#</Description>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
