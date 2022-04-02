@@ -115,6 +115,64 @@ namespace Qiniu.Storage.Tests
         }
 
         [Test]
+        public void RestoreArArchiveTest()
+        {
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac, config);
+
+            string newKey = "qiniu-archive-to-restore.png";
+            HttpResult copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            if (copyRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("copy error: " + copyRet.ToString());
+            }
+            Console.WriteLine(copyRet.ToString());
+            
+            HttpResult changeTypeRet = bucketManager.ChangeType(Bucket, newKey, 2);
+            if (changeTypeRet.Code != (int)HttpCode.OK && !changeTypeRet.Text.Contains("already in line stat"))
+            {
+                Assert.Fail("change type error: " + changeTypeRet.ToString());
+            }
+
+            HttpResult ret = bucketManager.RestoreAr(Bucket, newKey, 2);
+            if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("already in line stat"))
+            {
+                Assert.Fail("change type error: " + ret.ToString());
+            }
+        }
+
+        [Test]
+        public void RestoreArDeepArchiveTest()
+        {
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac, config);
+
+            string newKey = "qiniu-deep-archive-to-restore.png";
+            HttpResult copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            if (copyRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("copy error: " + copyRet.ToString());
+            }
+            Console.WriteLine(copyRet.ToString());
+            
+            HttpResult changeTypeRet = bucketManager.ChangeType(Bucket, newKey, 3);
+            if (changeTypeRet.Code != (int)HttpCode.OK && !changeTypeRet.Text.Contains("already in line stat"))
+            {
+                Assert.Fail("change type error: " + changeTypeRet.ToString());
+            }
+
+            HttpResult ret = bucketManager.RestoreAr(Bucket, newKey, 2);
+            if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("already in line stat"))
+            {
+                Assert.Fail("change type error: " + ret.ToString());
+            }
+        }
+
+        [Test]
         public void DeleteAfterDaysTest()
         {
             Config config = new Config();
