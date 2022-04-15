@@ -14,6 +14,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
+            config.UseHttps = true;
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
             string key = "qiniu.png";
