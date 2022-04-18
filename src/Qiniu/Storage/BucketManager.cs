@@ -308,7 +308,7 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
-        /// <param name="fileType">修改后的文件存储类型，0表示普通存储，1表示低频存储</param>
+        /// <param name="fileType">修改后的文件存储类型，0表示普通存储，1表示低频存储，2表示归档存储，3表示深度归档存储</param>
         /// <returns>状态码为200时表示OK</returns>
         public HttpResult ChangeType(string bucket, string key, int fileType)
         {
@@ -325,6 +325,39 @@ namespace Qiniu.Storage
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendFormat("[{0}] [chtype] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
+        public HttpResult RestoreAr(string bucket, string key, int freezeAfterDays)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string restoreUrl = string.Format("{0}{1}",
+                    this.config.RsHost(this.mac.AccessKey, bucket),
+                    RestoreArOp(bucket, key, freezeAfterDays));
+                string token = auth.CreateManageToken(restoreUrl);
+                result = httpManager.Post(restoreUrl, token);
+            }
+            catch (QiniuException ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [restore] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 Exception e = ex;
                 while (e != null)
                 {
@@ -751,6 +784,20 @@ namespace Qiniu.Storage
         {
             return string.Format("/chtype/{0}/type/{1}", Base64.UrlSafeBase64Encode(bucket, key),
                 fileType);
+        }
+
+        /// <summary>
+        /// 生成chtype操作字符串
+        /// </summary>
+        /// <param name="bucket">空间名称</param>
+        /// <param name="key">文件key</param>
+        /// <param name="freezeAfterDays">修改后文件类型</param>
+        /// <returns>chtype操作字符串</returns>
+        public string RestoreArOp(string bucket, string key, int freezeAfterDays)
+        {
+            return string.Format("/restoreAr/{0}/freezeAfterDays/{1}",
+                Base64.UrlSafeBase64Encode(bucket, key),
+                freezeAfterDays);
         }
 
         /// <summary>

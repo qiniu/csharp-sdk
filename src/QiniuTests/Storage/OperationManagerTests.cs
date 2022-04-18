@@ -22,6 +22,7 @@ namespace Qiniu.Storage.Tests
             string fops = string.Join(";", new string[] { avthumbMp4Fop, vframeJpgFop });
             Mac mac = new Mac(AccessKey, SecretKey);
             Config config = new Config();
+            config.UseHttps = true;
             OperationManager manager = new OperationManager(mac, config);
             string pipeline = "sdktest";
             string notifyUrl = "http://api.example.com/qiniu/pfop/notify";

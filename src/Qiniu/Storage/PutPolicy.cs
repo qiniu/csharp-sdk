@@ -135,7 +135,7 @@ namespace Qiniu.Storage
         public int? DeleteAfterDays { get; set; }
 
         /// <summary>
-        /// [可选]文件的存储类型，默认为普通存储，设置为1为低频存储
+        /// [可选]文件的存储类型，默认为普通存储，设置为：0 标准存储（默认），1 低频存储，2 归档存储，3 深度归档存储
         /// </summary>
         [JsonProperty("fileType", NullValueHandling = NullValueHandling.Ignore)]
         public int? FileType { get; set; }
