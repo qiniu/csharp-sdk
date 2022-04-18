@@ -1,3 +1,14 @@
+
+**2022-04-18**
+
+v8.1.0
+
+新增： 对象存储，新增支持 [深度归档存储类型](https://developer.qiniu.com/kodo/3956/kodo-category#deep_archive)
+
+
+
+* * * 
+
 **2021-10-14**
 
 v8.0.0
