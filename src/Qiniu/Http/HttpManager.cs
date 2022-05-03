@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.IO;
 using System.Net;
@@ -60,13 +61,26 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-GET方法
+        /// HTTP-GET 方法（不包含 headers）
         /// </summary>
-        /// <param name="url">请求目标URL</param>
-        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
+        /// <param name="url">请求目标 URL</param>
+        /// <param name="token">令牌(凭证)[可选 -> 设置为 null]</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
         /// <returns>HTTP-GET的响应结果</returns>
         public HttpResult Get(string url, string token, bool binaryMode = false)
+        {
+            return Get(url, null, token, binaryMode);
+        }
+
+        /// <summary>
+        /// HTTP-GET 方法
+        /// </summary>
+        /// <param name="url">请求目标URL</param>
+        /// <param name="headers">请求 Headers[可选 -> 设置为 null]</param>
+        /// <param name="token">令牌(凭证)[可选 -> 设置为 null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-GET的响应结果</returns>
+        public HttpResult Get(string url, StringDictionary headers, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -76,6 +90,18 @@ namespace Qiniu.Http
             {
                 wReq = WebRequest.Create(url) as HttpWebRequest;
                 wReq.Method = "GET";
+                if (headers != null)
+                {
+                    foreach (string fieldName in headers.Keys)
+                    {
+                        wReq.Headers.Add(fieldName, headers[fieldName]);
+                    }
+
+                    if (headers.ContainsKey("Content-Type"))
+                    {
+                        wReq.ContentType = headers["Content-Type"];
+                    }
+                }
                 if (!string.IsNullOrEmpty(token))
                 {
                     wReq.Headers.Add("Authorization", token);
@@ -165,13 +191,25 @@ namespace Qiniu.Http
         }
 
         /// <summary>
-        /// HTTP-POST方法(不包含body数据)
+        /// HTTP-POST 方法（不包含 headers，不包含 body 数据）
         /// </summary>
-        /// <param name="url">请求目标URL</param>
-        /// <param name="token">令牌(凭证)[可选]</param>
+        /// <param name="url">请求目标 URL</param>
+        /// <param name="token">令牌(凭证)[可选 -> 设置为 null]</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
-        /// <returns>HTTP-POST的响应结果</returns>
+        /// <returns>HTTP-POST 的响应结果</returns>
         public HttpResult Post(string url, string token, bool binaryMode = false)
+        {
+            return Post(url, null, token, binaryMode);
+        }
+        
+        /// <summary>
+        /// HTTP-POST 方法（不包含 body 数据）
+        /// </summary>
+        /// <param name="url">请求目标 URL</param>
+        /// <param name="token">令牌(凭证)[可选 -> 设置为 null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST 的响应结果</returns>
+        public HttpResult Post(string url, StringDictionary headers, string token, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -181,6 +219,18 @@ namespace Qiniu.Http
             {
                 wReq = WebRequest.Create(url) as HttpWebRequest;
                 wReq.Method = "POST";
+                if (headers != null)
+                {
+                    foreach (string fieldName in headers.Keys)
+                    {
+                        wReq.Headers.Add(fieldName, headers[fieldName]);
+                    }
+
+                    if (headers.ContainsKey("Content-Type"))
+                    {
+                        wReq.ContentType = headers["Content-Type"];
+                    }
+                }
                 if (!string.IsNullOrEmpty(token))
                 {
                     wReq.Headers.Add("Authorization", token);

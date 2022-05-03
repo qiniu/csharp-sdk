@@ -3,6 +3,8 @@ using System.Text;
 using Qiniu.Http;
 using Qiniu.Util;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -43,9 +45,13 @@ namespace Qiniu.Storage
             {
                 string statUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
                     StatOp(bucket, key));
-                string token = auth.CreateManageToken(statUrl);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("GET", statUrl, headers);
 
-                HttpResult hr = httpManager.Get(statUrl, token);
+                HttpResult hr = httpManager.Get(statUrl, headers, token);
                 result.Shadow(hr);
             }
             catch (QiniuException ex)
@@ -88,9 +94,13 @@ namespace Qiniu.Storage
                     sharedStr = "true";
                 }
                 string bucketsUrl = string.Format("{0}/buckets?shared={1}", rsHost, sharedStr);
-                string token = auth.CreateManageToken(bucketsUrl);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("GET", bucketsUrl, headers);
 
-                HttpResult hr = httpManager.Get(bucketsUrl, token);
+                HttpResult hr = httpManager.Get(bucketsUrl, headers, token);
                 result.Shadow(hr);
             }
             catch (QiniuException ex)
@@ -129,9 +139,13 @@ namespace Qiniu.Storage
             {
                 string deleteUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
                     DeleteOp(bucket, key));
-                string token = auth.CreateManageToken(deleteUrl);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", deleteUrl, headers);
 
-                result = httpManager.Post(deleteUrl, token);
+                result = httpManager.Post(deleteUrl, headers, token);
             }
             catch (QiniuException ex)
             {
@@ -184,9 +198,13 @@ namespace Qiniu.Storage
             {
                 string copyUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, srcBucket),
                     CopyOp(srcBucket, srcKey, dstBucket, dstKey, force));
-                string token = auth.CreateManageToken(copyUrl);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", copyUrl, headers);
 
-                result = httpManager.Post(copyUrl, token);
+                result = httpManager.Post(copyUrl, headers, token);
             }
             catch (QiniuException ex)
             {
@@ -239,9 +257,13 @@ namespace Qiniu.Storage
             {
                 string moveUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, srcBucket),
                     MoveOp(srcBucket, srcKey, dstBucket, dstKey, force));
-                string token = auth.CreateManageToken(moveUrl);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", moveUrl, headers);
 
-                result = httpManager.Post(moveUrl, token);
+                result = httpManager.Post(moveUrl, headers, token);
             }
             catch (QiniuException ex)
             {
@@ -279,8 +301,12 @@ namespace Qiniu.Storage
             {
                 string chgmUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
                     ChangeMimeOp(bucket, key, mimeType));
-                string token = auth.CreateManageToken(chgmUrl);
-                result = httpManager.Post(chgmUrl, token);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", chgmUrl, headers);
+                result = httpManager.Post(chgmUrl, headers, token);
             }
             catch (QiniuException ex)
             {
@@ -318,8 +344,12 @@ namespace Qiniu.Storage
             {
                 string chtypeUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
                     ChangeTypeOp(bucket, key, fileType));
-                string token = auth.CreateManageToken(chtypeUrl);
-                result = httpManager.Post(chtypeUrl, token);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", chtypeUrl, headers);
+                result = httpManager.Post(chtypeUrl, headers, token);
             }
             catch (QiniuException ex)
             {
@@ -351,8 +381,12 @@ namespace Qiniu.Storage
                 string restoreUrl = string.Format("{0}{1}",
                     this.config.RsHost(this.mac.AccessKey, bucket),
                     RestoreArOp(bucket, key, freezeAfterDays));
-                string token = auth.CreateManageToken(restoreUrl);
-                result = httpManager.Post(restoreUrl, token);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", restoreUrl, headers);
+                result = httpManager.Post(restoreUrl, headers, token);
             }
             catch (QiniuException ex)
             {
@@ -389,8 +423,15 @@ namespace Qiniu.Storage
                 string scheme = this.config.UseHttps ? "https://" : "http://";
                 string rsHost = string.Format("{0}{1}", scheme, Config.DefaultRsHost);
                 string batchUrl = rsHost + "/batch";
+                string token = auth.CreateManageTokenV2(
+                    "POST",
+                    batchUrl,
+                    new StringDictionary
+                    {
+                        {"Content-Type", ContentType.WWW_FORM_URLENC}
+                    },
+                    batchOps);
                 byte[] data = Encoding.UTF8.GetBytes(batchOps);
-                string token = auth.CreateManageToken(batchUrl, data);
 
                 HttpResult hr = httpManager.PostForm(batchUrl, data, token);
                 result.Shadow(hr);
@@ -448,9 +489,13 @@ namespace Qiniu.Storage
             {
                 string fetchUrl = string.Format("{0}{1}", this.config.IovipHost(this.mac.AccessKey, bucket),
                     FetchOp(resUrl, bucket, key));
-                string token = auth.CreateManageToken(fetchUrl);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", fetchUrl, headers);
 
-                HttpResult httpResult = httpManager.Post(fetchUrl, token);
+                HttpResult httpResult = httpManager.Post(fetchUrl, headers, token);
                 result.Shadow(httpResult);
             }
             catch (QiniuException ex)
@@ -487,9 +532,13 @@ namespace Qiniu.Storage
             try
             {
                 string prefetchUrl = this.config.IovipHost(this.mac.AccessKey, bucket) + PrefetchOp(bucket, key);
-                string token = auth.CreateManageToken(prefetchUrl);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", prefetchUrl, headers);
 
-                result = httpManager.Post(prefetchUrl, token);
+                result = httpManager.Post(prefetchUrl, headers, token);
             }
             catch (QiniuException ex)
             {
@@ -527,8 +576,15 @@ namespace Qiniu.Storage
                 string rsHost = string.Format("{0}{1}", scheme, Config.DefaultApiHost);
                 string domainsUrl = string.Format("{0}{1}", rsHost, "/v6/domain/list");
                 string body = string.Format("tbl={0}", bucket);
+                string token = auth.CreateManageTokenV2(
+                    "POST",
+                    domainsUrl,
+                    new StringDictionary
+                    {
+                        {"Content-Type", ContentType.WWW_FORM_URLENC}
+                    },
+                    body);
                 byte[] data = Encoding.UTF8.GetBytes(body);
-                string token = auth.CreateManageToken(domainsUrl, data);
 
                 HttpResult hr = httpManager.PostForm(domainsUrl, data, token);
                 result.Shadow(hr);
@@ -615,9 +671,13 @@ namespace Qiniu.Storage
                 }
 
                 string listUrl = string.Format("{0}{1}", this.config.RsfHost(this.mac.AccessKey, bucket), sb.ToString());
-                string token = auth.CreateManageToken(listUrl);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", listUrl, headers);
 
-                HttpResult hr = httpManager.Post(listUrl, token);
+                HttpResult hr = httpManager.Post(listUrl, headers, token);
                 result.Shadow(hr);
             }
             catch (QiniuException ex)
@@ -656,8 +716,12 @@ namespace Qiniu.Storage
             {
                 string updateUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
                     DeleteAfterDaysOp(bucket, key, deleteAfterDays));
-                string token = auth.CreateManageToken(updateUrl);
-                result = httpManager.Post(updateUrl, token);
+                StringDictionary headers = new StringDictionary
+                {
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+                string token = auth.CreateManageTokenV2("POST", updateUrl, headers);
+                result = httpManager.Post(updateUrl, headers, token);
             }
             catch (QiniuException ex)
             {

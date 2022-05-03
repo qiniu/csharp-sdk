@@ -1,4 +1,6 @@
-﻿namespace Qiniu.Util
+﻿using System.Collections.Specialized;
+
+namespace Qiniu.Util
 {
     /// <summary>
     /// Authentication/Authorization
@@ -105,6 +107,46 @@
         public static string CreateManageToken(Mac mac, string url)
         {
             return CreateManageToken(mac, url, null);
+        }
+
+        /// <summary>
+        /// 生成 Qiniu 管理凭证
+        /// </summary>
+        /// <param name="method">请求的方法</param>
+        /// <param name="url">请求的 URL</param>
+        /// <param name="headers">请求的 Headers</param>
+        /// <param name="body">请求体（可选），要求 UTF-8 编码</param>
+        /// <returns>生成的管理凭证</returns>
+        public string CreateManageTokenV2(string method, string url, StringDictionary headers, string body = "")
+        {
+            return string.Format("Qiniu {0}", signature.SignRequestV2(method, url, headers, body));
+        }
+
+        /// <summary>
+        /// 生成 Qiniu 管理凭证-不包含 header
+        /// </summary>
+        /// <param name="method">请求的方法</param>
+        /// <param name="url">请求的 URL</param>
+        /// <param name="body">请求体（可选），要求 UTF-8 编码</param>
+        /// <returns>生成的管理凭证</returns>
+        public string CreateManageTokenV2(string method, string url, string body = "")
+        {
+            return CreateManageTokenV2(method, url, null, body);
+        }
+        
+        /// <summary>
+        /// 生成 Qiniu 管理凭证-使用外部 mac
+        /// </summary>
+        /// <param name="mac">外部传入的 mac</param>
+        /// <param name="method">请求的方法</param>
+        /// <param name="url">请求的 URL</param>
+        /// <param name="headers">请求的 Headers</param>
+        /// <param name="body">请求体（可选），要求 UTF-8 编码</param>
+        /// <returns>生成的管理凭证</returns>
+        public static string CreateManageTokenV2(Mac mac, string method, string url, StringDictionary headers, string body = "")
+        {
+            Signature sign = new Signature(mac);
+            return string.Format("Qiniu {0}", sign.SignRequestV2(method, url, headers, body));
         }
 
         /// <summary>
