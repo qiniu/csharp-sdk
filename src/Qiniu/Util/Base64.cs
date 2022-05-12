@@ -50,14 +50,14 @@ namespace Qiniu.Util
         }
 
         /// <summary>
-        /// 获取EncodedObjectName
+        /// 获取EncodedObjectName，建议仅用于分片上传 V2
         /// </summary>
         /// <param name="key">待加密的字符串</param>
         /// <returns>已加密的字符串</returns>
         public static string GetEncodedObjectName(string key)
         {
             string encodedObjectName = "~";
-            if (!string.IsNullOrEmpty(key))
+            if (key != null)
             {
                 encodedObjectName = UrlSafeBase64Encode(key);
             }

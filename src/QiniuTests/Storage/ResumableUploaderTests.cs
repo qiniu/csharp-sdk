@@ -145,6 +145,63 @@ namespace Qiniu.Storage.Tests
         }
 
         [Test]
+        public void UploadFileV2WithoutKeyTest()
+        {
+            Mac mac = new Mac(AccessKey, SecretKey);
+
+            string tempPath = Path.GetTempPath();
+            int rnd = new Random().Next(1, 100000);
+            string filePath = tempPath + "resumeFile" + rnd.ToString();
+            char[] testBody = new char[6 * 1024 * 1024];
+            FileStream stream = new FileStream(filePath, FileMode.Create);
+            StreamWriter sw = new StreamWriter(stream, System.Text.Encoding.Default);
+            sw.Write(testBody);
+            sw.Close();
+            stream.Close();
+
+            PutPolicy putPolicy = new PutPolicy();
+            putPolicy.Scope = Bucket;
+            putPolicy.SetExpires(3600);
+            putPolicy.DeleteAfterDays = 1;
+            string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            config.UseHttps = true;
+            config.UseCdnDomains = true;
+            config.ChunkSize = ChunkUnit.U512K;
+            PutExtra extra = new PutExtra();
+            extra.MimeType = "application/json";
+            extra.Version = "v2";
+            extra.PartSize = 4 * 1024 * 1024;
+            ResumableUploader target = new ResumableUploader(config);
+            HttpResult result = target.UploadFile(filePath, null, token, extra);
+            Console.WriteLine("chunk upload result: " + result.ToString());
+            Assert.AreEqual((int)HttpCode.OK, result.Code);
+            Dictionary<string, string> responseBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+            Assert.AreEqual(responseBody["hash"], responseBody["key"]);
+
+            string downloadUrl = string.Format("http://{0}/{1}", Domain, responseBody["key"]);
+            HttpWebRequest wReq = WebRequest.Create(downloadUrl) as HttpWebRequest;
+            wReq.Method = "GET";
+            HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
+            Assert.AreEqual((int)HttpCode.OK, (int)wResp.StatusCode);
+            Assert.AreEqual("application/json", wResp.Headers[HttpResponseHeader.ContentType]);
+
+            using (var md5_1 = MD5.Create()) {
+                using (var md5_2 = MD5.Create()) {
+                    using (var fileStream = File.OpenRead(filePath)) {
+                        byte[] checksum1 = md5_1.ComputeHash(fileStream);
+                        byte[] checksum2 = md5_2.ComputeHash(wResp.GetResponseStream());
+                        Assert.AreEqual(checksum1, checksum2);
+                    }
+                }
+            }
+
+            File.Delete(filePath);
+        }
+
+        [Test]
         public void ResumeUploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
@@ -262,6 +319,71 @@ namespace Qiniu.Storage.Tests
                 }
 
                 System.IO.File.Delete(filePath);
+            }
+        }
+        
+        [Test]
+        public void ResumeUploadFileV2WithoutKeyTest()
+        {
+            Mac mac = new Mac(AccessKey, SecretKey);
+            Config config = new Config();
+            config.UseHttps = true;
+            config.Zone = Zone.ZONE_CN_East;
+            config.UseCdnDomains = true;
+            config.ChunkSize = ChunkUnit.U512K;
+            ResumableUploader target = new ResumableUploader(config);
+            PutExtra extra = new PutExtra();
+            extra.PartSize = 4 * 1024 * 1024;
+            extra.Version = "v2";
+
+            int[] sizes = new int[5]{extra.PartSize/2, extra.PartSize, extra.PartSize+1, extra.PartSize*2, 10*1024*1024};
+            foreach(int i in sizes)
+            {
+                char[] testBody = new char[i];
+                Random rand = new Random();
+
+                string tempPath = Path.GetTempPath();
+                int rnd = new Random().Next(1, 100000);
+                string filePath = tempPath + "resumeFile" + rnd.ToString();
+                FileStream stream = new FileStream(filePath, FileMode.Create);
+                StreamWriter sw = new StreamWriter(stream, System.Text.Encoding.Default);
+                sw.Write(testBody);
+                sw.Close();
+                stream.Close();
+                Stream fs = File.OpenRead(filePath);
+
+                PutPolicy putPolicy = new PutPolicy();
+                putPolicy.Scope = Bucket;
+                putPolicy.SetExpires(3600);
+                putPolicy.DeleteAfterDays = 1;
+                string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+
+                //设置断点续传进度记录文件
+                extra.ResumeRecordFile = ResumeHelper.GetDefaultRecordKey(filePath, rand.Next().ToString());
+                Console.WriteLine("record file:" + extra.ResumeRecordFile);
+                HttpResult result = target.UploadStream(fs, null, token, extra);
+                Console.WriteLine("resume upload: " + result.ToString());
+                Assert.AreEqual((int)HttpCode.OK, result.Code);
+                Dictionary<string, string> responseBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+                Assert.AreEqual(responseBody["hash"], responseBody["key"]);
+
+                string downloadUrl = string.Format("http://{0}/{1}", Domain, responseBody["key"]);
+                HttpWebRequest wReq = WebRequest.Create(downloadUrl) as HttpWebRequest;
+                wReq.Method = "GET";
+                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
+                Assert.AreEqual((int)HttpCode.OK, (int)wResp.StatusCode);
+
+                using (var md5_1 = MD5.Create()) {
+                    using (var md5_2 = MD5.Create()) {
+                        using (var fileStream = File.OpenRead(filePath)) {
+                            byte[] checksum1 = md5_1.ComputeHash(fileStream);
+                            byte[] checksum2 = md5_2.ComputeHash(wResp.GetResponseStream());
+                            Assert.AreEqual(checksum1, checksum2);
+                        }
+                    }
+                }
+
+               File.Delete(filePath);
             }
         }
 
