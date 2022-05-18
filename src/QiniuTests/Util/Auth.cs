@@ -8,7 +8,7 @@ namespace QiniuTests.Util
     [TestFixture]
     public class AuthTests
     {
-        static Mac mac = new Mac("ak", "sk");
+        private static Mac mac = new Mac("ak", "sk");
         private static Auth auth = new Auth(mac);
 
         [TestCaseSource(typeof(SignatureV2DataClass), nameof(SignatureV2DataClass.TestCases))]

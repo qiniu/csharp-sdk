@@ -72,6 +72,26 @@ namespace Qiniu.Http
             return Get(url, null, token, binaryMode);
         }
 
+        public HttpResult Get(string url, StringDictionary headers, Auth auth, bool binaryMode = false)
+        {
+            if (headers == null)
+            {
+                headers = new StringDictionary{
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+            }
+
+            if (!headers.ContainsKey("Content-Type"))
+            {
+                headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
+            }
+            
+            addAuthHeaders(ref headers, auth);
+
+            string token = auth.CreateManageTokenV2("GET", url, headers);
+            return Get(url, headers, token, binaryMode);
+        }
+
         /// <summary>
         /// HTTP-GET 方法
         /// </summary>
@@ -201,12 +221,33 @@ namespace Qiniu.Http
         {
             return Post(url, null, token, binaryMode);
         }
-        
+
+        public HttpResult Post(string url, StringDictionary headers, Auth auth, bool binaryMode = false)
+        {
+            if (headers == null)
+            {
+                headers = new StringDictionary{
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+            }
+
+            if (!headers.ContainsKey("Content-Type"))
+            {
+                headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
+            }
+            
+            addAuthHeaders(ref headers, auth);
+
+            string token = auth.CreateManageTokenV2("POST", url, headers);
+            return Post(url, headers, token, binaryMode);
+        }
+
         /// <summary>
         /// HTTP-POST 方法（不包含 body 数据）
         /// </summary>
         /// <param name="url">请求目标 URL</param>
         /// <param name="token">令牌(凭证)[可选 -> 设置为 null]</param>
+        /// <param name="headers">请求 Headers[可选 -> 设置为 null]</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
         /// <returns>HTTP-POST 的响应结果</returns>
         public HttpResult Post(string url, StringDictionary headers, string token, bool binaryMode = false)
@@ -1028,6 +1069,26 @@ namespace Qiniu.Http
             return result;
         }
 
+        public HttpResult PostForm(string url, StringDictionary headers, string data, Auth auth, bool binaryMode = false)
+        {
+            if (headers == null)
+            {
+                headers = new StringDictionary{
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
+            }
+
+            if (!headers.ContainsKey("Content-Type"))
+            {
+                headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
+            }
+            
+            addAuthHeaders(ref headers, auth);
+
+            string token = auth.CreateManageTokenV2("POST", url, headers, data);
+            return PostForm(url, headers, Encoding.UTF8.GetBytes(data), token, binaryMode);
+        }
+
         /// <summary>
         /// HTTP-POST方法(包含表单数据)
         /// </summary>
@@ -1038,6 +1099,20 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST的响应结果</returns>
         public HttpResult PostForm(string url, byte[] data, string token, bool binaryMode = false)
         {
+            return PostForm(url, null, data, token, binaryMode);
+        }
+
+        /// <summary>
+        /// HTTP-POST方法(包含表单数据)
+        /// </summary>
+        /// <param name="url">请求目标URL</param>
+        /// <param name="headers">请求 Headers[可选 -> 设置为 null]</param>
+        /// <param name="data">表单数据</param>
+        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
+        /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
+        /// <returns>HTTP-POST的响应结果</returns>
+        public HttpResult PostForm(string url, StringDictionary headers, byte[] data, string token, bool binaryMode = false)
+        {
             HttpResult result = new HttpResult();
 
             HttpWebRequest wReq = null;
@@ -1046,6 +1121,13 @@ namespace Qiniu.Http
             {
                 wReq = WebRequest.Create(url) as HttpWebRequest;
                 wReq.Method = "POST";
+                if (headers != null)
+                {
+                    foreach (string fieldName in headers.Keys)
+                    {
+                        wReq.Headers.Add(fieldName, headers[fieldName]);
+                    }
+                }
                 if (!string.IsNullOrEmpty(token))
                 {
                     wReq.Headers.Add("Authorization", token);
@@ -1430,5 +1512,29 @@ namespace Qiniu.Http
             }
         }
 
+
+        private void addAuthHeaders(ref StringDictionary headers, Auth auth)
+        {
+            string xQiniuDate = DateTime.UtcNow.ToString("yyyyMMdd'T'HHmmss'Z'");
+            string xQiniuDateDisableEnv = Environment.GetEnvironmentVariable("DISABLE_QINIU_TIMESTAMP_SIGNATURE");
+            if (auth.AuthOptions.DisableQiniuTimestampSignature is bool disableQiniuTimestampSignature)
+            {
+                if (!disableQiniuTimestampSignature)
+                {
+                    headers["X-Qiniu-Date"] = xQiniuDate;
+                }
+            }
+            else if (!String.IsNullOrEmpty(xQiniuDateDisableEnv))
+            {
+                if (xQiniuDateDisableEnv.ToLower() != "true")
+                {
+                    headers["X-Qiniu-Date"] = xQiniuDate;
+                }
+            }
+            else
+            {
+                headers["X-Qiniu-Date"] = xQiniuDate;
+            }
+        }
     }
 }

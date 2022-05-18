@@ -1,21 +1,34 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 
 namespace Qiniu.Util
 {
+    public class AuthOptions
+    {
+        public Nullable<bool> DisableQiniuTimestampSignature { get; set; } = null;
+    }
+
     /// <summary>
     /// Authentication/Authorization
     /// </summary>
     public class Auth
     {
         private Signature signature;
+        public AuthOptions AuthOptions;
 
         /// <summary>
         /// 一般初始化
         /// </summary>
         /// <param name="mac">账号(密钥)</param>
-        public Auth(Mac mac)
+        /// <param name="authOptions">认证时的配置</param>
+        public Auth(Mac mac, AuthOptions authOptions = null)
         {
             signature = new Signature(mac);
+            AuthOptions = authOptions;
+            if (AuthOptions == null)
+            {
+                AuthOptions = new AuthOptions();
+            }
         }
 
         /// <summary>
