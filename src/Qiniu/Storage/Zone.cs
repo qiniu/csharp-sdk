@@ -44,10 +44,8 @@
             RsfHost = "rsf.qbox.me",
             ApiHost = "api.qiniu.com",
             IovipHost = "iovip.qbox.me",
-            SrcUpHosts = new string[] { "up.qiniup.com",
-                "up-nb.qiniup.com", "up-xs.qiniup.com" },
-            CdnUpHosts = new string[] { "upload.qiniup.com",
-                "upload-nb.qiniup.com", "upload-xs.qiniup.com" }
+            SrcUpHosts = new string[] { "up.qiniup.com" },
+            CdnUpHosts = new string[] { "upload.qiniup.com" }
         };
 
         /// <summary>
@@ -72,10 +70,8 @@
             RsfHost = "rsf-z2.qbox.me",
             ApiHost = "api-z2.qiniu.com",
             IovipHost = "iovip-z2.qbox.me",
-            SrcUpHosts = new string[] { "up-z2.qiniup.com",
-                "up-gz.qiniup.com", "up-fs.qiniup.com" },
-            CdnUpHosts = new string[] { "upload-z2.qiniup.com",
-                "upload-gz.qiniup.com", "upload-fs.qiniup.com" }
+            SrcUpHosts = new string[] { "up-z2.qiniup.com" },
+            CdnUpHosts = new string[] { "upload-z2.qiniup.com" }
         };
 
         /// <summary>
