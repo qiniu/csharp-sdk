@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 #if WINDOWS_UWP
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
@@ -121,6 +124,81 @@ namespace Qiniu.Util
         {
             byte[] data = Encoding.UTF8.GetBytes(body);
             return SignRequest(url, data);
+        }
+
+        /// <summary>
+        /// HTTP 请求签名 V2 版本（Qiniu 签名），详见：https://developer.qiniu.com/kodo/1201/access-token
+        /// </summary>
+        /// <param name="method">请求的方法，GET, POST 等。支持非全大写，内部将自动转换，例如：Get -> GET</param>
+        /// <param name="url">请求目标的URL</param>
+        /// <param name="headers">请求的 Header，支持非规范化的字段名，内部自动转换，例如：CONTENT-TYPE -> Content-Type</param>
+        /// <param name="body">请求的主体数据，要求 UTF-8 编码</param>
+        /// <returns>签名结果，但不包括 Qiniu 这一开头，例如："access_key:token"</returns>
+        public string SignRequestV2(string method, string url, StringDictionary headers, string body)
+        {
+            Dictionary<string, string> canonicalHeaders = new Dictionary<string, string>();
+
+            if (headers != null)
+            {
+                foreach (string fieldName in headers.Keys)
+                {
+                    canonicalHeaders.Add(StringHelper.CanonicalMimeHeaderKey(fieldName), headers[fieldName]);
+                }
+            }
+
+            Uri parsedUrl = new Uri(url);
+            StringBuilder strToSignBuilder = new StringBuilder();
+            strToSignBuilder.AppendFormat("{0} {1}", method.ToUpper(), parsedUrl.PathAndQuery);
+
+            // add Host
+            strToSignBuilder.AppendFormat("\nHost: {0}", parsedUrl.Host);
+
+            // add Content-Type
+            if (canonicalHeaders.ContainsKey("Content-Type"))
+            {
+                strToSignBuilder.AppendFormat("\nContent-Type: {0}", canonicalHeaders["Content-Type"]);
+            }
+
+            // add Headers
+            if (canonicalHeaders.Count > 0)
+            {
+                List<string> qiniuHeaderNames = canonicalHeaders.Keys.ToList()
+                    .Where(k => k.StartsWith("X-Qiniu-") && k.Length > "X-Qiniu-".Length).ToList();
+                qiniuHeaderNames.Sort();
+                foreach (var headerName in qiniuHeaderNames)
+                {
+                    strToSignBuilder.AppendFormat("\n{0}: {1}", headerName, canonicalHeaders[headerName]);
+                }
+            }
+
+            // add new lines
+            strToSignBuilder.Append("\n\n");
+
+            // add Body
+            if (canonicalHeaders.ContainsKey("Content-Type") && canonicalHeaders["Content-Type"] != "application/octet-stream")
+            {
+                strToSignBuilder.Append(body);
+            }
+
+            // calculate sign
+            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
+            byte[] digest = hmac.ComputeHash(Encoding.UTF8.GetBytes(strToSignBuilder.ToString()));
+            string digestBase64 = Base64.UrlSafeBase64Encode(digest);
+
+            return string.Format("{0}:{1}", mac.AccessKey, digestBase64);
+        }
+
+        /// <summary>
+        /// HTTP 请求签名 V2 版本（Qiniu 签名），详见：https://developer.qiniu.com/kodo/1201/access-token
+        /// </summary>
+        /// <param name="method">请求的方法，GET, POST 等。支持非全大写，内部将自动转换，例如：Get -> GET</param>
+        /// <param name="url">请求目标的URL</param>
+        /// <param name="headers">请求的 Header，支持非规范化的字段名，内部自动转换，例如：CONTENT-TYPE -> Content-Type</param>
+        /// <param name="body">请求的主体数据，要求 UTF-8 编码</param>
+        /// <returns>签名结果，但不包括 Qiniu 这一开头，例如："access_key:token"</returns>
+        public string SignRequestV2(string method, string url, StringDictionary headers, byte[] body)
+        {
+            return SignRequestV2(method, url, headers, Encoding.UTF8.GetString(body));
         }
     }
 }
