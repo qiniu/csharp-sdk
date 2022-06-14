@@ -16,7 +16,7 @@ namespace Qiniu.Storage
         /// <summary>
         /// 默认数据处理域名
         /// </summary>
-        public static string DefaultApiHost = "api.qiniu.com";
+        public static string DefaultApiHost = "api.qiniuapi.com";
         /// <summary>
         /// 空间所在的区域(Zone)
         /// </summary>
