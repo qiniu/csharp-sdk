@@ -79,6 +79,18 @@ namespace Qiniu.Storage
                             zone.RsHost = "rs-as0.qiniu.com";
                             zone.RsfHost = "rsf-as0.qiniu.com";
                         }
+                        else if (zone.IovipHost.Contains("cn-east-2"))
+                        {
+                            zone.ApiHost = "api-cn-east-2.qiniuapi.com";
+                            zone.RsHost = "rs-cn-east-2.qiniuapi.com";
+                            zone.RsfHost = "rsf-cn-east-2.qiniuapi.com";
+                        }
+                        else if (zone.IovipHost.Contains("ap-northeast-1"))
+                        {
+                            zone.ApiHost = "api-ap-northeast-1.qiniuapi.com";
+                            zone.RsHost = "rs-ap-northeast-1.qiniuapi.com";
+                            zone.RsfHost = "rsf-ap-northeast-1.qiniuapi.com";
+                        }
                         else
                         {
                             zone.ApiHost = "api.qiniu.com";
