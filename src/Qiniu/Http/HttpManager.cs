@@ -114,7 +114,10 @@ namespace Qiniu.Http
                 {
                     foreach (string fieldName in headers.Keys)
                     {
-                        wReq.Headers.Add(fieldName, headers[fieldName]);
+                        if (!WebHeaderCollection.IsRestricted(fieldName))
+                        {
+                            wReq.Headers.Add(fieldName, headers[fieldName]);
+                        }
                     }
 
                     if (headers.ContainsKey("Content-Type"))
@@ -264,7 +267,10 @@ namespace Qiniu.Http
                 {
                     foreach (string fieldName in headers.Keys)
                     {
-                        wReq.Headers.Add(fieldName, headers[fieldName]);
+                        if (!WebHeaderCollection.IsRestricted(fieldName))
+                        {
+                            wReq.Headers.Add(fieldName, headers[fieldName]);
+                        }
                     }
 
                     if (headers.ContainsKey("Content-Type"))
@@ -1125,7 +1131,10 @@ namespace Qiniu.Http
                 {
                     foreach (string fieldName in headers.Keys)
                     {
-                        wReq.Headers.Add(fieldName, headers[fieldName]);
+                        if (!WebHeaderCollection.IsRestricted(fieldName))
+                        {
+                            wReq.Headers.Add(fieldName, headers[fieldName]);
+                        }
                     }
                 }
                 if (!string.IsNullOrEmpty(token))
