@@ -112,14 +112,15 @@ namespace Qiniu.Http
                 wReq.Method = "GET";
                 if (headers != null)
                 {
-                    foreach (string fieldName in headers.Keys)
-                    {
-                        wReq.Headers.Add(fieldName, headers[fieldName]);
-                    }
-
                     if (headers.ContainsKey("Content-Type"))
                     {
                         wReq.ContentType = headers["Content-Type"];
+                        headers.Remove("Content-Type");
+                    }
+
+                    foreach (string fieldName in headers.Keys)
+                    {
+                        wReq.Headers.Add(fieldName, headers[fieldName]);
                     }
                 }
                 if (!string.IsNullOrEmpty(token))
@@ -262,14 +263,15 @@ namespace Qiniu.Http
                 wReq.Method = "POST";
                 if (headers != null)
                 {
-                    foreach (string fieldName in headers.Keys)
-                    {
-                        wReq.Headers.Add(fieldName, headers[fieldName]);
-                    }
-
                     if (headers.ContainsKey("Content-Type"))
                     {
                         wReq.ContentType = headers["Content-Type"];
+                        headers.Remove("Content-Type");
+                    }
+
+                    foreach (string fieldName in headers.Keys)
+                    {
+                        wReq.Headers.Add(fieldName, headers[fieldName]);
                     }
                 }
                 if (!string.IsNullOrEmpty(token))
