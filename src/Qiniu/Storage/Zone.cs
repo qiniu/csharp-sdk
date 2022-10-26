@@ -1,7 +1,7 @@
 ﻿namespace Qiniu.Storage
 {
     /// <summary>
-    /// 目前已支持的区域：华东/华北/华南/北美/新加坡
+    /// 目前已支持的区域：华东/华东2/华北/华南/北美/新加坡/首尔
     /// </summary>
     public class Zone
     {
@@ -48,6 +48,19 @@
                 "up-nb.qiniup.com", "up-xs.qiniup.com" },
             CdnUpHosts = new string[] { "upload.qiniup.com",
                 "upload-nb.qiniup.com", "upload-xs.qiniup.com" }
+        };
+
+        /// <summary>
+        /// 华东-浙江2
+        /// </summary>
+        public static Zone ZONE_CN_East_2 = new Zone()
+        {
+            RsHost = "rs-cn-east-2.qiniuapi.com",
+            RsfHost = "rsf-cn-east-2.qiniuapi.com",
+            ApiHost = "api-cn-east-2.qiniuapi.com",
+            IovipHost = "iovip-cn-east-2.qiniuio.com",
+            SrcUpHosts = new string[] { "up-cn-east-2.qiniup.com" },
+            CdnUpHosts = new string[] { "upload-cn-east-2.qiniup.com" }
         };
 
         /// <summary>
@@ -102,6 +115,19 @@
             IovipHost = "iovip-as0.qbox.me",
             SrcUpHosts = new string[] { "up-as0.qiniup.com" },
             CdnUpHosts = new string[] { "upload-as0.qiniup.com" }
+        };
+
+        /// <summary>
+        /// 亚太-首尔
+        /// </summary>
+        public static Zone ZONE_AP_Seoul = new Zone()
+        {
+            RsHost = "rs-ap-northeast-1.qiniuapi.com",
+            RsfHost = "rsf-ap-northeast-1.qiniuapi.com",
+            ApiHost = "api-ap-northeast-1.qiniuapi.com",
+            IovipHost = "iovip-ap-northeast-1.qiniuio.com",
+            SrcUpHosts = new string[] { "up-ap-northeast-1.qiniup.com" },
+            CdnUpHosts = new string[] { "upload-ap-northeast-1.qiniup.com" }
         };
     }
 }
