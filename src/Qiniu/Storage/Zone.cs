@@ -42,12 +42,10 @@
         {
             RsHost = "rs.qbox.me",
             RsfHost = "rsf.qbox.me",
-            ApiHost = "api.qiniu.com",
+            ApiHost = "api.qiniuapi.com",
             IovipHost = "iovip.qbox.me",
-            SrcUpHosts = new string[] { "up.qiniup.com",
-                "up-nb.qiniup.com", "up-xs.qiniup.com" },
-            CdnUpHosts = new string[] { "upload.qiniup.com",
-                "upload-nb.qiniup.com", "upload-xs.qiniup.com" }
+            SrcUpHosts = new string[] { "up.qiniup.com" },
+            CdnUpHosts = new string[] { "upload.qiniup.com" }
         };
 
         /// <summary>
@@ -70,7 +68,7 @@
         {
             RsHost = "rs-z1.qbox.me",
             RsfHost = "rsf-z1.qbox.me",
-            ApiHost = "api-z1.qiniu.com",
+            ApiHost = "api-z1.qiniuapi.com",
             IovipHost = "iovip-z1.qbox.me",
             SrcUpHosts = new string[] { "up-z1.qiniup.com" },
             CdnUpHosts = new string[] { "upload-z1.qiniup.com" }
@@ -83,12 +81,10 @@
         {
             RsHost = "rs-z2.qbox.me",
             RsfHost = "rsf-z2.qbox.me",
-            ApiHost = "api-z2.qiniu.com",
+            ApiHost = "api-z2.qiniuapi.com",
             IovipHost = "iovip-z2.qbox.me",
-            SrcUpHosts = new string[] { "up-z2.qiniup.com",
-                "up-gz.qiniup.com", "up-fs.qiniup.com" },
-            CdnUpHosts = new string[] { "upload-z2.qiniup.com",
-                "upload-gz.qiniup.com", "upload-fs.qiniup.com" }
+            SrcUpHosts = new string[] { "up-z2.qiniup.com" },
+            CdnUpHosts = new string[] { "upload-z2.qiniup.com" }
         };
 
         /// <summary>
@@ -98,7 +94,7 @@
         {
             RsHost = "rs-na0.qbox.me",
             RsfHost = "rsf-na0.qbox.me",
-            ApiHost = "api-na0.qiniu.com",
+            ApiHost = "api-na0.qiniuapi.com",
             IovipHost = "iovip-na0.qbox.me",
             SrcUpHosts = new string[] { "up-na0.qiniup.com" },
             CdnUpHosts = new string[] { "upload-na0.qiniup.com" }
@@ -111,7 +107,7 @@
         {
             RsHost = "rs-as0.qbox.me",
             RsfHost = "rsf-as0.qbox.me",
-            ApiHost = "api-as0.qiniu.com",
+            ApiHost = "api-as0.qiniuapi.com",
             IovipHost = "iovip-as0.qbox.me",
             SrcUpHosts = new string[] { "up-as0.qiniup.com" },
             CdnUpHosts = new string[] { "upload-as0.qiniup.com" }
