@@ -196,6 +196,76 @@ namespace Qiniu.Storage.Tests
         }
 
         [Test]
+        public void SetObjectLifecycleTest()
+        {
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac, config);
+            string newKey = "qiniu-to-set-object-lifecycle.png";
+            HttpResult copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            if (copyRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("copy error: " + copyRet.ToString());
+            }
+            Console.WriteLine(copyRet.ToString());
+            HttpResult ret = bucketManager.SetObjectLifecycle(
+                Bucket,
+                newKey,
+                10,
+                20,
+                30,
+                40);
+            if (ret.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("deleteAfterDays error: " + ret.ToString());
+            }
+            Console.WriteLine(ret.ToString());
+        }
+
+        [Test]
+        public void SetObjectLifecycleCondTest()
+        {
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac, config);
+            string newKey = "qiniu-to-set-object-lifecycle-cond.png";
+            
+            HttpResult copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            if (copyRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("copy error: " + copyRet.ToString());
+            }
+            Console.WriteLine(copyRet.ToString());
+
+            StatResult statRet = bucketManager.Stat(Bucket, newKey);
+            if (statRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("copy error: " + statRet.ToString());
+            }
+            
+            
+            HttpResult ret = bucketManager.SetObjectLifecycle(
+                Bucket,
+                newKey,
+                new Dictionary<string, string>
+                {
+                    { "hash", statRet.Result.Hash },
+                    { "fsize", statRet.Result.Fsize.ToString() }
+                },
+                10,
+                20,
+                30,
+                40);
+            if (ret.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("deleteAfterDays error: " + ret.ToString());
+            }
+            Console.WriteLine(ret.ToString());
+        }
+
+        [Test]
         public void PrefetchTest()
         {
             Config config = new Config();
