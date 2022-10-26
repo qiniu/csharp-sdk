@@ -79,10 +79,10 @@ namespace Qiniu.Storage
         public HttpResult UploadStream(Stream stream, string key, string upToken, PutExtra putExtra)
         {
             HttpResult result = new HttpResult();
-            string encodedObjectName = "";
-            if (putExtra != null && putExtra.Version == "v2")
+            string encodedObjectNameForV2 = "~";
+            if (putExtra != null && putExtra.Version == "v2" && key != null)
             {
-                encodedObjectName = Base64.GetEncodedObjectName(key);
+                encodedObjectNameForV2 = Base64.UrlSafeBase64Encode(key);
             }
 
             //check put extra
@@ -144,7 +144,7 @@ namespace Qiniu.Storage
                         }
                         else if (putExtra.Version == "v2")
                         {
-                            HttpResult res = initReq(encodedObjectName, upToken);
+                            HttpResult res = initReq(encodedObjectNameForV2, upToken);
                             Dictionary<string, string> responseBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(res.Text);
                             if (res.Code != 200)
                             {
@@ -265,7 +265,7 @@ namespace Qiniu.Storage
                             {
 
                                 processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize,
-                                                  encodedObjectName);
+                                                  encodedObjectNameForV2);
                                 //check mkblk results
                                 foreach (int blkIndex in blockMakeResults.Keys)
                                 {
@@ -290,7 +290,7 @@ namespace Qiniu.Storage
                     if (blockDataDict.Count > 0)
                     {
                         processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize,
-                                          encodedObjectName);
+                                          encodedObjectNameForV2);
                         //check mkblk results
                         foreach (int blkIndex in blockMakeResults.Keys)
                         {
@@ -319,7 +319,7 @@ namespace Qiniu.Storage
                         }
                         else if (putExtra.Version == "v2")
                         {
-                            hr = completeParts(key, resumeInfo, key, upToken, putExtra, encodedObjectName);
+                            hr = completeParts(key, resumeInfo, key, upToken, putExtra, encodedObjectNameForV2);
                         } else {
                             throw new Exception("Invalid Version, only supports v1 / v2");
                         }
@@ -701,7 +701,7 @@ namespace Qiniu.Storage
         }
 
         /// <summary>
-        /// 初始化上传任务
+        /// 初始化上传任务，仅用于分片上传 V2
         /// </summary>
         /// <param name="upToken">上传凭证</param>
         /// <param name="encodedObjectName">Base64编码后的资源名</param>
@@ -754,7 +754,7 @@ namespace Qiniu.Storage
         }
 
         /// <summary>
-        /// 根据已上传的所有分片数据创建文件
+        /// 根据已上传的所有分片数据创建文件，仅用于分片上传 V2
         /// </summary>
         /// <param name="fileName">源文件名</param>
         /// <param name="resumeInfo">分片上传记录信息</param>

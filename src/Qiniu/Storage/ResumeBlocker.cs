@@ -16,7 +16,7 @@ namespace Qiniu.Storage
         public object ProgressLock { set; get; }
         public Dictionary<string, long> UploadedBytesDict { set; get; }
         public long FileSize { set; get; }
-        public string encodedObjectName { set; get; }
+        public string encodedObjectName { set; get; } // 仅用于分片上传 V2
 
         public ResumeBlocker(ManualResetEvent doneEvent, byte[] blockBuffer, long blockIndex, string uploadToken,
             PutExtra putExtra, ResumeInfo resumeInfo, Dictionary<long, HttpResult> blockMakeResults,
