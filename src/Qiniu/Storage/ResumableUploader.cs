@@ -79,11 +79,6 @@ namespace Qiniu.Storage
         public HttpResult UploadStream(Stream stream, string key, string upToken, PutExtra putExtra)
         {
             HttpResult result = new HttpResult();
-            string encodedObjectNameForV2 = "~";
-            if (putExtra != null && putExtra.Version == "v2" && key != null)
-            {
-                encodedObjectNameForV2 = Base64.UrlSafeBase64Encode(key);
-            }
 
             //check put extra
             if (putExtra == null)
@@ -109,188 +104,124 @@ namespace Qiniu.Storage
                 //start to upload
                 try
                 {
-                    long uploadedBytes = 0;
-                    long fileSize = stream.Length;
-                    long blockCount = (fileSize + putExtra.PartSize - 1) / putExtra.PartSize;
-                    int partNumber = 1;
-
-                    //check resume record file
+                    // load resume record file
                     ResumeInfo resumeInfo = null;
                     if (File.Exists(putExtra.ResumeRecordFile))
                     {
-
                         resumeInfo = ResumeHelper.Load(putExtra.ResumeRecordFile);
-
-                        if (resumeInfo != null && fileSize == resumeInfo.FileSize)
-                        {
-                            //check whether ctx expired
-                            if (UnixTimestamp.IsContextExpired(resumeInfo.ExpiredAt))
-                            {
-                                resumeInfo = null;
-                            }
-                        }
                     }
-                    if (resumeInfo == null)
+                    if (putExtra.Version == "v1")
                     {
-                        if (putExtra.Version == "v1")
-                        {
-                            resumeInfo = new ResumeInfo()
-                            {
-                                FileSize = fileSize,
-                                BlockCount = blockCount,
-                                Contexts = new string[blockCount],
-                                ExpiredAt = 0,
-                            };
-                        }
-                        else if (putExtra.Version == "v2")
-                        {
-                            HttpResult res = initReq(encodedObjectNameForV2, upToken);
-                            Dictionary<string, string> responseBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(res.Text);
-                            if (res.Code != 200)
-                            {
-                                return res;
-                            }
-
-                            resumeInfo = new ResumeInfo()
-                            {
-                                FileSize = fileSize,
-                                BlockCount = blockCount,
-                                Etags = new Dictionary<string, object>[blockCount],
-                                Uploaded = 0,
-                                ExpiredAt = long.Parse(responseBody["expireAt"]),
-                                UploadId = responseBody["uploadId"]
-                            };
-                        } else {
-                            throw new Exception("Invalid Version, only supports v1 / v2");
-                        }
+                        result = UploadStreamV1(stream, key, upToken, putExtra, resumeInfo);
                     }
-
-                    //calc upload progress
-                    for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                    else if (putExtra.Version == "v2")
                     {
-
-                        if (putExtra.Version == "v1")
-                        {
-                            string context = resumeInfo.Contexts[blockIndex];
-                            if (!string.IsNullOrEmpty(context))
-                            {
-                                uploadedBytes += putExtra.PartSize;
-                            }
-                        }
-                        else if (putExtra.Version == "v2")
-                        {
-                            Dictionary<string, object> etag = resumeInfo.Etags[blockIndex];
-                            if (etag != null)
-                            {
-                                if (blockIndex > 0)
-                                {
-                                    partNumber += 1;
-                                }
-                                uploadedBytes += putExtra.PartSize;
-                                resumeInfo.Uploaded = uploadedBytes;
-                            }
-                        } else {
-                            throw new Exception("Invalid Version, only supports v1 / v2");
-                        }
-
+                        result = UploadStreamV2(stream, key, upToken, putExtra, resumeInfo);
+                    } else {
+                        throw new Exception("Invalid Version, only supports v1 / v2");
                     }
-
-                    //set upload progress
-                    putExtra.ProgressHandler(uploadedBytes, fileSize);
-
-                    //init block upload error
-                    //check not finished blocks to upload
-                    UploadControllerAction upCtrl = putExtra.UploadController();
-                    ManualResetEvent manualResetEvent = new ManualResetEvent(false);
-                    Dictionary<long, byte[]> blockDataDict = new Dictionary<long, byte[]>();
-                    Dictionary<long, HttpResult> blockMakeResults = new Dictionary<long, HttpResult>();
-                    Dictionary<string, long> uploadedBytesDict = new Dictionary<string, long>();
-                    uploadedBytesDict.Add("UploadProgress", uploadedBytes);
-                    byte[] blockBuffer = new byte[putExtra.PartSize];
-                    for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.StackTrace);
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendFormat("[{0}] [ResumableUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                    Exception e = ex;
+                    while (e != null)
                     {
-                        string context = null;
-                        if (putExtra.Version == "v1")
+                        sb.Append(e.Message + " ");
+                        e = e.InnerException;
+                    }
+                    sb.AppendLine();
+
+                    result.RefCode = (int)HttpCode.USER_UNDEF;
+                    result.RefText += sb.ToString();
+                }
+            }
+
+            return result;
+        }
+
+        private HttpResult UploadStreamV1(Stream stream, string key, string upToken, PutExtra putExtra, ResumeInfo resumeInfo)
+        {
+            HttpResult result = new HttpResult();
+            bool isResumeUpload = resumeInfo != null;
+            try
+            {
+                string encodedObjectName = "";
+                long uploadedBytes = 0;
+                long fileSize = stream.Length;
+                long blockCount = (fileSize + putExtra.PartSize - 1) / putExtra.PartSize;
+                if (resumeInfo == null)
+                {
+                    resumeInfo = new ResumeInfo()
+                    {
+                        FileSize = fileSize,
+                        BlockCount = blockCount,
+                        Contexts = new string[blockCount],
+                        ContextsExpiredAt = new long[blockCount],
+                        ExpiredAt = 0,
+                    };
+                }
+
+                //init block upload error
+                UploadControllerAction upCtrl = putExtra.UploadController();
+                ManualResetEvent manualResetEvent = new ManualResetEvent(false);
+                Dictionary<long, byte[]> blockDataDict = new Dictionary<long, byte[]>();
+                Dictionary<long, HttpResult> blockMakeResults = new Dictionary<long, HttpResult>();
+                Dictionary<string, long> uploadedBytesDict = new Dictionary<string, long>();
+                uploadedBytesDict.Add("UploadProgress", uploadedBytes);
+                byte[] blockBuffer = new byte[putExtra.PartSize];
+
+                //check not finished blocks to upload
+                for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                {
+                    string context = resumeInfo.Contexts[blockIndex];
+                    long contextExpiredAt = resumeInfo.ContextsExpiredAt[blockIndex];
+                    if (!string.IsNullOrEmpty(context) && !UnixTimestamp.IsContextExpired(contextExpiredAt))
+                    {
+                        uploadedBytesDict["UploadProgress"] += putExtra.PartSize;
+                        continue;
+                    }
+                    //check upload controller action before each chunk
+                    while (true)
+                    {
+                        upCtrl = putExtra.UploadController();
+
+                        if (upCtrl == UploadControllerAction.Aborted)
                         {
-                            context = resumeInfo.Contexts[blockIndex];
+                            result.Code = (int)HttpCode.USER_CANCELED;
+                            result.RefCode = (int)HttpCode.USER_CANCELED;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                            manualResetEvent.Set();
+                            return result;
                         }
-                        else if (putExtra.Version == "v2")
+                        else if (upCtrl == UploadControllerAction.Suspended)
                         {
-                            Dictionary<string, object> etag = resumeInfo.Etags[blockIndex];
-                            if (etag != null && etag.Count > 0)
-                            {
-                                context = "~";
-                            }
-                        } else {
-                            throw new Exception("Invalid Version, only supports v1 / v2");
+                            result.RefCode = (int)HttpCode.USER_PAUSED;
+                            result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is paused\n",
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                            manualResetEvent.WaitOne(1000);
                         }
-
-                        if (string.IsNullOrEmpty(context))
+                        else if (upCtrl == UploadControllerAction.Activated)
                         {
-                            //check upload controller action before each chunk
-                            while (true)
-                            {
-                                upCtrl = putExtra.UploadController();
-
-                                if (upCtrl == UploadControllerAction.Aborted)
-                                {
-                                    result.Code = (int)HttpCode.USER_CANCELED;
-                                    result.RefCode = (int)HttpCode.USER_CANCELED;
-                                    result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted\n",
-                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                    manualResetEvent.Set();
-                                    return result;
-                                }
-                                else if (upCtrl == UploadControllerAction.Suspended)
-                                {
-                                    result.RefCode = (int)HttpCode.USER_PAUSED;
-                                    result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is paused\n",
-                                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                                    manualResetEvent.WaitOne(1000);
-                                }
-                                else if (upCtrl == UploadControllerAction.Activated)
-                                {
-                                    break;
-                                }
-                            }
-
-                            long offset = blockIndex * putExtra.PartSize;
-                            stream.Seek(offset, SeekOrigin.Begin);
-                            int blockLen = stream.Read(blockBuffer, 0, putExtra.PartSize);
-                            byte[] blockData = new byte[blockLen];
-                            Array.Copy(blockBuffer, blockData, blockLen);
-                            blockDataDict.Add(blockIndex, blockData);
-
-                            if (blockDataDict.Count == putExtra.BlockUploadThreads)
-                            {
-
-                                processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize,
-                                                  encodedObjectNameForV2);
-                                //check mkblk results
-                                foreach (int blkIndex in blockMakeResults.Keys)
-                                {
-                                    HttpResult mkblkRet = blockMakeResults[blkIndex];
-                                    if (mkblkRet.Code != 200)
-                                    {
-                                        result = mkblkRet;
-                                        manualResetEvent.Set();
-                                        return result;
-                                    }
-                                }
-                                blockDataDict.Clear();
-                                blockMakeResults.Clear();
-                                if (!string.IsNullOrEmpty(putExtra.ResumeRecordFile))
-                                {
-                                    ResumeHelper.Save(resumeInfo, putExtra.ResumeRecordFile);
-                                }
-                            }
+                            break;
                         }
                     }
 
-                    if (blockDataDict.Count > 0)
+                    long offset = blockIndex * putExtra.PartSize;
+                    stream.Seek(offset, SeekOrigin.Begin);
+                    int blockLen = stream.Read(blockBuffer, 0, putExtra.PartSize);
+                    byte[] blockData = new byte[blockLen];
+                    Array.Copy(blockBuffer, blockData, blockLen);
+                    blockDataDict.Add(blockIndex, blockData);
+
+                    if (blockDataDict.Count == putExtra.BlockUploadThreads)
                     {
+
                         processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize,
-                                          encodedObjectNameForV2);
+                            encodedObjectName);
                         //check mkblk results
                         foreach (int blkIndex in blockMakeResults.Keys)
                         {
@@ -309,63 +240,330 @@ namespace Qiniu.Storage
                             ResumeHelper.Save(resumeInfo, putExtra.ResumeRecordFile);
                         }
                     }
-
-                    if (upCtrl == UploadControllerAction.Activated)
+                }
+                
+                
+                if (blockDataDict.Count > 0)
+                {
+                    processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize,
+                        encodedObjectName);
+                    //check mkblk results
+                    foreach (int blkIndex in blockMakeResults.Keys)
                     {
-                        HttpResult hr = new HttpResult();;
-                        if (putExtra.Version == "v1")
+                        HttpResult mkblkRet = blockMakeResults[blkIndex];
+                        if (mkblkRet.Code != 200)
                         {
-                            hr = MakeFile(key, fileSize, key, upToken, putExtra, resumeInfo.Contexts);
+                            result = mkblkRet;
+                            manualResetEvent.Set();
+                            return result;
                         }
-                        else if (putExtra.Version == "v2")
+                    }
+                    blockDataDict.Clear();
+                    blockMakeResults.Clear();
+                    if (!string.IsNullOrEmpty(putExtra.ResumeRecordFile))
+                    {
+                        ResumeHelper.Save(resumeInfo, putExtra.ResumeRecordFile);
+                    }
+                }
+
+                if (upCtrl == UploadControllerAction.Activated)
+                {
+                    HttpResult hr = new HttpResult();
+                    hr = MakeFile(key, fileSize, key, upToken, putExtra, resumeInfo.Contexts);
+
+                    if (hr.Code != (int)HttpCode.OK)
+                    {
+                        result.Shadow(hr);
+                        result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
+                    }
+
+                    if (File.Exists(putExtra.ResumeRecordFile))
+                    {
+                        File.Delete(putExtra.ResumeRecordFile);
+                    }
+                    result.Shadow(hr);
+                    result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), putExtra.ResumeRecordFile, key);
+                }
+                else
+                {
+                    result.Code = (int)HttpCode.USER_CANCELED;
+                    result.RefCode = (int)HttpCode.USER_CANCELED;
+                    result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted, mkfile\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                }
+
+                manualResetEvent.Set();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [ResumableUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_UNDEF;
+                result.RefText += sb.ToString();
+            }
+
+            if (isResumeUpload && result.Code == (int)HttpCode.CONTEXT_EXPIRED)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                return UploadStreamV1(stream, key, upToken, putExtra, null);
+            }
+
+            return result;
+        }
+
+        private HttpResult UploadStreamV2(Stream stream, string key, string upToken, PutExtra putExtra, ResumeInfo resumeInfo)
+        {
+            HttpResult result = new HttpResult();
+            bool isResumeUpload = resumeInfo != null;
+
+            try
+            {
+                string encodedObjectName = "~";
+                if (key != null)
+                {
+                    encodedObjectName = Base64.GetEncodedObjectName(key);
+                }
+                long uploadedBytes = 0;
+                long fileSize = stream.Length;
+                long blockCount = (fileSize + putExtra.PartSize - 1) / putExtra.PartSize;
+
+                if (resumeInfo == null || UnixTimestamp.IsContextExpired(resumeInfo.ExpiredAt))
+                {
+                    HttpResult res = initReq(encodedObjectName, upToken);
+                    Dictionary<string, string> responseBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(res.Text);
+                    if (res.Code != 200)
+                    {
+                        return res;
+                    }
+
+                    resumeInfo = new ResumeInfo()
+                    {
+                        FileSize = fileSize,
+                        BlockCount = blockCount,
+                        Etags = new Dictionary<string, object>[blockCount],
+                        Uploaded = 0,
+                        ExpiredAt = long.Parse(responseBody["expireAt"]),
+                        UploadId = responseBody["uploadId"]
+                    };
+                }
+
+                //calc upload progress
+                for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                {
+                    Dictionary<string, object> etag = resumeInfo.Etags[blockIndex];
+                    if (etag != null)
+                    {
+                        uploadedBytes += putExtra.PartSize;
+                        resumeInfo.Uploaded = uploadedBytes;
+                    }
+                }
+                //set upload progress
+                putExtra.ProgressHandler(uploadedBytes, fileSize);
+
+                
+                //init block upload error
+                //check not finished blocks to upload
+                UploadControllerAction upCtrl = putExtra.UploadController();
+                ManualResetEvent manualResetEvent = new ManualResetEvent(false);
+                Dictionary<long, byte[]> blockDataDict = new Dictionary<long, byte[]>();
+                Dictionary<long, HttpResult> blockMakeResults = new Dictionary<long, HttpResult>();
+                Dictionary<string, long> uploadedBytesDict = new Dictionary<string, long>();
+                uploadedBytesDict.Add("UploadProgress", uploadedBytes);
+                byte[] blockBuffer = new byte[putExtra.PartSize];
+                for (long blockIndex = 0; blockIndex < blockCount; blockIndex++)
+                {
+                    string context = null;
+                    Dictionary<string, object> etag = resumeInfo.Etags[blockIndex];
+                    if (etag != null && etag.Count > 0)
+                    {
+                        context = "~";
+                    }
+
+                    if (string.IsNullOrEmpty(context))
+                    {
+                        //check upload controller action before each chunk
+                        while (true)
                         {
-                            hr = completeParts(key, resumeInfo, key, upToken, putExtra, encodedObjectNameForV2);
-                        } else {
-                            throw new Exception("Invalid Version, only supports v1 / v2");
+                            upCtrl = putExtra.UploadController();
+
+                            if (upCtrl == UploadControllerAction.Aborted)
+                            {
+                                result.Code = (int)HttpCode.USER_CANCELED;
+                                result.RefCode = (int)HttpCode.USER_CANCELED;
+                                result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted\n",
+                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                                manualResetEvent.Set();
+                                return result;
+                            }
+                            else if (upCtrl == UploadControllerAction.Suspended)
+                            {
+                                result.RefCode = (int)HttpCode.USER_PAUSED;
+                                result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is paused\n",
+                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                                manualResetEvent.WaitOne(1000);
+                            }
+                            else if (upCtrl == UploadControllerAction.Activated)
+                            {
+                                break;
+                            }
                         }
 
-                        if (hr.Code != (int)HttpCode.OK)
-                        {
-                            result.Shadow(hr);
-                            result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
-                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
-                        }
+                        long offset = blockIndex * putExtra.PartSize;
+                        stream.Seek(offset, SeekOrigin.Begin);
+                        int blockLen = stream.Read(blockBuffer, 0, putExtra.PartSize);
+                        byte[] blockData = new byte[blockLen];
+                        Array.Copy(blockBuffer, blockData, blockLen);
+                        blockDataDict.Add(blockIndex, blockData);
 
+                        if (blockDataDict.Count == putExtra.BlockUploadThreads)
+                        {
+
+                            processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize,
+                                              encodedObjectName);
+                            //check mkblk results
+                            foreach (int blkIndex in blockMakeResults.Keys)
+                            {
+                                HttpResult mkblkRet = blockMakeResults[blkIndex];
+                                if (mkblkRet.Code == (int) HttpCode.FILE_NOT_EXIST)
+                                {
+                                    if (File.Exists(putExtra.ResumeRecordFile))
+                                    {
+                                        File.Delete(putExtra.ResumeRecordFile);
+                                    }
+                                }
+                                if (isResumeUpload && mkblkRet.Code == (int)HttpCode.FILE_NOT_EXIST)
+                                {
+                                    stream.Seek(0, SeekOrigin.Begin);
+                                    return UploadStreamV2(stream, key, upToken, putExtra, null);
+                                }
+                                if (mkblkRet.Code != (int)HttpCode.OK)
+                                {
+                                    result = mkblkRet;
+                                    manualResetEvent.Set();
+                                    return result;
+                                }
+                            }
+                            blockDataDict.Clear();
+                            blockMakeResults.Clear();
+                            if (!string.IsNullOrEmpty(putExtra.ResumeRecordFile))
+                            {
+                                ResumeHelper.Save(resumeInfo, putExtra.ResumeRecordFile);
+                            }
+                        }
+                    }
+                }
+
+                if (blockDataDict.Count > 0)
+                {
+                    processMakeBlocks(blockDataDict, upToken, putExtra, resumeInfo, blockMakeResults, uploadedBytesDict, fileSize,
+                                      encodedObjectName);
+                    //check mkblk results
+                    foreach (int blkIndex in blockMakeResults.Keys)
+                    {
+                        HttpResult mkblkRet = blockMakeResults[blkIndex];
+
+                        if (mkblkRet.Code == (int) HttpCode.FILE_NOT_EXIST)
+                        {
+                            if (File.Exists(putExtra.ResumeRecordFile))
+                            {
+                                File.Delete(putExtra.ResumeRecordFile);
+                            }
+                        }
+                        if (isResumeUpload && mkblkRet.Code == (int)HttpCode.FILE_NOT_EXIST)
+                        {
+                            stream.Seek(0, SeekOrigin.Begin);
+                            return UploadStreamV2(stream, key, upToken, putExtra, null);
+                        }
+                        if (mkblkRet.Code != (int)HttpCode.OK)
+                        {
+                            result = mkblkRet;
+                            manualResetEvent.Set();
+                            return result;
+                        }
+                    }
+                    blockDataDict.Clear();
+                    blockMakeResults.Clear();
+                    if (!string.IsNullOrEmpty(putExtra.ResumeRecordFile))
+                    {
+                        ResumeHelper.Save(resumeInfo, putExtra.ResumeRecordFile);
+                    }
+                }
+
+                if (upCtrl == UploadControllerAction.Activated)
+                {
+                    HttpResult hr = new HttpResult();;
+                    hr = completeParts(key, resumeInfo, key, upToken, putExtra, encodedObjectName);
+
+                    if (result.Code == (int) HttpCode.FILE_NOT_EXIST)
+                    {
                         if (File.Exists(putExtra.ResumeRecordFile))
                         {
                             File.Delete(putExtra.ResumeRecordFile);
                         }
+                    }
+                    if (isResumeUpload && result.Code == (int)HttpCode.FILE_NOT_EXIST)
+                    {
+                        stream.Seek(0, SeekOrigin.Begin);
+                        return UploadStreamV2(stream, key, upToken, putExtra, null);
+                    }
+
+                    if (hr.Code != (int)HttpCode.OK)
+                    {
                         result.Shadow(hr);
-                        result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), putExtra.ResumeRecordFile, key);
-                    }
-                    else
-                    {
-                        result.Code = (int)HttpCode.USER_CANCELED;
-                        result.RefCode = (int)HttpCode.USER_CANCELED;
-                        result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted, mkfile\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                        result.RefText += string.Format("[{0}] [ResumableUpload] Error: mkfile: code = {1}, text = {2}\n",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), hr.Code, hr.Text);
                     }
 
-                    manualResetEvent.Set();
-                    return result;
+                    if (File.Exists(putExtra.ResumeRecordFile))
+                    {
+                        File.Delete(putExtra.ResumeRecordFile);
+                    }
+                    result.Shadow(hr);
+                    result.RefText += string.Format("[{0}] [ResumableUpload] Uploaded: \"{1}\" ==> \"{2}\"\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), putExtra.ResumeRecordFile, key);
                 }
-                catch (Exception ex)
+                else
                 {
-                    Console.WriteLine(ex.StackTrace);
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendFormat("[{0}] [ResumableUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    Exception e = ex;
-                    while (e != null)
-                    {
-                        sb.Append(e.Message + " ");
-                        e = e.InnerException;
-                    }
-                    sb.AppendLine();
-
-                    result.RefCode = (int)HttpCode.USER_UNDEF;
-                    result.RefText += sb.ToString();
+                    result.Code = (int)HttpCode.USER_CANCELED;
+                    result.RefCode = (int)HttpCode.USER_CANCELED;
+                    result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted, mkfile\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
                 }
+
+                manualResetEvent.Set();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [ResumableUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.RefCode = (int)HttpCode.USER_UNDEF;
+                result.RefText += sb.ToString();
+            }
+
+            if (isResumeUpload && result.Code == (int)HttpCode.FILE_NOT_EXIST)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                return UploadStreamV2(stream, key, upToken, putExtra, null);
             }
 
             return result;
@@ -407,7 +605,7 @@ namespace Qiniu.Storage
         /// <summary>
         /// 创建块(携带首片数据),v1检查CRC32,v2检查md5
         /// </summary>
-        /// <param name="resumeBlockerObj">创建分片上次的块请求</param>
+        /// <param name="resumeBlockerObj">创建分片上传的块请求</param>
         private void MakeBlock(object resumeBlockerObj)
         {
             ResumeBlocker resumeBlocker = (ResumeBlocker)resumeBlockerObj;
@@ -517,7 +715,7 @@ namespace Qiniu.Storage
                                 {
                                     //write the mkblk context
                                     resumeInfo.Contexts[blockIndex] = rc.Ctx;
-                                    resumeInfo.ExpiredAt = rc.ExpiredAt;
+                                    resumeInfo.ContextsExpiredAt[blockIndex] = rc.ExpiredAt;
                                     lock (progressLock)
                                     {
                                         uploadedBytesDict["UploadProgress"] += blockSize;
@@ -525,6 +723,7 @@ namespace Qiniu.Storage
                                     putExtra.ProgressHandler(uploadedBytesDict["UploadProgress"], fileSize);
                                 }
                             }
+                            // TODO: unreachable? bug?
                             else if (putExtra.Version == "v2")
                             {
                                 result.RefText += string.Format("[{0}] JSON Decode Error: text = {1}",

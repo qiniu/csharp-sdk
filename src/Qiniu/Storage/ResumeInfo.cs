@@ -26,6 +26,12 @@ namespace Qiniu.Storage
         public string[] Contexts { get; set; }
 
         /// <summary>
+        /// 上下文信息过期列表，与 context 配合使用
+        /// </summary>
+        [JsonProperty("contextsExpiredAt")]
+        public long[] ContextsExpiredAt { get; set; }
+
+        /// <summary>
         /// Ctx过期时间戳（单位秒）
         /// </summary>
         [JsonProperty("expiredAt")]
