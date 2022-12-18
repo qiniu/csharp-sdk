@@ -26,7 +26,6 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(statRet.Result.Hash);
             Console.WriteLine(statRet.Result.MimeType);
             Console.WriteLine(statRet.Result.Fsize);
-            Console.WriteLine(statRet.Result.MimeType);
             Console.WriteLine(statRet.Result.FileType);
         }
 
@@ -98,6 +97,25 @@ namespace Qiniu.Storage.Tests
                 Assert.Fail("change mime error: " + ret.ToString());
             }
             Console.WriteLine(ret.ToString());
+        }
+
+        [Test]
+        public void ChangeStatusTest()
+        {
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac, config);
+            HttpResult ret = bucketManager.ChangeStatus(Bucket, "qiniu.png", 1);
+            if (ret.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("change status error: " + ret.ToString());
+            }
+            ret = bucketManager.ChangeStatus(Bucket, "qiniu.png", 0);
+            if (ret.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("change status error: " + ret.ToString());
+            }
         }
 
         [Test]
