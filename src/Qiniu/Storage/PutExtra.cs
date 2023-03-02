@@ -31,7 +31,8 @@ namespace Qiniu.Storage
         /// <summary>
         /// 最大重试次数
         /// </summary>
-        public int MaxRetryTimes { set; get; }
+        /// 默认值应与 <see cref="Config.MaxRetryTimes"/> 一致
+        public int MaxRetryTimes { set; get; } = 3;
 
         /// <summary>
         /// 块并发上传的线程数量

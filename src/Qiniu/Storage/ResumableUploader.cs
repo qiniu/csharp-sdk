@@ -84,6 +84,7 @@ namespace Qiniu.Storage
             if (putExtra == null)
             {
                 putExtra = new PutExtra();
+                putExtra.MaxRetryTimes = config.MaxRetryTimes;
             }
             if (putExtra.ProgressHandler == null)
             {
@@ -588,7 +589,7 @@ namespace Qiniu.Storage
                 byte[] blockData = blockDataDict[blockIndex];
                 ResumeBlocker resumeBlocker = new ResumeBlocker(doneEvent, blockData, blockIndex, upToken, putExtra,
                     resumeInfo, blockMakeResults, progressLock, uploadedBytesDict, fileSize, encodedObjectName);
-                ThreadPool.QueueUserWorkItem(new WaitCallback(this.MakeBlock), resumeBlocker);
+                ThreadPool.QueueUserWorkItem(new WaitCallback(this.MakeBlockWithRetry), resumeBlocker);
             }
 
             try
@@ -602,11 +603,37 @@ namespace Qiniu.Storage
             }
         }
 
+        private void MakeBlockWithRetry(object resumeBlockerObj)
+        {
+            ResumeBlocker resumeBlocker = (ResumeBlocker)resumeBlockerObj;
+            ManualResetEvent doneEvent = resumeBlocker.DoneEvent;
+            Dictionary<long, HttpResult> blockMakeResults = resumeBlocker.BlockMakeResults;
+            long blockIndex = resumeBlocker.BlockIndex;
+            PutExtra putExtra = resumeBlocker.PutExtra;
+
+            HttpResult result = MakeBlock(resumeBlockerObj);
+
+
+            int retryTimes = 0;
+            while (
+                retryTimes < putExtra.MaxRetryTimes &&
+                UploadUtil.ShouldRetry(result.Code, result.RefCode)
+            )
+            {
+                result = MakeBlock(resumeBlockerObj);
+                retryTimes += 1;
+            }
+
+            //return the http result
+            blockMakeResults.Add(blockIndex, result);
+            doneEvent.Set();
+        }
+
         /// <summary>
         /// 创建块(携带首片数据),v1检查CRC32,v2检查md5
         /// </summary>
         /// <param name="resumeBlockerObj">创建分片上传的块请求</param>
-        private void MakeBlock(object resumeBlockerObj)
+        private HttpResult MakeBlock(object resumeBlockerObj)
         {
             ResumeBlocker resumeBlocker = (ResumeBlocker)resumeBlockerObj;
             ManualResetEvent doneEvent = resumeBlocker.DoneEvent;
@@ -632,7 +659,7 @@ namespace Qiniu.Storage
                     result.RefText += string.Format("[{0}] [ResumableUpload] Info: upload task is aborted, mkblk {1}\n",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), blockIndex);
                     blockMakeResults.Add(blockIndex, result);
-                    return;
+                    return result;
                 }
                 else
                 {
@@ -658,7 +685,7 @@ namespace Qiniu.Storage
                 {
                     result = HttpResult.InvalidToken;
                     doneEvent.Set();
-                    return;
+                    return result;
                 }
 
                 string uploadHost = this.config.UpHost(ak, bucket);
@@ -793,9 +820,7 @@ namespace Qiniu.Storage
                 }
             }
 
-            //return the http result
-            blockMakeResults.Add(blockIndex, result);
-            doneEvent.Set();
+            return result;
         }
 
         /// <summary>

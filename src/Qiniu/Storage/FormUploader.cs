@@ -81,6 +81,7 @@ namespace Qiniu.Storage
             if (putExtra == null)
             {
                 putExtra = new PutExtra();
+                putExtra.MaxRetryTimes = config.MaxRetryTimes;
             }
             if (string.IsNullOrEmpty(putExtra.MimeType )) {
                 putExtra.MimeType = "application/octet-stream";
@@ -182,17 +183,8 @@ namespace Qiniu.Storage
                     ms.Write(partData2, 0, partData2.Length);
                     ms.Write(partData3, 0, partData3.Length);
 
-                    //get upload host
-                    string ak = UpToken.GetAccessKeyFromUpToken(token);
-                    string bucket = UpToken.GetBucketFromUpToken(token);
-                    if (ak == null || bucket == null)
-                    {
-                        return HttpResult.InvalidToken;
-                    }
-
-                    string uploadHost = this.config.UpHost(ak, bucket);
                     putExtra.ProgressHandler(stream.Length / 5, stream.Length);
-                    result = httpManager.PostMultipart(uploadHost, ms.ToArray(), boundary, null);
+                    result = PostFormWithRetry(token, ms.ToArray(), boundary, putExtra);
                     putExtra.ProgressHandler(stream.Length, stream.Length);
                     if (result.Code == (int)HttpCode.OK)
                     {
@@ -265,6 +257,31 @@ namespace Qiniu.Storage
         {
             return UploadControllerAction.Activated;
         }
-    }
 
+        private HttpResult PostFormWithRetry(string token, byte[] data, string boundary, PutExtra putExtra)
+        {
+            //get upload host
+            string ak = UpToken.GetAccessKeyFromUpToken(token);
+            string bucket = UpToken.GetBucketFromUpToken(token);
+            if (ak == null || bucket == null)
+            {
+                return HttpResult.InvalidToken;
+            }
+
+            string uploadHost = this.config.UpHost(ak, bucket);
+            HttpResult result = httpManager.PostMultipart(uploadHost, data, boundary, null);
+
+            int retryTimes = 0;
+            while (
+                retryTimes < putExtra.MaxRetryTimes &&
+                UploadUtil.ShouldRetry(result.Code, result.RefCode)
+            )
+            {
+                result = httpManager.PostMultipart(uploadHost, data, boundary, null);
+                retryTimes += 1;
+            }
+
+            return result;
+        }
+    }
 }
