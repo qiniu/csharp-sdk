@@ -40,7 +40,8 @@ namespace Qiniu.Storage
         /// <summary>
         /// 重试请求次数
         /// </summary>
-        public int MaxRetryTimes = 3;
+        /// 默认值应与 <see cref="PutExtra.MaxRetryTimes"/> 一致
+        public int MaxRetryTimes { set; get; } = 3;
 
         /// <summary>
         /// 获取资源管理域名
