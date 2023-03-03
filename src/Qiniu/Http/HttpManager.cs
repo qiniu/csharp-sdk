@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.IO;
+using System.Linq;
 using System.Net;
 using Qiniu.Util;
 
@@ -633,7 +634,8 @@ namespace Qiniu.Http
                     wReq.AllowWriteStreamBuffering = true;
                     using (Stream sReq = wReq.GetRequestStream())
                     {
-                        sReq.Write(Encoding.UTF8.GetBytes(data), 0, data.Length);
+                        byte[] utf8Data = Encoding.UTF8.GetBytes(data);
+                        sReq.Write(utf8Data, 0, utf8Data.Length);
                         sReq.Flush();
                     }
                 }
@@ -750,7 +752,8 @@ namespace Qiniu.Http
                     wReq.AllowWriteStreamBuffering = true;
                     using (Stream sReq = wReq.GetRequestStream())
                     {
-                        sReq.Write(Encoding.UTF8.GetBytes(data), 0, data.Length);
+                        byte[] utf8Data = Encoding.UTF8.GetBytes(data);
+                        sReq.Write(utf8Data, 0, utf8Data.Length);
                         sReq.Flush();
                     }
                 }
@@ -864,16 +867,14 @@ namespace Qiniu.Http
 
                 if (kvData != null)
                 {
-                    StringBuilder sbb = new StringBuilder();
-                    foreach (var kv in kvData)
-                    {
-                        sbb.AppendFormat("{0}={1}&", Uri.EscapeDataString(kv.Key), Uri.EscapeDataString(kv.Value));
-                    }
+                    string data = string.Join("&",
+                        kvData.Select(kvp => Uri.EscapeDataString(kvp.Key) + "=" + Uri.EscapeDataString(kvp.Value)));
 
                     wReq.AllowWriteStreamBuffering = true;
                     using (Stream sReq = wReq.GetRequestStream())
                     {
-                        sReq.Write(Encoding.UTF8.GetBytes(sbb.ToString()), 0, sbb.Length - 1);
+                        byte[] utf8Data = Encoding.UTF8.GetBytes(data);
+                        sReq.Write(utf8Data, 0, utf8Data.Length);
                         sReq.Flush();
                     }
                 }
@@ -990,7 +991,8 @@ namespace Qiniu.Http
                     wReq.AllowWriteStreamBuffering = true;
                     using (Stream sReq = wReq.GetRequestStream())
                     {
-                        sReq.Write(Encoding.UTF8.GetBytes(data), 0, data.Length);
+                        byte[] utf8Data = Encoding.UTF8.GetBytes(data);
+                        sReq.Write(utf8Data, 0, utf8Data.Length);
                         sReq.Flush();
                     }
                 }
