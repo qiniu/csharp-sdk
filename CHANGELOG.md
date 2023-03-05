@@ -1,6 +1,6 @@
-**Next Release Date**
+**2023-03-06**
 
-Next Version
+v8.3.1
 
 修复：表单直传、分片上传配置 MaxRetryTimes 无效（v7.4.0 引入）
 
