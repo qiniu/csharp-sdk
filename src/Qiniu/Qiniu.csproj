@@ -28,7 +28,7 @@
     <PostBuildEvent>
     </PostBuildEvent>
     <ProjectId>Qiniu</ProjectId>
-    <Version>8.3.0</Version>
+    <Version>8.3.1</Version>
     <Authors>Rong Zhou, Qiniu SDK</Authors>
     <Company>Shanghai Qiniu Information Technology Co., Ltd.</Company>
     <Description>Qiniu Resource (Cloud) Storage SDK for C#</Description>
