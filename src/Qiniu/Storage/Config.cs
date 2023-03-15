@@ -10,6 +10,10 @@ namespace Qiniu.Storage
     public class Config
     {
         /// <summary>
+        /// 默认空间管理域名
+        /// </summary>
+        public static string DefaultUcHost = "uc.qbox.me";
+        /// <summary>
         /// 默认高级资源管理域名
         /// </summary>
         public static string DefaultRsHost = "rs.qiniu.com";
@@ -17,6 +21,14 @@ namespace Qiniu.Storage
         /// 默认数据处理域名
         /// </summary>
         public static string DefaultApiHost = "api.qiniuapi.com";
+        /// <summary>
+        /// 默认数据处理域名
+        /// </summary>
+        public static string DefaultIoHost = "iovip.qiniuio.com";
+        /// <summary>
+        /// 默认数据处理域名
+        /// </summary>
+        public static string DefaultRsfHost = "rsf.qiniu.com";
         /// <summary>
         /// 空间所在的区域(Zone)
         /// </summary>

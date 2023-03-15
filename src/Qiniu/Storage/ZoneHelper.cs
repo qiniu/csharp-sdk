@@ -6,12 +6,18 @@ using Newtonsoft.Json;
 
 namespace Qiniu.Storage
 {
+    internal class ZoneCacheValue
+    {
+        public DateTime Deadline { get; set; }
+        public Zone Zone { get; set; }
+    }
+    
     /// <summary>
     /// Zone辅助类，查询及配置Zone
     /// </summary>
     public class ZoneHelper
     {
-        private static Dictionary<string, Zone> zoneCache = new Dictionary<string, Zone>();
+        private static Dictionary<string, ZoneCacheValue> zoneCache = new Dictionary<string, ZoneCacheValue>();
         private static object rwLock = new object();
 
         /// <summary>
@@ -21,8 +27,7 @@ namespace Qiniu.Storage
         /// <param name="bucket">空间名称</param>
         public static Zone QueryZone(string accessKey, string bucket)
         {
-            Zone zone = null;
-
+            ZoneCacheValue zoneCacheValue = null;
             string cacheKey = string.Format("{0}:{1}", accessKey, bucket);
 
             //check from cache
@@ -30,23 +35,32 @@ namespace Qiniu.Storage
             {
                 if (zoneCache.ContainsKey(cacheKey))
                 {
-                    zone = zoneCache[cacheKey];
+                    zoneCacheValue = zoneCache[cacheKey];
                 }
             }
 
-            if (zone != null)
+            if (
+                zoneCacheValue != null &&
+                DateTime.Now < zoneCacheValue.Deadline &&
+                zoneCacheValue.Zone != null
+            )
             {
-                return zone;
+                return zoneCacheValue.Zone;
             }
 
             //query from uc api
+            Zone zone;
             HttpResult hr = null;
             try
             {
-                string queryUrl = string.Format("https://uc.qbox.me/v2/query?ak={0}&bucket={1}", accessKey, bucket);
+                string queryUrl = string.Format("https://{0}/v2/query?ak={1}&bucket={2}",
+                    Config.DefaultUcHost,
+                    accessKey,
+                    bucket
+                );
                 HttpManager httpManager = new HttpManager();
                 hr = httpManager.Get(queryUrl, null);
-                if (hr.Code == (int)HttpCode.OK)
+                if (hr.Code == (int)HttpCode.OK && !string.IsNullOrEmpty(hr.Text))
                 {
                     ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
                     if (zInfo != null)
@@ -54,53 +68,50 @@ namespace Qiniu.Storage
                         zone = new Zone();
                         zone.SrcUpHosts = zInfo.Up.Src.Main;
                         zone.CdnUpHosts = zInfo.Up.Acc.Main;
-                        zone.IovipHost = zInfo.Io.Src.Main[0];
-                        if (zone.IovipHost.Contains("z1"))
+
+                        if (!string.IsNullOrEmpty(zInfo.Io.Src.Main[0]))
                         {
-                            zone.ApiHost = "api-z1.qiniuapi.com";
-                            zone.RsHost = "rs-z1.qiniu.com";
-                            zone.RsfHost = "rsf-z1.qiniu.com";
-                        }
-                        else if (zone.IovipHost.Contains("z2"))
-                        {
-                            zone.ApiHost = "api-z2.qiniuapi.com";
-                            zone.RsHost = "rs-z2.qiniu.com";
-                            zone.RsfHost = "rsf-z2.qiniu.com";
-                        }
-                        else if (zone.IovipHost.Contains("na0"))
-                        {
-                            zone.ApiHost = "api-na0.qiniuapi.com";
-                            zone.RsHost = "rs-na0.qiniu.com";
-                            zone.RsfHost = "rsf-na0.qiniu.com";
-                        }
-                        else if (zone.IovipHost.Contains("as0"))
-                        {
-                            zone.ApiHost = "api-as0.qiniuapi.com";
-                            zone.RsHost = "rs-as0.qiniu.com";
-                            zone.RsfHost = "rsf-as0.qiniu.com";
-                        }
-                        else if (zone.IovipHost.Contains("cn-east-2"))
-                        {
-                            zone.ApiHost = "api-cn-east-2.qiniuapi.com";
-                            zone.RsHost = "rs-cn-east-2.qiniuapi.com";
-                            zone.RsfHost = "rsf-cn-east-2.qiniuapi.com";
-                        }
-                        else if (zone.IovipHost.Contains("ap-northeast-1"))
-                        {
-                            zone.ApiHost = "api-ap-northeast-1.qiniuapi.com";
-                            zone.RsHost = "rs-ap-northeast-1.qiniuapi.com";
-                            zone.RsfHost = "rsf-ap-northeast-1.qiniuapi.com";
+                            zone.IovipHost = zInfo.Io.Src.Main[0];
                         }
                         else
                         {
-                            zone.ApiHost = "api.qiniuapi.com";
-                            zone.RsHost = "rs.qiniu.com";
-                            zone.RsfHost = "rsf.qiniu.com";
+                            zone.IovipHost = Config.DefaultIoHost;
+                        }
+
+                        if (!string.IsNullOrEmpty(zInfo.Api.Acc.Main[0]))
+                        {
+                            zone.ApiHost = zInfo.Api.Acc.Main[0];
+                        }
+                        else
+                        {
+                            zone.ApiHost = Config.DefaultApiHost;
+                        }
+                        
+                        if (!string.IsNullOrEmpty(zInfo.Rs.Acc.Main[0]))
+                        {
+                            zone.RsHost = zInfo.Rs.Acc.Main[0];
+                        }
+                        else
+                        {
+                            zone.RsHost = Config.DefaultRsHost;
+                        }
+                        
+                        if (!string.IsNullOrEmpty(zInfo.Rsf.Acc.Main[0]))
+                        {
+                            zone.RsfHost = zInfo.Rsf.Acc.Main[0];
+                        }
+                        else
+                        {
+                            zone.RsfHost = Config.DefaultRsfHost;
                         }
 
                         lock (rwLock)
                         {
-                            zoneCache[cacheKey] = zone;
+                            zoneCacheValue = new ZoneCacheValue();
+                            TimeSpan ttl = TimeSpan.FromSeconds(zInfo.Ttl);
+                            zoneCacheValue.Deadline = DateTime.Now.Add(ttl);
+                            zoneCacheValue.Zone = zone;
+                            zoneCache[cacheKey] = zoneCacheValue;
                         }
                     }
                     else
