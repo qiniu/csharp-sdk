@@ -518,8 +518,8 @@ namespace Qiniu.Storage
 
             try
             {
-                string apiHost = config.ApiHost(this.mac.AccessKey, bucket);
-                string domainsUrl = string.Format("{0}{1}", apiHost, "/v6/domain/list");
+                string ucHost = Config.DefaultUcHost;
+                string domainsUrl = string.Format("https://{0}{1}", ucHost, "/v2/domains");
                 string body = string.Format("tbl={0}", bucket);
 
                 HttpResult hr = httpManager.PostForm(domainsUrl, null, body, auth);
