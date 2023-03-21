@@ -7,81 +7,55 @@ namespace Qiniu.Storage
     /// </summary>
     internal class ZoneInfo
     {
+        [JsonProperty("hosts")]
+        public ZoneHost[] Hosts { get; set; }
+    }
+
+    internal class ZoneHost
+    {
         /// <summary>
         /// 过期时间，单位：秒
         /// </summary>
         [JsonProperty("ttl")]
         public int Ttl { get; set; }
-        
+
+        [JsonProperty("region")]
+        public string Region { get; set; }
+
         [JsonProperty("io")]
-        public Io Io { set; get; }
-        
+        public ServiceDomains Io { get; set; }
+
+        [JsonProperty("io_src")]
+        public ServiceDomains IoSrc { get; set; }
+
         [JsonProperty("up")]
-        public Up Up { set; get; }
+        public ServiceDomains Up { get; set; }
         
         [JsonProperty("api")]
-        public Api Api { set; get; }
+        public ServiceDomains Api { get; set; }
         
         [JsonProperty("rs")]
-        public Rs Rs { set; get; }
+        public ServiceDomains Rs { get; set; }
         
         [JsonProperty("rsf")]
-        public Rsf Rsf { set; get; }
-    }
+        public ServiceDomains Rsf { get; set; }
+        
+        [JsonProperty("s3")]
+        public ServiceDomains S3 { get; set; }
+        
+        [JsonProperty("uc")]
+        public ServiceDomains Uc { get; set; }
 
-    internal class Io
-    {
-        [JsonProperty("src")]
-        public Src Src { set; get; }
-    }
+        internal class ServiceDomains
+        {
+            [JsonProperty("domains")]
+            public string[] Domains { get; set; }
 
-    internal class Src
-    {
-        [JsonProperty("main")]
-        public string[] Main { set; get; }
-    }
+            [JsonProperty("old", NullValueHandling = NullValueHandling.Ignore)]
+            public string[] Old { get; set; }
 
-    internal class Up
-    {
-        [JsonProperty("acc")]
-        public DomainInfo Acc { set; get; }
-        
-        [JsonProperty("old_acc")]
-        public DomainInfo OldAcc { set; get; }
-        
-        [JsonProperty("src")]
-        public DomainInfo Src { set; get; }
-        
-        [JsonProperty("old_src")]
-        public DomainInfo OldSrc { set; get; }
-    }
-    internal class DomainInfo
-    {
-        [JsonProperty("main")]
-        public string[] Main { set; get; }
-        
-        [JsonProperty("backup", NullValueHandling = NullValueHandling.Ignore)]
-        public string[] Backup { set; get; }
-        
-        [JsonProperty("info", NullValueHandling = NullValueHandling.Ignore)]
-        public string Info { set; get; }
-    }
-
-    internal class Api
-    {
-        [JsonProperty("acc")]
-        public DomainInfo Acc { set; get; }
-    }
-    
-    internal class Rs
-    {
-        [JsonProperty("acc")]
-        public DomainInfo Acc { set; get; }
-    }
-    
-    internal class Rsf
-    {
-        [JsonProperty("acc")]
-        public DomainInfo Acc { set; get; }
+            [JsonProperty("region_alias", NullValueHandling = NullValueHandling.Ignore)]
+            public string RegionAlias { get; set; }
+        }
     }
 }

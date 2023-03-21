@@ -53,7 +53,7 @@ namespace Qiniu.Storage
             HttpResult hr = null;
             try
             {
-                string queryUrl = string.Format("{0}{1}/v2/query?ak={2}&bucket={3}",
+                string queryUrl = string.Format("{0}{1}/v4/query?ak={2}&bucket={3}",
                     scheme,
                     Config.DefaultUcHost,
                     accessKey,
@@ -61,68 +61,71 @@ namespace Qiniu.Storage
                 );
                 HttpManager httpManager = new HttpManager();
                 hr = httpManager.Get(queryUrl, null);
-                if (hr.Code == (int)HttpCode.OK && !string.IsNullOrEmpty(hr.Text))
+                if (hr.Code != (int) HttpCode.OK || string.IsNullOrEmpty(hr.Text))
                 {
-                    ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
-                    if (zInfo != null)
-                    {
-                        zone = new Zone();
-                        zone.SrcUpHosts = zInfo.Up.Src.Main;
-                        zone.CdnUpHosts = zInfo.Up.Acc.Main;
+                    throw new Exception("code: " + hr.Code + ", text: " + hr.Text + ", ref-text:" + hr.RefText);
+                }
 
-                        if (!string.IsNullOrEmpty(zInfo.Io.Src.Main[0]))
-                        {
-                            zone.IovipHost = zInfo.Io.Src.Main[0];
-                        }
-                        else
-                        {
-                            zone.IovipHost = Config.DefaultIoHost;
-                        }
+                ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
+                if (zInfo == null)
+                {
+                    throw new Exception("JSON Deserialize failed: " + hr.Text);
+                }
+                
+                if (zInfo.Hosts.Length == 0)
+                {
+                    throw new Exception("There are no hosts available: " + hr.Text);
+                }
 
-                        if (!string.IsNullOrEmpty(zInfo.Api.Acc.Main[0]))
-                        {
-                            zone.ApiHost = zInfo.Api.Acc.Main[0];
-                        }
-                        else
-                        {
-                            zone.ApiHost = Config.DefaultApiHost;
-                        }
-                        
-                        if (!string.IsNullOrEmpty(zInfo.Rs.Acc.Main[0]))
-                        {
-                            zone.RsHost = zInfo.Rs.Acc.Main[0];
-                        }
-                        else
-                        {
-                            zone.RsHost = Config.DefaultRsHost;
-                        }
-                        
-                        if (!string.IsNullOrEmpty(zInfo.Rsf.Acc.Main[0]))
-                        {
-                            zone.RsfHost = zInfo.Rsf.Acc.Main[0];
-                        }
-                        else
-                        {
-                            zone.RsfHost = Config.DefaultRsfHost;
-                        }
+                ZoneHost zHost = zInfo.Hosts[0];
 
-                        lock (rwLock)
-                        {
-                            zoneCacheValue = new ZoneCacheValue();
-                            TimeSpan ttl = TimeSpan.FromSeconds(zInfo.Ttl);
-                            zoneCacheValue.Deadline = DateTime.Now.Add(ttl);
-                            zoneCacheValue.Zone = zone;
-                            zoneCache[cacheKey] = zoneCacheValue;
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("JSON Deserialize failed: " + hr.Text);
-                    }
+                zone = new Zone();
+                zone.SrcUpHosts = zHost.Up.Domains;
+                zone.CdnUpHosts = zHost.Up.Domains;
+
+                if (!string.IsNullOrEmpty(zHost.Io.Domains[0]))
+                {
+                    zone.IovipHost = zHost.Io.Domains[0];
                 }
                 else
                 {
-                    throw new Exception("code: " + hr.Code + ", text: " + hr.Text + ", ref-text:" + hr.RefText);
+                    zone.IovipHost = Config.DefaultIoHost;
+                }
+
+                if (!string.IsNullOrEmpty(zHost.Api.Domains[0]))
+                {
+                    zone.ApiHost = zHost.Api.Domains[0];
+                }
+                else
+                {
+                    zone.ApiHost = Config.DefaultApiHost;
+                }
+
+                if (!string.IsNullOrEmpty(zHost.Rs.Domains[0]))
+                {
+                    zone.RsHost = zHost.Rs.Domains[0];
+                }
+                else
+                {
+                    zone.RsHost = Config.DefaultRsHost;
+                }
+
+                if (!string.IsNullOrEmpty(zHost.Rsf.Domains[0]))
+                {
+                    zone.RsfHost = zHost.Rsf.Domains[0];
+                }
+                else
+                {
+                    zone.RsfHost = Config.DefaultRsfHost;
+                }
+
+                lock (rwLock)
+                {
+                    zoneCacheValue = new ZoneCacheValue();
+                    TimeSpan ttl = TimeSpan.FromSeconds(zHost.Ttl);
+                    zoneCacheValue.Deadline = DateTime.Now.Add(ttl);
+                    zoneCacheValue.Zone = zone;
+                    zoneCache[cacheKey] = zoneCacheValue;
                 }
             }
             catch (Exception ex)
