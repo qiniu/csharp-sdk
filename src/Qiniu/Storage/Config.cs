@@ -54,6 +54,19 @@ namespace Qiniu.Storage
         /// </summary>
         /// 默认值应与 <see cref="PutExtra.MaxRetryTimes"/> 一致
         public int MaxRetryTimes { set; get; } = 3;
+        
+        private string _ucHost = DefaultUcHost;
+
+        public void SetUcHost(string val)
+        {
+            _ucHost = val;
+        }
+
+        public string UcHost()
+        {
+            string scheme = UseHttps ? "https://" : "http://";
+            return string.Format("{0}{1}", scheme, _ucHost);
+        }
 
         /// <summary>
         /// 获取资源管理域名
@@ -67,7 +80,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, scheme);
             }
             return string.Format("{0}{1}", scheme, z.RsHost);
         }
@@ -84,7 +97,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, scheme);
             }
             return string.Format("{0}{1}", scheme, z.RsfHost);
         }
@@ -101,7 +114,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, scheme);
             }
             return string.Format("{0}{1}", scheme, z.ApiHost);
         }
@@ -118,7 +131,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, scheme);
             }
             return string.Format("{0}{1}", scheme, z.IovipHost);
         }
@@ -135,7 +148,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, scheme);
             }
             string upHost = z.SrcUpHosts[0];
             if (this.UseCdnDomains)

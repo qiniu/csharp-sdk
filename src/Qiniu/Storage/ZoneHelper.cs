@@ -25,7 +25,7 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="accessKey">AccessKek</param>
         /// <param name="bucket">空间名称</param>
-        public static Zone QueryZone(string accessKey, string bucket)
+        public static Zone QueryZone(string accessKey, string bucket, string scheme = "https://")
         {
             ZoneCacheValue zoneCacheValue = null;
             string cacheKey = string.Format("{0}:{1}", accessKey, bucket);
@@ -53,7 +53,8 @@ namespace Qiniu.Storage
             HttpResult hr = null;
             try
             {
-                string queryUrl = string.Format("https://{0}/v2/query?ak={1}&bucket={2}",
+                string queryUrl = string.Format("{0}{1}/v2/query?ak={2}&bucket={3}",
+                    scheme,
                     Config.DefaultUcHost,
                     accessKey,
                     bucket

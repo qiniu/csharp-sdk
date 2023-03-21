@@ -83,8 +83,7 @@ namespace Qiniu.Storage
 
             try
             {
-                string scheme = this.config.UseHttps ? "https://" : "http://";
-                string ucHost = string.Format("{0}{1}", scheme, Config.DefaultUcHost);
+                string ucHost = this.config.UcHost();
                 string sharedStr = "false";
                 if (shared)
                 {
@@ -518,8 +517,8 @@ namespace Qiniu.Storage
 
             try
             {
-                string ucHost = Config.DefaultUcHost;
-                string domainsUrl = string.Format("https://{0}{1}", ucHost, "/v2/domains");
+                string ucHost = this.config.UcHost();
+                string domainsUrl = string.Format("{0}{1}", ucHost, "/v2/domains");
                 string body = string.Format("tbl={0}", bucket);
 
                 HttpResult hr = httpManager.PostForm(domainsUrl, null, body, auth);
