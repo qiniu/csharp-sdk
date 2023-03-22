@@ -80,7 +80,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, scheme);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             return string.Format("{0}{1}", scheme, z.RsHost);
         }
@@ -97,7 +97,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, scheme);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             return string.Format("{0}{1}", scheme, z.RsfHost);
         }
@@ -114,7 +114,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, scheme);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             return string.Format("{0}{1}", scheme, z.ApiHost);
         }
@@ -131,7 +131,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, scheme);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             return string.Format("{0}{1}", scheme, z.IovipHost);
         }
@@ -148,7 +148,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, scheme);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             string upHost = z.SrcUpHosts[0];
             if (this.UseCdnDomains)

@@ -21,11 +21,12 @@ namespace Qiniu.Storage
         private static object rwLock = new object();
 
         /// <summary>
-        /// 从uc.qbox.me查询得到回复后，解析出upHost,然后根据upHost确定Zone
+        /// 从 UC 服务查询得到各个服务域名，生成 Zone 对象并返回
         /// </summary>
-        /// <param name="accessKey">AccessKek</param>
+        /// <param name="accessKey">AccessKey</param>
         /// <param name="bucket">空间名称</param>
-        public static Zone QueryZone(string accessKey, string bucket, string scheme = "https://")
+        /// <param name="ucHost">UC 域名</param>
+        public static Zone QueryZone(string accessKey, string bucket, string ucHost = null)
         {
             ZoneCacheValue zoneCacheValue = null;
             string cacheKey = string.Format("{0}:{1}", accessKey, bucket);
@@ -51,11 +52,14 @@ namespace Qiniu.Storage
             //query from uc api
             Zone zone;
             HttpResult hr = null;
+            if (String.IsNullOrEmpty(ucHost))
+            {
+                ucHost = "https://" + Config.DefaultUcHost;
+            }
             try
             {
-                string queryUrl = string.Format("{0}{1}/v4/query?ak={2}&bucket={3}",
-                    scheme,
-                    Config.DefaultUcHost,
+                string queryUrl = string.Format("{0}/v4/query?ak={1}&bucket={2}",
+                    ucHost,
                     accessKey,
                     bucket
                 );
