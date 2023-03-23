@@ -302,6 +302,38 @@ namespace Qiniu.Storage
             return result;
         }
 
+        public HttpResult ChangeStatus(string bucket, string key, int status)
+        {
+            HttpResult result = new HttpResult();
+
+            try
+            {
+                string chStatusUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
+                    ChangeStatusOp(bucket, key, status));
+
+                result = httpManager.Post(chStatusUrl, null, auth);
+            }
+            catch (QiniuException ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [chstatus] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result.Code = ex.HttpResult.Code;
+                result.RefCode = ex.HttpResult.Code;
+                result.Text = ex.HttpResult.Text;
+                result.RefText += sb.ToString();
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// 修改文件存储类型
         /// </summary>
@@ -837,6 +869,12 @@ namespace Qiniu.Storage
         {
             return string.Format("/chgm/{0}/mime/{1}", Base64.UrlSafeBase64Encode(bucket, key),
                 Base64.UrlSafeBase64Encode(mimeType));
+        }
+
+        public string ChangeStatusOp(string bucket, string key, int status)
+        {
+            return string.Format("/chstatus/{0}/status/{1}", Base64.UrlSafeBase64Encode(bucket, key),
+                status);
         }
 
         /// <summary>

@@ -26,8 +26,11 @@ namespace Qiniu.Storage.Tests
             Console.WriteLine(statRet.Result.Hash);
             Console.WriteLine(statRet.Result.MimeType);
             Console.WriteLine(statRet.Result.Fsize);
-            Console.WriteLine(statRet.Result.MimeType);
             Console.WriteLine(statRet.Result.FileType);
+            Assert.True(statRet.Result.Hash.Length > 0);
+            Assert.True(statRet.Result.MimeType.Length > 0);
+            Assert.True(statRet.Result.Fsize > 0);
+            Assert.True(statRet.Result.PutTime > 0);
         }
 
         [Test]
@@ -101,18 +104,60 @@ namespace Qiniu.Storage.Tests
         }
 
         [Test]
+        public void ChangeStatusTest()
+        {
+            Config config = new Config();
+            config.Zone = Zone.ZONE_CN_East;
+            Mac mac = new Mac(AccessKey, SecretKey);
+            BucketManager bucketManager = new BucketManager(mac, config);
+            string key = "qiniu.png";
+            HttpResult ret = bucketManager.ChangeStatus(Bucket, key, 1);
+            if (ret.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("change status error: " + ret.ToString());
+            }
+            StatResult statRet = bucketManager.Stat(Bucket, key);
+            if (statRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("stat error: " + statRet.ToString());
+            }
+            Assert.AreEqual(1, statRet.Result.Status);
+            ret = bucketManager.ChangeStatus(Bucket, key, 0);
+            if (ret.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("change status error: " + ret.ToString());
+            }
+        }
+
+        [Test]
         public void ChangeTypeTest()
         {
             Config config = new Config();
             config.Zone = Zone.ZONE_CN_East;
             Mac mac = new Mac(AccessKey, SecretKey);
             BucketManager bucketManager = new BucketManager(mac, config);
-            HttpResult ret = bucketManager.ChangeType(Bucket, "qiniu.png", 1);
+            string key = "qiniu.png";
+            
+            string newKey = "qiniu-to-change-type.png";
+            HttpResult copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            if (copyRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("copy error: " + copyRet.ToString());
+            }
+            Console.WriteLine(copyRet.ToString());
+
+            HttpResult ret = bucketManager.ChangeType(Bucket, newKey, 1);
             if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("already in line stat"))
             {
                 Assert.Fail("change type error: " + ret.ToString());
             }
             Console.WriteLine(ret.ToString());
+            StatResult statRet = bucketManager.Stat(Bucket, newKey);
+            if (statRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("stat error: " + statRet.ToString());
+            }
+            Assert.AreEqual(1, statRet.Result.FileType);
         }
 
         [Test]
@@ -142,6 +187,13 @@ namespace Qiniu.Storage.Tests
             {
                 Assert.Fail("change type error: " + ret.ToString());
             }
+
+            StatResult statRet = bucketManager.Stat(Bucket, newKey);
+            if (statRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("stat error: " + statRet.ToString());
+            }
+            Assert.AreEqual(1, statRet.Result.RestoreStatus);
         }
 
         [Test]
@@ -221,6 +273,15 @@ namespace Qiniu.Storage.Tests
                 Assert.Fail("deleteAfterDays error: " + ret.ToString());
             }
             Console.WriteLine(ret.ToString());
+            StatResult statRet = bucketManager.Stat(Bucket, newKey);
+            if (statRet.Code != (int)HttpCode.OK)
+            {
+                Assert.Fail("stat error: " + statRet.ToString());
+            }
+            Assert.True(statRet.Result.TransitionToIa > 0);
+            Assert.True(statRet.Result.TransitionToArchive > 0);
+            Assert.True(statRet.Result.TransitionToDeepArchive > 0);
+            Assert.True(statRet.Result.Expiration > 0);
         }
 
         [Test]
@@ -356,6 +417,20 @@ namespace Qiniu.Storage.Tests
                 Assert.Fail("list files error: " + listRet.ToString());
             }
             Console.WriteLine(listRet.ToString());
+            // 需要处理可能存在 key 为 "" 的情况
+            bool hasEmptyKey = false;
+            foreach (var item in listRet.Result.Items)
+            {
+                Assert.True(item.Key.Length > 0 || !hasEmptyKey);
+                if (item.Key.Length == 0)
+                {
+                    hasEmptyKey = true;
+                }
+                Assert.True(item.Hash.Length > 0);
+                Assert.True(item.MimeType.Length > 0);
+                Assert.True(item.Fsize > 0);
+                Assert.True(item.PutTime > 0);
+            }
         }
 
         [Test]
@@ -417,6 +492,10 @@ namespace Qiniu.Storage.Tests
                 {
                     Console.WriteLine("{0}, {1}, {2}, {3}, {4}", info.Data.MimeType,
                         info.Data.PutTime, info.Data.Hash, info.Data.Fsize, info.Data.FileType);
+                        Assert.True(info.Data.Hash.Length > 0);
+                        Assert.True(info.Data.MimeType.Length > 0);
+                        Assert.True(info.Data.Fsize > 0);
+                        Assert.True(info.Data.PutTime > 0);
                 }
                 else
                 {
