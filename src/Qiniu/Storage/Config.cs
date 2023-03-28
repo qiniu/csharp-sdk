@@ -10,6 +10,10 @@ namespace Qiniu.Storage
     public class Config
     {
         /// <summary>
+        /// 默认空间管理域名
+        /// </summary>
+        public static string DefaultUcHost = "uc.qbox.me";
+        /// <summary>
         /// 默认高级资源管理域名
         /// </summary>
         public static string DefaultRsHost = "rs.qiniu.com";
@@ -17,6 +21,14 @@ namespace Qiniu.Storage
         /// 默认数据处理域名
         /// </summary>
         public static string DefaultApiHost = "api.qiniuapi.com";
+        /// <summary>
+        /// 默认数据处理域名
+        /// </summary>
+        public static string DefaultIoHost = "iovip.qiniuio.com";
+        /// <summary>
+        /// 默认数据处理域名
+        /// </summary>
+        public static string DefaultRsfHost = "rsf.qiniu.com";
         /// <summary>
         /// 空间所在的区域(Zone)
         /// </summary>
@@ -42,6 +54,19 @@ namespace Qiniu.Storage
         /// </summary>
         /// 默认值应与 <see cref="PutExtra.MaxRetryTimes"/> 一致
         public int MaxRetryTimes { set; get; } = 3;
+        
+        private string _ucHost = DefaultUcHost;
+
+        public void SetUcHost(string val)
+        {
+            _ucHost = val;
+        }
+
+        public string UcHost()
+        {
+            string scheme = UseHttps ? "https://" : "http://";
+            return string.Format("{0}{1}", scheme, _ucHost);
+        }
 
         /// <summary>
         /// 获取资源管理域名
@@ -55,7 +80,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             return string.Format("{0}{1}", scheme, z.RsHost);
         }
@@ -72,7 +97,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             return string.Format("{0}{1}", scheme, z.RsfHost);
         }
@@ -89,7 +114,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             return string.Format("{0}{1}", scheme, z.ApiHost);
         }
@@ -106,7 +131,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             return string.Format("{0}{1}", scheme, z.IovipHost);
         }
@@ -123,7 +148,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket);
+                z = ZoneHelper.QueryZone(ak, bucket, UcHost());
             }
             string upHost = z.SrcUpHosts[0];
             if (this.UseCdnDomains)

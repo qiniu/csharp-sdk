@@ -83,14 +83,13 @@ namespace Qiniu.Storage
 
             try
             {
-                string scheme = this.config.UseHttps ? "https://" : "http://";
-                string rsHost = string.Format("{0}{1}", scheme, Config.DefaultRsHost);
+                string ucHost = this.config.UcHost();
                 string sharedStr = "false";
                 if (shared)
                 {
                     sharedStr = "true";
                 }
-                string bucketsUrl = string.Format("{0}/buckets?shared={1}", rsHost, sharedStr);
+                string bucketsUrl = string.Format("{0}/buckets?shared={1}", ucHost, sharedStr);
 
                 HttpResult hr = httpManager.Get(bucketsUrl, null, auth);
                 result.Shadow(hr);
@@ -550,9 +549,8 @@ namespace Qiniu.Storage
 
             try
             {
-                string scheme = this.config.UseHttps ? "https://" : "http://";
-                string rsHost = string.Format("{0}{1}", scheme, Config.DefaultApiHost);
-                string domainsUrl = string.Format("{0}{1}", rsHost, "/v6/domain/list");
+                string ucHost = this.config.UcHost();
+                string domainsUrl = string.Format("{0}{1}", ucHost, "/v2/domains");
                 string body = string.Format("tbl={0}", bucket);
 
                 HttpResult hr = httpManager.PostForm(domainsUrl, null, body, auth);

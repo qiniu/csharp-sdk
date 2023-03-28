@@ -6,23 +6,29 @@ using Newtonsoft.Json;
 
 namespace Qiniu.Storage
 {
+    internal class ZoneCacheValue
+    {
+        public DateTime Deadline { get; set; }
+        public Zone Zone { get; set; }
+    }
+    
     /// <summary>
     /// Zone辅助类，查询及配置Zone
     /// </summary>
     public class ZoneHelper
     {
-        private static Dictionary<string, Zone> zoneCache = new Dictionary<string, Zone>();
+        private static Dictionary<string, ZoneCacheValue> zoneCache = new Dictionary<string, ZoneCacheValue>();
         private static object rwLock = new object();
 
         /// <summary>
-        /// 从uc.qbox.me查询得到回复后，解析出upHost,然后根据upHost确定Zone
+        /// 从 UC 服务查询得到各个服务域名，生成 Zone 对象并返回
         /// </summary>
-        /// <param name="accessKey">AccessKek</param>
+        /// <param name="accessKey">AccessKey</param>
         /// <param name="bucket">空间名称</param>
-        public static Zone QueryZone(string accessKey, string bucket)
+        /// <param name="ucHost">UC 域名</param>
+        public static Zone QueryZone(string accessKey, string bucket, string ucHost = null)
         {
-            Zone zone = null;
-
+            ZoneCacheValue zoneCacheValue = null;
             string cacheKey = string.Format("{0}:{1}", accessKey, bucket);
 
             //check from cache
@@ -30,87 +36,100 @@ namespace Qiniu.Storage
             {
                 if (zoneCache.ContainsKey(cacheKey))
                 {
-                    zone = zoneCache[cacheKey];
+                    zoneCacheValue = zoneCache[cacheKey];
                 }
             }
 
-            if (zone != null)
+            if (
+                zoneCacheValue != null &&
+                DateTime.Now < zoneCacheValue.Deadline &&
+                zoneCacheValue.Zone != null
+            )
             {
-                return zone;
+                return zoneCacheValue.Zone;
             }
 
             //query from uc api
+            Zone zone;
             HttpResult hr = null;
+            if (String.IsNullOrEmpty(ucHost))
+            {
+                ucHost = "https://" + Config.DefaultUcHost;
+            }
             try
             {
-                string queryUrl = string.Format("https://uc.qbox.me/v2/query?ak={0}&bucket={1}", accessKey, bucket);
+                string queryUrl = string.Format("{0}/v4/query?ak={1}&bucket={2}",
+                    ucHost,
+                    accessKey,
+                    bucket
+                );
                 HttpManager httpManager = new HttpManager();
                 hr = httpManager.Get(queryUrl, null);
-                if (hr.Code == (int)HttpCode.OK)
+                if (hr.Code != (int) HttpCode.OK || string.IsNullOrEmpty(hr.Text))
                 {
-                    ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
-                    if (zInfo != null)
-                    {
-                        zone = new Zone();
-                        zone.SrcUpHosts = zInfo.Up.Src.Main;
-                        zone.CdnUpHosts = zInfo.Up.Acc.Main;
-                        zone.IovipHost = zInfo.Io.Src.Main[0];
-                        if (zone.IovipHost.Contains("z1"))
-                        {
-                            zone.ApiHost = "api-z1.qiniuapi.com";
-                            zone.RsHost = "rs-z1.qiniu.com";
-                            zone.RsfHost = "rsf-z1.qiniu.com";
-                        }
-                        else if (zone.IovipHost.Contains("z2"))
-                        {
-                            zone.ApiHost = "api-z2.qiniuapi.com";
-                            zone.RsHost = "rs-z2.qiniu.com";
-                            zone.RsfHost = "rsf-z2.qiniu.com";
-                        }
-                        else if (zone.IovipHost.Contains("na0"))
-                        {
-                            zone.ApiHost = "api-na0.qiniuapi.com";
-                            zone.RsHost = "rs-na0.qiniu.com";
-                            zone.RsfHost = "rsf-na0.qiniu.com";
-                        }
-                        else if (zone.IovipHost.Contains("as0"))
-                        {
-                            zone.ApiHost = "api-as0.qiniuapi.com";
-                            zone.RsHost = "rs-as0.qiniu.com";
-                            zone.RsfHost = "rsf-as0.qiniu.com";
-                        }
-                        else if (zone.IovipHost.Contains("cn-east-2"))
-                        {
-                            zone.ApiHost = "api-cn-east-2.qiniuapi.com";
-                            zone.RsHost = "rs-cn-east-2.qiniuapi.com";
-                            zone.RsfHost = "rsf-cn-east-2.qiniuapi.com";
-                        }
-                        else if (zone.IovipHost.Contains("ap-northeast-1"))
-                        {
-                            zone.ApiHost = "api-ap-northeast-1.qiniuapi.com";
-                            zone.RsHost = "rs-ap-northeast-1.qiniuapi.com";
-                            zone.RsfHost = "rsf-ap-northeast-1.qiniuapi.com";
-                        }
-                        else
-                        {
-                            zone.ApiHost = "api.qiniuapi.com";
-                            zone.RsHost = "rs.qiniu.com";
-                            zone.RsfHost = "rsf.qiniu.com";
-                        }
+                    throw new Exception("code: " + hr.Code + ", text: " + hr.Text + ", ref-text:" + hr.RefText);
+                }
 
-                        lock (rwLock)
-                        {
-                            zoneCache[cacheKey] = zone;
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("JSON Deserialize failed: " + hr.Text);
-                    }
+                ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
+                if (zInfo == null)
+                {
+                    throw new Exception("JSON Deserialize failed: " + hr.Text);
+                }
+                
+                if (zInfo.Hosts.Length == 0)
+                {
+                    throw new Exception("There are no hosts available: " + hr.Text);
+                }
+
+                ZoneHost zHost = zInfo.Hosts[0];
+
+                zone = new Zone();
+                zone.SrcUpHosts = zHost.Up.Domains;
+                zone.CdnUpHosts = zHost.Up.Domains;
+
+                if (!string.IsNullOrEmpty(zHost.Io.Domains[0]))
+                {
+                    zone.IovipHost = zHost.Io.Domains[0];
                 }
                 else
                 {
-                    throw new Exception("code: " + hr.Code + ", text: " + hr.Text + ", ref-text:" + hr.RefText);
+                    zone.IovipHost = Config.DefaultIoHost;
+                }
+
+                if (!string.IsNullOrEmpty(zHost.Api.Domains[0]))
+                {
+                    zone.ApiHost = zHost.Api.Domains[0];
+                }
+                else
+                {
+                    zone.ApiHost = Config.DefaultApiHost;
+                }
+
+                if (!string.IsNullOrEmpty(zHost.Rs.Domains[0]))
+                {
+                    zone.RsHost = zHost.Rs.Domains[0];
+                }
+                else
+                {
+                    zone.RsHost = Config.DefaultRsHost;
+                }
+
+                if (!string.IsNullOrEmpty(zHost.Rsf.Domains[0]))
+                {
+                    zone.RsfHost = zHost.Rsf.Domains[0];
+                }
+                else
+                {
+                    zone.RsfHost = Config.DefaultRsfHost;
+                }
+
+                lock (rwLock)
+                {
+                    zoneCacheValue = new ZoneCacheValue();
+                    TimeSpan ttl = TimeSpan.FromSeconds(zHost.Ttl);
+                    zoneCacheValue.Deadline = DateTime.Now.Add(ttl);
+                    zoneCacheValue.Zone = zone;
+                    zoneCache[cacheKey] = zoneCacheValue;
                 }
             }
             catch (Exception ex)
