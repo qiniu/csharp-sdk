@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Net;
 using NUnit.Framework;
 using Qiniu.Http;
 
@@ -17,7 +16,7 @@ namespace QiniuTests.Http
             _label = label;
         }
 
-        public HttpResult Send(HttpWebRequest req, DNextSend next)
+        public HttpResult Send(HttpRequestOptions req, DNextSend next)
         {
             _orderRecorder.Add("bef_" + _label + _orderRecorder.Count);
             HttpResult result = next(req);
@@ -32,7 +31,7 @@ namespace QiniuTests.Http
         [Test]
         public void SendWithMiddlewareTest()
         {
-            HttpManager httpManager = new HttpManager();
+            HttpManager httpManager = new HttpManager(true);
 
             List<string> orderRecorder = new List<string>();
 
@@ -42,8 +41,9 @@ namespace QiniuTests.Http
                 new RecorderMiddleware(orderRecorder, "B")
             };
 
-            httpManager.Get("https://qiniu.com/index.html", null, null, middlewares);
+            HttpResult resp = httpManager.Get("https://qiniu.com/index.html", null, null, middlewares);
 
+            Assert.AreEqual((int)HttpCode.OK, resp.Code, resp.ToString());
             CollectionAssert.AreEqual(
                 new List<string>
                 {
@@ -51,6 +51,56 @@ namespace QiniuTests.Http
                     "bef_B1",
                     "aft_B2",
                     "aft_A3"
+                },
+                orderRecorder
+            );
+        }
+        
+        [Test]
+        public void RetryDomainsMiddlewareTest()
+        {
+            
+            HttpManager httpManager = new HttpManager(true);
+
+            List<string> orderRecorder = new List<string>();
+
+            List<IMiddleware> middlewares = new List<IMiddleware>
+            {
+                new RetryDomainsMiddleware(
+                    new List<string>
+                    {
+                        "unavailable.csharpsdk.qiniu.com",
+                        "qiniu.com"
+                    },
+                    3
+                ),
+                new RecorderMiddleware(orderRecorder, "A")
+            };
+
+            HttpResult resp = httpManager.Get("https://fake.csharpsdk.qiniu.com/index.html", null, null, middlewares);
+
+            Assert.AreEqual((int)HttpCode.OK, resp.Code, resp.ToString());
+
+            CollectionAssert.AreEqual(
+                new List<string>
+                {
+                    // fake.pysdk.qiniu.com
+                    "bef_A0",
+                    "aft_A1",
+                    "bef_A2",
+                    "aft_A3",
+                    "bef_A4",
+                    "aft_A5",
+                    // unavailable.pysdk.qiniu.com
+                    "bef_A6",
+                    "aft_A7",
+                    "bef_A8",
+                    "aft_A9",
+                    "bef_A10",
+                    "aft_A11",
+                    // qiniu.com
+                    "bef_A12",
+                    "aft_A13"
                 },
                 orderRecorder
             );

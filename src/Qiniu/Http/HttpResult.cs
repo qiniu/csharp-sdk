@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Qiniu.Http
@@ -8,6 +9,30 @@ namespace Qiniu.Http
     /// </summary>
     public class HttpResult
     {
+        private static readonly IReadOnlyList<int> NotRetryableHttpCodes = new List<int>
+        {
+            (int)HttpCode.INVALID_ARGUMENT,
+            (int)HttpCode.INVALID_FILE,
+            (int)HttpCode.INVALID_TOKEN,
+            (int)HttpCode.USER_CANCELED,
+            (int)HttpCode.USER_PAUSED,
+            // 服务端
+            (int)HttpCode.NOT_IMPLEMENTED,
+            (int)HttpCode.BANDWIDTH_LIMIT_EXCEEDED,
+            (int)HttpCode.TOO_FREQUENT_ACCESS,
+            (int)HttpCode.CALLBACK_FAILED,
+            (int)HttpCode.CONTENT_MODIFIED,
+            (int)HttpCode.FILE_NOT_EXIST,
+            (int)HttpCode.FILE_EXISTS,
+            (int)HttpCode.INVALID_SHARE_BUCKET,
+            (int)HttpCode.BUCKET_IS_SHARING,
+            (int)HttpCode.BUCKET_COUNT_LIMIT,
+            (int)HttpCode.BUCKET_NOT_EXIST,
+            (int)HttpCode.EXCEED_SHARED_BUCKETS_LIMIT,
+            (int)HttpCode.INVALID_MARKER,
+            (int)HttpCode.CONTEXT_EXPIRED
+        };
+
         /// <summary>
         /// 状态码 (200表示OK)
         /// </summary>
@@ -140,5 +165,18 @@ namespace Qiniu.Http
             Code = (int)HttpCode.INVALID_FILE,
             Text = "invalid file"
         };
+
+        public bool NeedRetry()
+        {
+            if (Code > 0 && Code < 500)
+            {
+                return false;
+            }
+            if (NotRetryableHttpCodes.Contains(Code))
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
