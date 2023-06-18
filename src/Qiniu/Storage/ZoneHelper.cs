@@ -26,7 +26,12 @@ namespace Qiniu.Storage
         /// <param name="accessKey">AccessKey</param>
         /// <param name="bucket">空间名称</param>
         /// <param name="ucHost">UC 域名</param>
-        public static Zone QueryZone(string accessKey, string bucket, string ucHost = null)
+        public static Zone QueryZone(
+            string accessKey,
+            string bucket,
+            string ucHost = null,
+            List<string> backupUcHosts = null
+        )
         {
             ZoneCacheValue zoneCacheValue = null;
             string cacheKey = string.Format("{0}:{1}", accessKey, bucket);
@@ -56,6 +61,12 @@ namespace Qiniu.Storage
             {
                 ucHost = "https://" + Config.DefaultUcHost;
             }
+
+            if (backupUcHosts == null)
+            {
+                backupUcHosts = Config.DefaultBackupUcHosts;
+            }
+            
             try
             {
                 string queryUrl = string.Format("{0}/v4/query?ak={1}&bucket={2}",
@@ -64,7 +75,13 @@ namespace Qiniu.Storage
                     bucket
                 );
                 HttpManager httpManager = new HttpManager();
-                hr = httpManager.Get(queryUrl, null);
+                List<IMiddleware> middlewares = new List<IMiddleware>
+                {
+                    new RetryDomainsMiddleware(
+                        backupUcHosts
+                    )
+                };
+                hr = httpManager.Get(queryUrl, null, null, middlewares);
                 if (hr.Code != (int) HttpCode.OK || string.IsNullOrEmpty(hr.Text))
                 {
                     throw new Exception("code: " + hr.Code + ", text: " + hr.Text + ", ref-text:" + hr.RefText);
