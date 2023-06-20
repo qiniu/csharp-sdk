@@ -24,7 +24,7 @@ namespace Qiniu.Http
         public HttpManager(bool allowAutoRedirect = false)
         {
             this.allowAutoRedirect = allowAutoRedirect;
-            userAgent = GetUserAgent();            
+            userAgent = GetUserAgent();
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Qiniu.Http
         /// <returns>客户端标识UA</returns>
         public void SetUserAgent(string userAgent)
         {
-            if(!string.IsNullOrEmpty(userAgent))
+            if (!string.IsNullOrEmpty(userAgent))
             {
                 this.userAgent = userAgent;
             }
@@ -59,6 +59,149 @@ namespace Qiniu.Http
         {
             string now = DateTime.UtcNow.Ticks.ToString();
             return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.CalcMD5X(now));
+        }
+
+        public HttpRequestOptions CreateHttpRequestOptions(
+            string method,
+            string url,
+            StringDictionary headers,
+            string token = null
+        )
+        {
+            HttpRequestOptions reqOpts = new HttpRequestOptions();
+
+            reqOpts.Method = method;
+            reqOpts.Url = url;
+
+            if (headers != null)
+            {
+                reqOpts.Headers = headers;
+            }
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                reqOpts.Headers.Add("Authorization", token);
+            }
+
+            reqOpts.Headers.Add("User-Agent", userAgent);
+            reqOpts.AllowAutoRedirect = allowAutoRedirect;
+
+            return reqOpts;
+        }
+
+        public HttpResult CreateHttpResult(HttpWebResponse wResp, bool binaryMode = false)
+        {
+            HttpResult result = new HttpResult();
+
+            if (wResp == null)
+            {
+                return result;
+            }
+
+            result.Code = (int)wResp.StatusCode;
+            result.RefCode = (int)wResp.StatusCode;
+
+            getHeaders(ref result, wResp);
+
+            Stream respStream = wResp.GetResponseStream();
+            if (respStream == null)
+            {
+                wResp.Close();
+                return result;
+            }
+
+            if (binaryMode)
+            {
+                int len = (int)wResp.ContentLength;
+                result.Data = new byte[len];
+                int bytesLeft = len;
+                int bytesRead = 0;
+
+                using (BinaryReader br = new BinaryReader(respStream))
+                {
+                    while (bytesLeft > 0)
+                    {
+                        bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
+                        bytesLeft -= bytesRead;
+                    }
+                }
+            }
+            else
+            {
+                using (StreamReader sr = new StreamReader(respStream))
+                {
+                    result.Text = sr.ReadToEnd();
+                }
+            }
+
+            wResp.Close();
+            return result;
+        }
+
+        public HttpResult SendRequest(HttpRequestOptions reqOpts, Boolean binaryMode = false)
+        {
+            HttpResult result;
+            HttpWebRequest wReq = null;
+
+            try
+            {
+                wReq = reqOpts.CreateHttpWebRequest();
+                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
+
+                result = CreateHttpResult(wResp, binaryMode);
+            }
+            catch (WebException wex)
+            {
+                HttpWebResponse xResp = wex.Response as HttpWebResponse;
+                result = CreateHttpResult(xResp);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat(
+                    "[{0}] [{1}] [HTTP-{2}] Error:  ",
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
+                    userAgent,
+                    reqOpts.Method
+                );
+                Exception e = ex;
+                while (e != null)
+                {
+                    sb.Append(e.Message + " ");
+                    e = e.InnerException;
+                }
+                sb.AppendLine();
+
+                result = CreateHttpResult(null);
+                result.RefCode = (int)HttpCode.USER_UNDEF;
+                result.RefText += sb.ToString();
+            }
+            finally
+            {
+                if (wReq != null)
+                {
+                    wReq.Abort();
+                }
+            }
+
+            return result;
+        }
+
+        public HttpResult SendRequest(HttpRequestOptions reqOpts, List<IMiddleware> middlewares, Boolean binaryMode = false)
+        {
+            if (middlewares == null || middlewares.Count == 0)
+            {
+                return SendRequest(reqOpts, binaryMode);
+            }
+
+            List<IMiddleware> reversedMiddlewares = new List<IMiddleware>(middlewares);
+            reversedMiddlewares.Reverse();
+            DNextSend composedHandle = reversedMiddlewares.Aggregate<IMiddleware, DNextSend>(
+                req => SendRequest(req, binaryMode),
+                (handle, middleware) => request => middleware.Send(request, handle)
+            );
+
+            return composedHandle(reqOpts);
         }
 
         /// <summary>
@@ -103,115 +246,25 @@ namespace Qiniu.Http
         /// <returns>HTTP-GET的响应结果</returns>
         public HttpResult Get(string url, StringDictionary headers, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
+            return Get(url, headers, token, null, binaryMode);
+        }
 
-            HttpWebRequest wReq = null;
-
-            try
+        public HttpResult Get(string url, StringDictionary headers, string token, List<IMiddleware> middlewares, bool binaryMode = false)
+        {
+            if (headers == null)
             {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "GET";
-                if (headers != null)
-                {
-                    foreach (string fieldName in headers.Keys)
-                    {
-                        if (!WebHeaderCollection.IsRestricted(fieldName))
-                        {
-                            wReq.Headers.Add(fieldName, headers[fieldName]);
-                        }
-                    }
-
-                    if (headers.ContainsKey("Content-Type"))
-                    {
-                        wReq.ContentType = headers["Content-Type"];
-                    }
-                }
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
-            }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-GET] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
+                headers = new StringDictionary{
+                    {"Content-Type", ContentType.WWW_FORM_URLENC}
+                };
             }
 
-            return result;
+            if (!headers.ContainsKey("Content-Type"))
+            {
+                headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
+            }
+
+            HttpRequestOptions requestOptions = CreateHttpRequestOptions("GET", url, headers, token);
+            return SendRequest(requestOptions, middlewares, binaryMode);
         }
 
         /// <summary>
@@ -239,7 +292,7 @@ namespace Qiniu.Http
             {
                 headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
             }
-            
+
             addAuthHeaders(ref headers, auth);
 
             string token = auth.CreateManageTokenV2("POST", url, headers);
@@ -256,115 +309,8 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST 的响应结果</returns>
         public HttpResult Post(string url, StringDictionary headers, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
-
-            HttpWebRequest wReq = null;
-
-            try
-            {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "POST";
-                if (headers != null)
-                {
-                    foreach (string fieldName in headers.Keys)
-                    {
-                        if (!WebHeaderCollection.IsRestricted(fieldName))
-                        {
-                            wReq.Headers.Add(fieldName, headers[fieldName]);
-                        }
-                    }
-
-                    if (headers.ContainsKey("Content-Type"))
-                    {
-                        wReq.ContentType = headers["Content-Type"];
-                    }
-                }
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
-            }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
-            }
-
-            return result;
+            HttpRequestOptions reqOpts = CreateHttpRequestOptions("POST", url, headers, token);
+            return SendRequest(reqOpts, binaryMode);
         }
 
         /// <summary>
@@ -377,111 +323,13 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST的响应结果</returns>
         public HttpResult PostData(string url, byte[] data, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
-
-            HttpWebRequest wReq = null;
-
-            try
-            {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "POST";
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.ContentType = ContentType.APPLICATION_OCTET_STREAM;
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                if (data != null)
-                {
-                    wReq.AllowWriteStreamBuffering = true;
-                    using (Stream sReq = wReq.GetRequestStream())
-                    {
-                        sReq.Write(data, 0, data.Length);
-                        sReq.Flush();
-                    }
-                }
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
-            }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
-            }
-
-            return result;
+            return PostData(
+                url,
+                data,
+                ContentType.APPLICATION_OCTET_STREAM,
+                token,
+                binaryMode
+            );
         }
 
         /// <summary>
@@ -495,111 +343,16 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST的响应结果</returns>
         public HttpResult PostData(string url, byte[] data, string mimeType, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
+            HttpRequestOptions reqOpts = CreateHttpRequestOptions("POST", url, null, token);
 
-            HttpWebRequest wReq = null;
-
-            try
+            reqOpts.Headers.Add("Content-Type", mimeType);
+            if (data != null)
             {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "POST";
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.ContentType = mimeType;
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                if (data != null)
-                {
-                    wReq.AllowWriteStreamBuffering = true;
-                    using (Stream sReq = wReq.GetRequestStream())
-                    {
-                        sReq.Write(data, 0, data.Length);
-                        sReq.Flush();
-                    }
-                }
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
-            }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
+                reqOpts.AllowWriteStreamBuffering = true;
+                reqOpts.RequestData = data;
             }
 
-            return result;
+            return SendRequest(reqOpts, binaryMode);
         }
 
         /// <summary>
@@ -612,112 +365,12 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST的响应结果</returns>
         public HttpResult PostJson(string url, string data, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
-
-            HttpWebRequest wReq = null;
-
-            try
+            byte[] utf8Data = null;
+            if (!string.IsNullOrEmpty(data))
             {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "POST";
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.ContentType = ContentType.APPLICATION_JSON;
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-                
-                if (data != null)
-                {
-                    wReq.AllowWriteStreamBuffering = true;
-                    using (Stream sReq = wReq.GetRequestStream())
-                    {
-                        byte[] utf8Data = Encoding.UTF8.GetBytes(data);
-                        sReq.Write(utf8Data, 0, utf8Data.Length);
-                        sReq.Flush();
-                    }
-                }
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
+                utf8Data = Encoding.UTF8.GetBytes(data);
             }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-JSON] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
-            }
-
-            return result;
+            return PostData(url, utf8Data, ContentType.APPLICATION_JSON, token, binaryMode);
         }
 
         /// <summary>
@@ -730,112 +383,12 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST的响应结果</returns>
         public HttpResult PostText(string url, string data, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
-
-            HttpWebRequest wReq = null;
-
-            try
+            byte[] utf8Data = null;
+            if (!string.IsNullOrEmpty(data))
             {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "POST";
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.ContentType = ContentType.TEXT_PLAIN;
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                if (data != null)
-                {
-                    wReq.AllowWriteStreamBuffering = true;
-                    using (Stream sReq = wReq.GetRequestStream())
-                    {
-                        byte[] utf8Data = Encoding.UTF8.GetBytes(data);
-                        sReq.Write(utf8Data, 0, utf8Data.Length);
-                        sReq.Flush();
-                    }
-                }
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
+                utf8Data = Encoding.UTF8.GetBytes(data);
             }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-TEXT] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
-            }
-
-            return result;
+            return PostData(url, utf8Data, ContentType.TEXT_PLAIN, token, binaryMode);
         }
 
         /// <summary>
@@ -848,115 +401,13 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST的响应结果</returns>
         public HttpResult PostForm(string url, Dictionary<string, string> kvData, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
-
-            HttpWebRequest wReq = null;
-
-            try
+            string data = null;
+            if (kvData != null)
             {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "POST";
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.ContentType = ContentType.WWW_FORM_URLENC;
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                if (kvData != null)
-                {
-                    string data = string.Join("&",
-                        kvData.Select(kvp => Uri.EscapeDataString(kvp.Key) + "=" + Uri.EscapeDataString(kvp.Value)));
-
-                    wReq.AllowWriteStreamBuffering = true;
-                    using (Stream sReq = wReq.GetRequestStream())
-                    {
-                        byte[] utf8Data = Encoding.UTF8.GetBytes(data);
-                        sReq.Write(utf8Data, 0, utf8Data.Length);
-                        sReq.Flush();
-                    }
-                }
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
+                data = string.Join("&",
+                    kvData.Select(kvp => Uri.EscapeDataString(kvp.Key) + "=" + Uri.EscapeDataString(kvp.Value)));
             }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
-            }
-
-            return result;
+            return PostForm(url, data, token, binaryMode);
         }
 
         /// <summary>
@@ -969,112 +420,12 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST的响应结果</returns>
         public HttpResult PostForm(string url, string data, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
-
-            HttpWebRequest wReq = null;
-
-            try
+            byte[] utf8Data = null;
+            if (!string.IsNullOrEmpty(data))
             {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "POST";
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.ContentType = ContentType.WWW_FORM_URLENC;
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                if (!string.IsNullOrEmpty(data))
-                {
-                    wReq.AllowWriteStreamBuffering = true;
-                    using (Stream sReq = wReq.GetRequestStream())
-                    {
-                        byte[] utf8Data = Encoding.UTF8.GetBytes(data);
-                        sReq.Write(utf8Data, 0, utf8Data.Length);
-                        sReq.Flush();
-                    }
-                }
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
+                utf8Data = Encoding.UTF8.GetBytes(data);
             }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
-            }
-
-            return result;
+            return PostData(url, utf8Data, ContentType.WWW_FORM_URLENC, token, binaryMode);
         }
 
         public HttpResult PostForm(string url, StringDictionary headers, string data, Auth auth, bool binaryMode = false)
@@ -1121,121 +472,18 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST的响应结果</returns>
         public HttpResult PostForm(string url, StringDictionary headers, byte[] data, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
-
-            HttpWebRequest wReq = null;
-
-            try
+            HttpRequestOptions reqOpts = CreateHttpRequestOptions("POST", url, headers, token);
+            if (!reqOpts.Headers.ContainsKey("Content-Type"))
             {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "POST";
-                if (headers != null)
-                {
-                    foreach (string fieldName in headers.Keys)
-                    {
-                        if (!WebHeaderCollection.IsRestricted(fieldName))
-                        {
-                            wReq.Headers.Add(fieldName, headers[fieldName]);
-                        }
-                    }
-                }
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.ContentType = ContentType.WWW_FORM_URLENC;
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                if (data != null)
-                {
-                    wReq.AllowWriteStreamBuffering = true;
-                    using (Stream sReq = wReq.GetRequestStream())
-                    {
-                        sReq.Write(data, 0, data.Length);
-                        sReq.Flush();
-                    }
-                }
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
+                reqOpts.Headers.Add("Content-Type", ContentType.WWW_FORM_URLENC);
             }
-            catch (WebException wex)
+            if (data != null)
             {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-FORM] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
+                reqOpts.AllowWriteStreamBuffering = true;
+                reqOpts.RequestData = data;
             }
 
-            return result;
+            return SendRequest(reqOpts, binaryMode);
         }
 
         /// <summary>
@@ -1249,108 +497,20 @@ namespace Qiniu.Http
         /// <returns>HTTP-POST的响应结果</returns>
         public HttpResult PostMultipart(string url, byte[] data, string boundary, string token, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
+            HttpRequestOptions reqOpts = CreateHttpRequestOptions("POST", url, null, token);
 
-            HttpWebRequest wReq = null;
+            reqOpts.Headers.Add(
+                "Content-Type",
+                string.Format("{0}; boundary={1}", ContentType.MULTIPART_FORM_DATA, boundary)
+            );
 
-            try
+            if (data != null)
             {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "POST";
-                if (!string.IsNullOrEmpty(token))
-                {
-                    wReq.Headers.Add("Authorization", token);
-                }
-                wReq.ContentType = string.Format("{0}; boundary={1}", ContentType.MULTIPART_FORM_DATA, boundary);
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                wReq.AllowWriteStreamBuffering = true;
-                using (Stream sReq = wReq.GetRequestStream())
-                {
-                    sReq.Write(data, 0, data.Length);
-                    sReq.Flush();
-                }
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
-            }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-POST-MPART] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
+                reqOpts.AllowWriteStreamBuffering = true;
+                reqOpts.RequestData = data;
             }
 
-            return result;
+            return SendRequest(reqOpts, binaryMode);
         }
 
         /// <summary>
@@ -1359,120 +519,28 @@ namespace Qiniu.Http
         /// <param name="url">请求目标URL</param>
         /// <param name="data">主体数据(字节数据)</param>
         /// <param name="headers">上传设置的headers</param>
-        /// <param name="token">令牌(凭证)[可选->设置为null]</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
         /// <returns>HTTP-PUT的响应结果</returns>
         public HttpResult PutDataWithHeaders(string url, byte[] data, Dictionary<string, string> headers, bool binaryMode = false)
         {
-            HttpResult result = new HttpResult();
-
-            HttpWebRequest wReq = null;
-
-            try
+            // converse headers type for compaction
+            StringDictionary headersDict = new StringDictionary();
+            foreach (KeyValuePair<string, string> kvp in headers)
             {
-                wReq = WebRequest.Create(url) as HttpWebRequest;
-                wReq.Method = "PUT";
-                wReq.ContentType = ContentType.APPLICATION_OCTET_STREAM;
-                wReq.UserAgent = userAgent;
-                wReq.AllowAutoRedirect = allowAutoRedirect;
-                wReq.ServicePoint.Expect100Continue = false;
-
-                foreach(KeyValuePair<string, string> header in headers)
-                {
-                    if (!string.IsNullOrEmpty(header.Value)) 
-                    {
-                        wReq.Headers.Add(header.Key, header.Value);
-                    }
-                }
-                
-                if (data != null)
-                {
-                    wReq.AllowWriteStreamBuffering = true;
-                    using (Stream sReq = wReq.GetRequestStream())
-                    {
-                        sReq.Write(data, 0, data.Length);
-                        sReq.Flush();
-                    }
-                }
-
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
-
-                if (wResp != null)
-                {
-                    result.Code = (int)wResp.StatusCode;
-                    result.RefCode = (int)wResp.StatusCode;
-
-                    getHeaders(ref result, wResp);
-
-                    if (binaryMode)
-                    {
-                        int len = (int)wResp.ContentLength;
-                        result.Data = new byte[len];
-                        int bytesLeft = len;
-                        int bytesRead = 0;
-
-                        using (BinaryReader br = new BinaryReader(wResp.GetResponseStream()))
-                        {
-                            while (bytesLeft > 0)
-                            {
-                                bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                                bytesLeft -= bytesRead;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        using (StreamReader sr = new StreamReader(wResp.GetResponseStream()))
-                        {
-                            result.Text = sr.ReadToEnd();
-                        }
-                    }
-
-                    wResp.Close();
-                }
-            }
-            catch (WebException wex)
-            {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                if (xResp != null)
-                {
-                    result.Code = (int)xResp.StatusCode;
-                    result.RefCode = (int)xResp.StatusCode;
-
-                    getHeaders(ref result, xResp);
-
-                    using (StreamReader sr = new StreamReader(xResp.GetResponseStream()))
-                    {
-                        result.Text = sr.ReadToEnd();
-                    }
-
-                    xResp.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("[{0}] [{1}] [HTTP-PUT-BIN] Error:  ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),userAgent);
-                Exception e = ex;
-                while (e != null)
-                {
-                    sb.Append(e.Message + " ");
-                    e = e.InnerException;
-                }
-                sb.AppendLine();
-
-                result.RefCode = (int)HttpCode.USER_UNDEF;
-                result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
+                headersDict.Add(kvp.Key, kvp.Value);
             }
 
-            return result;
+            HttpRequestOptions wReq = CreateHttpRequestOptions("PUT", url, headersDict);
+
+            wReq.Headers.Add("Content-Type", ContentType.APPLICATION_OCTET_STREAM);
+
+            if (data != null)
+            {
+                wReq.AllowWriteStreamBuffering = true;
+                wReq.RequestData = data;
+            }
+
+            return SendRequest(wReq, binaryMode);
         }
 
         /// <summary>
@@ -1506,7 +574,7 @@ namespace Qiniu.Http
                     hr.RefInfo.Add("ContentType", resp.ContentType);
                 }
 
-                hr.RefInfo.Add("ContentLength", resp.ContentLength.ToString());                
+                hr.RefInfo.Add("ContentLength", resp.ContentLength.ToString());
 
                 var headers = resp.Headers;
                 if (headers != null && headers.Count > 0)
