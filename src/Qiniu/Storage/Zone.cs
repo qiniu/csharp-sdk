@@ -112,18 +112,5 @@
             SrcUpHosts = new string[] { "up-as0.qiniup.com" },
             CdnUpHosts = new string[] { "upload-as0.qiniup.com" }
         };
-
-        /// <summary>
-        /// 亚太-首尔
-        /// </summary>
-        public static Zone ZONE_AP_Seoul = new Zone()
-        {
-            RsHost = "rs-ap-northeast-1.qiniuapi.com",
-            RsfHost = "rsf-ap-northeast-1.qiniuapi.com",
-            ApiHost = "api-ap-northeast-1.qiniuapi.com",
-            IovipHost = "iovip-ap-northeast-1.qiniuio.com",
-            SrcUpHosts = new string[] { "up-ap-northeast-1.qiniup.com" },
-            CdnUpHosts = new string[] { "upload-ap-northeast-1.qiniup.com" }
-        };
     }
 }
