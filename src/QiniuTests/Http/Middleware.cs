@@ -84,14 +84,14 @@ namespace QiniuTests.Http
             CollectionAssert.AreEqual(
                 new List<string>
                 {
-                    // fake.pysdk.qiniu.com
+                    // fake.csharpsdk.qiniu.com
                     "bef_A0",
                     "aft_A1",
                     "bef_A2",
                     "aft_A3",
                     "bef_A4",
                     "aft_A5",
-                    // unavailable.pysdk.qiniu.com
+                    // unavailable.csharpsdk.qiniu.com
                     "bef_A6",
                     "aft_A7",
                     "bef_A8",

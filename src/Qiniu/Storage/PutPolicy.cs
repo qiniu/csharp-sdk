@@ -33,6 +33,13 @@ namespace Qiniu.Storage
         public int? InsertOnly { get; set; }
 
         /// <summary>
+        /// [可选]saveKey 的优先级设置。为 true 时，saveKey不能为空，会忽略客户端指定的key，强制使用saveKey进行文件命名。
+        /// 默认为 false
+        /// </summary>
+        [JsonProperty("forceSaveKey", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? ForceSaveKey { get; set; }
+
+        /// <summary>
         /// [可选]保存文件的key
         /// </summary>
         [JsonProperty("saveKey", NullValueHandling = NullValueHandling.Ignore)]
@@ -105,13 +112,13 @@ namespace Qiniu.Storage
         public string PersistentPipeline { get; set; }
 
         /// <summary>
-        /// [可选]上传文件大小限制：最小值
+        /// [可选]上传文件大小限制：最小值，单位Byte
         /// </summary>
         [JsonProperty("fsizeMin", NullValueHandling = NullValueHandling.Ignore)]
         public int? FsizeMin { get; set; }
 
         /// <summary>
-        /// [可选]上传文件大小限制：最大值
+        /// [可选]上传文件大小限制：最大值，单位Byte
         /// </summary>
         [JsonProperty("fsizeLimit", NullValueHandling = NullValueHandling.Ignore)]
         public int? FsizeLimit { get; set; }
