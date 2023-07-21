@@ -16,11 +16,15 @@ namespace Qiniu.Storage
         /// </summary>
         public static string DefaultUcHost = "uc.qbox.me";
         /// <summary>
-        /// 默认备用空间管理域名
+        /// 默认查询区域域名
         /// </summary>
-        public static List<string> DefaultBackupUcHosts = new List<string>
+        public static string DefaultQueryRegionHost = "kodo-config.qiniuapi.com";
+        /// <summary>
+        /// 默认备用查询区域域名
+        /// </summary>
+        public static List<string> DefaultBackupQueryRegionHosts = new List<string>
         {
-            "kodo-config.qiniuapi.com",
+            "uc.qbox.me",
             "api.qiniu.com"
         };
         
@@ -68,12 +72,15 @@ namespace Qiniu.Storage
         
         private string _ucHost = DefaultUcHost;
 
-        private List<string> _backupUcHosts = DefaultBackupUcHosts;
+        private string _queryRegionHost = DefaultQueryRegionHost;
+
+        private List<string> _backupQueryRegionHosts = DefaultBackupQueryRegionHosts;
 
         public void SetUcHost(string val)
         {
             _ucHost = val;
-            _backupUcHosts.Clear();
+            _queryRegionHost = val;
+            _backupQueryRegionHosts.Clear();
         }
 
         public string UcHost()
@@ -82,14 +89,26 @@ namespace Qiniu.Storage
             return string.Format("{0}{1}", scheme, _ucHost);
         }
 
-        public void SetBackupUcHost(List<string> val)
+        public void SetQueryRegionHost(string val)
         {
-            _backupUcHosts = val;
+            _queryRegionHost = val;
+            _backupQueryRegionHosts.Clear();
         }
 
-        public List<string> BackupUcHost()
+        public string QueryRegionHost()
         {
-            return _backupUcHosts;
+            string scheme = UseHttps ? "https://" : "http://";
+            return string.Format("{0}{1}", scheme, _queryRegionHost);
+        }
+
+        public void SetBackupQueryRegionHosts(List<string> val)
+        {
+            _backupQueryRegionHosts = val;
+        }
+
+        public List<string> BackupQueryRegionHosts()
+        {
+            return _backupQueryRegionHosts;
         }
 
         /// <summary>
@@ -104,7 +123,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, UcHost(), BackupUcHost());
+                z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());
             }
             return string.Format("{0}{1}", scheme, z.RsHost);
         }
@@ -121,7 +140,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, UcHost(), BackupUcHost());
+                z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());
             }
             return string.Format("{0}{1}", scheme, z.RsfHost);
         }
@@ -138,7 +157,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, UcHost(), BackupUcHost());
+                z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());
             }
             return string.Format("{0}{1}", scheme, z.ApiHost);
         }
@@ -155,7 +174,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, UcHost(), BackupUcHost());
+                z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());
             }
             return string.Format("{0}{1}", scheme, z.IovipHost);
         }
@@ -172,7 +191,7 @@ namespace Qiniu.Storage
             Zone z = this.Zone;
             if (z == null)
             {
-                z = ZoneHelper.QueryZone(ak, bucket, UcHost(), BackupUcHost());
+                z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());
             }
             string upHost = z.SrcUpHosts[0];
             if (this.UseCdnDomains)

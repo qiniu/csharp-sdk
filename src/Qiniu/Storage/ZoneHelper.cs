@@ -25,7 +25,8 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="accessKey">AccessKey</param>
         /// <param name="bucket">空间名称</param>
-        /// <param name="ucHost">UC 域名</param>
+        /// <param name="ucHost">查询域名</param>
+        /// <param name="backupUcHosts">备用查询域名</param>
         public static Zone QueryZone(
             string accessKey,
             string bucket,
@@ -59,12 +60,12 @@ namespace Qiniu.Storage
             HttpResult hr = null;
             if (String.IsNullOrEmpty(ucHost))
             {
-                ucHost = "https://" + Config.DefaultUcHost;
+                ucHost = "https://" + Config.DefaultQueryRegionHost;
             }
 
             if (backupUcHosts == null)
             {
-                backupUcHosts = Config.DefaultBackupUcHosts;
+                backupUcHosts = Config.DefaultBackupQueryRegionHosts;
             }
             
             try
