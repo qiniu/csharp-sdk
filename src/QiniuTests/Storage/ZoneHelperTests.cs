@@ -14,13 +14,28 @@ namespace Qiniu.Storage.Tests
 
             Assert.NotNull(zone);
         }
-
+        
+        [Test]
+        public void QueryZoneWithCustomQueryRegionHost()
+        {
+            Config config = new Config();
+            config.SetQueryRegionHost("uc.qbox.me");
+            config.UseHttps = true;
+            
+            Zone zone = ZoneHelper.QueryZone(
+                AccessKey,
+                Bucket,
+                config.UcHost()
+            );
+            Assert.NotNull(zone);
+        }
+        
         [Test]
         public void QueryZoneWithBackupHostsTest()
         {
             Config config = new Config();
-            config.SetUcHost("fake-uc.csharp.qiniu.com");
-            config.SetBackupUcHost(new List<string>
+            config.SetQueryRegionHost("fake-uc.csharp.qiniu.com");
+            config.SetBackupQueryRegionHosts(new List<string>
                 {
                     "unavailable-uc.csharp.qiniu.com",
                     "uc.qbox.me"
@@ -32,7 +47,29 @@ namespace Qiniu.Storage.Tests
                 AccessKey,
                 Bucket,
                 config.UcHost(),
-                config.BackupUcHost()
+                config.BackupQueryRegionHosts()
+            );
+            Assert.NotNull(zone);
+        }
+        
+        [Test]
+        public void QueryZoneWithUcAndBackupHostsTest()
+        {
+            Config config = new Config();
+            config.SetUcHost("fake-uc.csharp.qiniu.com");
+            config.SetBackupQueryRegionHosts(new List<string>
+                {
+                    "unavailable-uc.csharp.qiniu.com",
+                    "uc.qbox.me"
+                }
+            );
+            config.UseHttps = true;
+            
+            Zone zone = ZoneHelper.QueryZone(
+                AccessKey,
+                Bucket,
+                config.UcHost(),
+                config.BackupQueryRegionHosts()
             );
             Assert.NotNull(zone);
         }
