@@ -79,9 +79,17 @@ namespace Qiniu.Storage
         /// 文件在设置过期时间后才会返回该字段。
         /// 历史文件过期仍会自动删除，但不会返回该字段，重新设置文件过期时间可使历史文件返回该字段。
         /// </summary>
-        [JsonProperty("TransitionToIA", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("transitionToIA", NullValueHandling = NullValueHandling.Ignore)]
         public int TransitionToIa { get; set; }
         
+        /// <summary>
+        /// 文件生命周期中转为归档直读存储的日期，Unix 时间戳格式。
+        /// 文件在设置过期时间后才会返回该字段。
+        /// 历史文件过期仍会自动删除，但不会返回该字段，重新设置文件过期时间可使历史文件返回该字段。
+        /// </summary>
+        [JsonProperty("transitionToArchiveIR", NullValueHandling = NullValueHandling.Ignore)]
+        public int TransitionToArchiveIr { get; set; }
+
         /// <summary>
         /// 文件生命周期中转为归档存储的日期，Unix 时间戳格式。
         /// 文件在设置过期时间后才会返回该字段。
