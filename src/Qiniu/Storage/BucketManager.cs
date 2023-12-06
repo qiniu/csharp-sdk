@@ -993,7 +993,6 @@ namespace Qiniu.Storage
 
                 result += "/cond/" + Base64.UrlSafeBase64Encode(query);
             }
-            Console.WriteLine(result);
 
             return result;
         }
