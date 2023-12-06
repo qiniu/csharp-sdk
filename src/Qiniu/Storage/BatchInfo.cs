@@ -60,6 +60,7 @@ namespace Qiniu.Storage
         /// 1 低频存储
         /// 2 归档存储
         /// 3 深度归档存储
+        /// 4 归档直读存储
         /// </summary>
         [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         public int FileType { get; set; }
@@ -99,24 +100,32 @@ namespace Qiniu.Storage
         
         /// <summary>
         /// 文件生命周期中转为低频存储的日期，Unix 时间戳格式。
-        /// 文件在设置过期时间后才会返回该字段。
-        /// 历史文件过期仍会自动删除，但不会返回该字段，重新设置文件过期时间可使历史文件返回该字段。
+        /// 文件在设置低频存储转换时间后才会返回该字段。
+        /// 历史文件到期仍会自动转换，但不会返回该字段，重新设置文件转换时间可使历史文件返回该字段。
         /// </summary>
         [JsonProperty("TransitionToIA", NullValueHandling = NullValueHandling.Ignore)]
         public int TransitionToIa { get; set; }
         
         /// <summary>
+        /// 文件生命周期中转为归档直读存储的日期，Unix 时间戳格式。
+        /// 文件在设置归档直读存储转换时间后才会返回该字段。
+        /// 历史文件到期仍会自动转换，但不会返回该字段，重新设置文件转换时间可使历史文件返回该字段。
+        /// </summary>
+        [JsonProperty("transitionToArchiveIR", NullValueHandling = NullValueHandling.Ignore)]
+        public int TransitionToArchiveIr { get; set; }
+
+        /// <summary>
         /// 文件生命周期中转为归档存储的日期，Unix 时间戳格式。
-        /// 文件在设置过期时间后才会返回该字段。
-        /// 历史文件过期仍会自动删除，但不会返回该字段，重新设置文件过期时间可使历史文件返回该字段。
+        /// 文件在设置归档存储转换时间后才会返回该字段。
+        /// 历史文件到期仍会自动转换，但不会返回该字段，重新设置文件转换时间可使历史文件返回该字段。
         /// </summary>
         [JsonProperty("transitionToARCHIVE", NullValueHandling = NullValueHandling.Ignore)]
         public int TransitionToArchive { get; set; }
         
         /// <summary>
         /// 文件生命周期中转为深度归档存储的日期，Unix 时间戳格式。
-        /// 文件在设置过期时间后才会返回该字段。
-        /// 历史文件过期仍会自动删除，但不会返回该字段，重新设置文件过期时间可使历史文件返回该字段。
+        /// 文件在设置深度归档存储转换时间后才会返回该字段。
+        /// 历史文件到期仍会自动转换，但不会返回该字段，重新设置文件转换时间可使历史文件返回该字段。
         /// </summary>
         [JsonProperty("transitionToDeepArchive", NullValueHandling = NullValueHandling.Ignore)]
         public int TransitionToDeepArchive { get; set; }

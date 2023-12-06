@@ -338,7 +338,14 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
-        /// <param name="fileType">修改后的文件存储类型，0表示普通存储，1表示低频存储，2表示归档存储，3表示深度归档存储</param>
+        /// <param name="fileType">
+        /// 修改后的文件存储类型：
+        /// 0 表示普通存储；
+        /// 1 表示低频存储；
+        /// 2 表示归档存储；
+        /// 3 表示深度归档存储；
+        /// 4 表示归档直读存储；
+        /// </param>
         /// <returns>状态码为200时表示OK</returns>
         public HttpResult ChangeType(string bucket, string key, int fileType)
         {
