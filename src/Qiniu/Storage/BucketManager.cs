@@ -421,11 +421,32 @@ namespace Qiniu.Storage
         {
             BatchResult result = new BatchResult();
 
+            string bucket = "";
+            foreach (string op in batchOps.Split('&'))
+            {
+                string[] segments = op.Split('/');
+                if (segments.Length > 3)
+                {
+                    string entry = Encoding.UTF8.GetString(Base64.UrlsafeBase64Decode(segments[2]));
+                    bucket = entry.Split(':')[0];
+                }
+
+                if (bucket.Length > 0)
+                {
+                    break;
+                }
+            }
+
+            if (bucket.Length == 0)
+            {
+                result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
+                result.RefText = "bucket is Empty";
+                return result;
+            }
+
             try
             {
-                string scheme = this.config.UseHttps ? "https://" : "http://";
-                string rsHost = string.Format("{0}{1}", scheme, Config.DefaultRsHost);
-                string batchUrl = rsHost + "/batch";
+                string batchUrl = string.Format("{0}/batch", this.config.RsHost(this.mac.AccessKey, bucket));
 
                 HttpResult hr = httpManager.PostForm(batchUrl, null, batchOps, auth);
                 result.Shadow(hr);
