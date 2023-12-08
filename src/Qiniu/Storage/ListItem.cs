@@ -42,6 +42,7 @@ namespace Qiniu.Storage
         /// 1 低频存储
         /// 2 归档存储
         /// 3 深度归档存储
+        /// 4 归档直读存储
         /// </summary>
         [JsonProperty("type")]
         public int FileType { get; set; }

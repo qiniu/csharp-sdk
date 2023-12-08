@@ -338,7 +338,14 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="bucket">空间名称</param>
         /// <param name="key">文件key</param>
-        /// <param name="fileType">修改后的文件存储类型，0表示普通存储，1表示低频存储，2表示归档存储，3表示深度归档存储</param>
+        /// <param name="fileType">
+        /// 修改后的文件存储类型：
+        /// 0 表示普通存储；
+        /// 1 表示低频存储；
+        /// 2 表示归档存储；
+        /// 3 表示深度归档存储；
+        /// 4 表示归档直读存储；
+        /// </param>
         /// <returns>状态码为200时表示OK</returns>
         public HttpResult ChangeType(string bucket, string key, int fileType)
         {
@@ -414,11 +421,36 @@ namespace Qiniu.Storage
         {
             BatchResult result = new BatchResult();
 
+            string bucket = "";
+            foreach (string op in batchOps.Split('&'))
+            {
+                string[] segments = op.Split('/');
+                if (segments.Length < 3)
+                {
+                    continue;
+                }
+
+                string entry = Encoding.UTF8.GetString(Base64.UrlsafeBase64Decode(segments[2]));
+                bucket = entry.Split(':')[0];
+
+                if (bucket.Length > 0)
+                {
+                    break;
+                }
+            }
+
+            if (bucket.Length == 0)
+            {
+                result.Code = (int)HttpCode.INVALID_ARGUMENT;
+                result.RefCode = (int)HttpCode.INVALID_ARGUMENT;
+                result.Text = "{\"error\":\"bucket is Empty\"}";
+                result.RefText = "bucket is Empty";
+                return result;
+            }
+
             try
             {
-                string scheme = this.config.UseHttps ? "https://" : "http://";
-                string rsHost = string.Format("{0}{1}", scheme, Config.DefaultRsHost);
-                string batchUrl = rsHost + "/batch";
+                string batchUrl = string.Format("{0}/batch", this.config.RsHost(this.mac.AccessKey, bucket));
 
                 HttpResult hr = httpManager.PostForm(batchUrl, null, batchOps, auth);
                 result.Shadow(hr);
@@ -707,7 +739,8 @@ namespace Qiniu.Storage
             int toIaAfterDays = 0,
             int toArchiveAfterDays = 0,
             int toDeepArchiveAfterDays = 0,
-            int deleteAfterDays = 0
+            int deleteAfterDays = 0,
+            int toArchiveIrAfterDays = 0
         )
         {
             return SetObjectLifecycle(
@@ -717,7 +750,8 @@ namespace Qiniu.Storage
                 toIaAfterDays,
                 toArchiveAfterDays,
                 toDeepArchiveAfterDays,
-                deleteAfterDays
+                deleteAfterDays,
+                toArchiveIrAfterDays
             );
         }
 
@@ -728,6 +762,7 @@ namespace Qiniu.Storage
         /// <param name="key">文件key</param>
         /// <param name="cond">匹配条件，只有条件匹配才会设置成功，目前支持：hash、mime、fsize、putTime</param>
         /// <param name="toIaAfterDays">多少天后将文件转为低频存储，设置为 -1 表示取消已设置的转低频存储的生命周期规则，0 表示不修改转低频生命周期规则。</param>
+        /// <param name="toArchiveIrAfterDays">多少天后将文件转为归档直读存储，设置为 -1 表示取消已设置的转归档直读存储的生命周期规则，0 表示不修改转归档直读生命周期规则。</param>
         /// <param name="toArchiveAfterDays">多少天后将文件转为归档存储，设置为 -1 表示取消已设置的转归档存储的生命周期规则，0 表示不修改转归档生命周期规则。</param>
         /// <param name="toDeepArchiveAfterDays">多少天后将文件转为深度归档存储，设置为 -1 表示取消已设置的转深度归档存储的生命周期规则，0 表示不修改转深度归档生命周期规则。</param>
         /// <param name="deleteAfterDays">多少天后将文件删除，设置为 -1 表示取消已设置的删除存储的生命周期规则，0 表示不修改删除存储的生命周期规则。</param>
@@ -739,7 +774,8 @@ namespace Qiniu.Storage
             int toIaAfterDays = 0,
             int toArchiveAfterDays = 0,
             int toDeepArchiveAfterDays = 0,
-            int deleteAfterDays = 0
+            int deleteAfterDays = 0,
+            int toArchiveIrAfterDays = 0
         )
         {
             HttpResult result = new HttpResult();
@@ -747,7 +783,7 @@ namespace Qiniu.Storage
             try
             {
                 string updateUrl = string.Format("{0}{1}", this.config.RsHost(this.mac.AccessKey, bucket),
-                    SetObjectLifecycleOp(bucket, key, cond, toIaAfterDays, toArchiveAfterDays, toDeepArchiveAfterDays, deleteAfterDays));
+                    SetObjectLifecycleOp(bucket, key, cond, toIaAfterDays, toArchiveAfterDays, toDeepArchiveAfterDays, deleteAfterDays, toArchiveIrAfterDays));
                 StringDictionary headers = new StringDictionary
                 {
                     {"Content-Type", ContentType.WWW_FORM_URLENC}
@@ -954,6 +990,7 @@ namespace Qiniu.Storage
         /// <param name="key">文件key</param>
         /// <param name="cond">匹配条件，只有条件匹配才会设置成功，目前支持：hash、mime、fsize、putTime</param>
         /// <param name="toIaAfterDays">多少天后将文件转为低频存储，设置为 -1 表示取消已设置的转低频存储的生命周期规则，0 表示不修改转低频生命周期规则。</param>
+        /// <param name="toArchiveIrAfterDays">多少天后将文件转为归档直读存储，设置为 -1 表示取消已设置的转归档直读存储的生命周期规则，0 表示不修改转归档直读生命周期规则。</param>
         /// <param name="toArchiveAfterDays">多少天后将文件转为归档存储，设置为 -1 表示取消已设置的转归档存储的生命周期规则，0 表示不修改转归档生命周期规则。</param>
         /// <param name="toDeepArchiveAfterDays">多少天后将文件转为深度归档存储，设置为 -1 表示取消已设置的转深度归档存储的生命周期规则，0 表示不修改转深度归档生命周期规则。</param>
         /// <param name="deleteAfterDays">多少天后将文件删除，设置为 -1 表示取消已设置的删除存储的生命周期规则，0 表示不修改删除存储的生命周期规则。</param>
@@ -965,13 +1002,14 @@ namespace Qiniu.Storage
             int toIaAfterDays = 0,
             int toArchiveAfterDays = 0,
             int toDeepArchiveAfterDays = 0,
-            int deleteAfterDays = 0
+            int deleteAfterDays = 0,
+            int toArchiveIrAfterDays = 0
         )
         {
             string entry = Base64.UrlSafeBase64Encode(bucket, key);
             string result = string.Format(
-                "/lifecycle/{0}/toIAAfterDays/{1}/toArchiveAfterDays/{2}/toDeepArchiveAfterDays/{3}/deleteAfterDays/{4}",
-                entry, toIaAfterDays, toArchiveAfterDays, toDeepArchiveAfterDays, deleteAfterDays);
+                "/lifecycle/{0}/toIAAfterDays/{1}/toArchiveIRAfterDays/{2}/toArchiveAfterDays/{3}/toDeepArchiveAfterDays/{4}/deleteAfterDays/{5}",
+                entry, toIaAfterDays, toArchiveIrAfterDays, toArchiveAfterDays, toDeepArchiveAfterDays, deleteAfterDays);
 
             if (cond != null)
             {
@@ -980,7 +1018,6 @@ namespace Qiniu.Storage
 
                 result += "/cond/" + Base64.UrlSafeBase64Encode(query);
             }
-            Console.WriteLine(result);
 
             return result;
         }
