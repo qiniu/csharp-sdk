@@ -24,7 +24,7 @@ namespace Qiniu.Storage
         /// [必需]上传策略失效时刻，请使用SetExpire来设置它
         /// </summary>
         [JsonProperty("deadline")]
-        public int Deadline { get; private set; }
+        public long Deadline { get; private set; }
 
         /// <summary>
         /// [可选]"仅新增"模式
@@ -115,13 +115,13 @@ namespace Qiniu.Storage
         /// [可选]上传文件大小限制：最小值，单位Byte
         /// </summary>
         [JsonProperty("fsizeMin", NullValueHandling = NullValueHandling.Ignore)]
-        public int? FsizeMin { get; set; }
+        public long? FsizeMin { get; set; }
 
         /// <summary>
         /// [可选]上传文件大小限制：最大值，单位Byte
         /// </summary>
         [JsonProperty("fsizeLimit", NullValueHandling = NullValueHandling.Ignore)]
-        public int? FsizeLimit { get; set; }
+        public long? FsizeLimit { get; set; }
 
         /// <summary>
         /// [可选]上传时是否自动检测MIME
@@ -153,7 +153,12 @@ namespace Qiniu.Storage
         /// <param name="expireInSeconds"></param>
         public void SetExpires(int expireInSeconds)
         {
-            this.Deadline = (int)Util.UnixTimestamp.GetUnixTimestamp(expireInSeconds);
+            this.Deadline = Util.UnixTimestamp.GetUnixTimestamp(expireInSeconds);
+        }
+
+        public void SetExpires(long expireInSeconds)
+        {
+            this.Deadline = Util.UnixTimestamp.GetUnixTimestamp(expireInSeconds);
         }
 
         /// <summary>
