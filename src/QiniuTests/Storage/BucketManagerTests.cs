@@ -267,9 +267,8 @@ namespace Qiniu.Storage.Tests
                 10,
                 20,
                 30,
-                40);
-                // 40,
-                // 15);
+                40,
+                15);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.Fail("deleteAfterDays error: " + ret.ToString());
@@ -281,7 +280,7 @@ namespace Qiniu.Storage.Tests
                 Assert.Fail("stat error: " + statRet.ToString());
             }
             Assert.True(statRet.Result.TransitionToIa > 0);
-            // Assert.True(statRet.Result.TransitionToArchiveIr > 0);
+            Assert.True(statRet.Result.TransitionToArchiveIr > 0);
             Assert.True(statRet.Result.TransitionToArchive > 0);
             Assert.True(statRet.Result.TransitionToDeepArchive > 0);
             Assert.True(statRet.Result.Expiration > 0);
@@ -321,9 +320,8 @@ namespace Qiniu.Storage.Tests
                 10,
                 20,
                 30,
-                40);
-                // 40,
-                // 15);
+                40,
+                15);
             if (ret.Code != (int)HttpCode.OK)
             {
                 Assert.Fail("deleteAfterDays error: " + ret.ToString());
