@@ -50,6 +50,8 @@ namespace Qiniu.Storage.Tests
             putExtra.Params["x:var_1"] = "val_1";
             putExtra.Params["x:var_2"] = "val_2";
 
+            putExtra.BlockUploadThreads = 2;
+
             ResumableUploader target = new ResumableUploader(config);
             HttpResult result = target.UploadFile(filePath, key, token, putExtra);
             Console.WriteLine("chunk upload result: " + result.ToString());
@@ -115,6 +117,7 @@ namespace Qiniu.Storage.Tests
             extra.Params = new Dictionary<string, string>();
             extra.Params["x:var_1"] = "val_1";
             extra.Params["x:var_2"] = "val_2";
+            extra.BlockUploadThreads = 2;
             ResumableUploader target = new ResumableUploader(config);
             HttpResult result = target.UploadFile(filePath, key, token, extra);
             Console.WriteLine("chunk upload result: " + result.ToString());
@@ -383,7 +386,7 @@ namespace Qiniu.Storage.Tests
                     }
                 }
 
-               File.Delete(filePath);
+                File.Delete(filePath);
             }
         }
 
