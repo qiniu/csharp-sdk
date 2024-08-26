@@ -41,7 +41,7 @@ namespace QiniuTests.Http
                 new RecorderMiddleware(orderRecorder, "B")
             };
 
-            HttpResult resp = httpManager.Get("https://qiniu.com/index.html", null, null, middlewares);
+            HttpResult resp = httpManager.Get("https://example.com/index.html", null, null, middlewares);
 
             Assert.AreEqual((int)HttpCode.OK, resp.Code, resp.ToString());
             CollectionAssert.AreEqual(
@@ -70,7 +70,7 @@ namespace QiniuTests.Http
                     new List<string>
                     {
                         "unavailable.csharpsdk.qiniu.com",
-                        "qiniu.com"
+                        "example.com"
                     },
                     3
                 ),

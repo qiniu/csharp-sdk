@@ -139,7 +139,7 @@ namespace Qiniu.Storage.Tests
             string key = "qiniu.png";
             
             string newKey = "qiniu-to-change-type.png";
-            HttpResult copyRet = bucketManager.Copy(Bucket, "qiniu.png", Bucket, newKey, true);
+            HttpResult copyRet = bucketManager.Copy(Bucket, key, Bucket, newKey, true);
             if (copyRet.Code != (int)HttpCode.OK)
             {
                 Assert.Fail("copy error: " + copyRet.ToString());
