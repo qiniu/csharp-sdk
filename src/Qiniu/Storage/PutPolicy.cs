@@ -112,6 +112,13 @@ namespace Qiniu.Storage
         public string PersistentPipeline { get; set; }
 
         /// <summary>
+        /// [可选]持久化任务类型，为 1 时开启闲时任务
+        /// </summary>
+        [JsonProperty("persistentType", NullValueHandling = NullValueHandling.Ignore)]
+        public int? PersistentType { get; set; }
+
+
+        /// <summary>
         /// [可选]上传文件大小限制：最小值，单位Byte
         /// </summary>
         [JsonProperty("fsizeMin", NullValueHandling = NullValueHandling.Ignore)]
