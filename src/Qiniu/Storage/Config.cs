@@ -18,14 +18,14 @@ namespace Qiniu.Storage
         /// <summary>
         /// 默认查询区域域名
         /// </summary>
-        public static string DefaultQueryRegionHost = "kodo-config.qiniuapi.com";
+        public static string DefaultQueryRegionHost = "uc.qiniuapi.com";
         /// <summary>
         /// 默认备用查询区域域名
         /// </summary>
         public static List<string> DefaultBackupQueryRegionHosts = new List<string>
         {
-            "uc.qbox.me",
-            "api.qiniu.com"
+            "kodo-config.qiniuapi.com",
+            "uc.qbox.me"
         };
         
         /// <summary>
