@@ -23,5 +23,13 @@ namespace QiniuTests.Util
         {
             return string.Format("Qiniu {0}", sign.SignRequestV2(method, url, headers, Encoding.UTF8.GetBytes(body)));
         }
+
+        [TestCaseSource(typeof(VerifyRequestDataClass), nameof(VerifyRequestDataClass.TestCases))]
+        public bool VerifyRequestTest(string method, string url, StringDictionary headers, string body)
+        {
+            Mac mac = new Mac("abcdefghklmnopq", "1234567890");
+            Signature mockSign = new Signature(mac);
+            return mockSign.VerifyRequest(method, url, headers, body);
+        }
     }
 }
