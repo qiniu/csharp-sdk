@@ -14,7 +14,7 @@ namespace Qiniu.Storage
         /// <summary>
         /// 默认空间管理域名
         /// </summary>
-        public static string DefaultUcHost = "uc.qbox.me";
+        public static string DefaultUcHost = "uc.qiniuapi.com";
         /// <summary>
         /// 默认查询区域域名
         /// </summary>

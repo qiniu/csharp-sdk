@@ -11,7 +11,7 @@ namespace Qiniu.Storage.Tests
         {
             Config config = new Config();
             string ucHost = config.UcHost();
-            Assert.AreEqual("http://uc.qbox.me", ucHost);
+            Assert.AreEqual("http://uc.qiniuapi.com", ucHost);
             config.SetUcHost("uc.example.com");
             ucHost = config.UcHost();
             Assert.AreEqual("http://uc.example.com", ucHost);
@@ -19,7 +19,7 @@ namespace Qiniu.Storage.Tests
             config = new Config();
             config.UseHttps = true;
             ucHost = config.UcHost();
-            Assert.AreEqual("https://uc.qbox.me", ucHost);
+            Assert.AreEqual("https://uc.qiniuapi.com", ucHost);
             config.SetUcHost("uc.example.com");
             ucHost = config.UcHost();
             Assert.AreEqual("https://uc.example.com", ucHost);
