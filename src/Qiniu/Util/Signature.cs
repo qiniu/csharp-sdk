@@ -200,5 +200,50 @@ namespace Qiniu.Util
         {
             return SignRequestV2(method, url, headers, Encoding.UTF8.GetString(body));
         }
+
+        public bool VerifyRequest(
+            string method,
+            string url,
+            StringDictionary headers,
+            string body = null
+        )
+        {
+            byte[] bodyBytes = null;
+            if (!string.IsNullOrEmpty(body)) {
+                bodyBytes = Encoding.UTF8.GetBytes(body);
+            }
+            return VerifyRequest(
+                method,
+                url,
+                headers,
+                bodyBytes
+            );
+        }
+
+        public bool VerifyRequest(
+            string method,
+            string url,
+            StringDictionary headers,
+            byte[] body = null
+        )
+        {
+            if (!headers.ContainsKey("Authorization"))
+            {
+                return false;
+            }
+
+            string authString = headers["Authorization"];
+            if (authString.StartsWith("QBox "))
+            {
+                return authString == "QBox " + SignRequest(url, body);
+            }
+
+            if (authString.StartsWith("Qiniu "))
+            {
+                return authString == "Qiniu " + SignRequestV2(method, url, headers, body);
+            }
+
+            return false;
+        }
     }
 }

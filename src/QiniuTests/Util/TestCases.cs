@@ -211,4 +211,36 @@ namespace QiniuTests.Util
             }
         }
     }
+
+    public class VerifyRequestDataClass
+    {
+        public static IEnumerable TestCases
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    "",
+                    "https://test.qiniu.com/callback",
+                    new StringDictionary
+                    {
+                        {"Authorization", "QBox abcdefghklmnopq:T7F-SjxX7X2zI4Fc1vANiNt1AUE="},
+                        {"Content-Type", "application/x-www-form-urlencoded"}
+                    },
+                    "name=sunflower.jpg&hash=Fn6qeQi4VDLQ347NiRm-RlQx_4O2&location=Shanghai&price=1500.00&uid=123"
+                ).Returns(true);
+
+                yield return new TestCaseData(
+                    "GET",
+                    "https://test.qiniu.com/callback",
+                    new StringDictionary
+                    {
+                        {"Authorization", "Qiniu abcdefghklmnopq:ZqS7EZuAKrhZaEIxqNGxDJi41IQ="},
+                        {"X-Qiniu-Bbb", "BBB"},
+                        {"Content-Type", "application/x-www-form-urlencoded"}
+                    },
+                    "name=sunflower.jpg&hash=Fn6qeQi4VDLQ347NiRm-RlQx_4O2&location=Shanghai&price=1500.00&uid=123"
+                ).Returns(true);
+            }
+        }
+    }
 }

@@ -19,7 +19,7 @@ namespace Qiniu.Storage
 
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                   info= JsonConvert.DeserializeObject<PfopInfo>(Text);
+                    info= JsonConvert.DeserializeObject<PfopInfo>(Text);
                 }
                 return info;
             }

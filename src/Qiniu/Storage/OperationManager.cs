@@ -41,8 +41,17 @@ namespace Qiniu.Storage
         /// <param name="pipeline">私有队列</param>
         /// <param name="notifyUrl">通知url</param>
         /// <param name="force">forece参数</param>
+        /// <param name="persistentType">为 1 时开启闲时任务</param>
         /// <returns>pfop操作返回结果，正确返回结果包含persistentId</returns>
-        public PfopResult Pfop(string bucket, string key, string fops, string pipeline, string notifyUrl, bool force)
+        public PfopResult Pfop(
+            string bucket,
+            string key,
+            string fops,
+            string pipeline,
+            string notifyUrl,
+            bool force,
+            int type = 0
+        )
         {
             PfopResult result = new PfopResult();
 
@@ -64,6 +73,10 @@ namespace Qiniu.Storage
                 if (!string.IsNullOrEmpty(pipeline))
                 {
                     sb.AppendFormat("&pipeline={0}", pipeline);
+                }
+                if (type > 0)
+                {
+                    sb.AppendFormat("&type={0}", type);
                 }
                 byte[] data = Encoding.UTF8.GetBytes(sb.ToString());
                 string token = auth.CreateManageToken(pfopUrl, data);

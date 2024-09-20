@@ -13,6 +13,16 @@ namespace Qiniu.Storage
         [JsonProperty("id")]
         public string Id;
         /// <summary>
+        /// 任务类型，为 1 代表为闲时任务
+        /// </summary>
+        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Type;
+        /// <summary>
+        /// 任务创建时间
+        /// </summary>
+        [JsonProperty("creationDate", NullValueHandling = NullValueHandling.Ignore)]
+        public string CreationDate;
+        /// <summary>
         /// 任务结果状态码
         /// </summary>
         [JsonProperty("code")]
