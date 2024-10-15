@@ -53,6 +53,11 @@ namespace Qiniu.Storage
         [JsonProperty("reqid")]
         public string Reqid;
         /// <summary>
+        /// 任务来源
+        /// </summary>
+        [JsonProperty("taskFrom")]
+        public string TaskFrom;
+        /// <summary>
         /// 数据处理的命令集合
         /// </summary>
         [JsonProperty("items")]
