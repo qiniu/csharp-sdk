@@ -37,6 +37,6 @@ public class QiniuCSharpSDK
     /// <summary>
     /// SDK版本号
     /// </summary>
-    public const string VERSION = "8.6.0";
+    public const string VERSION = "8.7.0";
 
 }
