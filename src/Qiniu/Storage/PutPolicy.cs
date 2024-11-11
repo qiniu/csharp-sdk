@@ -94,7 +94,7 @@ namespace Qiniu.Storage
         public int? CallbackFetchKey { get; set; }
 
         /// <summary>
-        /// [可选]上传预转持久化
+        /// [可选]上传预转持久化，与 PersistentWorkflowTemplateId 二选一
         /// </summary>
         [JsonProperty("persistentOps", NullValueHandling = NullValueHandling.Ignore)]
         public string PersistentOps { get; set; }
@@ -116,6 +116,12 @@ namespace Qiniu.Storage
         /// </summary>
         [JsonProperty("persistentType", NullValueHandling = NullValueHandling.Ignore)]
         public int? PersistentType { get; set; }
+        
+        /// <summary>
+        /// [可选]任务模版，与 PersistentOps 二选一
+        /// </summary>
+        [JsonProperty("persistentWorkflowTemplateID", NullValueHandling = NullValueHandling.Ignore)]
+        public string PersistentWorkflowTemplateId { get; set; }
 
 
         /// <summary>

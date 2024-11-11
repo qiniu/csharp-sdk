@@ -37,31 +37,46 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="bucket">空间</param>
         /// <param name="key">空间文件的key</param>
-        /// <param name="fops">操作(命令参数)</param>
+        /// <param name="fops">操作(命令参数)，与 workflowTemplateId 二选一</param>
         /// <param name="pipeline">私有队列</param>
         /// <param name="notifyUrl">通知url</param>
         /// <param name="force">forece参数</param>
-        /// <param name="persistentType">为 1 时开启闲时任务</param>
+        /// <param name="type">为 1 时开启闲时任务</param>
+        /// <param name="workflowTemplateId">模版 ID，与 fops 二选一</param>
         /// <returns>pfop操作返回结果，正确返回结果包含persistentId</returns>
         public PfopResult Pfop(
             string bucket,
             string key,
-            string fops,
-            string pipeline,
-            string notifyUrl,
-            bool force,
-            int type = 0
+            string fops=null,
+            string pipeline=null,
+            string notifyUrl=null,
+            bool force=false,
+            int type = 0,
+            string workflowTemplateId = null
         )
         {
             PfopResult result = new PfopResult();
+
+            if (string.IsNullOrEmpty(fops) && string.IsNullOrEmpty(workflowTemplateId))
+            {
+                throw new ArgumentException("Must provide one of fops or workflowTemplateId");
+            }
 
             try
             {
                 string pfopUrl = string.Format("{0}/pfop/", this.config.ApiHost(this.mac.AccessKey, bucket));
 
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("bucket={0}&key={1}&fops={2}", StringHelper.UrlEncode(bucket), StringHelper.UrlEncode(key),
-                    StringHelper.UrlEncode(fops));
+                sb.AppendFormat("bucket={0}&key={1}", StringHelper.UrlEncode(bucket), StringHelper.UrlEncode(key));
+                if (!string.IsNullOrEmpty(fops))
+                {
+                    sb.AppendFormat("&fops={0}", StringHelper.UrlEncode(fops));
+                }
+
+                if (!string.IsNullOrEmpty(workflowTemplateId))
+                {
+                    sb.AppendFormat("&workflowTemplateID={0}", workflowTemplateId);
+                }
                 if (!string.IsNullOrEmpty(notifyUrl))
                 {
                     sb.AppendFormat("&notifyURL={0}", StringHelper.UrlEncode(notifyUrl));
