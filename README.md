@@ -21,4 +21,4 @@
 
 ## 许可证
 
-Copyright (c) 2017 [qiniu.com](www.qiniu.com)
+Copyright (c) 2018 [qiniu.com](www.qiniu.com)
