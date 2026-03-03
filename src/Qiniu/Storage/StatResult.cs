@@ -19,7 +19,7 @@ namespace Qiniu.Storage
                 FileInfo info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info = QiniuJson.Deserialize(Text, QiniuJsonSerializerContext.Default.FileInfo);
+                    info = QiniuJson.Deserialize<FileInfo>(Text);
                 }
                 return info;
             }

@@ -39,7 +39,7 @@ namespace Qiniu.Util
                 try
                 {
                     string policyStr = Encoding.UTF8.GetString(Base64.UrlsafeBase64Decode(encodedPolicy));
-                    PutPolicy putPolicy = QiniuJson.Deserialize(policyStr, QiniuJsonSerializerContext.Default.PutPolicy);
+                    PutPolicy putPolicy = QiniuJson.Deserialize<PutPolicy>(policyStr);
                     string scope = putPolicy.Scope;
                     string[] scopeItems = scope.Split(':');
                     if (scopeItems.Length >= 1)

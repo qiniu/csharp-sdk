@@ -40,7 +40,7 @@ namespace Qiniu.Storage
                     using (StreamReader sr = new StreamReader(fs))
                     {
                         string jsonStr = sr.ReadToEnd();
-                        resumeInfo = QiniuJson.Deserialize(jsonStr, QiniuJsonSerializerContext.Default.ResumeInfo);
+                        resumeInfo = QiniuJson.Deserialize<ResumeInfo>(jsonStr);
                     }
                 }
             }

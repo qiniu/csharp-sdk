@@ -100,16 +100,6 @@ namespace Qiniu.Http
                 handler.Credentials = Credentials;
             }
 
-            if (ImpersonationLevel.HasValue)
-            {
-                handler.ImpersonationLevel = ImpersonationLevel.Value;
-            }
-
-            if (KeepAlive.HasValue)
-            {
-                handler.UseProxy = true;
-            }
-
             if (PreAuthenticate.HasValue)
             {
                 handler.PreAuthenticate = PreAuthenticate.Value;
