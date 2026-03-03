@@ -18,7 +18,4 @@
     <Company>Shanghai Qiniu Information Technology Co., Ltd.</Company>
     <Description>Qiniu Resource (Cloud) Storage SDK for C#</Description>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="Compat\" />
-  </ItemGroup>
 </Project>
