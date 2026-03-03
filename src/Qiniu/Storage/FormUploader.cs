@@ -17,8 +17,8 @@ namespace Qiniu.Storage
     /// </summary>
     public class FormUploader
     {
-        private Config config;
-        private HttpManager httpManager;
+        private readonly Config _config;
+        private readonly HttpManager _httpManager;
 
         /// <summary>
         /// 初始化
@@ -26,8 +26,8 @@ namespace Qiniu.Storage
         /// <param name="config">表单上传的配置信息</param>
         public FormUploader(Config config)
         {
-            this.config = config;
-            this.httpManager = new HttpManager();
+            this._config = config;
+            this._httpManager = new HttpManager();
         }
 
         /// <summary>
@@ -74,14 +74,14 @@ namespace Qiniu.Storage
         /// <param name="stream">(确定长度的)数据流</param>
         /// <param name="key">要保存的key</param>
         /// <param name="token">上传凭证</param>
-        /// <param name="extra">上传可选设置</param>
+        /// <param name="putExtra">上传可选设置</param>
         /// <returns>上传数据流后的返回结果</returns>
-        public HttpResult UploadStream(Stream stream, string key, string token, PutExtra putExtra)
+        public HttpResult UploadStream(Stream stream, string? key, string token, PutExtra? putExtra)
         {
             if (putExtra == null)
             {
                 putExtra = new PutExtra();
-                putExtra.MaxRetryTimes = config.MaxRetryTimes;
+                putExtra.MaxRetryTimes = _config.MaxRetryTimes;
             }
             if (string.IsNullOrEmpty(putExtra.MimeType )) {
                 putExtra.MimeType = "application/octet-stream";
@@ -94,10 +94,10 @@ namespace Qiniu.Storage
             {
                 putExtra.UploadController = DefaultUploadController;
             }
-            string fname = key;
-            if (string.IsNullOrEmpty(key))
+            string? fileName = key;
+            if (string.IsNullOrEmpty(fileName))
             {
-                fname = "fname_temp";
+                fileName = "fname_temp";
             }
 
             HttpResult result = new HttpResult();
@@ -146,14 +146,14 @@ namespace Qiniu.Storage
                     byte[] buffer = new byte[bufferSize];
                     int bytesRead = 0;
                     putExtra.ProgressHandler(0, stream.Length);
-                    MemoryStream dataMS = new MemoryStream();
+                    using MemoryStream dataMemoryStream = new MemoryStream();
                     while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
                     {
-                        dataMS.Write(buffer, 0, bytesRead);
+                        dataMemoryStream.Write(buffer, 0, bytesRead);
                     }
 
                     //write crc32
-                    uint crc32 = CRC32.CheckSumBytes(dataMS.ToArray());
+                    uint crc32 = CRC32.CheckSumBytes(dataMemoryStream.ToArray());
                     //write key when it is not null
                     bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"crc32\"");
                     bodyBuilder.AppendLine();
@@ -161,7 +161,7 @@ namespace Qiniu.Storage
                     bodyBuilder.AppendLine("--" + boundary);
 
                     //write fname
-                    bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"", fname);
+                    bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"", fileName);
                     bodyBuilder.AppendLine();
 
                     //write mime type
@@ -175,10 +175,10 @@ namespace Qiniu.Storage
                     bodyEnd.AppendLine("--" + boundary + "--");
 
                     byte[] partData1 = Encoding.UTF8.GetBytes(bodyBuilder.ToString());
-                    byte[] partData2 = dataMS.ToArray();
+                    byte[] partData2 = dataMemoryStream.ToArray();
                     byte[] partData3 = Encoding.UTF8.GetBytes(bodyEnd.ToString());
 
-                    MemoryStream ms = new MemoryStream();
+                    using MemoryStream ms = new MemoryStream();
                     ms.Write(partData1, 0, partData1.Length);
                     ms.Write(partData2, 0, partData2.Length);
                     ms.Write(partData3, 0, partData3.Length);
@@ -196,21 +196,19 @@ namespace Qiniu.Storage
                         result.RefText += string.Format("[{0}] [FormUpload] Failed: code = {1}, text = {2}\n",
                             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
                     }
-
-                    //close memory stream
-                    ms.Close();
-                    dataMS.Close();
                 }
                 catch (Exception ex)
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendFormat("[{0}] [FormUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    Exception e = ex;
-                    while (e != null)
-                    {
-                        sb.Append(e.Message + " ");
-                        e = e.InnerException;
-                    }
+                    // 不要自己循环去获取内部异常，而是直接使用 ToString 方法输出，这样还能获取正确的堆栈信息
+                    //Exception e = ex;
+                    //while (e != null)
+                    //{
+                    //    sb.Append(e.Message + " ");
+                    //    e = e.InnerException;
+                    //}
+                    sb.AppendLine(ex.ToString());
                     sb.AppendLine();
 
                     if (ex is QiniuException)
@@ -261,15 +259,15 @@ namespace Qiniu.Storage
         private HttpResult PostFormWithRetry(string token, byte[] data, string boundary, PutExtra putExtra)
         {
             //get upload host
-            string ak = UpToken.GetAccessKeyFromUpToken(token);
-            string bucket = UpToken.GetBucketFromUpToken(token);
+            string? ak = UpToken.GetAccessKeyFromUpToken(token);
+            string? bucket = UpToken.GetBucketFromUpToken(token);
             if (ak == null || bucket == null)
             {
                 return HttpResult.InvalidToken;
             }
 
-            string uploadHost = this.config.UpHost(ak, bucket);
-            HttpResult result = httpManager.PostMultipart(uploadHost, data, boundary, null);
+            string uploadHost = this._config.UpHost(ak, bucket);
+            HttpResult result = _httpManager.PostMultipart(uploadHost, data, boundary, null);
 
             int retryTimes = 0;
             while (
@@ -277,7 +275,7 @@ namespace Qiniu.Storage
                 UploadUtil.ShouldRetry(result.Code, result.RefCode)
             )
             {
-                result = httpManager.PostMultipart(uploadHost, data, boundary, null);
+                result = _httpManager.PostMultipart(uploadHost, data, boundary, null);
                 retryTimes += 1;
             }
 

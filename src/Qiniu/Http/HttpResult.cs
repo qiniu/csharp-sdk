@@ -42,12 +42,12 @@ namespace Qiniu.Http
         /// <summary>
         /// 消息或错误文本
         /// </summary>
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         /// <summary>
         /// 消息或错误(二进制格式)
         /// </summary>
-        public byte[] Data { get; set; }
+        public byte[]? Data { get; set; }
 
         /// <summary>
         /// 参考代码(用户自定义)
@@ -62,7 +62,7 @@ namespace Qiniu.Http
         /// <summary>
         /// 参考信息(从返回消息WebResponse的头部获取)
         /// </summary>
-        public Dictionary<string, string> RefInfo { get; set; }
+        public Dictionary<string, string>? RefInfo { get; set; }
 
         /// <summary>
         /// 初始化(所有成员默认值，需要后续赋值)

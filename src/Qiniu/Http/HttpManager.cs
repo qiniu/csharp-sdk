@@ -102,7 +102,7 @@ namespace Qiniu.Http
             result.Code = (int)response.StatusCode;
             result.RefCode = (int)response.StatusCode;
 
-            getHeaders(ref result, response);
+            GetHeaders(ref result, response);
 
             using (response)
             {
@@ -215,7 +215,7 @@ namespace Qiniu.Http
                 headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
             }
             
-            addAuthHeaders(ref headers, auth);
+            AddAuthHeaders(ref headers, auth);
 
             string token = auth.CreateManageTokenV2("GET", url, headers);
             return Get(url, headers, token, binaryMode);
@@ -278,7 +278,7 @@ namespace Qiniu.Http
                 headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
             }
 
-            addAuthHeaders(ref headers, auth);
+            AddAuthHeaders(ref headers, auth);
 
             string token = auth.CreateManageTokenV2("POST", url, headers);
             return Post(url, headers, token, binaryMode);
@@ -427,7 +427,7 @@ namespace Qiniu.Http
                 headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
             }
             
-            addAuthHeaders(ref headers, auth);
+            AddAuthHeaders(ref headers, auth);
 
             string token = auth.CreateManageTokenV2("POST", url, headers, data);
             return PostForm(url, headers, Encoding.UTF8.GetBytes(data), token, binaryMode);
@@ -480,7 +480,7 @@ namespace Qiniu.Http
         /// <param name="token">令牌(凭证)[可选->设置为null]</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
         /// <returns>HTTP-POST的响应结果</returns>
-        public HttpResult PostMultipart(string url, byte[] data, string boundary, string token, bool binaryMode = false)
+        public HttpResult PostMultipart(string url, byte[]? data, string boundary, string? token, bool binaryMode = false)
         {
             HttpRequestOptions reqOpts = CreateHttpRequestOptions("POST", url, null, token);
 
@@ -506,7 +506,7 @@ namespace Qiniu.Http
         /// <param name="headers">上传设置的headers</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
         /// <returns>HTTP-PUT的响应结果</returns>
-        public HttpResult PutDataWithHeaders(string url, byte[] data, Dictionary<string, string> headers, bool binaryMode = false)
+        public HttpResult PutDataWithHeaders(string url, byte[]? data, Dictionary<string, string> headers, bool binaryMode = false)
         {
             // converse headers type for compaction
             StringDictionary headersDict = new StringDictionary();
@@ -533,7 +533,7 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="hr">即将被HTTP请求封装函数返回的HttpResult变量</param>
         /// <param name="resp">正在被读取的HTTP响应</param>
-        private void getHeaders(ref HttpResult hr, HttpResponseMessage resp)
+        private void GetHeaders(ref HttpResult hr, HttpResponseMessage? resp)
         {
             if (resp != null)
             {
@@ -576,8 +576,7 @@ namespace Qiniu.Http
             }
         }
 
-
-        private void addAuthHeaders(ref StringDictionary headers, Auth auth)
+        private void AddAuthHeaders(ref StringDictionary headers, Auth auth)
         {
             string xQiniuDate = DateTime.UtcNow.ToString("yyyyMMdd'T'HHmmss'Z'");
             string xQiniuDateDisableEnv = Environment.GetEnvironmentVariable("DISABLE_QINIU_TIMESTAMP_SIGNATURE");

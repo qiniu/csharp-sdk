@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 using Qiniu.Http;
 using Qiniu.Util;
 
@@ -68,7 +69,7 @@ namespace Qiniu.Storage
 
             if (backupUcHosts == null)
             {
-                backupUcHosts = Config.DefaultBackupQueryRegionHosts;
+                backupUcHosts = Config.DefaultBackupQueryRegionHosts.ToList();
             }
             
             try
