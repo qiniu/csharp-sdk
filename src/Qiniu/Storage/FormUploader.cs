@@ -1,8 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using Qiniu.Http;
+﻿using Qiniu.Http;
 using Qiniu.Util;
+
+using System;
+using System.Globalization;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+using HttpRequestOptions = Qiniu.Http.HttpRequestOptions;
 
 namespace Qiniu.Storage
 {
@@ -38,12 +46,12 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadFile(string localFile, string key, string token, PutExtra extra)
+        public async Task<HttpResult> UploadFile(string localFile, string key, string token, PutExtra? extra)
         {
             try
             {
-                using FileStream fs = new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-                return this.UploadStream(fs, key, token, extra);
+                await using FileStream fs = new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+                return await this.UploadStreamAsync(fs, key, token, extra);
             }
             catch (Exception ex)
             {
@@ -53,7 +61,6 @@ namespace Qiniu.Storage
             }
         }
 
-
         /// <summary>
         /// 上传数据
         /// </summary>
@@ -62,10 +69,10 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传数据后的返回结果</returns>
-        public HttpResult UploadData(byte[] data, string key, string token, PutExtra extra)
+        public async Task<HttpResult> UploadDataAsync(byte[] data, string key, string token, PutExtra extra)
         {
             using MemoryStream stream = new MemoryStream(data);
-            return this.UploadStream(stream, key, token, extra);
+            return await this.UploadStreamAsync(stream, key, token, extra);
         }
 
         /// <summary>
@@ -76,14 +83,14 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="putExtra">上传可选设置</param>
         /// <returns>上传数据流后的返回结果</returns>
-        public HttpResult UploadStream(Stream stream, string? key, string token, PutExtra? putExtra)
+        public async Task<HttpResult> UploadStreamAsync(Stream stream, string? key, string token, PutExtra? putExtra)
         {
             if (putExtra == null)
             {
                 putExtra = new PutExtra();
                 putExtra.MaxRetryTimes = _config.MaxRetryTimes;
             }
-            if (string.IsNullOrEmpty(putExtra.MimeType )) 
+            if (string.IsNullOrEmpty(putExtra.MimeType))
             {
                 putExtra.MimeType = "application/octet-stream";
             }
@@ -105,24 +112,24 @@ namespace Qiniu.Storage
 
             try
             {
+                var startPosition = stream.Position;
+                Stream uploadStream = await ReadonlyWrapperStream.CreateWrapperStreamAsync(stream);
+                var uploadedBytes = uploadStream.Length;
+
                 string boundary = HttpManager.CreateFormDataBoundary();
+                var multipartFormDataContent = new MultipartFormDataContent(boundary);
+
                 StringBuilder bodyBuilder = new StringBuilder();
                 bodyBuilder.AppendLine("--" + boundary);
 
                 if (key != null)
                 {
                     //write key when it is not null
-                    bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"key\"");
-                    bodyBuilder.AppendLine();
-                    bodyBuilder.AppendLine(key);
-                    bodyBuilder.AppendLine("--" + boundary);
+                    multipartFormDataContent.Add(new StringContent(key), "key");
                 }
 
                 //write token
-                bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"token\"");
-                bodyBuilder.AppendLine();
-                bodyBuilder.AppendLine(token);
-                bodyBuilder.AppendLine("--" + boundary);
+                multipartFormDataContent.Add(new StringContent(token), "token");
 
                 //write extra params
                 if (putExtra.Params != null && putExtra.Params.Count > 0)
@@ -131,61 +138,42 @@ namespace Qiniu.Storage
                     {
                         if (p.Key.StartsWith("x:"))
                         {
-                            bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"{0}\"", p.Key);
-                            bodyBuilder.AppendLine();
-                            bodyBuilder.AppendLine();
-                            bodyBuilder.AppendLine(p.Value);
-                            bodyBuilder.AppendLine("--" + boundary);
+                            multipartFormDataContent.Add(new StringContent(p.Value), p.Key);
                         }
                     }
                 }
 
                 //prepare data buffer
-                int bufferSize = 1024 * 1024;
-                byte[] buffer = new byte[bufferSize];
-                int bytesRead = 0;
-                putExtra.ProgressHandler(0, stream.Length);
-                using MemoryStream dataMemoryStream = new MemoryStream();
-                while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
-                {
-                    dataMemoryStream.Write(buffer, 0, bytesRead);
-                }
+                putExtra.ProgressHandler(0, uploadedBytes);
 
                 //write crc32
-                uint crc32 = CRC32.CheckSumBytes(dataMemoryStream.ToArray());
-                //write key when it is not null
-                bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"crc32\"");
-                bodyBuilder.AppendLine();
-                bodyBuilder.AppendLine(crc32.ToString());
-                bodyBuilder.AppendLine("--" + boundary);
+                uint crc32 = await CRC32.CheckSumBytes(uploadStream);
+                uploadStream.Position = startPosition;
+
+                multipartFormDataContent.Add(new StringContent(crc32.ToString(CultureInfo.InvariantCulture)), "crc32");
 
                 //write fname
-                bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"", fileName);
-                bodyBuilder.AppendLine();
+                multipartFormDataContent.Add(new StreamContent(uploadStream)
+                {
+                    Headers = { ContentType = new MediaTypeHeaderValue(putExtra.MimeType) }
+                }, "file", fileName);
 
-                //write mime type
-                bodyBuilder.AppendFormat("Content-Type: {0}", putExtra.MimeType);
-                bodyBuilder.AppendLine();
-                bodyBuilder.AppendLine();
+                putExtra.ProgressHandler(uploadedBytes / 5, uploadedBytes);
 
-                //write file data
-                StringBuilder bodyEnd = new StringBuilder();
-                bodyEnd.AppendLine();
-                bodyEnd.AppendLine("--" + boundary + "--");
+                string? ak = UpToken.GetAccessKeyFromUpToken(token);
+                string? bucket = UpToken.GetBucketFromUpToken(token);
+                if (ak == null || bucket == null)
+                {
+                    return HttpResult.InvalidToken;
+                }
 
-                byte[] partData1 = Encoding.UTF8.GetBytes(bodyBuilder.ToString());
-                byte[] partData2 = dataMemoryStream.ToArray();
-                byte[] partData3 = Encoding.UTF8.GetBytes(bodyEnd.ToString());
+                string uploadHost = this._config.UpHost(ak, bucket);
+                HttpRequestOptions reqOpts = _httpManager.CreateHttpRequestOptions("POST", uploadHost, null, token);
+                reqOpts.RequestContent = multipartFormDataContent;
+                result = await _httpManager.SendRequestAsync(reqOpts);
 
-                using MemoryStream ms = new MemoryStream();
-                ms.Write(partData1, 0, partData1.Length);
-                ms.Write(partData2, 0, partData2.Length);
-                ms.Write(partData3, 0, partData3.Length);
-
-                putExtra.ProgressHandler(stream.Length / 5, stream.Length);
-                result = PostFormWithRetry(token, ms.ToArray(), boundary, putExtra);
-                putExtra.ProgressHandler(stream.Length, stream.Length);
-                if (result.Code == (int)HttpCode.OK)
+                putExtra.ProgressHandler(uploadedBytes, uploadedBytes);
+                if (result.Code == (int) HttpCode.OK)
                 {
                     result.RefText += string.Format("[{0}] [FormUpload] Uploaded: #STREAM# ==> \"{1}\"\n",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), key);
@@ -212,7 +200,7 @@ namespace Qiniu.Storage
 
                 if (ex is QiniuException)
                 {
-                    QiniuException qex = (QiniuException)ex;
+                    QiniuException qex = (QiniuException) ex;
                     result.Code = qex.HttpResult.Code;
                     result.RefCode = qex.HttpResult.Code;
                     result.Text = qex.HttpResult.Text;
@@ -220,7 +208,7 @@ namespace Qiniu.Storage
                 }
                 else
                 {
-                    result.RefCode = (int)HttpCode.USER_UNDEF;
+                    result.RefCode = (int) HttpCode.USER_UNDEF;
                     result.RefText += sb.ToString();
                 }
             }
@@ -278,6 +266,119 @@ namespace Qiniu.Storage
             }
 
             return result;
+        }
+    }
+
+    class ReadonlyWrapperStream : Stream
+    {
+        public static async ValueTask<ReadonlyWrapperStream> CreateWrapperStreamAsync(Stream inputStream)
+        {
+            if (inputStream.CanSeek)
+            {
+                var wrapperStream = new ReadonlyWrapperStream(inputStream, leaveOpen: true);
+                return wrapperStream;
+            }
+            else
+            {
+                var memoryStream = new MemoryStream();
+                await inputStream.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+                var wrapperStream = new ReadonlyWrapperStream(memoryStream, leaveOpen: false);
+                return wrapperStream;
+            }
+        }
+
+        private ReadonlyWrapperStream(Stream innerStream, bool leaveOpen)
+        {
+            _innerStream = innerStream;
+            _leaveOpen = leaveOpen;
+        }
+
+        private readonly Stream _innerStream;
+
+        private readonly bool _leaveOpen;
+        public override void Flush()
+        {
+            _innerStream.Flush();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            return _innerStream.Read(buffer, offset, count);
+        }
+
+        public override int Read(Span<byte> buffer)
+        {
+            return _innerStream.Read(buffer);
+        }
+
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            return _innerStream.ReadAsync(buffer, offset, count, cancellationToken);
+        }
+
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return _innerStream.ReadAsync(buffer, cancellationToken);
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            return _innerStream.Seek(offset, origin);
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override bool CanRead => _innerStream.CanRead;
+
+        public override bool CanSeek => _innerStream.CanSeek;
+
+        public override bool CanWrite => false;
+
+        public override long Length => _innerStream.Length;
+
+        public override long Position
+        {
+            get => _innerStream.Position;
+            set => _innerStream.Position = value;
+        }
+
+        public override void CopyTo(Stream destination, int bufferSize)
+        {
+            _innerStream.CopyTo(destination, bufferSize);
+        }
+
+        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            return _innerStream.CopyToAsync(destination, bufferSize, cancellationToken);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_leaveOpen)
+            {
+                _innerStream.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        public override async ValueTask DisposeAsync()
+        {
+            if (!_leaveOpen)
+            {
+                await _innerStream.DisposeAsync();
+            }
+
+            await base.DisposeAsync();
         }
     }
 }

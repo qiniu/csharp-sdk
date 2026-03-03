@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Qiniu.Util;
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using Qiniu.Util;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Qiniu.Http
 {
@@ -90,7 +92,34 @@ namespace Qiniu.Http
             return reqOpts;
         }
 
-        public HttpResult CreateHttpResult(HttpResponseMessage response, bool binaryMode = false)
+        public async Task<HttpResult> CreateHttpResultAsync(HttpResponseMessage? response, bool binaryMode = false)
+        {
+            HttpResult result = new HttpResult();
+
+            if (response == null)
+            {
+                return result;
+            }
+
+            result.Code = (int) response.StatusCode;
+            result.RefCode = (int) response.StatusCode;
+
+            GetHeaders(result, response);
+
+            var content = response.Content;
+            if (binaryMode)
+            {
+                result.Data = await content.ReadAsByteArrayAsync();
+            }
+            else
+            {
+                result.Text = await content.ReadAsStringAsync();
+            }
+
+            return result;
+        }
+
+        public HttpResult CreateHttpResult(HttpResponseMessage? response, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
@@ -102,7 +131,7 @@ namespace Qiniu.Http
             result.Code = (int)response.StatusCode;
             result.RefCode = (int)response.StatusCode;
 
-            GetHeaders(ref result, response);
+            GetHeaders(result, response);
 
             using (response)
             {
@@ -121,6 +150,46 @@ namespace Qiniu.Http
                     result.Text = content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                 }
             }
+            return result;
+        }
+
+        public async Task<HttpResult> SendRequestAsync(HttpRequestOptions reqOpts, Boolean binaryMode = false)
+        {
+            HttpResult result;
+            try
+            {
+                using var handler = reqOpts.CreateHttpClientHandler();
+                using var client = new HttpClient(handler);
+                if (reqOpts.Timeout.HasValue)
+                {
+                    client.Timeout = TimeSpan.FromMilliseconds(reqOpts.Timeout.Value);
+                }
+
+                using var request = reqOpts.CreateHttpRequestMessage();
+                using HttpResponseMessage response = await client.SendAsync(request);
+                result = await CreateHttpResultAsync(response, binaryMode);
+            }
+            catch (HttpRequestException httpRequestException) when (httpRequestException.StatusCode.HasValue)
+            {
+                result = new HttpResult
+                {
+                    Code = (int) httpRequestException.StatusCode.Value,
+                    RefCode = (int) httpRequestException.StatusCode.Value,
+                    RefText = httpRequestException.Message
+                };
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [{_userAgent}] [HTTP-{reqOpts.Method}] Error:  ");
+                sb.AppendLine(ex.ToString());
+                sb.AppendLine();
+
+                result = new HttpResult();
+                result.RefCode = (int) HttpCode.USER_UNDEF;
+                result.RefText += sb.ToString();
+            }
+
             return result;
         }
 
@@ -533,7 +602,7 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="hr">即将被HTTP请求封装函数返回的HttpResult变量</param>
         /// <param name="resp">正在被读取的HTTP响应</param>
-        private void GetHeaders(ref HttpResult hr, HttpResponseMessage? resp)
+        private void GetHeaders(HttpResult hr, HttpResponseMessage? resp)
         {
             if (resp != null)
             {

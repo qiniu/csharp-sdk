@@ -2,6 +2,7 @@
 using Qiniu.Util;
 using Qiniu.Http;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Qiniu.Storage
 {
@@ -29,10 +30,10 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadData(byte[] data, string key, string token, PutExtra extra)
+        public async Task<HttpResult> UploadDataAsync(byte[] data, string key, string token, PutExtra extra)
         {
             FormUploader formUploader = new FormUploader(this._config);
-            return formUploader.UploadData(data, key, token, extra);
+            return await formUploader.UploadDataAsync(data, key, token, extra);
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadFile(string localFile, string key, string token, PutExtra extra)
+        public async Task<HttpResult> UploadFile(string localFile, string key, string token, PutExtra extra)
         {
             HttpResult result;
 
@@ -57,12 +58,11 @@ namespace Qiniu.Storage
             else
             {
                 FormUploader formUploader = new FormUploader(_config);
-                result = formUploader.UploadFile(localFile, key, token, extra);
+                result = await formUploader.UploadFile(localFile, key, token, extra);
             }
 
             return result;
         }
-
 
         /// <summary>
         /// 上传文件数据流，根据文件大小以及设置的阈值(用户初始化UploadManager时可指定该值)自动选择：
@@ -73,7 +73,7 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="extra">上传可选设置</param>
         /// <returns>上传文件后的返回结果</returns>
-        public HttpResult UploadStream(Stream stream, string key, string token, PutExtra extra)
+        public async Task<HttpResult> UploadStream(Stream stream, string key, string token, PutExtra extra)
         {
             HttpResult result = new HttpResult();
 
@@ -85,7 +85,7 @@ namespace Qiniu.Storage
             else
             {
                 FormUploader formUploader = new FormUploader(this._config);
-                result = formUploader.UploadStream(stream, key, token, extra);
+                result = await formUploader.UploadStreamAsync(stream, key, token, extra);
             }
 
             return result;

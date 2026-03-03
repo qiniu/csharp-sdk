@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Qiniu.Util
 {
@@ -49,7 +51,7 @@ namespace Qiniu.Util
             uint[] table = new uint[256];
             for (int i = 0; i < 256; i++)
             {
-                uint crc = (uint)i;
+                uint crc = (uint) i;
                 for (int j = 0; j < 8; j++)
                 {
                     if ((crc & 1) == 1)
@@ -76,7 +78,7 @@ namespace Qiniu.Util
             crc = ~crc;
             for (int i = 0; i < count; i++)
             {
-                crc = table[((byte)crc) ^ p[offset + i]] ^ (crc >> 8);
+                crc = table[((byte) crc) ^ p[offset + i]] ^ (crc >> 8);
             }
             return ~crc;
         }
@@ -116,7 +118,7 @@ namespace Qiniu.Util
         {
             CRC32 crc = new CRC32();
             int bufferLen = 32 * 1024;
-			using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
                 byte[] buffer = new byte[bufferLen];
                 while (true)
@@ -128,6 +130,32 @@ namespace Qiniu.Util
                 }
             }
             return crc.Sum();
+        }
+
+        public static async Task<uint> CheckSumBytes(Stream stream)
+        {
+            var buffer = ArrayPool<byte>.Shared.Rent(1024);
+
+            CRC32 crc = new CRC32();
+
+            try
+            {
+                while (true)
+                {
+                    var readCount = await stream.ReadAsync(buffer.AsMemory());
+                    if (readCount == 0)
+                    {
+                        break;
+                    }
+
+                    crc.Write(buffer, 0, readCount);
+                }
+                return crc.Sum();
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
     }
 }

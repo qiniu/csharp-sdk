@@ -41,12 +41,13 @@ namespace Qiniu.Http
         public int? Timeout { get; set; }
         public bool? UnsafeAuthenticatedConnectionSharing { get; set; }
         public bool? UseDefaultCredentials { get; set; }
+        public HttpContent? RequestContent { get; set; }
 
         // Custom Options
-        public string Url;
-        public StringDictionary Headers;
-        public Stream RequestStream;
-        public byte[] RequestData;
+        public string Url { get; set; }
+        public StringDictionary Headers { get; set; }
+        public Stream? RequestStream { get; set; }
+        public byte[]? RequestData { get; set; }
 
         public HttpRequestOptions()
         {
@@ -148,14 +149,15 @@ namespace Qiniu.Http
 
         private void SetBody(HttpRequestMessage request)
         {
-            if (RequestData != null)
+            if (RequestContent != null)
+            {
+                request.Content = RequestContent;
+            }
+            else if (RequestData != null)
             {
                 request.Content = new ByteArrayContent(RequestData);
-
-                return;
             }
-
-            if (RequestStream != null)
+            else if (RequestStream != null)
             {
                 request.Content = new StreamContent(RequestStream);
             }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Qiniu.Util;
 using Qiniu.Tests;
@@ -14,7 +15,7 @@ namespace Qiniu.Storage.Tests
     public class FormUploaderTests : TestEnv
     {
         [Test]
-        public void UploadFileTest()
+        public async Task UploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
             string key = $"UploadFileTest_{Random.Shared.Next()}.dat";
@@ -24,7 +25,7 @@ namespace Qiniu.Storage.Tests
 
             var testBody = new byte[8 * 1024 * 1024];
             Random.Shared.NextBytes(testBody);
-            File.WriteAllBytes(filePath, testBody);
+            await File.WriteAllBytesAsync(filePath, testBody);
 
             PutPolicy putPolicy = new PutPolicy();
             putPolicy.Scope = Bucket + ":" + key;
@@ -37,14 +38,14 @@ namespace Qiniu.Storage.Tests
             config.UseCdnDomains = true;
             config.ChunkSize = ChunkUnit.U512K;
             FormUploader target = new FormUploader(config);
-            HttpResult result = target.UploadFile(filePath, key, token, null);
+            HttpResult result = await target.UploadFile(filePath, key, token, null);
             Console.WriteLine("form upload result: " + result.ToString());
             Assert.AreEqual((int)HttpCode.OK, result.Code);
             System.IO.File.Delete(filePath);
         }
 
         [Test]
-        public void UploadFileV2Test()
+        public async Task UploadFileV2Test()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
             Random rand = new Random();
@@ -74,14 +75,14 @@ namespace Qiniu.Storage.Tests
             PutExtra extra = new PutExtra();
             extra.Version = "v2";
             extra.PartSize = 4 * 1024 * 1024;
-            HttpResult result = target.UploadFile(filePath, key, token, extra);
+            HttpResult result = await target.UploadFile(filePath, key, token, extra);
             Console.WriteLine("form upload result: " + result.ToString());
             Assert.AreEqual((int)HttpCode.OK, result.Code);
             System.IO.File.Delete(filePath);
         }
 
         [TestCaseSource(typeof(OperationManagerTests), nameof(OperationManagerTests.PfopOptionsTestCases))]
-        public void UploadFileWithPersistOptionsTest(int type, string workflowId)
+        public async Task UploadFileWithPersistOptionsTest(int type, string workflowId)
         {
             Mac mac = new Mac(AccessKey, SecretKey);
             string bucketName = Bucket;
@@ -131,7 +132,7 @@ namespace Qiniu.Storage.Tests
             config.UseCdnDomains = true;
             string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
             FormUploader uploader = new FormUploader(config);
-            HttpResult result = uploader.UploadFile(filePath, key, token, null);
+            HttpResult result = await uploader.UploadFile(filePath, key, token, null);
             Console.WriteLine("form upload result: " + result.ToString());
             Assert.AreEqual((int)HttpCode.OK, result.Code);
             System.IO.File.Delete(filePath);
