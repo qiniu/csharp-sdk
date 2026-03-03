@@ -4,10 +4,10 @@ namespace Qiniu.Tests
 {
     public class TestEnv
     {
-        public string AccessKey;
-        public string SecretKey;
-        public string Bucket;
-        public string Domain;
+        public string AccessKey { get; }
+        public string SecretKey { get; }
+        public string Bucket { get; }
+        public string Domain { get; }
 
         public TestEnv()
         {
