@@ -1,4 +1,6 @@
-﻿namespace Qiniu.Util
+﻿using System;
+
+namespace Qiniu.Util
 {
     /// <summary>
     /// 账户访问控制(密钥)
@@ -8,12 +10,12 @@
         /// <summary>
         /// 密钥-AccessKey
         /// </summary>
-        public string AccessKey { set; get; }
+        public string AccessKey { init; get; }
 
         /// <summary>
         /// 密钥-SecretKey
         /// </summary>
-        public string SecretKey { set; get; }
+        public string SecretKey { init; get; }
 
         /// <summary>
         /// 初始化密钥AK/SK
@@ -22,8 +24,11 @@
         /// <param name="secretKey">SecretKey</param>
         public Mac(string accessKey, string secretKey)
         {
-            this.AccessKey = accessKey;
-            this.SecretKey = secretKey;
+            ArgumentNullException.ThrowIfNull(accessKey);
+            ArgumentNullException.ThrowIfNull(secretKey);
+
+            AccessKey = accessKey;
+            SecretKey = secretKey;
         }
     }
 }
