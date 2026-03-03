@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Qiniu.Storage
 {
@@ -10,57 +10,59 @@ namespace Qiniu.Storage
         /// <summary>
         /// 任务ID
         /// </summary>
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public string Id;
         /// <summary>
         /// 任务类型，为 1 代表为闲时任务
         /// </summary>
-        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? Type;
         /// <summary>
         /// 任务创建时间
         /// </summary>
-        [JsonProperty("creationDate", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("creationDate")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string CreationDate;
         /// <summary>
         /// 任务结果状态码
         /// </summary>
-        [JsonProperty("code")]
+        [JsonPropertyName("code")]
         public int Code;
         /// <summary>
         /// 任务结果状态描述
         /// </summary>
-        [JsonProperty("desc")]
+        [JsonPropertyName("desc")]
         public string Desc;
         /// <summary>
         /// 待处理的数据文件
         /// </summary>
-        [JsonProperty("inputKey")]
+        [JsonPropertyName("inputKey")]
         public string InputKey;
         /// <summary>
         /// 待处理文件所在空间
         /// </summary>
-        [JsonProperty("inputBucket")]
+        [JsonPropertyName("inputBucket")]
         public string InputBucket;
         /// <summary>
         /// 数据处理队列
         /// </summary>
-        [JsonProperty("pipeline")]
+        [JsonPropertyName("pipeline")]
         public string Pipeline;
         /// <summary>
         /// 任务的Reqid
         /// </summary>
-        [JsonProperty("reqid")]
+        [JsonPropertyName("reqid")]
         public string Reqid;
         /// <summary>
         /// 任务来源
         /// </summary>
-        [JsonProperty("taskFrom")]
+        [JsonPropertyName("taskFrom")]
         public string TaskFrom;
         /// <summary>
         /// 数据处理的命令集合
         /// </summary>
-        [JsonProperty("items")]
+        [JsonPropertyName("items")]
         public PfopItems[] Items;
     }
 
@@ -72,42 +74,47 @@ namespace Qiniu.Storage
         /// <summary>
         /// 命令
         /// </summary>
-        [JsonProperty("cmd")]
+        [JsonPropertyName("cmd")]
         public string Cmd;
         /// <summary>
         /// 命令执行结果状态码
         /// </summary>
-        [JsonProperty("code")]
+        [JsonPropertyName("code")]
         public string Code;
         /// <summary>
         /// 命令执行结果描述
         /// </summary>
-        [JsonProperty("desc")]
+        [JsonPropertyName("desc")]
         public string Desc;
         /// <summary>
         /// 命令执行错误
         /// </summary>
-        [JsonProperty("Error", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("Error")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Error;
         /// <summary>
         /// VSample命令的生成文件名列表
         /// </summary>
-        [JsonProperty("keys", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("keys")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string[] Keys;
         /// <summary>
         /// 命令生成的文件名
         /// </summary>
-        [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("key")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Key;
         /// <summary>
         /// 命令生成的文件内容hash
         /// </summary>
-        [JsonProperty("hash", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("hash")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Hash;
         /// <summary>
         /// 该命令是否返回了上一次相同命令生成的结果
         /// </summary>
-        [JsonProperty("returnOld", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("returnOld")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? ReturnOld;
     }
 }

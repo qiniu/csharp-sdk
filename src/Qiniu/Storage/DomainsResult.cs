@@ -1,7 +1,7 @@
-﻿using System.Text;
+using System.Text;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.Storage
 {
@@ -20,7 +20,7 @@ namespace Qiniu.Storage
                 List<string> domains = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    domains=JsonConvert.DeserializeObject<List<string>>(Text);
+                    domains = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.ListString);
                 }
                 return domains;
             }

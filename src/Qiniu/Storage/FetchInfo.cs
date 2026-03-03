@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -9,25 +9,25 @@ namespace Qiniu.Storage
         /// <summary>
         /// 文件名
         /// </summary>
-        [JsonProperty("key")]
+        [JsonPropertyName("key")]
         public string Key { set; get; }
 
         /// <summary>
         /// 文件大小(字节)
         /// </summary>
-        [JsonProperty("fsize")]
+        [JsonPropertyName("fsize")]
         public long Fsize { set; get; }
 
         /// <summary>
         /// 文件hash(ETAG)
         /// </summary>
-        [JsonProperty("hash")]
+        [JsonPropertyName("hash")]
         public string Hash { set; get; }
 
         /// <summary>
         /// 文件MIME类型
         /// </summary>
-        [JsonProperty("mimeType")]
+        [JsonPropertyName("mimeType")]
         public string MimeType { set; get; }
     }
 }

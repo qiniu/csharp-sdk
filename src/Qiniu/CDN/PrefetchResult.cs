@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Newtonsoft.Json;
 using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.CDN
 {
@@ -12,14 +12,14 @@ namespace Qiniu.CDN
         /// <summary>
         /// 获取文件预取信息
         /// </summary>
-        public PrefetchInfo Result
+        public PrefetchInfo? Result
         {
             get
             {
-                PrefetchInfo info = null;
+                PrefetchInfo? info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info=JsonConvert.DeserializeObject<PrefetchInfo>(Text);
+                    info = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.PrefetchInfo);
                 }
                 return info;
             }

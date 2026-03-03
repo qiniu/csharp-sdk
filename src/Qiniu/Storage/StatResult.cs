@@ -12,11 +12,11 @@ namespace Qiniu.Storage
         /// <summary>
         /// stat信息列表
         /// </summary>
-        public FileInfo Result
+        public FileInfo? Result
         {
             get
             {
-                FileInfo info = null;
+                FileInfo? info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
                     info = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.FileInfo);

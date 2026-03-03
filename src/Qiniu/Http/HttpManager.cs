@@ -15,8 +15,8 @@ namespace Qiniu.Http
     /// </summary>
     public class HttpManager
     {
-        private bool allowAutoRedirect;
-        private string userAgent;
+        private readonly bool _allowAutoRedirect;
+        private string _userAgent;
 
         /// <summary>
         /// 初始化
@@ -24,8 +24,8 @@ namespace Qiniu.Http
         /// <param name="allowAutoRedirect">是否允许HttpWebRequest的“重定向”，默认禁止</param>
         public HttpManager(bool allowAutoRedirect = false)
         {
-            this.allowAutoRedirect = allowAutoRedirect;
-            userAgent = GetUserAgent();
+            _allowAutoRedirect = allowAutoRedirect;
+            _userAgent = GetUserAgent();
         }
 
         /// <summary>
@@ -44,11 +44,11 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="userAgent">用户自定义的UserAgent</param>
         /// <returns>客户端标识UA</returns>
-        public void SetUserAgent(string userAgent)
+        public void SetUserAgent(string? userAgent)
         {
             if (!string.IsNullOrEmpty(userAgent))
             {
-                this.userAgent = userAgent;
+                _userAgent = userAgent;
             }
         }
 
@@ -65,8 +65,8 @@ namespace Qiniu.Http
         public HttpRequestOptions CreateHttpRequestOptions(
             string method,
             string url,
-            StringDictionary headers,
-            string token = null
+            StringDictionary? headers,
+            string? token = null
         )
         {
             HttpRequestOptions reqOpts = new HttpRequestOptions();
@@ -84,8 +84,8 @@ namespace Qiniu.Http
                 reqOpts.Headers.Add("Authorization", token);
             }
 
-            reqOpts.Headers.Add("User-Agent", userAgent);
-            reqOpts.AllowAutoRedirect = allowAutoRedirect;
+            reqOpts.Headers.Add("User-Agent", _userAgent);
+            reqOpts.AllowAutoRedirect = _allowAutoRedirect;
 
             return reqOpts;
         }
@@ -154,7 +154,7 @@ namespace Qiniu.Http
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [{userAgent}] [HTTP-{reqOpts.Method}] Error:  ");
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [{_userAgent}] [HTTP-{reqOpts.Method}] Error:  ");
                 Exception e = ex;
                 while (e != null)
                 {

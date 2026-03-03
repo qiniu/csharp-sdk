@@ -4,6 +4,7 @@
     <OutputType>Library</OutputType>
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -11,13 +12,13 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>QiniuCSharpSDK.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-  </ItemGroup>
   <PropertyGroup>
     <Version>8.7.0</Version>
     <Authors>Rong Zhou, Qiniu SDK</Authors>
     <Company>Shanghai Qiniu Information Technology Co., Ltd.</Company>
     <Description>Qiniu Resource (Cloud) Storage SDK for C#</Description>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Compat\" />
+  </ItemGroup>
 </Project>

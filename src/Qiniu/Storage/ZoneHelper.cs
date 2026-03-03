@@ -17,8 +17,8 @@ namespace Qiniu.Storage
     /// </summary>
     public class ZoneHelper
     {
-        private static Dictionary<string, ZoneCacheValue> zoneCache = new Dictionary<string, ZoneCacheValue>(16);
-        private static object rwLock = new object();
+        private static readonly Dictionary<string, ZoneCacheValue> _zoneCache = new Dictionary<string, ZoneCacheValue>(16);
+        private static readonly object _rwLock = new object();
 
         /// <summary>
         /// 从 UC 服务查询得到各个服务域名，生成 Zone 对象并返回
@@ -30,19 +30,22 @@ namespace Qiniu.Storage
         public static Zone QueryZone(
             string accessKey,
             string bucket,
-            string ucHost = null,
-            List<string> backupUcHosts = null
+            string? ucHost = null,
+            List<string>? backupUcHosts = null
         )
         {
-            ZoneCacheValue zoneCacheValue = null;
+            ArgumentException.ThrowIfNullOrWhiteSpace(accessKey);
+            ArgumentException.ThrowIfNullOrWhiteSpace(bucket);
+
+            ZoneCacheValue? zoneCacheValue = null;
             string cacheKey = $"{accessKey}:{bucket}";
 
             //check from cache
-            lock (rwLock)
+            lock (_rwLock)
             {
-                if (zoneCache.ContainsKey(cacheKey))
+                if (_zoneCache.ContainsKey(cacheKey))
                 {
-                    zoneCacheValue = zoneCache[cacheKey];
+                    zoneCacheValue = _zoneCache[cacheKey];
                 }
             }
 
@@ -57,7 +60,7 @@ namespace Qiniu.Storage
 
             //query from uc api
             Zone zone;
-            HttpResult hr = null;
+            HttpResult? hr = null;
             if (String.IsNullOrEmpty(ucHost))
             {
                 ucHost = "https://" + Config.DefaultQueryRegionHost;
@@ -90,18 +93,23 @@ namespace Qiniu.Storage
                     throw new Exception("JSON Deserialize failed: " + hr.Text);
                 }
                 
-                if (zInfo.Hosts.Length == 0)
+                if (zInfo.Hosts == null || zInfo.Hosts.Length == 0)
                 {
                     throw new Exception("There are no hosts available: " + hr.Text);
                 }
 
                 ZoneHost zHost = zInfo.Hosts[0];
 
+                if (zHost.Up?.Domains == null || zHost.Up.Domains.Length == 0)
+                {
+                    throw new Exception("There are no upload hosts available: " + hr.Text);
+                }
+
                 zone = new Zone();
                 zone.SrcUpHosts = zHost.Up.Domains;
                 zone.CdnUpHosts = zHost.Up.Domains;
 
-                if (!string.IsNullOrEmpty(zHost.Io.Domains[0]))
+                if (zHost.Io?.Domains != null && zHost.Io.Domains.Length > 0 && !string.IsNullOrEmpty(zHost.Io.Domains[0]))
                 {
                     zone.IovipHost = zHost.Io.Domains[0];
                 }
@@ -110,7 +118,7 @@ namespace Qiniu.Storage
                     zone.IovipHost = Config.DefaultIoHost;
                 }
 
-                if (!string.IsNullOrEmpty(zHost.Api.Domains[0]))
+                if (zHost.Api?.Domains != null && zHost.Api.Domains.Length > 0 && !string.IsNullOrEmpty(zHost.Api.Domains[0]))
                 {
                     zone.ApiHost = zHost.Api.Domains[0];
                 }
@@ -119,7 +127,7 @@ namespace Qiniu.Storage
                     zone.ApiHost = Config.DefaultApiHost;
                 }
 
-                if (!string.IsNullOrEmpty(zHost.Rs.Domains[0]))
+                if (zHost.Rs?.Domains != null && zHost.Rs.Domains.Length > 0 && !string.IsNullOrEmpty(zHost.Rs.Domains[0]))
                 {
                     zone.RsHost = zHost.Rs.Domains[0];
                 }
@@ -128,7 +136,7 @@ namespace Qiniu.Storage
                     zone.RsHost = Config.DefaultRsHost;
                 }
 
-                if (!string.IsNullOrEmpty(zHost.Rsf.Domains[0]))
+                if (zHost.Rsf?.Domains != null && zHost.Rsf.Domains.Length > 0 && !string.IsNullOrEmpty(zHost.Rsf.Domains[0]))
                 {
                     zone.RsfHost = zHost.Rsf.Domains[0];
                 }
@@ -137,13 +145,13 @@ namespace Qiniu.Storage
                     zone.RsfHost = Config.DefaultRsfHost;
                 }
 
-                lock (rwLock)
+                lock (_rwLock)
                 {
                     zoneCacheValue = new ZoneCacheValue();
                     TimeSpan ttl = TimeSpan.FromSeconds(zHost.Ttl);
                     zoneCacheValue.Deadline = DateTime.Now.Add(ttl);
                     zoneCacheValue.Zone = zone;
-                    zoneCache[cacheKey] = zoneCacheValue;
+                    _zoneCache[cacheKey] = zoneCacheValue;
                 }
             }
             catch (Exception ex)

@@ -23,13 +23,13 @@ namespace Qiniu.Storage
         /// 上下文信息列表
         /// </summary>
         [JsonPropertyName("contexts")]
-        public string[] Contexts { get; set; }
+        public string[] Contexts { get; set; } = System.Array.Empty<string>();
 
         /// <summary>
         /// 上下文信息过期列表，与 context 配合使用
         /// </summary>
         [JsonPropertyName("contextsExpiredAt")]
-        public long[] ContextsExpiredAt { get; set; }
+        public long[] ContextsExpiredAt { get; set; } = System.Array.Empty<long>();
 
         /// <summary>
         /// Ctx过期时间戳（单位秒）
@@ -46,13 +46,13 @@ namespace Qiniu.Storage
         /// 新版分片上下文信息列表
         /// </summary>
         [JsonPropertyName("etags")]
-        public Dictionary<string, object>[] Etags { get; set; }
+        public Dictionary<string, object>[] Etags { get; set; } = System.Array.Empty<Dictionary<string, object>>();
 
         /// <summary>
         /// 新版分片上传id
         /// </summary>
         [JsonPropertyName("uploadId")]
-        public string UploadId { get; set; }
+        public string UploadId { get; set; } = string.Empty;
 
         /// <summary>
         /// 完成上传的字节数

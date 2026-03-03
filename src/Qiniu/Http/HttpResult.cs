@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -9,7 +10,7 @@ namespace Qiniu.Http
     /// </summary>
     public class HttpResult
     {
-        private static readonly IReadOnlyList<int> NotRetryableHttpCodes = new List<int>
+        private static readonly IReadOnlyList<int> _notRetryableHttpCodes = new List<int>(19)
         {
             (int)HttpCode.INVALID_ARGUMENT,
             (int)HttpCode.INVALID_FILE,
@@ -73,7 +74,8 @@ namespace Qiniu.Http
             Data = null;
 
             RefCode = (int)HttpCode.USER_UNDEF;
-            RefInfo = null;
+            RefText = string.Empty;
+            RefInfo = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -82,11 +84,13 @@ namespace Qiniu.Http
         /// <param name="hr">要复制其内容的来源</param>
         public void Shadow(HttpResult hr)
         {
+            ArgumentNullException.ThrowIfNull(hr);
+
             this.Code = hr.Code;
             this.Text = hr.Text;
             this.Data = hr.Data;
             this.RefCode = hr.RefCode;
-            this.RefText += hr.RefText;
+            this.RefText += hr.RefText ?? string.Empty;
             this.RefInfo = hr.RefInfo;
         }
 
@@ -172,7 +176,7 @@ namespace Qiniu.Http
             {
                 return false;
             }
-            if (NotRetryableHttpCodes.Contains(Code))
+            if (_notRetryableHttpCodes.Contains(Code))
             {
                 return false;
             }

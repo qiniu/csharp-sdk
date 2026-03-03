@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Newtonsoft.Json;
 using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.CDN
 {
@@ -12,14 +12,14 @@ namespace Qiniu.CDN
         /// <summary>
         /// 获取缓存刷新信息
         /// </summary>
-        public RefreshInfo Result
+        public RefreshInfo? Result
         {
             get
             {
-                RefreshInfo info = null;
+                RefreshInfo? info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info=JsonConvert.DeserializeObject<RefreshInfo>(Text);
+                    info = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.RefreshInfo);
                 }
                 return info;
             }

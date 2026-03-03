@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Newtonsoft.Json;
 using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.CDN
 {
@@ -12,14 +12,14 @@ namespace Qiniu.CDN
         /// <summary>
         /// 获取日志列表信息
         /// </summary>
-        public LogListInfo Result
+        public LogListInfo? Result
         {
             get
             {
-                LogListInfo info = null;
+                LogListInfo? info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info=JsonConvert.DeserializeObject<LogListInfo>(Text);
+                    info = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.LogListInfo);
                 }
                 return info;
             }

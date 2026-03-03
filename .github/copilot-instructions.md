@@ -14,6 +14,9 @@
 6. 属性、方法、字段、类型名等的命名需要符合 C# 命名规范，例如：
   - 属性、方法、类型名应该使用 PascalCasing 命名风格
   - 局部变量应该使用 camelCase 命名风格
-  - 字段应该使用 `_camelCase` 风格，而且尽可能使用 `readonly ` 标记只读
+  - 字段应该使用 `_camelCase` 风格，而且尽可能使用 `readonly ` 标记只读。
 7. 最好不要公开字段，请封装为属性进行公开
 8. 考虑可空。但可以对进行网络请求的纯数据结构放宽要求
+9. 结果模型统一走 `QiniuJson` + `JsonSerializerContext`，减少反射序列化路径
+10. 旧 API 的命名保留兼容入口（`[Obsolete]`），新增规范命名 API 并逐步迁移
+11. 禁止通过伪造兼容层保留 `Newtonsoft` 特性；应直接迁移为 `System.Text.Json` 特性与 API

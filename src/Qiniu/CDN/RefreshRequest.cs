@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+using Qiniu.Util;
 namespace Qiniu.CDN
 {
     /// <summary>
@@ -17,7 +18,8 @@ namespace Qiniu.CDN
         /// 带参数的 url 刷新，根据其域名缓存配置是否忽略参数缓存决定刷新结果。
         /// 如果配置了时间戳防盗链的资源 url 提交时刷新需要去掉 e 和 token 参数
         /// </summary>
-        [JsonProperty("urls", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("urls")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<string> Urls { get; set; }
 
         /// <summary>
@@ -25,7 +27,8 @@ namespace Qiniu.CDN
         /// 例如：http://bar.foo.com/dir/，
         /// 也支持在尾部使用通配符，例如：http://bar.foo.com/dir/*
         /// </summary>
-        [JsonProperty("dirs", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("dirs")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<string> Dirs { get; set; }
 
         /// <summary>
@@ -100,7 +103,7 @@ namespace Qiniu.CDN
         /// <returns>请求内容的JSON字符串</returns>
         public string ToJsonStr()
         {
-            return JsonConvert.SerializeObject(this);
+            return QiniuJson.Serialize(this, QiniuJson.SerializerContext.RefreshRequest);
         }
     }
 }

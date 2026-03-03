@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using Qiniu.Http;
+﻿using Qiniu.Http;
 using System.Text;
+using Qiniu.Util;
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -19,7 +19,7 @@ namespace Qiniu.Storage
 
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info= JsonConvert.DeserializeObject<PfopInfo>(Text);
+                    info = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.PfopInfo);
                 }
                 return info;
             }
@@ -37,7 +37,7 @@ namespace Qiniu.Storage
 
             if (this.Result!=null)
             {
-                sb.AppendFormat("result: {0}\n", JsonConvert.SerializeObject(this.Result));
+                sb.AppendFormat("result: {0}\n", QiniuJson.Serialize(this.Result, QiniuJson.SerializerContext.PfopInfo));
             }
             else
             {
