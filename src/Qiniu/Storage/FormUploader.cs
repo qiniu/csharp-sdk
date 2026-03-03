@@ -23,7 +23,7 @@ namespace Qiniu.Storage
     /// 上传策略 http://developer.qiniu.com/article/developer/security/upload-token.html
     /// 上传凭证 http://developer.qiniu.com/article/developer/security/put-policy.html
     /// </summary>
-    public class FormUploader
+    public class FormUploader : IDisposable
     {
         private readonly Config _config;
         private readonly HttpManager _httpManager;
@@ -266,6 +266,11 @@ namespace Qiniu.Storage
             }
 
             return result;
+        }
+
+        public void Dispose()
+        {
+            _httpManager.Dispose();
         }
     }
 

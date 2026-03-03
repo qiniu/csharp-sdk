@@ -19,33 +19,33 @@ namespace Qiniu.Http
         public bool? AllowWriteStreamBuffering { get; set; }
         public AuthenticationLevel? AuthenticationLevel { get; set; }
         public DecompressionMethods? AutomaticDecompression { get; set; }
-        public RequestCachePolicy CachePolicy { get; set; }
-        public X509CertificateCollection ClientCertificates { get; set; }
-        public string ConnectionGroupName { get; set; }
-        public HttpContinueDelegate ContinueDelegate { get; set; }
+        public RequestCachePolicy? CachePolicy { get; set; }
+        public X509CertificateCollection? ClientCertificates { get; set; }
+        public string? ConnectionGroupName { get; set; }
+        public HttpContinueDelegate? ContinueDelegate { get; set; }
         public int? ContinueTimeout { get; set; }
-        public CookieContainer CookieContainer { get; set; }
-        public ICredentials Credentials { get; set; }
+        public CookieContainer? CookieContainer { get; set; }
+        public ICredentials? Credentials { get; set; }
         public TokenImpersonationLevel? ImpersonationLevel { get; set; }
         public bool? KeepAlive { get; set; }
         public int? MaximumAutomaticRedirections { get; set; }
         public int? MaximumResponseHeadersLength { get; set; }
-        public string MediaType { get; set; }
-        public string Method { get; set; }
+        public string? MediaType { get; set; }
+        public string? Method { get; set; }
         public bool? Pipelined { get; set; }
         public bool? PreAuthenticate { get; set; }
-        public IWebProxy Proxy { get; set; }
+        public IWebProxy? Proxy { get; set; }
         public int? ReadWriteTimeout { get; set; }
         public bool? SendChunked { get; set; }
-        public RemoteCertificateValidationCallback ServerCertificateValidationCallback { get; set; }
+        public RemoteCertificateValidationCallback? ServerCertificateValidationCallback { get; set; }
         public int? Timeout { get; set; }
         public bool? UnsafeAuthenticatedConnectionSharing { get; set; }
         public bool? UseDefaultCredentials { get; set; }
         public HttpContent? RequestContent { get; set; }
 
         // Custom Options
-        public string Url { get; set; }
-        public StringDictionary Headers { get; set; }
+        public string? Url { get; set; }
+        public StringDictionary? Headers { get; set; }
         public Stream? RequestStream { get; set; }
         public byte[]? RequestData { get; set; }
 
@@ -70,6 +70,48 @@ namespace Qiniu.Http
             SetHeaders(message);
             SetBody(message);
             return message;
+        }
+
+        internal bool CanUseSharedHttpClientHandler()
+        {
+            if (AllowAutoRedirect is true)
+            {
+                return false;
+            }
+
+            if (AutomaticDecompression != null && AutomaticDecompression.Value != DecompressionMethods.None)
+            {
+                return false;
+            }
+
+            if (ClientCertificates is not null
+                || CookieContainer is not null
+                || Credentials is not null)
+            {
+                return false;
+            }
+
+            if (PreAuthenticate is true)
+            {
+                return false;
+            }
+
+            if (Proxy is not null)
+            {
+                return false;
+            }
+
+            if (UseDefaultCredentials is true)
+            {
+                return false;
+            }
+
+            if (ServerCertificateValidationCallback is not null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public HttpClientHandler CreateHttpClientHandler()
@@ -134,7 +176,7 @@ namespace Qiniu.Http
 
             foreach (string fieldName in Headers.Keys)
             {
-                string fieldVal = Headers[fieldName];
+                string? fieldVal = Headers[fieldName];
                 if (!request.Headers.TryAddWithoutValidation(fieldName, fieldVal))
                 {
                     if (request.Content == null)

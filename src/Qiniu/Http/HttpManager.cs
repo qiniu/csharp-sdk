@@ -15,7 +15,7 @@ namespace Qiniu.Http
     /// <summary>
     /// HttpManager for .NET 2.0/3.0/3.5/4.0
     /// </summary>
-    public class HttpManager
+    public class HttpManager : IDisposable
     {
         private readonly bool _allowAutoRedirect;
         private string _userAgent;
@@ -29,6 +29,8 @@ namespace Qiniu.Http
             _allowAutoRedirect = allowAutoRedirect;
             _userAgent = GetUserAgent();
         }
+
+        private HttpClientHandler? _sharedHttpClientHandler;
 
         /// <summary>
         /// 客户端标识(UserAgent)，示例："SepcifiedClient/1.1 (Universal)"
@@ -81,6 +83,7 @@ namespace Qiniu.Http
                 reqOpts.Headers = headers;
             }
 
+            reqOpts.Headers ??= new StringDictionary();
             if (!string.IsNullOrEmpty(token))
             {
                 reqOpts.Headers.Add("Authorization", token);
@@ -128,8 +131,8 @@ namespace Qiniu.Http
                 return result;
             }
 
-            result.Code = (int)response.StatusCode;
-            result.RefCode = (int)response.StatusCode;
+            result.Code = (int) response.StatusCode;
+            result.RefCode = (int) response.StatusCode;
 
             GetHeaders(result, response);
 
@@ -156,10 +159,20 @@ namespace Qiniu.Http
         public async Task<HttpResult> SendRequestAsync(HttpRequestOptions reqOpts, Boolean binaryMode = false)
         {
             HttpResult result;
+            HttpClientHandler handler;
+            if (reqOpts.CanUseSharedHttpClientHandler())
+            {
+                _sharedHttpClientHandler ??= new HttpClientHandler();
+                handler = _sharedHttpClientHandler;
+            }
+            else
+            {
+                handler = reqOpts.CreateHttpClientHandler();
+            }
+
             try
             {
-                using var handler = reqOpts.CreateHttpClientHandler();
-                using var client = new HttpClient(handler);
+                using var client = new HttpClient(handler, disposeHandler: false);
                 if (reqOpts.Timeout.HasValue)
                 {
                     client.Timeout = TimeSpan.FromMilliseconds(reqOpts.Timeout.Value);
@@ -173,8 +186,8 @@ namespace Qiniu.Http
             {
                 result = new HttpResult
                 {
-                    Code = (int) httpRequestException.StatusCode.Value,
-                    RefCode = (int) httpRequestException.StatusCode.Value,
+                    Code = (int)httpRequestException.StatusCode.Value,
+                    RefCode = (int)httpRequestException.StatusCode.Value,
                     RefText = httpRequestException.Message
                 };
             }
@@ -186,8 +199,15 @@ namespace Qiniu.Http
                 sb.AppendLine();
 
                 result = new HttpResult();
-                result.RefCode = (int) HttpCode.USER_UNDEF;
+                result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
+            }
+            finally
+            {
+                if (!ReferenceEquals(handler, _sharedHttpClientHandler))
+                {
+                    handler.Dispose();
+                }
             }
 
             return result;
@@ -196,10 +216,19 @@ namespace Qiniu.Http
         public HttpResult SendRequest(HttpRequestOptions reqOpts, Boolean binaryMode = false)
         {
             HttpResult result;
+            HttpClientHandler handler;
+            if (reqOpts.CanUseSharedHttpClientHandler())
+            {
+                _sharedHttpClientHandler ??= new HttpClientHandler();
+                handler = _sharedHttpClientHandler;
+            }
+            else
+            {
+                handler = reqOpts.CreateHttpClientHandler();
+            }
 
             try
             {
-                using var handler = reqOpts.CreateHttpClientHandler();
                 using var client = new HttpClient(handler);
                 if (reqOpts.Timeout.HasValue)
                 {
@@ -215,8 +244,8 @@ namespace Qiniu.Http
             {
                 result = new HttpResult
                 {
-                    Code = (int)httpRequestException.StatusCode.Value,
-                    RefCode = (int)httpRequestException.StatusCode.Value,
+                    Code = (int) httpRequestException.StatusCode.Value,
+                    RefCode = (int) httpRequestException.StatusCode.Value,
                     RefText = httpRequestException.Message
                 };
             }
@@ -233,7 +262,7 @@ namespace Qiniu.Http
                 sb.AppendLine();
 
                 result = CreateHttpResult(null);
-                result.RefCode = (int)HttpCode.USER_UNDEF;
+                result.RefCode = (int) HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
 
@@ -283,7 +312,7 @@ namespace Qiniu.Http
             {
                 headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
             }
-            
+
             AddAuthHeaders(ref headers, auth);
 
             string token = auth.CreateManageTokenV2("GET", url, headers);
@@ -495,7 +524,7 @@ namespace Qiniu.Http
             {
                 headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
             }
-            
+
             AddAuthHeaders(ref headers, auth);
 
             string token = auth.CreateManageTokenV2("POST", url, headers, data);
@@ -667,6 +696,11 @@ namespace Qiniu.Http
             {
                 headers["X-Qiniu-Date"] = xQiniuDate;
             }
+        }
+
+        public void Dispose()
+        {
+            _sharedHttpClientHandler?.Dispose();
         }
     }
 }
