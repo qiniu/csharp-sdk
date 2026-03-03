@@ -84,7 +84,7 @@ namespace Qiniu.Storage
                     throw new Exception("code: " + hr.Code + ", text: " + hr.Text + ", ref-text:" + hr.RefText);
                 }
 
-                ZoneInfo zInfo = QiniuJson.Deserialize<ZoneInfo>(hr.Text);
+                ZoneInfo zInfo = QiniuJson.Deserialize(hr.Text, QiniuJson.SerializerContext.ZoneInfo);
                 if (zInfo == null)
                 {
                     throw new Exception("JSON Deserialize failed: " + hr.Text);

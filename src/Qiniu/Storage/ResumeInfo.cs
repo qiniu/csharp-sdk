@@ -62,7 +62,7 @@ namespace Qiniu.Storage
 
         public string ToJsonStr()
         {
-            return Util.QiniuJson.Serialize(this);
+            return Util.QiniuJson.Serialize(this, Util.QiniuJson.SerializerContext.ResumeInfo);
         }
     }
 }
