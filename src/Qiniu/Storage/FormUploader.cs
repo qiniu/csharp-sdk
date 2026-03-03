@@ -42,7 +42,7 @@ namespace Qiniu.Storage
         {
             try
             {
-                using FileStream fs = new FileStream(localFile, FileMode.Open);
+                using FileStream fs = new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.Read);
                 return this.UploadStream(fs, key, token, extra);
             }
             catch (Exception ex)
