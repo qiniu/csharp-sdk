@@ -76,6 +76,7 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="putExtra">上传可选设置</param>
         /// <returns>上传数据流后的返回结果</returns>
+        /// <remarks>此方法将会关闭传入的 <paramref name="stream"/> 内容</remarks>
         public HttpResult UploadStream(Stream stream, string? key, string token, PutExtra? putExtra)
         {
             if (putExtra == null)
@@ -83,7 +84,8 @@ namespace Qiniu.Storage
                 putExtra = new PutExtra();
                 putExtra.MaxRetryTimes = _config.MaxRetryTimes;
             }
-            if (string.IsNullOrEmpty(putExtra.MimeType )) {
+            if (string.IsNullOrEmpty(putExtra.MimeType )) 
+            {
                 putExtra.MimeType = "application/octet-stream";
             }
             if (putExtra.ProgressHandler == null)

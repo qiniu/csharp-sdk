@@ -2,6 +2,7 @@
 using Qiniu.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 using Qiniu.Util;
@@ -16,18 +17,14 @@ namespace Qiniu.Storage.Tests
         public void UploadFileTest()
         {
             Mac mac = new Mac(AccessKey, SecretKey);
-            Random rand = new Random();
-            string key = string.Format("UploadFileTest_{0}.dat", rand.Next());
+            string key = $"UploadFileTest_{Random.Shared.Next()}.dat";
 
             string tempPath = System.IO.Path.GetTempPath();
-            int rnd = new Random().Next(1, 100000);
-            string filePath = tempPath + "resumeFile" + rnd.ToString();
-            char[] testBody = new char[4 * 1024 * 1024];
-            System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(stream, System.Text.Encoding.Default);
-            sw.Write(testBody);
-            sw.Close();
-            stream.Close();
+            var filePath = Path.Join(tempPath, $"resumeFile_{Path.GetRandomFileName()}");
+
+            var testBody = new byte[8 * 1024 * 1024];
+            Random.Shared.NextBytes(testBody);
+            File.WriteAllBytes(filePath, testBody);
 
             PutPolicy putPolicy = new PutPolicy();
             putPolicy.Scope = Bucket + ":" + key;
