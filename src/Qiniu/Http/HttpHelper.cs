@@ -85,7 +85,7 @@ namespace Qiniu.Http
             var osInfo = Environment.OSVersion;
             string sfx = Environment.MachineName + "; " + osInfo.Platform + "; " + osInfo.Version; 
 #endif
-            return string.Format("{0}/{1} ({2})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.VERSION, sfx);
+            return $"{QiniuCSharpSDK.ALIAS}/{QiniuCSharpSDK.VERSION} ({sfx})";
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Qiniu.Http
         public static string createFormDataBoundary()
         {
             string now = DateTime.UtcNow.Ticks.ToString();
-            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.CalcMD5(now));
+            return $"-------{QiniuCSharpSDK.ALIAS}Boundary{Hashing.CalcMD5(now)}";
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using Qiniu.Http;
-using Newtonsoft.Json;
+using Qiniu.Util;
 
 namespace Qiniu.Storage
 {
@@ -19,7 +19,7 @@ namespace Qiniu.Storage
                 FileInfo info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info = JsonConvert.DeserializeObject<FileInfo>(Text);
+                    info = QiniuJson.Deserialize(Text, QiniuJsonSerializerContext.Default.FileInfo);
                 }
                 return info;
             }
@@ -64,7 +64,7 @@ namespace Qiniu.Storage
                 sb.AppendFormat("ref-info:\n");
                 foreach (var d in RefInfo)
                 {
-                    sb.AppendLine(string.Format("{0}: {1}", d.Key, d.Value));
+                    sb.AppendLine($"{d.Key}: {d.Value}");
                 }
             }
 

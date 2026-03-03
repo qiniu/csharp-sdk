@@ -2,7 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using Qiniu.Http;
-using Newtonsoft.Json;
+using Qiniu.Util;
 
 namespace Qiniu.Storage
 {
@@ -17,7 +17,7 @@ namespace Qiniu.Storage
     /// </summary>
     public class ZoneHelper
     {
-        private static Dictionary<string, ZoneCacheValue> zoneCache = new Dictionary<string, ZoneCacheValue>();
+        private static Dictionary<string, ZoneCacheValue> zoneCache = new Dictionary<string, ZoneCacheValue>(16);
         private static object rwLock = new object();
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Qiniu.Storage
         )
         {
             ZoneCacheValue zoneCacheValue = null;
-            string cacheKey = string.Format("{0}:{1}", accessKey, bucket);
+            string cacheKey = $"{accessKey}:{bucket}";
 
             //check from cache
             lock (rwLock)
@@ -70,11 +70,7 @@ namespace Qiniu.Storage
             
             try
             {
-                string queryUrl = string.Format("{0}/v4/query?ak={1}&bucket={2}",
-                    ucHost,
-                    accessKey,
-                    bucket
-                );
+                string queryUrl = $"{ucHost}/v4/query?ak={accessKey}&bucket={bucket}";
                 HttpManager httpManager = new HttpManager();
                 List<IMiddleware> middlewares = new List<IMiddleware>
                 {
@@ -88,7 +84,7 @@ namespace Qiniu.Storage
                     throw new Exception("code: " + hr.Code + ", text: " + hr.Text + ", ref-text:" + hr.RefText);
                 }
 
-                ZoneInfo zInfo = JsonConvert.DeserializeObject<ZoneInfo>(hr.Text);
+                ZoneInfo zInfo = QiniuJson.Deserialize(hr.Text, QiniuJsonSerializerContext.Default.ZoneInfo);
                 if (zInfo == null)
                 {
                     throw new Exception("JSON Deserialize failed: " + hr.Text);

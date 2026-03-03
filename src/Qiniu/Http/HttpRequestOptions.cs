@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using System.IO;
+using System.Net.Http;
 using System.Net;
 using System.Net.Cache;
 using System.Net.Security;
@@ -52,165 +53,90 @@ namespace Qiniu.Http
             Headers = new StringDictionary();
         }
 
-        public HttpWebRequest CreateHttpWebRequest()
+        public HttpRequestMessage CreateHttpRequestMessage()
         {
-            HttpWebRequest wReq = WebRequest.Create(Url) as HttpWebRequest;
-            if (wReq == null)
+            if (string.IsNullOrWhiteSpace(Url))
             {
-                StringBuilder msg = new StringBuilder();
-                msg.AppendFormat("Failed to create HttpWebRequest with URL \"{0}\".", Url);
-                throw new InvalidOperationException(msg.ToString());
+                throw new InvalidOperationException("Failed to create HttpRequestMessage because URL is empty.");
             }
 
-            SetProperties(wReq);
-            SetHeaders(wReq);
-            wReq.ServicePoint.Expect100Continue = false;
-            SetBody(wReq);
+            if (Method == null)
+            {
+                throw new InvalidOperationException("Failed to create HttpRequestMessage because HTTP method is empty.");
+            }
 
-            return wReq;
+            var message = new HttpRequestMessage(new HttpMethod(Method), Url);
+            SetHeaders(message);
+            SetBody(message);
+            return message;
         }
 
-        private void SetProperties(HttpWebRequest wReq)
+        public HttpClientHandler CreateHttpClientHandler()
         {
+            var handler = new HttpClientHandler();
+
             if (AllowAutoRedirect.HasValue)
             {
-                wReq.AllowAutoRedirect = AllowAutoRedirect.Value;
-            }
-
-            if (AllowReadStreamBuffering.HasValue)
-            {
-                wReq.AllowReadStreamBuffering = AllowReadStreamBuffering.Value;
-            }
-
-            if (AllowWriteStreamBuffering.HasValue)
-            {
-                wReq.AllowWriteStreamBuffering = AllowWriteStreamBuffering.Value;
-            }
-
-            if (AuthenticationLevel.HasValue)
-            {
-                wReq.AuthenticationLevel = AuthenticationLevel.Value;
+                handler.AllowAutoRedirect = AllowAutoRedirect.Value;
             }
 
             if (AutomaticDecompression.HasValue)
             {
-                wReq.AutomaticDecompression = AutomaticDecompression.Value;
-            }
-
-            if (CachePolicy != null)
-            {
-                wReq.CachePolicy = CachePolicy;
+                handler.AutomaticDecompression = AutomaticDecompression.Value;
             }
 
             if (ClientCertificates != null)
             {
-                wReq.ClientCertificates = ClientCertificates;
-            }
-
-            if (ConnectionGroupName != null)
-            {
-                wReq.ConnectionGroupName = ConnectionGroupName;
-            }
-
-            if (ContinueDelegate != null)
-            {
-                wReq.ContinueDelegate = ContinueDelegate;
-            }
-
-            if (ContinueTimeout.HasValue)
-            {
-                wReq.ContinueTimeout = ContinueTimeout.Value;
+                handler.ClientCertificates.AddRange(ClientCertificates);
             }
 
             if (CookieContainer != null)
             {
-                wReq.CookieContainer = CookieContainer;
+                handler.CookieContainer = CookieContainer;
             }
 
             if (Credentials != null)
             {
-                wReq.Credentials = Credentials;
+                handler.Credentials = Credentials;
             }
 
             if (ImpersonationLevel.HasValue)
             {
-                wReq.ImpersonationLevel = ImpersonationLevel.Value;
+                handler.ImpersonationLevel = ImpersonationLevel.Value;
             }
 
             if (KeepAlive.HasValue)
             {
-                wReq.KeepAlive = KeepAlive.Value;
-            }
-
-            if (MaximumAutomaticRedirections.HasValue)
-            {
-                wReq.MaximumAutomaticRedirections = MaximumAutomaticRedirections.Value;
-            }
-
-            if (MaximumResponseHeadersLength.HasValue)
-            {
-                wReq.MaximumResponseHeadersLength = MaximumResponseHeadersLength.Value;
-            }
-
-            if (MediaType != null)
-            {
-                wReq.MediaType = MediaType;
-            }
-
-            if (Method != null)
-            {
-                wReq.Method = Method;
-            }
-
-            if (Pipelined.HasValue)
-            {
-                wReq.Pipelined = Pipelined.Value;
+                handler.UseProxy = true;
             }
 
             if (PreAuthenticate.HasValue)
             {
-                wReq.PreAuthenticate = PreAuthenticate.Value;
+                handler.PreAuthenticate = PreAuthenticate.Value;
             }
 
             if (Proxy != null)
             {
-                wReq.Proxy = Proxy;
-            }
-
-            if (ReadWriteTimeout.HasValue)
-            {
-                wReq.ReadWriteTimeout = ReadWriteTimeout.Value;
-            }
-
-            if (SendChunked.HasValue)
-            {
-                wReq.SendChunked = SendChunked.Value;
-            }
-
-            if (ServerCertificateValidationCallback != null)
-            {
-                wReq.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
-            }
-
-            if (Timeout.HasValue)
-            {
-                wReq.Timeout = Timeout.Value;
-            }
-
-            if (UnsafeAuthenticatedConnectionSharing.HasValue)
-            {
-                wReq.UnsafeAuthenticatedConnectionSharing = UnsafeAuthenticatedConnectionSharing.Value;
+                handler.Proxy = Proxy;
             }
 
             if (UseDefaultCredentials.HasValue)
             {
-                wReq.UseDefaultCredentials = UseDefaultCredentials.Value;
+                handler.UseDefaultCredentials = UseDefaultCredentials.Value;
             }
+
+            if (ServerCertificateValidationCallback != null)
+            {
+                handler.ServerCertificateCustomValidationCallback = (message, certificate, chain, errors) =>
+                    ServerCertificateValidationCallback(message?.RequestUri?.Host ?? string.Empty, certificate, chain, errors);
+            }
+
+            return handler;
         }
 
-        private void SetHeaders(HttpWebRequest wReq)
+        private void SetHeaders(HttpRequestMessage request)
         {
-            if (Headers == null || wReq == null)
+            if (Headers == null)
             {
                 return;
             }
@@ -218,72 +144,30 @@ namespace Qiniu.Http
             foreach (string fieldName in Headers.Keys)
             {
                 string fieldVal = Headers[fieldName];
-                if (WebHeaderCollection.IsRestricted(fieldName))
+                if (!request.Headers.TryAddWithoutValidation(fieldName, fieldVal))
                 {
-                    switch (fieldName)
+                    if (request.Content == null)
                     {
-                        case "accept":
-                            wReq.Accept = fieldVal;
-                            break;
-                        // should be set by KeepAlive property
-                        // case "connection":
-                        //     wReq.Connection = fieldVal;
-                        //     break;
-                        case "content-type":
-                            wReq.ContentType = fieldVal;
-                            break;
-                        case "date":
-                            wReq.Date = DateTime.Parse(fieldVal);
-                            break;
-                        case "expect":
-                            wReq.Expect = fieldVal;
-                            break;
-                        case "host":
-                            wReq.Host = fieldVal;
-                            break;
-                        case "if-modified-since":
-                            wReq.IfModifiedSince = DateTime.Parse(fieldVal);
-                            break;
-                        case "referer":
-                            wReq.Referer = fieldVal;
-                            break;
-                        case "transfer-encoding":
-                            wReq.TransferEncoding = fieldVal;
-                            break;
-                        case "user-agent":
-                            wReq.UserAgent = fieldVal;
-                            break;
+                        request.Content = new ByteArrayContent(Array.Empty<byte>());
                     }
-                }
-                else
-                {
-                    wReq.Headers.Add(fieldName, fieldVal);
+
+                    request.Content.Headers.TryAddWithoutValidation(fieldName, fieldVal);
                 }
             }
         }
 
-        private void SetBody(HttpWebRequest wReq)
+        private void SetBody(HttpRequestMessage request)
         {
             if (RequestData != null)
             {
-                wReq.ContentLength = RequestData.Length;
-                wReq.AllowWriteStreamBuffering = true;
-                using (Stream sReq = wReq.GetRequestStream())
-                {
-                    sReq.Write(RequestData, 0, RequestData.Length);
-                    sReq.Flush();
-                }
+                request.Content = new ByteArrayContent(RequestData);
 
                 return;
             }
 
             if (RequestStream != null)
             {
-                wReq.ContentLength = RequestStream.Length;
-                using (Stream sReq = wReq.GetRequestStream())
-                {
-                    RequestStream.CopyTo(sReq);
-                }
+                request.Content = new StreamContent(RequestStream);
             }
         }
     }

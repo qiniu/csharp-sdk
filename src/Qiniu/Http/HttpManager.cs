@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using Qiniu.Util;
 
 namespace Qiniu.Http
@@ -34,7 +35,7 @@ namespace Qiniu.Http
         public static string GetUserAgent()
         {
             string osDesc = Environment.OSVersion.Platform + "; " + Environment.OSVersion.Version;
-            return string.Format("{0}/{1} ({2}; {3})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.VERSION, QiniuCSharpSDK.RTFX, osDesc);
+            return $"{QiniuCSharpSDK.ALIAS}/{QiniuCSharpSDK.VERSION} ({QiniuCSharpSDK.RTFX}; {osDesc})";
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace Qiniu.Http
         public static string CreateFormDataBoundary()
         {
             string now = DateTime.UtcNow.Ticks.ToString();
-            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.CalcMD5X(now));
+            return $"-------{QiniuCSharpSDK.ALIAS}Boundary{Hashing.CalcMD5X(now)}";
         }
 
         public HttpRequestOptions CreateHttpRequestOptions(
@@ -89,81 +90,71 @@ namespace Qiniu.Http
             return reqOpts;
         }
 
-        public HttpResult CreateHttpResult(HttpWebResponse wResp, bool binaryMode = false)
+        public HttpResult CreateHttpResult(HttpResponseMessage response, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
-            if (wResp == null)
+            if (response == null)
             {
                 return result;
             }
 
-            result.Code = (int)wResp.StatusCode;
-            result.RefCode = (int)wResp.StatusCode;
+            result.Code = (int)response.StatusCode;
+            result.RefCode = (int)response.StatusCode;
 
-            getHeaders(ref result, wResp);
+            getHeaders(ref result, response);
 
-            Stream respStream = wResp.GetResponseStream();
-            if (respStream == null)
+            using (response)
             {
-                wResp.Close();
-                return result;
-            }
-
-            if (binaryMode)
-            {
-                int len = (int)wResp.ContentLength;
-                result.Data = new byte[len];
-                int bytesLeft = len;
-                int bytesRead = 0;
-
-                using (BinaryReader br = new BinaryReader(respStream))
+                var content = response.Content;
+                if (content == null)
                 {
-                    while (bytesLeft > 0)
-                    {
-                        bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                        bytesLeft -= bytesRead;
-                    }
+                    return result;
+                }
+
+                if (binaryMode)
+                {
+                    result.Data = content.ReadAsByteArrayAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    result.Text = content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                 }
             }
-            else
-            {
-                using (StreamReader sr = new StreamReader(respStream))
-                {
-                    result.Text = sr.ReadToEnd();
-                }
-            }
-
-            wResp.Close();
             return result;
         }
 
         public HttpResult SendRequest(HttpRequestOptions reqOpts, Boolean binaryMode = false)
         {
             HttpResult result;
-            HttpWebRequest wReq = null;
 
             try
             {
-                wReq = reqOpts.CreateHttpWebRequest();
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
+                using var handler = reqOpts.CreateHttpClientHandler();
+                using var client = new HttpClient(handler);
+                if (reqOpts.Timeout.HasValue)
+                {
+                    client.Timeout = TimeSpan.FromMilliseconds(reqOpts.Timeout.Value);
+                }
 
-                result = CreateHttpResult(wResp, binaryMode);
+                using var request = reqOpts.CreateHttpRequestMessage();
+                using HttpResponseMessage response = client.Send(request);
+
+                result = CreateHttpResult(response, binaryMode);
             }
-            catch (WebException wex)
+            catch (HttpRequestException httpRequestException) when (httpRequestException.StatusCode.HasValue)
             {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                result = CreateHttpResult(xResp);
+                result = new HttpResult
+                {
+                    Code = (int)httpRequestException.StatusCode.Value,
+                    RefCode = (int)httpRequestException.StatusCode.Value,
+                    RefText = httpRequestException.Message
+                };
             }
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat(
-                    "[{0}] [{1}] [HTTP-{2}] Error:  ",
-                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                    userAgent,
-                    reqOpts.Method
-                );
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [{userAgent}] [HTTP-{reqOpts.Method}] Error:  ");
                 Exception e = ex;
                 while (e != null)
                 {
@@ -176,13 +167,6 @@ namespace Qiniu.Http
                 result.RefCode = (int)HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
             }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
-            }
 
             return result;
         }
@@ -194,7 +178,8 @@ namespace Qiniu.Http
                 return SendRequest(reqOpts, binaryMode);
             }
 
-            List<IMiddleware> reversedMiddlewares = new List<IMiddleware>(middlewares);
+            List<IMiddleware> reversedMiddlewares = new List<IMiddleware>(middlewares.Count);
+            reversedMiddlewares.AddRange(middlewares);
             reversedMiddlewares.Reverse();
             DNextSend composedHandle = reversedMiddlewares.Aggregate<IMiddleware, DNextSend>(
                 req => SendRequest(req, binaryMode),
@@ -501,7 +486,7 @@ namespace Qiniu.Http
 
             reqOpts.Headers.Add(
                 "Content-Type",
-                string.Format("{0}; boundary={1}", ContentType.MULTIPART_FORM_DATA, boundary)
+                $"{ContentType.MULTIPART_FORM_DATA}; boundary={boundary}"
             );
 
             if (data != null)
@@ -548,7 +533,7 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="hr">即将被HTTP请求封装函数返回的HttpResult变量</param>
         /// <param name="resp">正在被读取的HTTP响应</param>
-        private void getHeaders(ref HttpResult hr, HttpWebResponse resp)
+        private void getHeaders(ref HttpResult hr, HttpResponseMessage resp)
         {
             if (resp != null)
             {
@@ -557,35 +542,35 @@ namespace Qiniu.Http
                     hr.RefInfo = new Dictionary<string, string>();
                 }
 
-                hr.RefInfo.Add("ProtocolVersion", resp.ProtocolVersion.ToString());
+                hr.RefInfo.Add("ProtocolVersion", resp.Version.ToString());
 
-                if (!string.IsNullOrEmpty(resp.CharacterSet))
+                if (resp.Content?.Headers?.ContentType?.CharSet is string characterSet && !string.IsNullOrEmpty(characterSet))
                 {
-                    hr.RefInfo.Add("Characterset", resp.CharacterSet);
+                    hr.RefInfo.Add("Characterset", characterSet);
                 }
 
-                if (!string.IsNullOrEmpty(resp.ContentEncoding))
+                if (resp.Content?.Headers?.ContentEncoding != null)
                 {
-                    hr.RefInfo.Add("ContentEncoding", resp.ContentEncoding);
+                    hr.RefInfo.Add("ContentEncoding", string.Join(",", resp.Content.Headers.ContentEncoding));
                 }
 
-                if (!string.IsNullOrEmpty(resp.ContentType))
+                if (resp.Content?.Headers?.ContentType != null)
                 {
-                    hr.RefInfo.Add("ContentType", resp.ContentType);
+                    hr.RefInfo.Add("ContentType", resp.Content.Headers.ContentType.ToString());
                 }
 
-                hr.RefInfo.Add("ContentLength", resp.ContentLength.ToString());
+                hr.RefInfo.Add("ContentLength", (resp.Content?.Headers?.ContentLength ?? 0).ToString());
 
-                var headers = resp.Headers;
-                if (headers != null && headers.Count > 0)
+                foreach (var header in resp.Headers)
                 {
-                    if (hr.RefInfo == null)
+                    hr.RefInfo[header.Key] = string.Join(",", header.Value);
+                }
+
+                if (resp.Content?.Headers != null)
+                {
+                    foreach (var header in resp.Content.Headers)
                     {
-                        hr.RefInfo = new Dictionary<string, string>();
-                    }
-                    foreach (var key in headers.AllKeys)
-                    {
-                        hr.RefInfo.Add(key, headers[key]);
+                        hr.RefInfo[header.Key] = string.Join(",", header.Value);
                     }
                 }
             }

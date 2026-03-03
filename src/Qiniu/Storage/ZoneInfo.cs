@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Qiniu.Storage
 {
@@ -7,7 +7,7 @@ namespace Qiniu.Storage
     /// </summary>
     internal class ZoneInfo
     {
-        [JsonProperty("hosts")]
+        [JsonPropertyName("hosts")]
         public ZoneHost[] Hosts { get; set; }
     }
 
@@ -16,45 +16,47 @@ namespace Qiniu.Storage
         /// <summary>
         /// 过期时间，单位：秒
         /// </summary>
-        [JsonProperty("ttl")]
+        [JsonPropertyName("ttl")]
         public int Ttl { get; set; }
 
-        [JsonProperty("region")]
+        [JsonPropertyName("region")]
         public string Region { get; set; }
 
-        [JsonProperty("io")]
+        [JsonPropertyName("io")]
         public ServiceDomains Io { get; set; }
 
-        [JsonProperty("io_src")]
+        [JsonPropertyName("io_src")]
         public ServiceDomains IoSrc { get; set; }
 
-        [JsonProperty("up")]
+        [JsonPropertyName("up")]
         public ServiceDomains Up { get; set; }
         
-        [JsonProperty("api")]
+        [JsonPropertyName("api")]
         public ServiceDomains Api { get; set; }
         
-        [JsonProperty("rs")]
+        [JsonPropertyName("rs")]
         public ServiceDomains Rs { get; set; }
         
-        [JsonProperty("rsf")]
+        [JsonPropertyName("rsf")]
         public ServiceDomains Rsf { get; set; }
         
-        [JsonProperty("s3")]
+        [JsonPropertyName("s3")]
         public ServiceDomains S3 { get; set; }
         
-        [JsonProperty("uc")]
+        [JsonPropertyName("uc")]
         public ServiceDomains Uc { get; set; }
 
         internal class ServiceDomains
         {
-            [JsonProperty("domains")]
+            [JsonPropertyName("domains")]
             public string[] Domains { get; set; }
 
-            [JsonProperty("old", NullValueHandling = NullValueHandling.Ignore)]
+            [JsonPropertyName("old")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
             public string[] Old { get; set; }
 
-            [JsonProperty("region_alias", NullValueHandling = NullValueHandling.Ignore)]
+            [JsonPropertyName("region_alias")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
             public string RegionAlias { get; set; }
         }
     }

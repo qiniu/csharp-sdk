@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Qiniu.Util;
-using Newtonsoft.Json;
 
 namespace Qiniu.Storage
 {
@@ -21,7 +20,7 @@ namespace Qiniu.Storage
         {
             string tempDir = System.IO.Path.GetTempPath();
             System.IO.FileInfo fileInfo = new System.IO.FileInfo(localFile);
-            string uniqueKey = string.Format("{0}:{1}:{2}", localFile, key, fileInfo.LastWriteTime.ToFileTime());
+            string uniqueKey = $"{localFile}:{key}:{fileInfo.LastWriteTime.ToFileTime()}";
             return Path.Combine(tempDir, "QiniuResume_" + Hashing.CalcMD5X(uniqueKey));
         }
 
@@ -41,7 +40,7 @@ namespace Qiniu.Storage
                     using (StreamReader sr = new StreamReader(fs))
                     {
                         string jsonStr = sr.ReadToEnd();
-                        resumeInfo=JsonConvert.DeserializeObject<ResumeInfo>(jsonStr);
+                        resumeInfo = QiniuJson.Deserialize(jsonStr, QiniuJsonSerializerContext.Default.ResumeInfo);
                     }
                 }
             }

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Qiniu.Util;
 using Qiniu.Http;
-using Newtonsoft.Json;
 
 namespace Qiniu.Storage
 {
@@ -344,7 +343,7 @@ namespace Qiniu.Storage
                 if (resumeInfo == null || UnixTimestamp.IsContextExpired(resumeInfo.ExpiredAt))
                 {
                     HttpResult res = initReq(encodedObjectName, upToken);
-                    Dictionary<string, string> responseBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(res.Text);
+                    Dictionary<string, string> responseBody = QiniuJson.Deserialize(res.Text, QiniuJsonSerializerContext.Default.DictionaryStringString);
                     if (res.Code != 200)
                     {
                         return res;
@@ -734,7 +733,7 @@ namespace Qiniu.Storage
                     {
                         if (putExtra.Version == "v1")
                         {
-                            ResumeContext rc = JsonConvert.DeserializeObject<ResumeContext>(result.Text);
+                            ResumeContext rc = QiniuJson.Deserialize(result.Text, QiniuJsonSerializerContext.Default.ResumeContext);
 
                             if (rc.Crc32 > 0)
                             {
@@ -769,7 +768,7 @@ namespace Qiniu.Storage
                         }
                         else if (putExtra.Version == "v2")
                         {
-                            Dictionary<string, string> rc = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+                            Dictionary<string, string> rc = QiniuJson.Deserialize(result.Text, QiniuJsonSerializerContext.Default.DictionaryStringString);
                             string md5 = LabMD5.GenerateMD5(blockBuffer);
                             if (md5 != rc["md5"])
                             {
@@ -1028,7 +1027,7 @@ namespace Qiniu.Storage
                 body.Add("customVars", putExtra.Params);
                 body.Add("parts", resumeInfo.Etags);
                 string url = string.Format("{0}/buckets/{1}/objects/{2}/uploads/{3}", uploadHost, bucket, encodedObjectName, resumeInfo.UploadId);
-                string bodyStr = JsonConvert.SerializeObject(body);
+                string bodyStr = QiniuJson.Serialize(body, QiniuJsonSerializerContext.Default.DictionaryStringObject);
                 result = httpManager.PostJson(url, bodyStr, upTokenStr);
             }
             catch (Exception ex)

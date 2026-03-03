@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -10,31 +10,31 @@ namespace Qiniu.Storage
         /// <summary>
         /// 文件大小
         /// </summary>
-        [JsonProperty("fileSize")]
+        [JsonPropertyName("fileSize")]
         public long FileSize { get; set; }
 
         /// <summary>
         /// 文件块总数
         /// </summary>
-        [JsonProperty("blockCount")]
+        [JsonPropertyName("blockCount")]
         public long BlockCount { get; set; }
 
         /// <summary>
         /// 上下文信息列表
         /// </summary>
-        [JsonProperty("contexts")]
+        [JsonPropertyName("contexts")]
         public string[] Contexts { get; set; }
 
         /// <summary>
         /// 上下文信息过期列表，与 context 配合使用
         /// </summary>
-        [JsonProperty("contextsExpiredAt")]
+        [JsonPropertyName("contextsExpiredAt")]
         public long[] ContextsExpiredAt { get; set; }
 
         /// <summary>
         /// Ctx过期时间戳（单位秒）
         /// </summary>
-        [JsonProperty("expiredAt")]
+        [JsonPropertyName("expiredAt")]
         public long ExpiredAt { get; set; }
 
         /// <summary>
@@ -45,24 +45,24 @@ namespace Qiniu.Storage
         /// <summary>
         /// 新版分片上下文信息列表
         /// </summary>
-        [JsonProperty("etags")]
+        [JsonPropertyName("etags")]
         public Dictionary<string, object>[] Etags { get; set; }
 
         /// <summary>
         /// 新版分片上传id
         /// </summary>
-        [JsonProperty("uploadId")]
+        [JsonPropertyName("uploadId")]
         public string UploadId { get; set; }
 
         /// <summary>
         /// 完成上传的字节数
         /// </summary>
-        [JsonProperty("uploaded")]
+        [JsonPropertyName("uploaded")]
         public long Uploaded { get; set; }
 
         public string ToJsonStr()
         {
-            return JsonConvert.SerializeObject(this);
+            return Util.QiniuJson.Serialize(this, Util.QiniuJsonSerializerContext.Default.ResumeInfo);
         }
     }
 }
