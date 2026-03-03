@@ -31,17 +31,17 @@ namespace Qiniu.Util
             this.mac = mac;
         }
 
-        private string encodedSign(byte[] data)
+        private string EncodedSign(byte[] data)
         {
             HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
             byte[] digest = hmac.ComputeHash(data);
             return Base64.UrlSafeBase64Encode(digest);
         }
 
-        private string encodedSign(string str)
+        private string EncodedSign(string str)
         {
             byte[] data = Encoding.UTF8.GetBytes(str);
-            return encodedSign(data);
+            return EncodedSign(data);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Qiniu.Util
         /// <returns></returns>
         public string Sign(byte[] data)
         {
-            return string.Format("{0}:{1}", mac.AccessKey, encodedSign(data));
+            return $"{mac.AccessKey}:{EncodedSign(data)}";
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace Qiniu.Util
         /// <returns></returns>
         public string SignWithData(byte[] data)
         {
-            string sstr = Base64.UrlSafeBase64Encode(data);
-            return string.Format("{0}:{1}:{2}", mac.AccessKey, encodedSign(sstr), sstr);
+            string safeString = Base64.UrlSafeBase64Encode(data);
+            return $"{mac.AccessKey}:{EncodedSign(safeString)}:{safeString}";
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Qiniu.Util
         /// <param name="url">请求目标的URL</param>
         /// <param name="body">请求的主体数据</param>
         /// <returns></returns>
-        public string SignRequest(string url, byte[] body)
+        public string SignRequest(string url, byte[]? body)
         {
             Uri u = new Uri(url);
             string pathAndQuery = u.PathAndQuery;
@@ -110,7 +110,7 @@ namespace Qiniu.Util
                 HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
                 byte[] digest = hmac.ComputeHash(buffer.ToArray());
                 string digestBase64 = Base64.UrlSafeBase64Encode(digest);
-                return string.Format("{0}:{1}", mac.AccessKey, digestBase64);
+                return $"{mac.AccessKey}:{digestBase64}";
             }
         }
 
@@ -134,7 +134,7 @@ namespace Qiniu.Util
         /// <param name="headers">请求的 Header，支持非规范化的字段名，内部自动转换，例如：CONTENT-TYPE -> Content-Type</param>
         /// <param name="body">请求的主体数据，要求 UTF-8 编码</param>
         /// <returns>签名结果，但不包括 Qiniu 这一开头，例如："access_key:token"</returns>
-        public string SignRequestV2(string method, string url, StringDictionary headers, string body)
+        public string SignRequestV2(string method, string url, StringDictionary? headers, string body)
         {
             Dictionary<string, string> canonicalHeaders = new Dictionary<string, string>();
 
@@ -205,10 +205,10 @@ namespace Qiniu.Util
             string method,
             string url,
             StringDictionary headers,
-            string body = null
+            string? body = null
         )
         {
-            byte[] bodyBytes = null;
+            byte[]? bodyBytes = null;
             if (!string.IsNullOrEmpty(body)) {
                 bodyBytes = Encoding.UTF8.GetBytes(body);
             }
@@ -224,7 +224,7 @@ namespace Qiniu.Util
             string method,
             string url,
             StringDictionary headers,
-            byte[] body = null
+            byte[]? body = null
         )
         {
             if (!headers.ContainsKey("Authorization"))
@@ -232,7 +232,12 @@ namespace Qiniu.Util
                 return false;
             }
 
-            string authString = headers["Authorization"];
+            string? authString = headers["Authorization"];
+            if (authString is null)
+            {
+                return false;
+            }
+
             if (authString.StartsWith("QBox "))
             {
                 return authString == "QBox " + SignRequest(url, body);

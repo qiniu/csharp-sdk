@@ -27,29 +27,29 @@ namespace Qiniu.CDN
             httpManager = new HttpManager();
         }
 
-        private string refreshEntry()
+        private string RefreshEntry()
         {
-            return string.Format("{0}/v2/tune/refresh", FUSION_API_HOST);
+            return $"{FUSION_API_HOST}/v2/tune/refresh";
         }
 
-        private string prefetchEntry()
+        private string PrefetchEntry()
         {
-            return string.Format("{0}/v2/tune/prefetch", FUSION_API_HOST);
+            return $"{FUSION_API_HOST}/v2/tune/prefetch";
         }
 
-        private string bandwidthEntry()
+        private string BandwidthEntry()
         {
-            return string.Format("{0}/v2/tune/bandwidth", FUSION_API_HOST);
+            return $"{FUSION_API_HOST}/v2/tune/bandwidth";
         }
 
-        private string fluxEntry()
+        private string FluxEntry()
         {
-            return string.Format("{0}/v2/tune/flux", FUSION_API_HOST);
+            return $"{FUSION_API_HOST}/v2/tune/flux";
         }
 
-        private string logListEntry()
+        private string LogListEntry()
         {
-            return string.Format("{0}/v2/tune/log/list", FUSION_API_HOST);
+            return $"{FUSION_API_HOST}/v2/tune/log/list";
         }
 
 
@@ -66,7 +66,7 @@ namespace Qiniu.CDN
 
             try
             {
-                string url = refreshEntry();
+                string url = RefreshEntry();
                 string body = request.ToJsonStr();
                 string token = auth.CreateManageToken(url);
 
@@ -126,7 +126,7 @@ namespace Qiniu.CDN
 
             try
             {
-                string url = prefetchEntry();
+                string url = PrefetchEntry();
                 string body = request.ToJsonStr();
                 string token = auth.CreateManageToken(url);
 
@@ -173,7 +173,7 @@ namespace Qiniu.CDN
 
             try
             {
-                string url = bandwidthEntry();
+                string url = BandwidthEntry();
                 string body = request.ToJsonStr();
                 string token = auth.CreateManageToken(url);
 
@@ -220,7 +220,7 @@ namespace Qiniu.CDN
 
             try
             {
-                string url = fluxEntry();
+                string url = FluxEntry();
                 string body = request.ToJsonStr();
                 string token = auth.CreateManageToken(url);
 
@@ -262,7 +262,7 @@ namespace Qiniu.CDN
 
             try
             {
-                string url = logListEntry();
+                string url = LogListEntry();
                 string body = request.ToJsonStr();
                 string token = auth.CreateManageToken(url);
 
