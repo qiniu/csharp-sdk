@@ -20,7 +20,7 @@ namespace Qiniu.Util
     /// </summary>
     public class Signature
     {
-        private Mac mac;
+        private readonly Mac _mac;
 
         /// <summary>
         /// 初始化
@@ -28,12 +28,12 @@ namespace Qiniu.Util
         /// <param name="mac">账号(密钥)</param>
         public Signature(Mac mac)
         {
-            this.mac = mac;
+            this._mac = mac;
         }
 
         private string EncodedSign(byte[] data)
         {
-            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
+            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_mac.SecretKey));
             byte[] digest = hmac.ComputeHash(data);
             return Base64.UrlSafeBase64Encode(digest);
         }
@@ -51,7 +51,7 @@ namespace Qiniu.Util
         /// <returns></returns>
         public string Sign(byte[] data)
         {
-            return $"{mac.AccessKey}:{EncodedSign(data)}";
+            return $"{_mac.AccessKey}:{EncodedSign(data)}";
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Qiniu.Util
         public string SignWithData(byte[] data)
         {
             string safeString = Base64.UrlSafeBase64Encode(data);
-            return $"{mac.AccessKey}:{EncodedSign(safeString)}:{safeString}";
+            return $"{_mac.AccessKey}:{EncodedSign(safeString)}:{safeString}";
         }
 
         /// <summary>
@@ -107,10 +107,10 @@ namespace Qiniu.Util
                 {
                     buffer.Write(body, 0, body.Length);
                 }
-                HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
+                HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_mac.SecretKey));
                 byte[] digest = hmac.ComputeHash(buffer.ToArray());
                 string digestBase64 = Base64.UrlSafeBase64Encode(digest);
-                return $"{mac.AccessKey}:{digestBase64}";
+                return $"{_mac.AccessKey}:{digestBase64}";
             }
         }
 
@@ -181,11 +181,11 @@ namespace Qiniu.Util
             }
 
             // calculate sign
-            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
+            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_mac.SecretKey));
             byte[] digest = hmac.ComputeHash(Encoding.UTF8.GetBytes(strToSignBuilder.ToString()));
             string digestBase64 = Base64.UrlSafeBase64Encode(digest);
 
-            return string.Format("{0}:{1}", mac.AccessKey, digestBase64);
+            return string.Format("{0}:{1}", _mac.AccessKey, digestBase64);
         }
 
         /// <summary>
