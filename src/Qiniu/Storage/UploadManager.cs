@@ -10,7 +10,7 @@ namespace Qiniu.Storage
     /// </summary>
     public class UploadManager
     {
-        private Config config;
+        private readonly Config _config;
 
         /// <summary>
         /// 初始化
@@ -18,7 +18,7 @@ namespace Qiniu.Storage
         /// <param name="config">文件上传的配置信息</param>
         public UploadManager(Config config)
         {
-            this.config = config;
+            this._config = config;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Qiniu.Storage
         /// <returns>上传文件后的返回结果</returns>
         public HttpResult UploadData(byte[] data, string key, string token, PutExtra extra)
         {
-            FormUploader formUploader = new FormUploader(this.config);
+            FormUploader formUploader = new FormUploader(this._config);
             return formUploader.UploadData(data, key, token, extra);
         }
 
@@ -46,17 +46,17 @@ namespace Qiniu.Storage
         /// <returns>上传文件后的返回结果</returns>
         public HttpResult UploadFile(string localFile, string key, string token, PutExtra extra)
         {
-            HttpResult result = new HttpResult();
+            HttpResult result;
 
             System.IO.FileInfo fi = new System.IO.FileInfo(localFile);
-            if (fi.Length > this.config.PutThreshold)
+            if (fi.Length > this._config.PutThreshold)
             {
-                ResumableUploader resumeUploader = new ResumableUploader(config);
+                ResumableUploader resumeUploader = new ResumableUploader(_config);
                 result = resumeUploader.UploadFile(localFile, key, token, extra);
             }
             else
             {
-                FormUploader formUploader = new FormUploader(config);
+                FormUploader formUploader = new FormUploader(_config);
                 result = formUploader.UploadFile(localFile, key, token, extra);
             }
 
@@ -77,14 +77,14 @@ namespace Qiniu.Storage
         {
             HttpResult result = new HttpResult();
 
-            if (stream.Length > this.config.PutThreshold)
+            if (stream.Length > this._config.PutThreshold)
             {
-                ResumableUploader resumeUploader = new ResumableUploader(this.config);
+                ResumableUploader resumeUploader = new ResumableUploader(this._config);
                 result = resumeUploader.UploadStream(stream, key, token, extra);
             }
             else
             {
-                FormUploader formUploader = new FormUploader(this.config);
+                FormUploader formUploader = new FormUploader(this._config);
                 result = formUploader.UploadStream(stream, key, token, extra);
             }
 

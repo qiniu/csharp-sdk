@@ -42,7 +42,7 @@ namespace Qiniu.Storage
         {
             try
             {
-                FileStream fs = new FileStream(localFile, FileMode.Open);
+                using FileStream fs = new FileStream(localFile, FileMode.Open);
                 return this.UploadStream(fs, key, token, extra);
             }
             catch (Exception ex)
@@ -64,7 +64,7 @@ namespace Qiniu.Storage
         /// <returns>上传数据后的返回结果</returns>
         public HttpResult UploadData(byte[] data, string key, string token, PutExtra extra)
         {
-            MemoryStream stream = new MemoryStream(data);
+            using MemoryStream stream = new MemoryStream(data);
             return this.UploadStream(stream, key, token, extra);
         }
 
@@ -76,7 +76,6 @@ namespace Qiniu.Storage
         /// <param name="token">上传凭证</param>
         /// <param name="putExtra">上传可选设置</param>
         /// <returns>上传数据流后的返回结果</returns>
-        /// <remarks>此方法将会关闭传入的 <paramref name="stream"/> 内容</remarks>
         public HttpResult UploadStream(Stream stream, string? key, string token, PutExtra? putExtra)
         {
             if (putExtra == null)
@@ -104,128 +103,125 @@ namespace Qiniu.Storage
 
             HttpResult result = new HttpResult();
 
-            using (stream)
+            try
             {
-                try
+                string boundary = HttpManager.CreateFormDataBoundary();
+                StringBuilder bodyBuilder = new StringBuilder();
+                bodyBuilder.AppendLine("--" + boundary);
+
+                if (key != null)
                 {
-                    string boundary = HttpManager.CreateFormDataBoundary();
-                    StringBuilder bodyBuilder = new StringBuilder();
-                    bodyBuilder.AppendLine("--" + boundary);
-
-                    if (key != null)
-                    {
-                        //write key when it is not null
-                        bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"key\"");
-                        bodyBuilder.AppendLine();
-                        bodyBuilder.AppendLine(key);
-                        bodyBuilder.AppendLine("--" + boundary);
-                    }
-
-                    //write token
-                    bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"token\"");
+                    //write key when it is not null
+                    bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"key\"");
                     bodyBuilder.AppendLine();
-                    bodyBuilder.AppendLine(token);
+                    bodyBuilder.AppendLine(key);
                     bodyBuilder.AppendLine("--" + boundary);
+                }
 
-                    //write extra params
-                    if (putExtra.Params != null && putExtra.Params.Count > 0)
+                //write token
+                bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"token\"");
+                bodyBuilder.AppendLine();
+                bodyBuilder.AppendLine(token);
+                bodyBuilder.AppendLine("--" + boundary);
+
+                //write extra params
+                if (putExtra.Params != null && putExtra.Params.Count > 0)
+                {
+                    foreach (var p in putExtra.Params)
                     {
-                        foreach (var p in putExtra.Params)
+                        if (p.Key.StartsWith("x:"))
                         {
-                            if (p.Key.StartsWith("x:"))
-                            {
-                                bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"{0}\"", p.Key);
-                                bodyBuilder.AppendLine();
-                                bodyBuilder.AppendLine();
-                                bodyBuilder.AppendLine(p.Value);
-                                bodyBuilder.AppendLine("--" + boundary);
-                            }
+                            bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"{0}\"", p.Key);
+                            bodyBuilder.AppendLine();
+                            bodyBuilder.AppendLine();
+                            bodyBuilder.AppendLine(p.Value);
+                            bodyBuilder.AppendLine("--" + boundary);
                         }
                     }
-
-                    //prepare data buffer
-                    int bufferSize = 1024 * 1024;
-                    byte[] buffer = new byte[bufferSize];
-                    int bytesRead = 0;
-                    putExtra.ProgressHandler(0, stream.Length);
-                    using MemoryStream dataMemoryStream = new MemoryStream();
-                    while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
-                    {
-                        dataMemoryStream.Write(buffer, 0, bytesRead);
-                    }
-
-                    //write crc32
-                    uint crc32 = CRC32.CheckSumBytes(dataMemoryStream.ToArray());
-                    //write key when it is not null
-                    bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"crc32\"");
-                    bodyBuilder.AppendLine();
-                    bodyBuilder.AppendLine(crc32.ToString());
-                    bodyBuilder.AppendLine("--" + boundary);
-
-                    //write fname
-                    bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"", fileName);
-                    bodyBuilder.AppendLine();
-
-                    //write mime type
-                    bodyBuilder.AppendFormat("Content-Type: {0}", putExtra.MimeType);
-                    bodyBuilder.AppendLine();
-                    bodyBuilder.AppendLine();
-
-                    //write file data
-                    StringBuilder bodyEnd = new StringBuilder();
-                    bodyEnd.AppendLine();
-                    bodyEnd.AppendLine("--" + boundary + "--");
-
-                    byte[] partData1 = Encoding.UTF8.GetBytes(bodyBuilder.ToString());
-                    byte[] partData2 = dataMemoryStream.ToArray();
-                    byte[] partData3 = Encoding.UTF8.GetBytes(bodyEnd.ToString());
-
-                    using MemoryStream ms = new MemoryStream();
-                    ms.Write(partData1, 0, partData1.Length);
-                    ms.Write(partData2, 0, partData2.Length);
-                    ms.Write(partData3, 0, partData3.Length);
-
-                    putExtra.ProgressHandler(stream.Length / 5, stream.Length);
-                    result = PostFormWithRetry(token, ms.ToArray(), boundary, putExtra);
-                    putExtra.ProgressHandler(stream.Length, stream.Length);
-                    if (result.Code == (int)HttpCode.OK)
-                    {
-                        result.RefText += string.Format("[{0}] [FormUpload] Uploaded: #STREAM# ==> \"{1}\"\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), key);
-                    }
-                    else
-                    {
-                        result.RefText += string.Format("[{0}] [FormUpload] Failed: code = {1}, text = {2}\n",
-                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
-                    }
                 }
-                catch (Exception ex)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendFormat("[{0}] [FormUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
-                    // 不要自己循环去获取内部异常，而是直接使用 ToString 方法输出，这样还能获取正确的堆栈信息
-                    //Exception e = ex;
-                    //while (e != null)
-                    //{
-                    //    sb.Append(e.Message + " ");
-                    //    e = e.InnerException;
-                    //}
-                    sb.AppendLine(ex.ToString());
-                    sb.AppendLine();
 
-                    if (ex is QiniuException)
-                    {
-                        QiniuException qex = (QiniuException)ex;
-                        result.Code = qex.HttpResult.Code;
-                        result.RefCode = qex.HttpResult.Code;
-                        result.Text = qex.HttpResult.Text;
-                        result.RefText += sb.ToString();
-                    }
-                    else
-                    {
-                        result.RefCode = (int)HttpCode.USER_UNDEF;
-                        result.RefText += sb.ToString();
-                    }
+                //prepare data buffer
+                int bufferSize = 1024 * 1024;
+                byte[] buffer = new byte[bufferSize];
+                int bytesRead = 0;
+                putExtra.ProgressHandler(0, stream.Length);
+                using MemoryStream dataMemoryStream = new MemoryStream();
+                while ((bytesRead = stream.Read(buffer, 0, bufferSize)) != 0)
+                {
+                    dataMemoryStream.Write(buffer, 0, bytesRead);
+                }
+
+                //write crc32
+                uint crc32 = CRC32.CheckSumBytes(dataMemoryStream.ToArray());
+                //write key when it is not null
+                bodyBuilder.AppendLine("Content-Disposition: form-data; name=\"crc32\"");
+                bodyBuilder.AppendLine();
+                bodyBuilder.AppendLine(crc32.ToString());
+                bodyBuilder.AppendLine("--" + boundary);
+
+                //write fname
+                bodyBuilder.AppendFormat("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"", fileName);
+                bodyBuilder.AppendLine();
+
+                //write mime type
+                bodyBuilder.AppendFormat("Content-Type: {0}", putExtra.MimeType);
+                bodyBuilder.AppendLine();
+                bodyBuilder.AppendLine();
+
+                //write file data
+                StringBuilder bodyEnd = new StringBuilder();
+                bodyEnd.AppendLine();
+                bodyEnd.AppendLine("--" + boundary + "--");
+
+                byte[] partData1 = Encoding.UTF8.GetBytes(bodyBuilder.ToString());
+                byte[] partData2 = dataMemoryStream.ToArray();
+                byte[] partData3 = Encoding.UTF8.GetBytes(bodyEnd.ToString());
+
+                using MemoryStream ms = new MemoryStream();
+                ms.Write(partData1, 0, partData1.Length);
+                ms.Write(partData2, 0, partData2.Length);
+                ms.Write(partData3, 0, partData3.Length);
+
+                putExtra.ProgressHandler(stream.Length / 5, stream.Length);
+                result = PostFormWithRetry(token, ms.ToArray(), boundary, putExtra);
+                putExtra.ProgressHandler(stream.Length, stream.Length);
+                if (result.Code == (int)HttpCode.OK)
+                {
+                    result.RefText += string.Format("[{0}] [FormUpload] Uploaded: #STREAM# ==> \"{1}\"\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), key);
+                }
+                else
+                {
+                    result.RefText += string.Format("[{0}] [FormUpload] Failed: code = {1}, text = {2}\n",
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), result.Code, result.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("[{0}] [FormUpload] Error: ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"));
+                // 不要自己循环去获取内部异常，而是直接使用 ToString 方法输出，这样还能获取正确的堆栈信息
+                //Exception e = ex;
+                //while (e != null)
+                //{
+                //    sb.Append(e.Message + " ");
+                //    e = e.InnerException;
+                //}
+                sb.AppendLine(ex.ToString());
+                sb.AppendLine();
+
+                if (ex is QiniuException)
+                {
+                    QiniuException qex = (QiniuException)ex;
+                    result.Code = qex.HttpResult.Code;
+                    result.RefCode = qex.HttpResult.Code;
+                    result.Text = qex.HttpResult.Text;
+                    result.RefText += sb.ToString();
+                }
+                else
+                {
+                    result.RefCode = (int)HttpCode.USER_UNDEF;
+                    result.RefText += sb.ToString();
                 }
             }
 
