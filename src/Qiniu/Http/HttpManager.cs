@@ -1,21 +1,24 @@
-﻿using System;
+﻿using Qiniu.Util;
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Qiniu.Util;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Qiniu.Http
 {
     /// <summary>
     /// HttpManager for .NET 2.0/3.0/3.5/4.0
     /// </summary>
-    public class HttpManager
+    public class HttpManager : IDisposable
     {
-        private bool allowAutoRedirect;
-        private string userAgent;
+        private readonly bool _allowAutoRedirect;
+        private string _userAgent;
 
         /// <summary>
         /// 初始化
@@ -23,9 +26,11 @@ namespace Qiniu.Http
         /// <param name="allowAutoRedirect">是否允许HttpWebRequest的“重定向”，默认禁止</param>
         public HttpManager(bool allowAutoRedirect = false)
         {
-            this.allowAutoRedirect = allowAutoRedirect;
-            userAgent = GetUserAgent();
+            _allowAutoRedirect = allowAutoRedirect;
+            _userAgent = GetUserAgent();
         }
+
+        private HttpClientHandler? _sharedHttpClientHandler;
 
         /// <summary>
         /// 客户端标识(UserAgent)，示例："SepcifiedClient/1.1 (Universal)"
@@ -34,7 +39,7 @@ namespace Qiniu.Http
         public static string GetUserAgent()
         {
             string osDesc = Environment.OSVersion.Platform + "; " + Environment.OSVersion.Version;
-            return string.Format("{0}/{1} ({2}; {3})", QiniuCSharpSDK.ALIAS, QiniuCSharpSDK.VERSION, QiniuCSharpSDK.RTFX, osDesc);
+            return $"{QiniuCSharpSDK.ALIAS}/{QiniuCSharpSDK.VERSION} ({QiniuCSharpSDK.RTFX}; {osDesc})";
         }
 
         /// <summary>
@@ -43,11 +48,11 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="userAgent">用户自定义的UserAgent</param>
         /// <returns>客户端标识UA</returns>
-        public void SetUserAgent(string userAgent)
+        public void SetUserAgent(string? userAgent)
         {
             if (!string.IsNullOrEmpty(userAgent))
             {
-                this.userAgent = userAgent;
+                _userAgent = userAgent;
             }
         }
 
@@ -58,14 +63,14 @@ namespace Qiniu.Http
         public static string CreateFormDataBoundary()
         {
             string now = DateTime.UtcNow.Ticks.ToString();
-            return string.Format("-------{0}Boundary{1}", QiniuCSharpSDK.ALIAS, Hashing.CalcMD5X(now));
+            return $"-------{QiniuCSharpSDK.ALIAS}Boundary{Hashing.CalcMD5X(now)}";
         }
 
         public HttpRequestOptions CreateHttpRequestOptions(
             string method,
             string url,
-            StringDictionary headers,
-            string token = null
+            StringDictionary? headers,
+            string? token = null
         )
         {
             HttpRequestOptions reqOpts = new HttpRequestOptions();
@@ -78,92 +83,176 @@ namespace Qiniu.Http
                 reqOpts.Headers = headers;
             }
 
+            reqOpts.Headers ??= new StringDictionary();
             if (!string.IsNullOrEmpty(token))
             {
                 reqOpts.Headers.Add("Authorization", token);
             }
 
-            reqOpts.Headers.Add("User-Agent", userAgent);
-            reqOpts.AllowAutoRedirect = allowAutoRedirect;
+            reqOpts.Headers.Add("User-Agent", _userAgent);
+            reqOpts.AllowAutoRedirect = _allowAutoRedirect;
 
             return reqOpts;
         }
 
-        public HttpResult CreateHttpResult(HttpWebResponse wResp, bool binaryMode = false)
+        public async Task<HttpResult> CreateHttpResultAsync(HttpResponseMessage? response, bool binaryMode = false)
         {
             HttpResult result = new HttpResult();
 
-            if (wResp == null)
+            if (response == null)
             {
                 return result;
             }
 
-            result.Code = (int)wResp.StatusCode;
-            result.RefCode = (int)wResp.StatusCode;
+            result.Code = (int) response.StatusCode;
+            result.RefCode = (int) response.StatusCode;
 
-            getHeaders(ref result, wResp);
+            GetHeaders(result, response);
 
-            Stream respStream = wResp.GetResponseStream();
-            if (respStream == null)
-            {
-                wResp.Close();
-                return result;
-            }
-
+            var content = response.Content;
             if (binaryMode)
             {
-                int len = (int)wResp.ContentLength;
-                result.Data = new byte[len];
-                int bytesLeft = len;
-                int bytesRead = 0;
-
-                using (BinaryReader br = new BinaryReader(respStream))
-                {
-                    while (bytesLeft > 0)
-                    {
-                        bytesRead = br.Read(result.Data, len - bytesLeft, bytesLeft);
-                        bytesLeft -= bytesRead;
-                    }
-                }
+                result.Data = await content.ReadAsByteArrayAsync();
             }
             else
             {
-                using (StreamReader sr = new StreamReader(respStream))
+                result.Text = await content.ReadAsStringAsync();
+            }
+
+            return result;
+        }
+
+        public HttpResult CreateHttpResult(HttpResponseMessage? response, bool binaryMode = false)
+        {
+            HttpResult result = new HttpResult();
+
+            if (response == null)
+            {
+                return result;
+            }
+
+            result.Code = (int) response.StatusCode;
+            result.RefCode = (int) response.StatusCode;
+
+            GetHeaders(result, response);
+
+            using (response)
+            {
+                var content = response.Content;
+                if (content == null)
                 {
-                    result.Text = sr.ReadToEnd();
+                    return result;
+                }
+
+                if (binaryMode)
+                {
+                    result.Data = content.ReadAsByteArrayAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    result.Text = content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                }
+            }
+            return result;
+        }
+
+        public async Task<HttpResult> SendRequestAsync(HttpRequestOptions reqOpts, Boolean binaryMode = false)
+        {
+            HttpResult result;
+            HttpClientHandler handler;
+            if (reqOpts.CanUseSharedHttpClientHandler())
+            {
+                _sharedHttpClientHandler ??= new HttpClientHandler();
+                handler = _sharedHttpClientHandler;
+            }
+            else
+            {
+                handler = reqOpts.CreateHttpClientHandler();
+            }
+
+            try
+            {
+                using var client = new HttpClient(handler, disposeHandler: false);
+                if (reqOpts.Timeout.HasValue)
+                {
+                    client.Timeout = TimeSpan.FromMilliseconds(reqOpts.Timeout.Value);
+                }
+
+                using var request = reqOpts.CreateHttpRequestMessage();
+                using HttpResponseMessage response = await client.SendAsync(request);
+                result = await CreateHttpResultAsync(response, binaryMode);
+            }
+            catch (HttpRequestException httpRequestException) when (httpRequestException.StatusCode.HasValue)
+            {
+                result = new HttpResult
+                {
+                    Code = (int)httpRequestException.StatusCode.Value,
+                    RefCode = (int)httpRequestException.StatusCode.Value,
+                    RefText = httpRequestException.Message
+                };
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [{_userAgent}] [HTTP-{reqOpts.Method}] Error:  ");
+                sb.AppendLine(ex.ToString());
+                sb.AppendLine();
+
+                result = new HttpResult();
+                result.RefCode = (int)HttpCode.USER_UNDEF;
+                result.RefText += sb.ToString();
+            }
+            finally
+            {
+                if (!ReferenceEquals(handler, _sharedHttpClientHandler))
+                {
+                    handler.Dispose();
                 }
             }
 
-            wResp.Close();
             return result;
         }
 
         public HttpResult SendRequest(HttpRequestOptions reqOpts, Boolean binaryMode = false)
         {
             HttpResult result;
-            HttpWebRequest wReq = null;
+            HttpClientHandler handler;
+            if (reqOpts.CanUseSharedHttpClientHandler())
+            {
+                _sharedHttpClientHandler ??= new HttpClientHandler();
+                handler = _sharedHttpClientHandler;
+            }
+            else
+            {
+                handler = reqOpts.CreateHttpClientHandler();
+            }
 
             try
             {
-                wReq = reqOpts.CreateHttpWebRequest();
-                HttpWebResponse wResp = wReq.GetResponse() as HttpWebResponse;
+                using var client = new HttpClient(handler);
+                if (reqOpts.Timeout.HasValue)
+                {
+                    client.Timeout = TimeSpan.FromMilliseconds(reqOpts.Timeout.Value);
+                }
 
-                result = CreateHttpResult(wResp, binaryMode);
+                using var request = reqOpts.CreateHttpRequestMessage();
+                using HttpResponseMessage response = client.Send(request);
+
+                result = CreateHttpResult(response, binaryMode);
             }
-            catch (WebException wex)
+            catch (HttpRequestException httpRequestException) when (httpRequestException.StatusCode.HasValue)
             {
-                HttpWebResponse xResp = wex.Response as HttpWebResponse;
-                result = CreateHttpResult(xResp);
+                result = new HttpResult
+                {
+                    Code = (int) httpRequestException.StatusCode.Value,
+                    RefCode = (int) httpRequestException.StatusCode.Value,
+                    RefText = httpRequestException.Message
+                };
             }
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat(
-                    "[{0}] [{1}] [HTTP-{2}] Error:  ",
-                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"),
-                    userAgent,
-                    reqOpts.Method
-                );
+                sb.Append($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}] [{_userAgent}] [HTTP-{reqOpts.Method}] Error:  ");
                 Exception e = ex;
                 while (e != null)
                 {
@@ -173,15 +262,8 @@ namespace Qiniu.Http
                 sb.AppendLine();
 
                 result = CreateHttpResult(null);
-                result.RefCode = (int)HttpCode.USER_UNDEF;
+                result.RefCode = (int) HttpCode.USER_UNDEF;
                 result.RefText += sb.ToString();
-            }
-            finally
-            {
-                if (wReq != null)
-                {
-                    wReq.Abort();
-                }
             }
 
             return result;
@@ -194,7 +276,8 @@ namespace Qiniu.Http
                 return SendRequest(reqOpts, binaryMode);
             }
 
-            List<IMiddleware> reversedMiddlewares = new List<IMiddleware>(middlewares);
+            List<IMiddleware> reversedMiddlewares = new List<IMiddleware>(middlewares.Count);
+            reversedMiddlewares.AddRange(middlewares);
             reversedMiddlewares.Reverse();
             DNextSend composedHandle = reversedMiddlewares.Aggregate<IMiddleware, DNextSend>(
                 req => SendRequest(req, binaryMode),
@@ -229,8 +312,8 @@ namespace Qiniu.Http
             {
                 headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
             }
-            
-            addAuthHeaders(ref headers, auth);
+
+            AddAuthHeaders(ref headers, auth);
 
             string token = auth.CreateManageTokenV2("GET", url, headers);
             return Get(url, headers, token, binaryMode);
@@ -293,7 +376,7 @@ namespace Qiniu.Http
                 headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
             }
 
-            addAuthHeaders(ref headers, auth);
+            AddAuthHeaders(ref headers, auth);
 
             string token = auth.CreateManageTokenV2("POST", url, headers);
             return Post(url, headers, token, binaryMode);
@@ -441,8 +524,8 @@ namespace Qiniu.Http
             {
                 headers["Content-Type"] = ContentType.WWW_FORM_URLENC;
             }
-            
-            addAuthHeaders(ref headers, auth);
+
+            AddAuthHeaders(ref headers, auth);
 
             string token = auth.CreateManageTokenV2("POST", url, headers, data);
             return PostForm(url, headers, Encoding.UTF8.GetBytes(data), token, binaryMode);
@@ -495,13 +578,13 @@ namespace Qiniu.Http
         /// <param name="token">令牌(凭证)[可选->设置为null]</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
         /// <returns>HTTP-POST的响应结果</returns>
-        public HttpResult PostMultipart(string url, byte[] data, string boundary, string token, bool binaryMode = false)
+        public HttpResult PostMultipart(string url, byte[]? data, string boundary, string? token, bool binaryMode = false)
         {
             HttpRequestOptions reqOpts = CreateHttpRequestOptions("POST", url, null, token);
 
             reqOpts.Headers.Add(
                 "Content-Type",
-                string.Format("{0}; boundary={1}", ContentType.MULTIPART_FORM_DATA, boundary)
+                $"{ContentType.MULTIPART_FORM_DATA}; boundary={boundary}"
             );
 
             if (data != null)
@@ -521,7 +604,7 @@ namespace Qiniu.Http
         /// <param name="headers">上传设置的headers</param>
         /// <param name="binaryMode">是否以二进制模式读取响应内容(默认:否，即表示以文本方式读取)</param>
         /// <returns>HTTP-PUT的响应结果</returns>
-        public HttpResult PutDataWithHeaders(string url, byte[] data, Dictionary<string, string> headers, bool binaryMode = false)
+        public HttpResult PutDataWithHeaders(string url, byte[]? data, Dictionary<string, string> headers, bool binaryMode = false)
         {
             // converse headers type for compaction
             StringDictionary headersDict = new StringDictionary();
@@ -548,7 +631,7 @@ namespace Qiniu.Http
         /// </summary>
         /// <param name="hr">即将被HTTP请求封装函数返回的HttpResult变量</param>
         /// <param name="resp">正在被读取的HTTP响应</param>
-        private void getHeaders(ref HttpResult hr, HttpWebResponse resp)
+        private void GetHeaders(HttpResult hr, HttpResponseMessage? resp)
         {
             if (resp != null)
             {
@@ -557,42 +640,41 @@ namespace Qiniu.Http
                     hr.RefInfo = new Dictionary<string, string>();
                 }
 
-                hr.RefInfo.Add("ProtocolVersion", resp.ProtocolVersion.ToString());
+                hr.RefInfo.Add("ProtocolVersion", resp.Version.ToString());
 
-                if (!string.IsNullOrEmpty(resp.CharacterSet))
+                if (resp.Content?.Headers?.ContentType?.CharSet is string characterSet && !string.IsNullOrEmpty(characterSet))
                 {
-                    hr.RefInfo.Add("Characterset", resp.CharacterSet);
+                    hr.RefInfo.Add("Characterset", characterSet);
                 }
 
-                if (!string.IsNullOrEmpty(resp.ContentEncoding))
+                if (resp.Content?.Headers?.ContentEncoding != null)
                 {
-                    hr.RefInfo.Add("ContentEncoding", resp.ContentEncoding);
+                    hr.RefInfo.Add("ContentEncoding", string.Join(",", resp.Content.Headers.ContentEncoding));
                 }
 
-                if (!string.IsNullOrEmpty(resp.ContentType))
+                if (resp.Content?.Headers?.ContentType != null)
                 {
-                    hr.RefInfo.Add("ContentType", resp.ContentType);
+                    hr.RefInfo.Add("ContentType", resp.Content.Headers.ContentType.ToString());
                 }
 
-                hr.RefInfo.Add("ContentLength", resp.ContentLength.ToString());
+                hr.RefInfo.Add("ContentLength", (resp.Content?.Headers?.ContentLength ?? 0).ToString());
 
-                var headers = resp.Headers;
-                if (headers != null && headers.Count > 0)
+                foreach (var header in resp.Headers)
                 {
-                    if (hr.RefInfo == null)
+                    hr.RefInfo[header.Key] = string.Join(",", header.Value);
+                }
+
+                if (resp.Content?.Headers != null)
+                {
+                    foreach (var header in resp.Content.Headers)
                     {
-                        hr.RefInfo = new Dictionary<string, string>();
-                    }
-                    foreach (var key in headers.AllKeys)
-                    {
-                        hr.RefInfo.Add(key, headers[key]);
+                        hr.RefInfo[header.Key] = string.Join(",", header.Value);
                     }
                 }
             }
         }
 
-
-        private void addAuthHeaders(ref StringDictionary headers, Auth auth)
+        private void AddAuthHeaders(ref StringDictionary headers, Auth auth)
         {
             string xQiniuDate = DateTime.UtcNow.ToString("yyyyMMdd'T'HHmmss'Z'");
             string xQiniuDateDisableEnv = Environment.GetEnvironmentVariable("DISABLE_QINIU_TIMESTAMP_SIGNATURE");
@@ -614,6 +696,11 @@ namespace Qiniu.Http
             {
                 headers["X-Qiniu-Date"] = xQiniuDate;
             }
+        }
+
+        public void Dispose()
+        {
+            _sharedHttpClientHandler?.Dispose();
         }
     }
 }

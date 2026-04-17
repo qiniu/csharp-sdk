@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Newtonsoft.Json;
 using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.Storage
 {
@@ -20,7 +20,7 @@ namespace Qiniu.Storage
 
                 if (Code == (int)HttpCode.OK && !string.IsNullOrEmpty(Text))
                 {
-                   info= JsonConvert.DeserializeObject<BucketInfo>(Text);
+                   info = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.BucketInfo);
                 }
 
                 return info;

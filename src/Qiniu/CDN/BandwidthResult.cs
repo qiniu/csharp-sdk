@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Newtonsoft.Json;
 using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.CDN
 {
@@ -12,14 +12,14 @@ namespace Qiniu.CDN
         /// <summary>
         /// 获取带宽信息
         /// </summary>
-        public BandwidthInfo Result
+        public BandwidthInfo? Result
         {
             get
             {
-                BandwidthInfo info = null;
+                BandwidthInfo? info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info = JsonConvert.DeserializeObject<BandwidthInfo>(Text);
+                    info = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.BandwidthInfo);
                 }
                 return info;
             }

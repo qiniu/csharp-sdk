@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Qiniu.Storage
 {
@@ -14,67 +15,69 @@ namespace Qiniu.Storage
         /// <summary>
         /// 默认空间管理域名
         /// </summary>
-        public static string DefaultUcHost = "uc.qiniuapi.com";
+        public const string DefaultUcHost = "uc.qiniuapi.com";
         /// <summary>
         /// 默认查询区域域名
         /// </summary>
-        public static string DefaultQueryRegionHost = "uc.qiniuapi.com";
+        public const string DefaultQueryRegionHost = "uc.qiniuapi.com";
         /// <summary>
         /// 默认备用查询区域域名
         /// </summary>
-        public static List<string> DefaultBackupQueryRegionHosts = new List<string>
+        public static readonly IReadOnlyList<string> DefaultBackupQueryRegionHosts = new List<string>
         {
             "kodo-config.qiniuapi.com",
             "uc.qbox.me"
         };
-        
+
         /// <summary>
         /// 默认高级资源管理域名
         /// </summary>
-        public static string DefaultRsHost = "rs.qiniu.com";
+        public const string DefaultRsHost = "rs.qiniu.com";
         /// <summary>
         /// 默认数据处理域名
         /// </summary>
-        public static string DefaultApiHost = "api.qiniuapi.com";
+        public const string DefaultApiHost = "api.qiniuapi.com";
         /// <summary>
         /// 默认数据处理域名
         /// </summary>
-        public static string DefaultIoHost = "iovip.qiniuio.com";
+        public const string DefaultIoHost = "iovip.qiniuio.com";
         /// <summary>
         /// 默认数据处理域名
         /// </summary>
-        public static string DefaultRsfHost = "rsf.qiniu.com";
+        public const string DefaultRsfHost = "rsf.qiniu.com";
+
         /// <summary>
         /// 空间所在的区域(Zone)
         /// </summary>
-        public Zone Zone = null;
+        public Zone? Zone { get; set; } = null;
+
         /// <summary>
         /// 是否采用https域名
         /// </summary>
-        public bool UseHttps = false;
+        public bool UseHttps { get; set; } = false;
         /// <summary>
         /// 是否采用CDN加速域名，对上传有效
         /// </summary>
-        public bool UseCdnDomains = false;
+        public bool UseCdnDomains { get; set; } = false;
         /// <summary>
         /// 分片上传时，片的大小，默认为4MB，以提高上传效率
         /// </summary>
-        public ChunkUnit ChunkSize = ChunkUnit.U4096K;
+        public ChunkUnit ChunkSize { get; set; } = ChunkUnit.U4096K;
         /// <summary>
         /// 分片上传的阈值，超过该大小采用分片上传的方式
         /// </summary>
-        public int PutThreshold =ResumeChunk.GetChunkSize(ChunkUnit.U1024K) * 10;
+        public int PutThreshold { get; set; } = ResumeChunk.GetChunkSize(ChunkUnit.U1024K) * 10;
         /// <summary>
         /// 重试请求次数
         /// </summary>
         /// 默认值应与 <see cref="PutExtra.MaxRetryTimes"/> 一致
         public int MaxRetryTimes { set; get; } = 3;
-        
+
         private string _ucHost = DefaultUcHost;
 
         private string _queryRegionHost = DefaultQueryRegionHost;
 
-        private List<string> _backupQueryRegionHosts = DefaultBackupQueryRegionHosts;
+        private List<string> _backupQueryRegionHosts = DefaultBackupQueryRegionHosts.ToList();
 
         public void SetUcHost(string val)
         {
@@ -120,7 +123,7 @@ namespace Qiniu.Storage
         public string RsHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
+            Zone? z = this.Zone;
             if (z == null)
             {
                 z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());
@@ -137,7 +140,7 @@ namespace Qiniu.Storage
         public string RsfHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
+            Zone? z = this.Zone;
             if (z == null)
             {
                 z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());
@@ -154,7 +157,7 @@ namespace Qiniu.Storage
         public string ApiHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
+            Zone? z = this.Zone;
             if (z == null)
             {
                 z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());
@@ -171,7 +174,7 @@ namespace Qiniu.Storage
         public string IovipHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
+            Zone? z = this.Zone;
             if (z == null)
             {
                 z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());
@@ -188,7 +191,7 @@ namespace Qiniu.Storage
         public string UpHost(string ak, string bucket)
         {
             string scheme = UseHttps ? "https://" : "http://";
-            Zone z = this.Zone;
+            Zone? z = this.Zone;
             if (z == null)
             {
                 z = ZoneHelper.QueryZone(ak, bucket, QueryRegionHost(), BackupQueryRegionHosts());

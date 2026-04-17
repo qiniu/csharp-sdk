@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
 using Qiniu.Storage;
 namespace Qiniu.Util
 {
@@ -14,9 +14,14 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="upToken">上传凭证</param>
         /// <returns>AccessKey</returns>
-        public static string GetAccessKeyFromUpToken(string upToken)
+        public static string? GetAccessKeyFromUpToken(string? upToken)
         {
-            string accessKey = null;
+            if (string.IsNullOrWhiteSpace(upToken))
+            {
+                return null;
+            }
+
+            string? accessKey = null;
             string[] items = upToken.Split(':');
             if (items.Length == 3)
             {
@@ -30,9 +35,14 @@ namespace Qiniu.Util
         /// </summary>
         /// <param name="upToken">上传凭证</param>
         /// <returns>Bucket</returns>
-        public static string GetBucketFromUpToken(string upToken)
+        public static string? GetBucketFromUpToken(string? upToken)
         {
-            string bucket = null;
+            if (string.IsNullOrWhiteSpace(upToken))
+            {
+                return null;
+            }
+
+            string? bucket = null;
             string[] items = upToken.Split(':');
             if (items.Length == 3)
             {
@@ -40,16 +50,26 @@ namespace Qiniu.Util
                 try
                 {
                     string policyStr = Encoding.UTF8.GetString(Base64.UrlsafeBase64Decode(encodedPolicy));
-                    PutPolicy putPolicy = JsonConvert.DeserializeObject<PutPolicy>(policyStr);
+                    PutPolicy putPolicy = QiniuJson.Deserialize(policyStr, QiniuJson.SerializerContext.PutPolicy);
+                    if (putPolicy == null || string.IsNullOrWhiteSpace(putPolicy.Scope))
+                    {
+                        return null;
+                    }
+
                     string scope = putPolicy.Scope;
                     string[] scopeItems = scope.Split(':');
                     if (scopeItems.Length >= 1)
                     {
                         bucket = scopeItems[0];
                     }
-                }catch(Exception)
+                }
+                catch (FormatException)
                 {
-
+                    return null;
+                }
+                catch (JsonException)
+                {
+                    return null;
                 }
             }
             return bucket;

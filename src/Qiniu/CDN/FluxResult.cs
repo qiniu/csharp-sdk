@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Newtonsoft.Json;
 using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.CDN
 {
@@ -12,14 +12,14 @@ namespace Qiniu.CDN
         /// <summary>
         /// 获取流量信息
         /// </summary>
-        public FluxInfo Result
+        public FluxInfo? Result
         {
             get
             {
-                FluxInfo info = null;
+                FluxInfo? info = null;
                 if ((Code == (int)HttpCode.OK) && (!string.IsNullOrEmpty(Text)))
                 {
-                    info=JsonConvert.DeserializeObject<FluxInfo>(Text);
+                    info = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.FluxInfo);
                 }
                 return info;
             }

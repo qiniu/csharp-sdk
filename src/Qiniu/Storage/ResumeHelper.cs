@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json;
 using Qiniu.Util;
-using Newtonsoft.Json;
 
 namespace Qiniu.Storage
 {
@@ -21,7 +21,7 @@ namespace Qiniu.Storage
         {
             string tempDir = System.IO.Path.GetTempPath();
             System.IO.FileInfo fileInfo = new System.IO.FileInfo(localFile);
-            string uniqueKey = string.Format("{0}:{1}:{2}", localFile, key, fileInfo.LastWriteTime.ToFileTime());
+            string uniqueKey = $"{localFile}:{key}:{fileInfo.LastWriteTime.ToFileTime()}";
             return Path.Combine(tempDir, "QiniuResume_" + Hashing.CalcMD5X(uniqueKey));
         }
 
@@ -30,27 +30,36 @@ namespace Qiniu.Storage
         /// </summary>
         /// <param name="recordFile">断点记录文件</param>
         /// <returns>断点信息</returns>
-        public static ResumeInfo Load(string recordFile)
+        public static ResumeInfo? Load(string recordFile)
         {
-            ResumeInfo resumeInfo = null;
+            if (string.IsNullOrWhiteSpace(recordFile))
+            {
+                throw new ArgumentException("recordFile cannot be null or empty.", nameof(recordFile));
+            }
 
             try
             {
-                using (FileStream fs = new FileStream(recordFile, FileMode.Open))
+                using (FileStream fs = new FileStream(recordFile, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     using (StreamReader sr = new StreamReader(fs))
                     {
                         string jsonStr = sr.ReadToEnd();
-                        resumeInfo=JsonConvert.DeserializeObject<ResumeInfo>(jsonStr);
+                        return QiniuJson.Deserialize(jsonStr, QiniuJson.SerializerContext.ResumeInfo);
                     }
                 }
             }
-            catch (Exception)
+            catch (FileNotFoundException)
             {
-                resumeInfo = null;
+                return null;
             }
-
-            return resumeInfo;
+            catch (DirectoryNotFoundException)
+            {
+                return null;
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -60,6 +69,12 @@ namespace Qiniu.Storage
         /// <param name="recordFile">断点记录文件</param>
         public static void Save(ResumeInfo resumeInfo, string recordFile)
         {
+            ArgumentNullException.ThrowIfNull(resumeInfo);
+            if (string.IsNullOrWhiteSpace(recordFile))
+            {
+                throw new ArgumentException("recordFile cannot be null or empty.", nameof(recordFile));
+            }
+
             string jsonStr = resumeInfo.ToJsonStr();
 
             using (FileStream fs = new FileStream(recordFile, FileMode.Create))

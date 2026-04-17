@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Qiniu.Util;
 using Qiniu.Http;
-using Newtonsoft.Json;
 
 namespace Qiniu.Storage
 {
@@ -20,10 +19,10 @@ namespace Qiniu.Storage
     /// </summary>
     public class ResumableUploader
     {
-        private Config config;
+        private readonly Config _config;
 
         // HTTP请求管理器(GET/POST等)
-        private HttpManager httpManager;
+        private readonly HttpManager _httpManager;
 
         /// <summary>
         /// 初始化
@@ -33,13 +32,13 @@ namespace Qiniu.Storage
         {
             if (config == null)
             {
-                this.config = new Config();
+                _config = new Config();
             }
             else
             {
-                this.config = config;
+                _config = config;
             }
-            this.httpManager = new HttpManager();
+            _httpManager = new HttpManager();
         }
 
 
@@ -53,10 +52,13 @@ namespace Qiniu.Storage
         /// <returns>上传文件后的返回结果</returns>
         public HttpResult UploadFile(string localFile, string key, string token, PutExtra putExtra)
         {
+            ArgumentException.ThrowIfNullOrWhiteSpace(localFile);
+            ArgumentException.ThrowIfNullOrWhiteSpace(token);
+
             try
             {
-                FileStream fs = new FileStream(localFile, FileMode.Open);
-                return this.UploadStream(fs, key, token, putExtra);
+                using FileStream fs = new FileStream(localFile, FileMode.Open);
+                return UploadStream(fs, key, token, putExtra);
             }
             catch (Exception ex)
             {
@@ -84,7 +86,7 @@ namespace Qiniu.Storage
             if (putExtra == null)
             {
                 putExtra = new PutExtra();
-                putExtra.MaxRetryTimes = config.MaxRetryTimes;
+                putExtra.MaxRetryTimes = _config.MaxRetryTimes;
             }
             if (putExtra.ProgressHandler == null)
             {
@@ -344,7 +346,7 @@ namespace Qiniu.Storage
                 if (resumeInfo == null || UnixTimestamp.IsContextExpired(resumeInfo.ExpiredAt))
                 {
                     HttpResult res = initReq(encodedObjectName, upToken);
-                    Dictionary<string, string> responseBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(res.Text);
+                    Dictionary<string, string> responseBody = QiniuJson.Deserialize(res.Text, QiniuJson.SerializerContext.DictionaryStringString);
                     if (res.Code != 200)
                     {
                         return res;
@@ -695,7 +697,7 @@ namespace Qiniu.Storage
                     return result;
                 }
 
-                string uploadHost = this.config.UpHost(ak, bucket);
+                string uploadHost = _config.UpHost(ak, bucket);
                 string url = "";
                 if (putExtra.Version == "v1")
                 {
@@ -715,7 +717,7 @@ namespace Qiniu.Storage
                     byte[] data = ms.ToArray();
                     if (putExtra.Version == "v1")
                     {
-                        result = httpManager.PostData(url, data, upTokenStr);
+                        result = _httpManager.PostData(url, data, upTokenStr);
                     }
                     else if (putExtra.Version == "v2")
                     {
@@ -724,7 +726,7 @@ namespace Qiniu.Storage
                         // data to md5
                         string md5 = LabMD5.GenerateMD5(blockBuffer);
                         headers.Add("Content-MD5", md5);
-                        result = httpManager.PutDataWithHeaders(url, data, headers);
+                        result = _httpManager.PutDataWithHeaders(url, data, headers);
                     } else {
                         throw new Exception("Invalid Version, only supports v1 / v2");
                     }
@@ -734,7 +736,7 @@ namespace Qiniu.Storage
                     {
                         if (putExtra.Version == "v1")
                         {
-                            ResumeContext rc = JsonConvert.DeserializeObject<ResumeContext>(result.Text);
+                            ResumeContext rc = QiniuJson.Deserialize(result.Text, QiniuJson.SerializerContext.ResumeContext);
 
                             if (rc.Crc32 > 0)
                             {
@@ -769,7 +771,7 @@ namespace Qiniu.Storage
                         }
                         else if (putExtra.Version == "v2")
                         {
-                            Dictionary<string, string> rc = JsonConvert.DeserializeObject<Dictionary<string, string>>(result.Text);
+                            Dictionary<string, string> rc = QiniuJson.Deserialize(result.Text, QiniuJson.SerializerContext.DictionaryStringString);
                             string md5 = LabMD5.GenerateMD5(blockBuffer);
                             if (md5 != rc["md5"])
                             {
@@ -893,13 +895,13 @@ namespace Qiniu.Storage
                     return HttpResult.InvalidToken;
                 }
 
-                string uploadHost = this.config.UpHost(ak, bucket);
+                string uploadHost = _config.UpHost(ak, bucket);
 
                 string url = string.Format("{0}/mkfile/{1}{2}{3}{4}{5}", uploadHost, size, mimeTypeStr, fnameStr, keyStr, paramStr);
                 string body = string.Join(",", contexts);
                 string upTokenStr = string.Format("UpToken {0}", upToken);
 
-                result = httpManager.PostText(url, body, upTokenStr);
+                result = _httpManager.PostText(url, body, upTokenStr);
             }
             catch (Exception ex)
             {
@@ -950,10 +952,10 @@ namespace Qiniu.Storage
                     return HttpResult.InvalidToken;
                 }
 
-                string uploadHost = this.config.UpHost(ak, bucket);
+                string uploadHost = _config.UpHost(ak, bucket);
                 string url = string.Format("{0}/buckets/{1}/objects/{2}/uploads", uploadHost, bucket, encodedObjectName);
                 string upTokenStr = string.Format("UpToken {0}", upToken);
-                result = httpManager.PostText(url, null, upTokenStr);
+                result = _httpManager.PostText(url, null, upTokenStr);
             }
             catch (Exception ex)
             {
@@ -1019,7 +1021,7 @@ namespace Qiniu.Storage
                     return HttpResult.InvalidToken;
                 }
 
-                string uploadHost = this.config.UpHost(ak, bucket);
+                string uploadHost = _config.UpHost(ak, bucket);
 
                 string upTokenStr = string.Format("UpToken {0}", upToken);
                 Dictionary<string, object> body = new Dictionary<string, object>();
@@ -1028,8 +1030,8 @@ namespace Qiniu.Storage
                 body.Add("customVars", putExtra.Params);
                 body.Add("parts", resumeInfo.Etags);
                 string url = string.Format("{0}/buckets/{1}/objects/{2}/uploads/{3}", uploadHost, bucket, encodedObjectName, resumeInfo.UploadId);
-                string bodyStr = JsonConvert.SerializeObject(body);
-                result = httpManager.PostJson(url, bodyStr, upTokenStr);
+                string bodyStr = QiniuJson.Serialize(body, QiniuJson.SerializerContext.DictionaryStringObject);
+                result = _httpManager.PostJson(url, bodyStr, upTokenStr);
             }
             catch (Exception ex)
             {

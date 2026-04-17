@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using Qiniu.Http;
+using Qiniu.Util;
 
 namespace Qiniu.Storage
 {
@@ -21,7 +21,7 @@ namespace Qiniu.Storage
                 if (Code != (int)HttpCode.OK && Code != (int)HttpCode.PARTLY_OK)
                 {
 
-                    Dictionary<string, string> ret = JsonConvert.DeserializeObject<Dictionary<string, string>>(Text);
+                    Dictionary<string, string> ret = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.DictionaryStringString);
                     if (ret.ContainsKey("error"))
                     {
                         ex = ret["error"];
@@ -42,7 +42,7 @@ namespace Qiniu.Storage
                 if ((Code == (int)HttpCode.OK || Code == (int)HttpCode.PARTLY_OK) &&
                     (!string.IsNullOrEmpty(Text)))
                 {
-                    info = JsonConvert.DeserializeObject<List<BatchInfo>>(Text);
+                    info = QiniuJson.Deserialize(Text, QiniuJson.SerializerContext.ListBatchInfo);
                 }
                 return info;
             }

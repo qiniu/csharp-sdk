@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+using Qiniu.Util;
 namespace Qiniu.CDN
 {
     /// <summary>
@@ -11,13 +12,13 @@ namespace Qiniu.CDN
         /// <summary>
         /// 日期，例如 2016-09-01
         /// </summary>
-        [JsonProperty("day")]
+        [JsonPropertyName("day")]
         public string Day { get; set; }
 
         /// <summary>
         /// 域名列表，以西文半角分号分割
         /// </summary>
-        [JsonProperty("domains")]
+        [JsonPropertyName("domains")]
         public string Domains { get; set; }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace Qiniu.CDN
         /// <returns>请求内容的JSON字符串</returns>
         public string ToJsonStr()
         {
-            return JsonConvert.SerializeObject(this);
+            return QiniuJson.Serialize(this, QiniuJson.SerializerContext.LogListRequest);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 namespace Qiniu.Storage
 {
     /// <summary>
@@ -9,13 +9,15 @@ namespace Qiniu.Storage
         /// <summary>
         /// 状态码
         /// </summary>
-        [JsonProperty("code",NullValueHandling=NullValueHandling.Ignore)]
+        [JsonPropertyName("code")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int Code { get; set; }
 
         /// <summary>
         /// 消息
         /// </summary>
-        [JsonProperty("data",NullValueHandling=NullValueHandling.Ignore)]
+        [JsonPropertyName("data")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public BatchData Data { get; set; }
     }
 
@@ -27,31 +29,36 @@ namespace Qiniu.Storage
         /// <summary>
         /// 处理遇到的错误信息
         /// </summary>
-        [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("error")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Error { get; set; }
 
         /// <summary>
         /// 文件hash(ETAG)
         /// </summary>
-        [JsonProperty("hash", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("hash")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Hash { get; set; }
 
         /// <summary>
         /// 文件大小(字节)
         /// </summary>
-        [JsonProperty("fsize", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("fsize")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public long Fsize { get; set; }
 
         /// <summary>
         /// 文件MIME类型
         /// </summary>
-        [JsonProperty("mimeType", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("mimeType")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string MimeType { get; set; }
 
         /// <summary>
         /// 上传时间
         /// </summary>
-        [JsonProperty("putTime", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("putTime")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public long PutTime { get; set; }
 
         /// <summary>
@@ -62,7 +69,8 @@ namespace Qiniu.Storage
         /// 3 深度归档存储
         /// 4 归档直读存储
         /// </summary>
-        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int FileType { get; set; }
 
         /// <summary>
@@ -71,7 +79,8 @@ namespace Qiniu.Storage
         /// 2 已解冻
         /// 0 如果是归档/深度归档，但处于冻结，后端不返回此字段，因此默认值为 0。请勿依赖 0 判断冻结状态
         /// </summary>
-        [JsonProperty("restoreStatus", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("restoreStatus")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int RestoreStatus { get; set; }
 
         /// <summary>
@@ -79,7 +88,8 @@ namespace Qiniu.Storage
         /// 0 启用，非禁用后端不返回此字段，因此默认值为 0。
         /// 1 禁用
         /// </summary>
-        [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("status")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int Status { get; set; }
 
         /// <summary>
@@ -87,7 +97,8 @@ namespace Qiniu.Storage
         /// 服务端不确保一定返回此字段，详见：
         /// https://developer.qiniu.com/kodo/1308/stat#:~:text=%E8%AF%A5%E5%AD%97%E6%AE%B5%E3%80%82-,md5,-%E5%90%A6
         /// </summary>
-        [JsonProperty("md5", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("md5")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Md5 { get; set; }
         
         /// <summary>
@@ -95,7 +106,8 @@ namespace Qiniu.Storage
         /// 文件在设置过期时间后才会返回该字段。
         /// 历史文件过期仍会自动删除，但不会返回该字段，重新设置文件过期时间可使历史文件返回该字段。
         /// </summary>
-        [JsonProperty("expiration", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("expiration")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int Expiration { get; set; }
         
         /// <summary>
@@ -103,7 +115,8 @@ namespace Qiniu.Storage
         /// 文件在设置低频存储转换时间后才会返回该字段。
         /// 历史文件到期仍会自动转换，但不会返回该字段，重新设置文件转换时间可使历史文件返回该字段。
         /// </summary>
-        [JsonProperty("TransitionToIA", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("TransitionToIA")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int TransitionToIa { get; set; }
         
         /// <summary>
@@ -111,7 +124,8 @@ namespace Qiniu.Storage
         /// 文件在设置归档直读存储转换时间后才会返回该字段。
         /// 历史文件到期仍会自动转换，但不会返回该字段，重新设置文件转换时间可使历史文件返回该字段。
         /// </summary>
-        [JsonProperty("transitionToArchiveIR", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("transitionToArchiveIR")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int TransitionToArchiveIr { get; set; }
 
         /// <summary>
@@ -119,7 +133,8 @@ namespace Qiniu.Storage
         /// 文件在设置归档存储转换时间后才会返回该字段。
         /// 历史文件到期仍会自动转换，但不会返回该字段，重新设置文件转换时间可使历史文件返回该字段。
         /// </summary>
-        [JsonProperty("transitionToARCHIVE", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("transitionToARCHIVE")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int TransitionToArchive { get; set; }
         
         /// <summary>
@@ -127,7 +142,8 @@ namespace Qiniu.Storage
         /// 文件在设置深度归档存储转换时间后才会返回该字段。
         /// 历史文件到期仍会自动转换，但不会返回该字段，重新设置文件转换时间可使历史文件返回该字段。
         /// </summary>
-        [JsonProperty("transitionToDeepArchive", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("transitionToDeepArchive")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int TransitionToDeepArchive { get; set; }
     }
 }
